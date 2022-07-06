@@ -34,5 +34,6 @@ Methods for measuring oxygen consumption of crabs.
 9. Quickly place respirometry chambers in the experimental tank and attach FireSting probes
 10. Start data collection. Measure until oxygen saturation dips below 80% (about 30 minutes at 15ºC).
 11. Once oxygen saturation is below 80%, remove the crab from the container and quickly reseal the chamber, avoiding any bubbles.
-12. Measure background respiration in the chamber for as long as the crab's respiration was measured. After measuring background respiration, stop logging. While measuring, obtain salinity measurement from experimental tank.
-13. Save data session to appropriate folder on PC. Move data files to separate machine and/or Google Drive as a back-up.
+12. Measure background respiration in the chamber for as long as the crab's respiration was measured. After measuring background respiration, stop logging.
+13. While measuring, obtain salinity measurement from experimental tank. Blot and weigh crabs that were measured.
+14. Save data session to appropriate folder on PC. Move data files to separate machine and/or Google Drive as a back-up.
