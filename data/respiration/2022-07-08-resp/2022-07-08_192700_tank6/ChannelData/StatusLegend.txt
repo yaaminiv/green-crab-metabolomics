@@ -1,0 +1,17 @@
+This legend elaborates on the data stored in the "Status" column of the log files. Example: NotOK(3,9)
+
+0. N/A
+1. N/A
+2. Detector saturated. Reduction of ambient light (e.g. lamp, sunlight) necessary.
+3. Reference signal intensity too low (<20mV). Contact info@pyroscience.com for support
+4. Reference signal too high (>2400mV). Contact info@pyroscience.com for support
+5. Failure of sample temperature sensor (Pt100). Either no sensor is connected or the sensor is broken.
+6. N/A
+7. High humidity (>90%RH). The device can get permanently damaged in condensing conditions. Reduce humidity in the environment of the device.
+8. Failure of case temperature sensor. Contact info@pyroscience.com for support
+9. Failure of pressure sensor. Contact info@pyroscience.com for support
+10. Failure of humidity sensor. Contact info@pyroscience.com for support
+11. Sensor intensity too low for reliable measurements.
+12. Sensor intensity too low for reliable measurements. Probably no sensor connected.
+13. pH sensor out of specified range for this sensor type.
+14. Too much ambient light reaches the detector. Please reduce ambient light for reliable measurements.
