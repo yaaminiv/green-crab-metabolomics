@@ -8,12 +8,12 @@ output: html_document
 # Set up R Markdown document
 
 ```{bash}
-mkdir ../output/01-temp-conditions #Make output directory
+#mkdir ../output/01-temp-conditions #Make output directory
 ```
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = "../output/01-temp-conditions/") #Set root directory
+knitr::opts_knit$set(root.dir = "/Users/yaaminivenkataraman/Documents/green-crab-metabolomics/output/01-temp-conditions") #Set root directory
 ```
 
 #Install packages
@@ -34,23 +34,23 @@ Outliers from when HOBO loggers recorded data while outside of the tank were rem
 ```{r}
 #Import CSV output from HOBO loggers. Skip first line of CSV and specify header. Retain second and third columns, rename columns, and format dateTime column correctly
 
-tank1a <- read.csv("../data/HOBO/yrv_1.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435404..SEN.S.N..21435404.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
-tank1b <- read.csv("../data/HOBO/yrv_2.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435401..SEN.S.N..21435401.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
+tank1a <- read.csv("../../data/HOBO/yrv_1.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435404..SEN.S.N..21435404.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
+tank1b <- read.csv("../../data/HOBO/yrv_2.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435401..SEN.S.N..21435401.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
 
-tank2a <- read.csv("../data/HOBO/yrv_3.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435198..SEN.S.N..21435198.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
-tank2b <- read.csv("../data/HOBO/yrv_4.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435200..SEN.S.N..21435200.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
+tank2a <- read.csv("../../data/HOBO/yrv_3.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435198..SEN.S.N..21435198.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
+tank2b <- read.csv("../../data/HOBO/yrv_4.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435200..SEN.S.N..21435200.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
 
-tank3a <- read.csv("../data/HOBO/yrv_5.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435403..SEN.S.N..21435403.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
-tank3b <- read.csv("../data/HOBO/yrv_6.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435199..SEN.S.N..21435199.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
+tank3a <- read.csv("../../data/HOBO/yrv_5.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435403..SEN.S.N..21435403.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
+tank3b <- read.csv("../../data/HOBO/yrv_6.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435199..SEN.S.N..21435199.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
 
-tank4a <- read.csv("../data/HOBO/yrv_7.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435407..SEN.S.N..21435407.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
-tank4b <- read.csv("../data/HOBO/yrv_8.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435413..SEN.S.N..21435413.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
+tank4a <- read.csv("../../data/HOBO/yrv_7.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435407..SEN.S.N..21435407.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
+tank4b <- read.csv("../../data/HOBO/yrv_8.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435413..SEN.S.N..21435413.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
 
-tank5a <- read.csv("../data/HOBO/yrv_9_13_comb.csv", skip = 1,  header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435414..SEN.S.N..21435414.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
-tank5b <- read.csv("../data/HOBO/yrv_10.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435411..SEN.S.N..21435411.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
+tank5a <- read.csv("../../data/HOBO/yrv_9_13_comb.csv", skip = 1,  header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435414..SEN.S.N..21435414.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
+tank5b <- read.csv("../../data/HOBO/yrv_10.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435411..SEN.S.N..21435411.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
 
-tank6a <- read.csv("../data/HOBO/yrv_11.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435402..SEN.S.N..21435402.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
-tank6b <- read.csv("../data/HOBO/yrv_12.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435410..SEN.S.N..21435410.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
+tank6a <- read.csv("../../data/HOBO/yrv_11.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435402..SEN.S.N..21435402.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
+tank6b <- read.csv("../../data/HOBO/yrv_12.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435410..SEN.S.N..21435410.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
 ```
 
 ```{r}
@@ -61,6 +61,13 @@ head(tank1a) #Confirm import and formatting
 
 ### Calculate treatment mean and SE
 
+```{r}
+hobos <- list(tank1a, tank2a, tank3a, tank4a, tank5a, tank6a,
+              tank1b, tank2b, tank3b, tank4b, tank5b, tank6b) #Create a list of filenames to cycle through
+```
+
+#### For each tank
+
 Row 631 is when HOBO loggers are recording data on the first full day of the experiment after the temperatures have reached the treatment setpoints, so I'll use that as my cutoff.
 
 ```{r}
@@ -70,12 +77,6 @@ treatmentTempStats <- data.frame("tank" = seq(1:6),
 ```
 
 ```{r}
-hobos <- list(tank1a, tank2a, tank3a, tank4a, tank5a, tank6a,
-              tank1b, tank2b, tank3b, tank4b, tank5b, tank6b) #Create a list of filenames to cycle through
-```
-
-
-```{r}
 for (i in 1:(length(hobos)/2)) {
   treatmentTempStats[i,2] <- mean(rbind(hobos[[i]][,2][631:length(hobos[[i]][,2])], hobos[[i+6]][,2][631:length(hobos[[i+6]][,2])]), na.rm = TRUE)
   treatmentTempStats[i,3] <- sd(rbind(hobos[[i]][,2][631:length(hobos[[i]][,2])], hobos[[i+6]][,2][631:length(hobos[[i+6]][,2])]), na.rm = TRUE)
@@ -83,11 +84,53 @@ for (i in 1:(length(hobos)/2)) {
 head(treatmentTempStats) #Confirm calculations
 ```
 
+```{r}
+write.csv(treatmentTempStats, "temp-mean-sd.csv", quote = FALSE)
+```
 
+#### For each treatment
 
+```{r}
+#Ambient
+mean(rbind(hobos[[1]][,2][631:length(hobos[[1]][,2])],
+           hobos[[7]][,2][631:length(hobos[[7]][,2])],
+           hobos[[4]][,2][631:length(hobos[[4]][,2])],
+           hobos[[10]][,2][631:length(hobos[[10]][,2])]),
+     na.rm = TRUE)
+sd(rbind(hobos[[1]][,2][631:length(hobos[[1]][,2])],
+           hobos[[7]][,2][631:length(hobos[[7]][,2])],
+           hobos[[4]][,2][631:length(hobos[[4]][,2])],
+           hobos[[10]][,2][631:length(hobos[[10]][,2])]),
+     na.rm = TRUE)
+```
 
+```{r}
+#Cold
+mean(rbind(hobos[[2]][,2][631:length(hobos[[2]][,2])],
+           hobos[[8]][,2][631:length(hobos[[8]][,2])],
+           hobos[[5]][,2][631:length(hobos[[5]][,2])],
+           hobos[[11]][,2][631:length(hobos[[11]][,2])]),
+     na.rm = TRUE)
+sd(rbind(hobos[[2]][,2][631:length(hobos[[2]][,2])],
+         hobos[[8]][,2][631:length(hobos[[8]][,2])],
+         hobos[[5]][,2][631:length(hobos[[5]][,2])],
+         hobos[[11]][,2][631:length(hobos[[11]][,2])]),
+   na.rm = TRUE)
+```
 
-
+```{r}
+#Warm
+mean(rbind(hobos[[3]][,2][631:length(hobos[[3]][,2])],
+           hobos[[9]][,2][631:length(hobos[[9]][,2])],
+           hobos[[6]][,2][631:length(hobos[[6]][,2])],
+           hobos[[12]][,2][631:length(hobos[[12]][,2])]),
+     na.rm = TRUE)
+sd(rbind(hobos[[3]][,2][631:length(hobos[[3]][,2])],
+         hobos[[9]][,2][631:length(hobos[[9]][,2])],
+         hobos[[6]][,2][631:length(hobos[[6]][,2])],
+         hobos[[12]][,2][631:length(hobos[[12]][,2])]),
+   na.rm = TRUE)
+```
 
 
 
