@@ -132,6 +132,9 @@ sd(rbind(hobos[[3]][,2][631:length(hobos[[3]][,2])],
    na.rm = TRUE)
 ```
 
+# TO DO LIST
 
-
-
+- remove outlier points manually from each HOBO csv
+- change 631 to the appropriate number based on point removal
+- stat diff in temp between treatments and replicates
+- plot temp
