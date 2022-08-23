@@ -16,11 +16,22 @@ knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir = "/Users/yaaminivenkataraman/Documents/green-crab-metabolomics/output/01-temp-conditions") #Set root directory
 ```
 
+```{r}
+setwd("/Users/yaaminivenkataraman/Documents/green-crab-metabolomics/output/01-temp-conditions") #Setting root directory isn't working and I don't know why.
+```
+
+
 #Install packages
 
 ```{r}
 #install.packages("tidyverse")
+#install.packages("qpcR")
+#install.packages("RColorBrewer")
+#install.packages("patchwork")
+require(qpcR)
 require(tidyverse)
+require(RColorBrewer)
+require(patchwork)
 ```
 
 ```{r}
@@ -34,39 +45,56 @@ Outliers from when HOBO loggers recorded data while outside of the tank were rem
 ```{r}
 #Import CSV output from HOBO loggers. Skip first line of CSV and specify header. Retain second and third columns, rename columns, and format dateTime column correctly
 
-tank1a <- read.csv("../../data/HOBO/yrv_1.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435404..SEN.S.N..21435404.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
-tank1b <- read.csv("../../data/HOBO/yrv_2.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435401..SEN.S.N..21435401.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
+tank1a <- read.csv("../../data/HOBO/yrv_1.csv", skip = 1, header = TRUE) %>% dplyr::select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435404..SEN.S.N..21435404.)  %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%H:%M"))
+tank1b <- read.csv("../../data/HOBO/yrv_2.csv", skip = 1, header = TRUE) %>% dplyr::select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435401..SEN.S.N..21435401.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%H:%M"))
 
-tank2a <- read.csv("../../data/HOBO/yrv_3.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435198..SEN.S.N..21435198.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
-tank2b <- read.csv("../../data/HOBO/yrv_4.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435200..SEN.S.N..21435200.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
+tank2a <- read.csv("../../data/HOBO/yrv_3.csv", skip = 1, header = TRUE) %>% dplyr::select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435198..SEN.S.N..21435198.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%H:%M"))
+tank2b <- read.csv("../../data/HOBO/yrv_4.csv", skip = 1, header = TRUE) %>% dplyr::select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435200..SEN.S.N..21435200.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%H:%M"))
 
-tank3a <- read.csv("../../data/HOBO/yrv_5.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435403..SEN.S.N..21435403.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
-tank3b <- read.csv("../../data/HOBO/yrv_6.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435199..SEN.S.N..21435199.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
+tank3a <- read.csv("../../data/HOBO/yrv_5.csv", skip = 1, header = TRUE) %>% dplyr::select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435403..SEN.S.N..21435403.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%H:%M"))
+tank3b <- read.csv("../../data/HOBO/yrv_6.csv", skip = 1, header = TRUE) %>% dplyr::select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435199..SEN.S.N..21435199.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%H:%M"))
 
-tank4a <- read.csv("../../data/HOBO/yrv_7.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435407..SEN.S.N..21435407.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
-tank4b <- read.csv("../../data/HOBO/yrv_8.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435413..SEN.S.N..21435413.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
+tank4a <- read.csv("../../data/HOBO/yrv_7.csv", skip = 1, header = TRUE) %>% dplyr::select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435407..SEN.S.N..21435407.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%H:%M"))
+tank4b <- read.csv("../../data/HOBO/yrv_8.csv", skip = 1, header = TRUE) %>% dplyr::select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435413..SEN.S.N..21435413.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%H:%M"))
 
-tank5a <- read.csv("../../data/HOBO/yrv_9_13_comb.csv", skip = 1,  header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435414..SEN.S.N..21435414.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
-tank5b <- read.csv("../../data/HOBO/yrv_10.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435411..SEN.S.N..21435411.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
+tank5a <- read.csv("../../data/HOBO/yrv_9_13_comb.csv", skip = 1,  header = TRUE) %>% dplyr::select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435414..SEN.S.N..21435414.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%H:%M"))
+tank5b <- read.csv("../../data/HOBO/yrv_10.csv", skip = 1, header = TRUE) %>% dplyr::select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435411..SEN.S.N..21435411.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%H:%M"))
 
-tank6a <- read.csv("../../data/HOBO/yrv_11.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435402..SEN.S.N..21435402.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
-tank6b <- read.csv("../../data/HOBO/yrv_12.csv", skip = 1, header = TRUE) %>% select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435410..SEN.S.N..21435410.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%r"))
+tank6a <- read.csv("../../data/HOBO/yrv_11.csv", skip = 1, header = TRUE) %>% dplyr::select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435402..SEN.S.N..21435402.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%H:%M"))
+tank6b <- read.csv("../../data/HOBO/yrv_12.csv", skip = 1, header = TRUE) %>% dplyr::select(., 2:3) %>% rename(dateTime = Date.Time..GMT.04.00, temp = Temp...C..LGR.S.N..21435410..SEN.S.N..21435410.) %>% mutate(dateTime = as.POSIXct(dateTime, format = "%m/%d/%y%t%H:%M"))
 ```
 
 ```{r}
-head(tank1a) #Confirm import and formatting
+#Add columns for tank ID and treatment
+
+tank1a <- tank1a %>% mutate(tank = rep(1, times = length(tank1a[,1])), treatment = rep("ambient", times = length(tank1a[,1])))
+tank1b <-tank1b %>% mutate(tank = rep(1, times = length(tank1b[,1])), treatment = rep("ambient", times = length(tank1b[,1])))
+
+tank2a <- tank2a %>% mutate(tank = rep(2, times = length(tank2a[,1])), treatment = rep("cold", times = length(tank2a[,1])))
+tank2b <- tank2b %>% mutate(tank = rep(2, times = length(tank2b[,1])), treatment = rep("cold", times = length(tank2b[,1])))
+
+tank3a <- tank3a %>% mutate(tank = rep(3, times = length(tank3a[,1])), treatment = rep("warm", times = length(tank3a[,1])))
+tank3b <- tank3b %>% mutate(tank = rep(3, times = length(tank3b[,1])), treatment = rep("warm", times = length(tank3b[,1])))
+
+tank4a <- tank4a %>% mutate(tank = rep(4, times = length(tank4a[,1])), treatment = rep("ambient", times = length(tank4a[,1])))
+tank4b <- tank4b %>% mutate(tank = rep(4, times = length(tank4b[,1])), treatment = rep("ambient", times = length(tank4b[,1])))
+
+tank5a <- tank5a %>% mutate(tank = rep(5, times = length(tank5a[,1])), treatment = rep("cold", times = length(tank5a[,1])))
+tank5b <- tank5b %>% mutate(tank = rep(5, times = length(tank5b[,1])), treatment = rep("cold", times = length(tank5b[,1])))
+
+tank6a <- tank6a %>% mutate(tank = rep(6, times = length(tank6a[,1])), treatment = rep("warm", times = length(tank6a[,1])))
+tank6b <- tank6b %>% mutate(tank = rep(6, times = length(tank6b[,1])), treatment = rep("warm", times = length(tank6b[,1])))
 ```
+# Treatment conditions
 
-## Treatment conditions
-
-### Calculate treatment mean and SE
+## Calculate treatment mean and SE
 
 ```{r}
 hobos <- list(tank1a, tank2a, tank3a, tank4a, tank5a, tank6a,
               tank1b, tank2b, tank3b, tank4b, tank5b, tank6b) #Create a list of filenames to cycle through
 ```
 
-#### For each tank
+### For each tank
 
 Row 631 is when HOBO loggers are recording data on the first full day of the experiment after the temperatures have reached the treatment setpoints, so I'll use that as my cutoff.
 
@@ -88,53 +116,159 @@ head(treatmentTempStats) #Confirm calculations
 write.csv(treatmentTempStats, "temp-mean-sd.csv", quote = FALSE)
 ```
 
-#### For each treatment
+### For each treatment
 
 ```{r}
-#Ambient
-mean(rbind(hobos[[1]][,2][631:length(hobos[[1]][,2])],
-           hobos[[7]][,2][631:length(hobos[[7]][,2])],
-           hobos[[4]][,2][631:length(hobos[[4]][,2])],
-           hobos[[10]][,2][631:length(hobos[[10]][,2])]),
-     na.rm = TRUE)
-sd(rbind(hobos[[1]][,2][631:length(hobos[[1]][,2])],
-           hobos[[7]][,2][631:length(hobos[[7]][,2])],
-           hobos[[4]][,2][631:length(hobos[[4]][,2])],
-           hobos[[10]][,2][631:length(hobos[[10]][,2])]),
-     na.rm = TRUE)
+#Ambient: Mean = 13.79212, SD = 0.9136427
+ambientMean <- mean(rbind(hobos[[1]][,2][631:length(hobos[[1]][,2])],
+                          hobos[[7]][,2][631:length(hobos[[7]][,2])],
+                          hobos[[4]][,2][631:length(hobos[[4]][,2])],
+                          hobos[[10]][,2][631:length(hobos[[10]][,2])]),
+                    na.rm = TRUE)
+ambientSD <- sd(rbind(hobos[[1]][,2][631:length(hobos[[1]][,2])],
+                      hobos[[7]][,2][631:length(hobos[[7]][,2])],
+                      hobos[[4]][,2][631:length(hobos[[4]][,2])],
+                      hobos[[10]][,2][631:length(hobos[[10]][,2])]),
+                na.rm = TRUE)
+ambientMean
+ambientSD
 ```
 
 ```{r}
-#Cold
-mean(rbind(hobos[[2]][,2][631:length(hobos[[2]][,2])],
-           hobos[[8]][,2][631:length(hobos[[8]][,2])],
-           hobos[[5]][,2][631:length(hobos[[5]][,2])],
-           hobos[[11]][,2][631:length(hobos[[11]][,2])]),
-     na.rm = TRUE)
-sd(rbind(hobos[[2]][,2][631:length(hobos[[2]][,2])],
-         hobos[[8]][,2][631:length(hobos[[8]][,2])],
-         hobos[[5]][,2][631:length(hobos[[5]][,2])],
-         hobos[[11]][,2][631:length(hobos[[11]][,2])]),
-   na.rm = TRUE)
+#Cold: Mean = 5.666688, SD = 0.3637059
+coldMean <- mean(rbind(hobos[[2]][,2][631:length(hobos[[2]][,2])],
+                       hobos[[8]][,2][631:length(hobos[[8]][,2])],
+                       hobos[[5]][,2][631:length(hobos[[5]][,2])],
+                       hobos[[11]][,2][631:length(hobos[[11]][,2])]),
+                 na.rm = TRUE)
+coldSD <- sd(rbind(hobos[[2]][,2][631:length(hobos[[2]][,2])],
+                   hobos[[8]][,2][631:length(hobos[[8]][,2])],
+                   hobos[[5]][,2][631:length(hobos[[5]][,2])],
+                   hobos[[11]][,2][631:length(hobos[[11]][,2])]),
+             na.rm = TRUE)
+coldMean
+coldSD
 ```
 
 ```{r}
-#Warm
-mean(rbind(hobos[[3]][,2][631:length(hobos[[3]][,2])],
-           hobos[[9]][,2][631:length(hobos[[9]][,2])],
-           hobos[[6]][,2][631:length(hobos[[6]][,2])],
-           hobos[[12]][,2][631:length(hobos[[12]][,2])]),
-     na.rm = TRUE)
-sd(rbind(hobos[[3]][,2][631:length(hobos[[3]][,2])],
-         hobos[[9]][,2][631:length(hobos[[9]][,2])],
-         hobos[[6]][,2][631:length(hobos[[6]][,2])],
-         hobos[[12]][,2][631:length(hobos[[12]][,2])]),
-   na.rm = TRUE)
+#Warm: Mean = 30.81052, SD = 2.360069
+warmMean <- mean(rbind(hobos[[3]][,2][631:length(hobos[[3]][,2])],
+                       hobos[[9]][,2][631:length(hobos[[9]][,2])],
+                       hobos[[6]][,2][631:length(hobos[[6]][,2])],
+                       hobos[[12]][,2][631:length(hobos[[12]][,2])]),
+                 na.rm = TRUE)
+warmSD <- sd(rbind(hobos[[3]][,2][631:length(hobos[[3]][,2])],
+                   hobos[[9]][,2][631:length(hobos[[9]][,2])],
+                   hobos[[6]][,2][631:length(hobos[[6]][,2])],
+                   hobos[[12]][,2][631:length(hobos[[12]][,2])]),
+             na.rm = TRUE)
+warmMean
+warmSD
 ```
+
+# Statistical test
+
+I will conduct a one-way ANOVA to confirm there are significant differences between treatments.
+
+```{r}
+tempDataLong <- rbind(tank1a, tank1b,
+                      tank2a, tank2b,
+                      tank3a, tank3b,
+                      tank4a, tank4b,
+                      tank5a, tank5b,
+                      tank6a, tank6b) %>% drop_na() #Create long dataframe for ANOVA and remove rows with NAs
+tail(tempDataLong) #Confirm dataframe creation
+```
+
+```{r}
+tempANOVA <- aov(temp ~ treatment, data = tempDataLong) #One-way ANOVA by treatment
+summary(tempANOVA)[[1]][4][[1]][1] # F = 42002.94
+summary(tempANOVA)[[1]][5][[1]][1] # P-value = 0
+```
+
+# Plot temperature
+
+## Average temperature by tank and treatment
+
+```{r}
+ambientTemp <- qpcR:::cbind.na(tank1a, tank1b, tank4a, tank4b) #Use cbind.na to cbind dataframes with uneven numbers of rows, calculate mean temperature, and only retain treatment period data
+ambientTemp$avgAmbientTemp <- rowMeans(ambientTemp[,c(2, 6, 10, 14)], na.rm = TRUE) #Calculate mean temperature
+ambientTemp <- ambientTemp[,c(13,17)] %>% slice(-(1:630)) #Drop extra dateTime columns and only retain treatment period data
+tail(ambientTemp) #Confirm formatting
+```
+
+```{r}
+coldTemp <- qpcR:::cbind.na(tank2a, tank2b, tank5a, tank5b) #Use cbind.na to cbind dataframes with uneven numbers of rows
+coldTemp$avgColdTemp <- rowMeans(coldTemp[,c(2, 6, 10, 14)], na.rm = TRUE) #Calculate mean temperature
+coldTemp <- coldTemp[,c(13,17)] %>% slice(-(1:630)) #Drop extra dateTime columns and only retain treatment period data
+tail(coldTemp) #Confirm formatting
+```
+
+```{r}
+warmTemp <- qpcR:::cbind.na(tank3a, tank3b, tank6a, tank6b) #Use cbind.na to cbind dataframes with uneven numbers of rows
+warmTemp$avgWarmTemp <- rowMeans(warmTemp[,c(2, 6, 10, 14)], na.rm = TRUE) #Calculate mean temperature
+warmTemp <- warmTemp[,c(13,17)] %>% slice(-(1:630)) #Drop extra columns and only retain treatment period data
+tail(warmTemp) #Confirm formatting
+```
+
+```{r}
+allTemps <- qpcR:::cbind.na(ambientTemp,
+                            coldTemp,
+                            warmTemp) #Combine columns for figure into same dataframe
+allTemps <- allTemps[,c(5,2,4,6)] #Drop extra dateTime and reorder columns
+head(allTemps)
+```
+
+## Create plot
+
+```{r}
+plotColors <- c(brewer.pal(9, "Reds")[7],
+                brewer.pal(9, "Greys")[7],
+                brewer.pal(9, "Blues")[7]) #Create color scheme
+```
+
+
+```{r}
+#Create individual plots for each temperature
+
+warmPlot <- ggplot(data = allTemps) + 
+  geom_ribbon(aes(x = dateTime, y = avgWarmTemp, ymin = warmMean - warmSD, ymax = warmMean + warmSD), fill = plotColors[1], alpha = 0.15) +
+  geom_line(aes(x = dateTime, y = avgWarmTemp), color = plotColors[1]) +
+  geom_hline(yintercept = 30.8, colour = plotColors[1], linetype = 3) +
+  labs(x = "", y = "") + scale_y_continuous(breaks = seq(23.5, 32.5, 3)) +
+  theme_classic() + theme(axis.line.x = element_blank(),
+                          axis.ticks.x = element_blank(),
+                          axis.text.x = element_blank(),
+                          axis.text.y = element_text(size = 13),
+                          plot.margin = margin(2,0,1,0))
+
+ambientPlot <- ggplot(data = allTemps) + 
+  geom_ribbon(aes(x = dateTime, y = avgAmbientTemp, ymin = ambientMean - ambientSD, ymax = ambientMean + ambientSD), fill = plotColors[2], alpha = 0.15) +
+  geom_line(aes(x = dateTime, y = avgAmbientTemp), color = plotColors[2]) + 
+  geom_hline(yintercept = 13.8, colour = plotColors[2], linetype = 3) +
+  labs(x = "", y = "Temperature (ºC)") + scale_y_continuous(limits = c(12, 16), breaks = seq(12, 16, 1)) +
+  theme_classic() + theme(axis.line.x = element_blank(),
+                          axis.ticks.x = element_blank(),
+                          axis.text.x = element_blank(),
+                          axis.text.y = element_text(size = 13),
+                          axis.title.y = element_text(size = 20),
+                          plot.margin = margin(2,0,1,0))
+
+#Cold: Mean = 5.666688, SD = 0.3637059
+coldPlot <- ggplot(data = allTemps) + 
+  geom_ribbon(aes(x = dateTime, y = avgColdTemp, ymin = coldMean - coldSD, ymax = coldMean + coldSD), fill = plotColors[3], alpha = 0.15) +
+  geom_line(aes(x = dateTime, y = avgColdTemp), color = plotColors[3]) + 
+  geom_hline(yintercept = 5.7, colour = plotColors[3], linetype = 3) +
+  labs(x = "", y = "") + scale_y_continuous(limits = c(5, 7.5), breaks = seq(5, 7.5, 0.5)) + 
+  theme_classic() + theme(axis.text = element_text(size = 13),
+                          plot.margin = margin(2,0,1,0))
+
+warmPlot / ambientPlot / coldPlot #Assemble individual plots using patchwork
+ggsave("exp-temp.pdf", width = 11, height = 8.5)
+```
+
+
 
 # TO DO LIST
 
-- remove outlier points manually from each HOBO csv
-- change 631 to the appropriate number based on point removal
-- stat diff in temp between treatments and replicates
-- plot temp
+- fix y-axis on ambient and warm plots
