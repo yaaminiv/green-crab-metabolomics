@@ -1,0 +1,86 @@
+id,acclimation-tank,sex,integument-color,carapace-width,carapace-length,weight,treatment,treatment-tank,notes
+1,T6,M,YG,44,39,18.20,ambient,1,
+15,T5,M,YG,49,41,29.44,ambient,1,
+29,T4,M,Y,49,39,26.54,ambient,1,
+30,T4,M,G,46,38,23.31,ambient,1,
+33,T4,M,YG,50,40,31.32,ambient,1,
+46,T3,M,Y,49,38,23.36,ambient,1,-1 leg
+48,T3,F,YO,42,36,18.09,ambient,1,removed to even out number of females in each tank
+49,T3,F,Y,45,38,22.72,ambient,1,
+54,T3,F,G,40,32,13.86,ambient,1,
+56,T3,F,YG,40,32,13.35,ambient,1,
+57,T3,F,B,41,34,16.28,ambient,1,
+59,T2,M,YG,47,39,24.65,ambient,1,
+60,T2,M,YO,44,36,21.14,ambient,1,
+65,T2,F,BG,46,38,20.94,ambient,1,
+84,T1,M,G,40,31,13.72,ambient,1,
+2,T6,F,BG,49,40,25.34,cold,2,-2 leg
+3,T6,M,YG,51,41,33.87,cold,2,-2 leg
+10,T6,F,Y,42,35,17.18,cold,2,
+16,T5,M,YG,49,40,29.32,cold,2,
+31,T4,M,Y,50,40,29.00,cold,2,
+42,T4,M,G,48,39,23.79,cold,2,
+45,T3,M,YG,46,36,21.82,cold,2,
+61,T2,M,Y,49,40,28.62,cold,2,
+62,T2,M,YG,45,36,20.13,cold,2,
+66,T2,F,Y,42,35,18.34,cold,2,
+67,T2,F,YG,38,31,12.65,cold,2,
+74,T1,M,BG,49,39,24.72,cold,2,"-1 leg, shell crack"
+80,T1,F,BG,48,39,23.22,cold,2,
+83,T1,M,G,42,34,18.67,warm,2,
+5,T6,F,BG,44,36,19.39,warm,3,
+6,T6,M,YG,55,43,35.81,warm,3,
+13,T6,F,G,39,31,13.39,warm,3,
+17,T5,M,Y,49,39,26.36,warm,3,
+18,T5,M,YG,50,41,30.07,warm,3,-2 leg
+21,T5,F,Y,44,37,21.73,warm,3,
+25,T5,F,YG,41,34,16.00,warm,3,
+32,T4,M,Y,50,39,27.39,warm,3,
+44,T3,M,G,52,42,34.08,warm,3,-1 leg
+47,T3,M,YG,46,36,24.19,warm,3,
+63,T2,M,Y,49,40,27.88,warm,3,
+64,T2,M,YG,47,38,22.20,warm,3,-1 leg
+68,T2,F,YG,39,31,13.11,warm,3,
+75,T1,M,BG,51,39,28.73,warm,3,
+4,T6,M,G,48,39,24.71,ambient,4,
+8,T6,M,YG,50,39,25.15,ambient,4,
+9,T6,F,BG,39,31,11.01,ambient,4,
+19,T5,M,Y,40,33,16.34,ambient,4,
+20,T5,M,YG,47,39,25.81,ambient,4,
+23,T5,F,Y,44,36,19.48,ambient,4,
+34,T4,F,G,45,39,21.60,ambient,4,
+35,T4,F,YG,42,34,20.03,ambient,4,
+36,T4,M,Y,42,34,15.98,ambient,4,
+50,T3,M,YG,43,34,16.34,ambient,4,-1 leg
+69,T2,F,YG,38,31,12.19,ambient,4,
+70,T2,M,YG,40,32,12.81,ambient,4,-1 leg
+71,T2,M,G,39,31,12.91,ambient,4,
+77,T1,M,Y,49,39,25.77,ambient,4,-1 leg
+7,T6,M,G,51,41,33.45,cold,5,-1 leg
+12,T6,M,YG,49,39,25.83,cold,5,
+22,T5,M,YG,49,26,23.71,cold,5,
+24,T5,F,Y,40,32,14.74,cold,5,
+26,T5,M,Y,43,35,19.78,cold,5,-1 leg
+37,T4,F,YG,44,38,19.26,cold,5,
+38,T4,F,G,40,32,13.63,cold,5,
+39,T4,F,BG,41,32,14.02,cold,5,
+41,T4,M,Y,42,34,16.00,cold,5,-1 leg
+55,T3,M,YG,37,31,12.69,cold,5,
+72,T1,M,G,59,48,49.42,cold,5,
+73,T1,M,YG,55,44,36.97,cold,5,
+78,T1,M,Y,45,38,22.24,cold,5,
+79,T1,F,YG,45,37,20.67,cold,5,- 1 leg
+11,T6,M,G,39,31,13.55,warm,6,
+14,T5,M,YG,50,41,28.57,warm,6,
+27,T5,M,Y,41,33,15.96,warm,6,-1 leg
+28,T5,M,YG,39,31,14.69,warm,6,
+40,T4,F,Y,37,32,13.60,warm,6,
+43,T4,M,Y,49,33,19.76,warm,6,
+51,T3,F,YG,46,37,18.89,warm,6,
+52,T3,F,G,41,35,17.19,warm,6,
+53,T3,F,BG,39,33,14.68,warm,6,
+58,T2,M,YG,55,44,39.19,warm,6,
+76,T1,M,YG,45,36,19.35,warm,6,-1 leg
+81,T1,M,Y,44,36,21.10,warm,6,
+82,T1,F,YG,44,36,18.09,warm,6,
+85,T1,F,G,44,36,17.00,cold,6,
