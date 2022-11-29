@@ -34,9 +34,11 @@ cw_data <- read.csv("carapace_width.csv")
 cl_data <- read.csv("carapace_length.csv")
 ig_data <- read.csv("integument_color.csv")
 w_data <- read.csv("weight.csv")
+
 ```
 
 ```{r Carapace Width, echo=FALSE}
+
 cw_1 <- cw_data[c(1:7,43:49,85:91,127:133,169:175,210:220),c(1,2:3)]
 cw_2 <- cw_data[c(8:14,50:56,92:98,134:140,176:182,221:230),c(1,2:3)]
 cw_3 <- cw_data[c(15:21,57:63,99:105,141:147,183:188,231:235),c(1,2:3)]
@@ -44,12 +46,13 @@ cw_4 <- cw_data[c(22:28,64:70,106:112,148:154,189:195,236:245),c(1,2:3)]
 cw_5 <- cw_data[c(29:35,71:77,113:119,155:161,196:202,246:255),c(1,2:3)]
 cw_6 <- cw_data[c(36:42,78:84,120:126,162:168,203:209,256:260),c(1,2:3)]
 
-cw1_bp <- ggplot(data = cw_1, aes(x=date, y=carapace.width)) + geom_boxplot() + geom_jitter() + stat_compare_means() + labs(y = "Carapace Width", x = "Day") 
-cw2_bp <- ggplot(data = cw_2, aes(x=date, y=carapace.width)) + geom_boxplot() + geom_jitter() + stat_compare_means() + labs(y = "Carapace Width", x = "Day") 
-cw3_bp <- ggplot(data = cw_3, aes(x=date, y=carapace.width)) + geom_boxplot() + geom_jitter() + stat_compare_means() + labs(y = "Carapace Width", x = "Day") 
-cw4_bp <- ggplot(data = cw_4, aes(x=date, y=carapace.width)) + geom_boxplot() + geom_jitter() + stat_compare_means() + labs(y = "Carapace Width", x = "Day") 
-cw5_bp <- ggplot(data = cw_5, aes(x=date, y=carapace.width)) + geom_boxplot() + geom_jitter() + stat_compare_means() + labs(y = "Carapace Width", x = "Day") 
-cw6_bp <- ggplot(data = cw_6, aes(x=date, y=carapace.width)) + geom_boxplot() + geom_jitter() + stat_compare_means() + labs(y = "Carapace Width", x = "Day") 
+cw1_bp <- ggplot(data = cw_1, aes(x=factor(as.Date(date,format="%m/%d/%Y")), y=carapace.width)) + geom_boxplot() + geom_point() + stat_compare_means() + labs(y = "Carapace Width", x = "Day") 
+cw2_bp <- ggplot(data = cw_2, aes(x=factor(as.Date(date,format="%m/%d/%Y")), y=carapace.width)) + geom_boxplot() + geom_point() + stat_compare_means() + labs(y = "Carapace Width", x = "Day") 
+cw3_bp <- ggplot(data = cw_3, aes(x=factor(as.Date(date,format="%m/%d/%Y")), y=carapace.width)) + geom_boxplot() + geom_point() + stat_compare_means() + labs(y = "Carapace Width", x = "Day") 
+cw4_bp <- ggplot(data = cw_4, aes(x=factor(as.Date(date,format="%m/%d/%Y")), y=carapace.width)) + geom_boxplot() + geom_point() + stat_compare_means() + labs(y = "Carapace Width", x = "Day") 
+cw5_bp <- ggplot(data = cw_5, aes(x=factor(as.Date(date,format="%m/%d/%Y")), y=carapace.width)) + geom_boxplot() + geom_point() + stat_compare_means() + labs(y = "Carapace Width", x = "Day") 
+cw6_bp <- ggplot(data = cw_6, aes(x=factor(as.Date(date,format="%m/%d/%Y")), y=carapace.width)) + geom_boxplot() + geom_point() + stat_compare_means() + labs(y = "Carapace Width", x = "Day") 
+
 
 p_cw <- plot_grid(cw1_bp + rremove("x.text"), cw2_bp + rremove("x.text"), cw3_bp + rremove("x.text"), cw4_bp + rremove("x.text"), cw5_bp + rremove("x.text"), cw6_bp + rremove("x.text"), labels = c("1","2","3","4","5","6"), ncol=3, nrow=2)
 title_cw <- ggdraw() + draw_label("Carapace Width Over Time", fontface='bold')
@@ -65,12 +68,12 @@ cl_4 <- cl_data[c(22:28,64:70,106:112,148:154,189:195,236:245),c(1,2:3)]
 cl_5 <- cl_data[c(29:35,71:77,113:119,155:161,196:202,246:255),c(1,2:3)]
 cl_6 <- cl_data[c(36:42,78:84,120:126,162:168,203:209,256:260),c(1,2:3)]
 
-cl1_bp <- ggplot(data = cl_1, aes(x=date, y=carapace.length)) + geom_boxplot() + geom_jitter() + stat_compare_means() + labs(y = "Carapace Length", x = "Day") 
-cl2_bp <- ggplot(data = cl_2, aes(x=date, y=carapace.length)) + geom_boxplot() + geom_jitter() + stat_compare_means() + labs(y = "Carapace Length", x = "Day") 
-cl3_bp <- ggplot(data = cl_3, aes(x=date, y=carapace.length)) + geom_boxplot() + geom_jitter() + stat_compare_means() + labs(y = "Carapace Length", x = "Day") 
-cl4_bp <- ggplot(data = cl_4, aes(x=date, y=carapace.length)) + geom_boxplot() + geom_jitter() + stat_compare_means() + labs(y = "Carapace Length", x = "Day") 
-cl5_bp <- ggplot(data = cl_5, aes(x=date, y=carapace.length)) + geom_boxplot() + geom_jitter() + stat_compare_means() + labs(y = "Carapace Length", x = "Day") 
-cl6_bp <- ggplot(data = cl_6, aes(x=date, y=carapace.length)) + geom_boxplot() + geom_jitter() + stat_compare_means() + labs(y = "Carapace Length", x = "Day") 
+cl1_bp <- ggplot(data = cl_1, aes(x=factor(as.Date(date,format="%m/%d/%Y")), y=carapace.length)) + geom_boxplot() + geom_point() + stat_compare_means() + labs(y = "Carapace Length", x = "Day") 
+cl2_bp <- ggplot(data = cl_2, aes(x=factor(as.Date(date,format="%m/%d/%Y")), y=carapace.length)) + geom_boxplot() + geom_point() + stat_compare_means() + labs(y = "Carapace Length", x = "Day") 
+cl3_bp <- ggplot(data = cl_3, aes(x=factor(as.Date(date,format="%m/%d/%Y")), y=carapace.length)) + geom_boxplot() + geom_point() + stat_compare_means() + labs(y = "Carapace Length", x = "Day") 
+cl4_bp <- ggplot(data = cl_4, aes(x=factor(as.Date(date,format="%m/%d/%Y")), y=carapace.length)) + geom_boxplot() + geom_point() + stat_compare_means() + labs(y = "Carapace Length", x = "Day") 
+cl5_bp <- ggplot(data = cl_5, aes(x=factor(as.Date(date,format="%m/%d/%Y")), y=carapace.length)) + geom_boxplot() + geom_point() + stat_compare_means() + labs(y = "Carapace Length", x = "Day") 
+cl6_bp <- ggplot(data = cl_6, aes(x=factor(as.Date(date,format="%m/%d/%Y")), y=carapace.length)) + geom_boxplot() + geom_point() + stat_compare_means() + labs(y = "Carapace Length", x = "Day") 
 
 p_cl <- plot_grid(cl1_bp + rremove("x.text"), cl2_bp + rremove("x.text"), cl3_bp + rremove("x.text"), cl4_bp + rremove("x.text"), cl5_bp + rremove("x.text"), cl6_bp + rremove("x.text"), labels = c("1","2","3","4","5","6"), ncol=3, nrow=2)
 title_cl <- ggdraw() + draw_label("Carapace Length Over Time", fontface='bold')
@@ -86,12 +89,12 @@ w_4 <- w_data[c(22:28,64:70,106:112,148:154,189:195,236:245),c(1,2:3)]
 w_5 <- w_data[c(29:35,71:77,113:119,155:161,196:202,246:255),c(1,2:3)]
 w_6 <- w_data[c(36:42,78:84,120:126,162:168,203:209,256:260),c(1,2:3)]
 
-w1_bp <- ggplot(data = w_1, aes(x=date, y=weight)) + geom_boxplot() + geom_jitter() + stat_compare_means() + labs(y = "Weight", x = "Day") 
-w2_bp <- ggplot(data = w_2, aes(x=date, y=weight)) + geom_boxplot() + geom_jitter() + stat_compare_means() + labs(y = "Weight", x = "Day") 
-w3_bp <- ggplot(data = w_3, aes(x=date, y=weight)) + geom_boxplot() + geom_jitter() + stat_compare_means() + labs(y = "Weight", x = "Day") 
-w4_bp <- ggplot(data = w_4, aes(x=date, y=weight)) + geom_boxplot() + geom_jitter() + stat_compare_means() + labs(y = "Weight", x = "Day") 
-w5_bp <- ggplot(data = w_5, aes(x=date, y=weight)) + geom_boxplot() + geom_jitter() + stat_compare_means() + labs(y = "Weight", x = "Day") 
-w6_bp <- ggplot(data = w_6, aes(x=date, y=weight)) + geom_boxplot() + geom_jitter() + stat_compare_means() + labs(y = "Weight", x = "Day") 
+w1_bp <- ggplot(data = w_1, aes(x=factor(as.Date(date,format="%m/%d/%Y")), y=weight)) + geom_boxplot() + geom_point() + stat_compare_means() + labs(y = "Weight", x = "Day") 
+w2_bp <- ggplot(data = w_2, aes(x=factor(as.Date(date,format="%m/%d/%Y")), y=weight)) + geom_boxplot() + geom_point() + stat_compare_means() + labs(y = "Weight", x = "Day") 
+w3_bp <- ggplot(data = w_3, aes(x=factor(as.Date(date,format="%m/%d/%Y")), y=weight)) + geom_boxplot() + geom_point() + stat_compare_means() + labs(y = "Weight", x = "Day") 
+w4_bp <- ggplot(data = w_4, aes(x=factor(as.Date(date,format="%m/%d/%Y")), y=weight)) + geom_boxplot() + geom_point() + stat_compare_means() + labs(y = "Weight", x = "Day") 
+w5_bp <- ggplot(data = w_5, aes(x=factor(as.Date(date,format="%m/%d/%Y")), y=weight)) + geom_boxplot() + geom_point() + stat_compare_means() + labs(y = "Weight", x = "Day") 
+w6_bp <- ggplot(data = w_6, aes(x=factor(as.Date(date,format="%m/%d/%Y")), y=weight)) + geom_boxplot() + geom_point() + stat_compare_means() + labs(y = "Weight", x = "Day") 
 
 title_w <- ggdraw() + draw_label("Weight Over Time", fontface='bold')
 p_w <- plot_grid(w1_bp + rremove("x.text"), w2_bp + rremove("x.text"), w3_bp + rremove("x.text"), w4_bp + rremove("x.text"), w5_bp + rremove("x.text"), w6_bp + rremove("x.text"), labels = c("1","2","3","4","5","6"), ncol=3, nrow=2)
@@ -112,14 +115,14 @@ ig_4 <- ig_data[c(22:28,64:70,106:112,148:154,189:195,236:245),c(1,2,4)]
 ig_5 <- ig_data[c(29:35,71:77,113:119,155:161,196:202,246:255),c(1,2,4)]
 ig_6 <- ig_data[c(36:42,78:84,120:126,162:168,203:209,256:260),c(1,2,4)]
 
-ig1_bp <- ggplot(data = ig_1, aes(x=date, fill = integument_color)) + scale_fill_manual(values = c("#00CCCC","#99FF33","#CCFF00","#FFFF00","#FFCC00","#FF9900","#FF6600")) + geom_bar() + theme(legend.position="none") + rremove("x.text") + labs(y = "Number of Crabs", x = "Day") 
-ig2_bp <- ggplot(data = ig_2, aes(x=date, fill = integument_color)) + scale_fill_manual(values = c("#00CCCC","#99FF33","#CCFF00","#FFFF00","#FFCC00","#FF9900","#FF6600")) + geom_bar() + theme(legend.position="none") + rremove("x.text") + labs(y = "Number of Crabs", x = "Day") 
-ig3_bp <- ggplot(data = ig_3, aes(x=date, fill = integument_color)) + scale_fill_manual(values = c("#99FF33","#CCFF00","#FFFF00","#FFCC00","#FF9900","#FF6600")) + geom_bar() + theme(legend.position="none") + rremove("x.text") + labs(y = "Number of Crabs", x = "Day") 
-ig4_bp <- ggplot(data = ig_4, aes(x=date, fill = integument_color)) + scale_fill_manual(values = c("#99FF33","#CCFF00","#FFFF00","#FFCC00","#FF9900","#FF6600")) + geom_bar() + theme(legend.position="none") + rremove("x.text") + labs(y = "Number of Crabs", x = "Day") 
-ig5_bp <- ggplot(data = ig_5, aes(x=date, fill = integument_color)) + scale_fill_manual(values = c("#00CCCC","#99FF33","#CCFF00","#FFFF00","#FFCC00","#FF9900","#FF6600")) + geom_bar() + theme(legend.position="none") + rremove("x.text") + labs(y = "Number of Crabs", x = "Day") 
-ig6_bp <- ggplot(data = ig_6, aes(x=date, fill = integument_color)) + scale_fill_manual(values = c("#99FF33","#CCFF00","#FFFF00","#FFCC00","#FF9900","#FF6600")) + geom_bar() + theme(legend.position="none") + rremove("x.text") + labs(y = "Number of Crabs", x = "Day") 
+ig1_bp <- ggplot(data = ig_1, aes(x=factor(as.Date(date,format="%m/%d/%Y")), fill = integument_color)) + scale_fill_manual(values = c("#00CCCC","#99FF33","#CCFF00","#FFFF00","#FFCC00","#FF9900","#FF6600")) + geom_bar() + theme(legend.position="none") + rremove("x.text") + labs(y = "Number of Crabs", x = "Day") 
+ig2_bp <- ggplot(data = ig_2, aes(x=factor(as.Date(date,format="%m/%d/%Y")), fill = integument_color)) + scale_fill_manual(values = c("#00CCCC","#99FF33","#CCFF00","#FFFF00","#FFCC00","#FF9900","#FF6600")) + geom_bar() + theme(legend.position="none") + rremove("x.text") + labs(y = "Number of Crabs", x = "Day") 
+ig3_bp <- ggplot(data = ig_3, aes(x=factor(as.Date(date,format="%m/%d/%Y")), fill = integument_color)) + scale_fill_manual(values = c("#99FF33","#CCFF00","#FFFF00","#FFCC00","#FF9900","#FF6600")) + geom_bar() + theme(legend.position="none") + rremove("x.text") + labs(y = "Number of Crabs", x = "Day") 
+ig4_bp <- ggplot(data = ig_4, aes(x=factor(as.Date(date,format="%m/%d/%Y")), fill = integument_color)) + scale_fill_manual(values = c("#99FF33","#CCFF00","#FFFF00","#FFCC00","#FF9900","#FF6600")) + geom_bar() + theme(legend.position="none") + rremove("x.text") + labs(y = "Number of Crabs", x = "Day") 
+ig5_bp <- ggplot(data = ig_5, aes(x=factor(as.Date(date,format="%m/%d/%Y")), fill = integument_color)) + scale_fill_manual(values = c("#00CCCC","#99FF33","#CCFF00","#FFFF00","#FFCC00","#FF9900","#FF6600")) + geom_bar() + theme(legend.position="none") + rremove("x.text") + labs(y = "Number of Crabs", x = "Day") 
+ig6_bp <- ggplot(data = ig_6, aes(x=factor(as.Date(date,format="%m/%d/%Y")), fill = integument_color)) + scale_fill_manual(values = c("#99FF33","#CCFF00","#FFFF00","#FFCC00","#FF9900","#FF6600")) + geom_bar() + theme(legend.position="none") + rremove("x.text") + labs(y = "Number of Crabs", x = "Day") 
 
-ig_all_bp <- ggplot(data = ig_all, aes(x=date, fill = integument_color)) + scale_fill_manual(values = c("#00CCCC","#99FF33","#CCFF00","#FFFF00","#FFCC00","#FF9900","#FF6600")) + geom_bar() + labs(y = "Number of Crabs", x = "Day")
+ig_all_bp <- ggplot(data = ig_all, aes(x=factor(as.Date(date,format="%m/%d/%Y")), fill = integument_color)) + scale_fill_manual(values = c("#00CCCC","#99FF33","#CCFF00","#FFFF00","#FFCC00","#FF9900","#FF6600")) + geom_bar() + labs(y = "Number of Crabs", x = "Day")
 legend_ig <- get_legend(ig_all_bp)
 
 title_ig <- ggdraw() + draw_label("Integument Color Over Time", fontface='bold')
