@@ -253,7 +253,7 @@ chi_a
 chi_h
 ```
 
-```{r Comparison between treatments across individual time points, echo=FALSE}
+```{r Comparison between tanks across individual time points, echo=FALSE}
 
 cw_8th <- cw_data[c(1:42),c(1,2:3)]
 cw_12th <- cw_data[c(43:84),c(1,2:3)]
@@ -271,7 +271,7 @@ cw26th_bp <- ggplot(data = cw_26th, aes(x=as.factor(treatment.tank), y=carapace.
 
 p_cw_date <- ((cw8th_bp | cw12th_bp | cw15th_bp) / (cw19th_bp | cw22nd_bp | cw26th_bp))
 
-p_cw_date + plot_annotation(title = 'Carapace Width Across Treatments')
+p_cw_date + plot_annotation(title = 'Carapace Width Between Tanks')
 
 #####
 
@@ -291,7 +291,7 @@ cl26th_bp <- ggplot(data = cl_26th, aes(x=as.factor(treatment.tank), y=carapace.
 
 p_cl_date <- ((cl8th_bp | cl12th_bp | cl15th_bp) / (cl19th_bp | cl22nd_bp | cl26th_bp))
 
-p_cl_date + plot_annotation(title = 'Carapace Length Across Treatments')
+p_cl_date + plot_annotation(title = 'Carapace Length Between Tanks')
 
 ########
 
@@ -311,7 +311,7 @@ w26th_bp <- ggplot(data = w_26th, aes(x=as.factor(treatment.tank), y=weight)) + 
 
 p_w_date <- ((w8th_bp | w12th_bp | w15th_bp) / (w19th_bp | w22nd_bp | w26th_bp))
 
-p_w_date + plot_annotation(title = 'Weight Across Treatments')
+p_w_date + plot_annotation(title = 'Weight Between Tanks')
 
 #########
 
@@ -333,7 +333,7 @@ ig26th_bp <- ggplot(data = ig_26th, aes(x=as.factor(treatment.tank), y=treatment
 
 p_ig_date <- ((ig8th_bp | ig12th_bp | ig15th_bp) / (ig19th_bp | ig22nd_bp | ig26th_bp))
 
-p_ig_date + plot_annotation(title = 'Integument Color Across Treatments')
+p_ig_date + plot_annotation(title = 'Integument Color Between Tanks')
 
 chi_8th <- chisq.test(ig_8th$treatment.tank,ig_8th$integument_color)
 chi_12th <- chisq.test(ig_12th$treatment.tank,ig_12th$integument_color)
@@ -341,6 +341,111 @@ chi_15th <- chisq.test(ig_15th$treatment.tank,ig_15th$integument_color)
 chi_19th <- chisq.test(ig_19th$treatment.tank,ig_19th$integument_color)
 chi_22nd <- chisq.test(ig_22nd$treatment.tank,ig_22nd$integument_color)
 chi_26th <- chisq.test(ig_26th$treatment.tank,ig_26th$integument_color)
+
+chi_8th
+chi_12th
+chi_15th
+chi_19th
+chi_22nd
+chi_26th
+```
+
+```{r Comparison between treatments across individual time points, echo=FALSE}
+cw.data.treatment <- read.csv("carapace_width.csv")
+cw.data.treatment$treatment.tank <- recode(cw.data.treatment$treatment.tank,"1"="Ambient","2"="Cold","3"="Hot","4"="Ambient","5"="Cold","6"="Hot")
+
+cw.8th <- cw.data.treatment[c(1:42),c(1,2:3)]
+cw.12th <- cw.data.treatment[c(43:84),c(1,2:3)]
+cw.15th <- cw.data.treatment[c(85:126),c(1,2:3)]
+cw.19th <- cw.data.treatment[c(127:168),c(1,2:3)]
+cw.22nd <- cw.data.treatment[c(169:209),c(1,2:3)]
+cw.26th <- cw.data.treatment[c(210:260),c(1,2:3)]
+
+cw8th.bp <- ggplot(data = cw.8th, aes(x=as.factor(treatment.tank), y=carapace.width)) + geom_boxplot() + geom_point() + labs(y = "Carapace Width", x = "Treatment") + stat_compare_means() + ggtitle("07/08/2022")
+cw12th.bp <- ggplot(data = cw.12th, aes(x=as.factor(treatment.tank), y=carapace.width)) + geom_boxplot() + geom_point() + labs(y = "Carapace Width", x = "Treatment") + stat_compare_means() + ggtitle("07/12/2022")
+cw15th.bp <- ggplot(data = cw.15th, aes(x=as.factor(treatment.tank), y=carapace.width)) + geom_boxplot() + geom_point() + labs(y = "Carapace Width", x = "Treatment") + stat_compare_means() + ggtitle("07/15/2022")
+cw19th.bp <- ggplot(data = cw.19th, aes(x=as.factor(treatment.tank), y=carapace.width)) + geom_boxplot() + geom_point() + labs(y = "Carapace Width", x = "Treatment") + stat_compare_means() + ggtitle("07/19/2022")
+cw22nd.bp <- ggplot(data = cw.22nd, aes(x=as.factor(treatment.tank), y=carapace.width)) + geom_boxplot() + geom_point() + labs(y = "Carapace Width", x = "Treatment") + stat_compare_means() + ggtitle("07/22/2022")
+cw26th.bp <- ggplot(data = cw.26th, aes(x=as.factor(treatment.tank), y=carapace.width)) + geom_boxplot() + geom_point() + labs(y = "Carapace Width", x = "Treatment") + stat_compare_means() + ggtitle("07/26/2022")
+
+p.cw.date <- ((cw8th.bp | cw12th.bp | cw15th.bp) / (cw19th.bp | cw22nd.bp | cw26th.bp))
+
+p.cw.date + plot_annotation(title = 'Carapace Width Between Treatments')
+
+#####
+cl.data.treatment <- read.csv("carapace_length.csv")
+cl.data.treatment$treatment.tank <- recode(cl.data.treatment$treatment.tank,"1"="Ambient","2"="Cold","3"="Hot","4"="Ambient","5"="Cold","6"="Hot")
+
+
+cl.8th <- cl.data.treatment[c(1:42),c(1,2:3)]
+cl.12th <- cl.data.treatment[c(43:84),c(1,2:3)]
+cl.15th <- cl.data.treatment[c(85:126),c(1,2:3)]
+cl.19th <- cl.data.treatment[c(127:168),c(1,2:3)]
+cl.22nd <- cl.data.treatment[c(169:209),c(1,2:3)]
+cl.26th <- cl.data.treatment[c(210:260),c(1,2:3)]
+
+cl8th.bp <- ggplot(data = cl.8th, aes(x=as.factor(treatment.tank), y=carapace.length)) + geom_boxplot() + geom_point() + labs(y = "Carapace Length", x = "Treatment") + stat_compare_means() + ggtitle("07/08/2022")
+cl12th.bp <- ggplot(data = cl.12th, aes(x=as.factor(treatment.tank), y=carapace.length)) + geom_boxplot() + geom_point() + labs(y = "Carapace Length", x = "Treatment") + stat_compare_means() + ggtitle("07/12/2022")
+cl15th.bp <- ggplot(data = cl.15th, aes(x=as.factor(treatment.tank), y=carapace.length)) + geom_boxplot() + geom_point() + labs(y = "Carapace Length", x = "Treatment") + stat_compare_means() + ggtitle("07/15/2022")
+cl19th.bp <- ggplot(data = cl.19th, aes(x=as.factor(treatment.tank), y=carapace.length)) + geom_boxplot() + geom_point() + labs(y = "Carapace Length", x = "Treatment") + stat_compare_means() + ggtitle("07/19/2022")
+cl22nd.bp <- ggplot(data = cl.22nd, aes(x=as.factor(treatment.tank), y=carapace.length)) + geom_boxplot() + geom_point() + labs(y = "Carapace Length", x = "Treatment") + stat_compare_means() + ggtitle("07/22/2022")
+cl26th.bp <- ggplot(data = cl.26th, aes(x=as.factor(treatment.tank), y=carapace.length)) + geom_boxplot() + geom_point() + labs(y = "Carapace Length", x = "Treatment") + stat_compare_means() + ggtitle("07/26/2022")
+
+p.cl.date <- ((cl8th.bp | cl12th.bp | cl15th.bp) / (cl19th.bp | cl22nd.bp | cl26th.bp))
+
+p.cl.date + plot_annotation(title = 'Carapace Length Between Treatments')
+
+########
+w.data.treatment <- read.csv("weight.csv")
+w.data.treatment$treatment.tank <- recode(w.data.treatment$treatment.tank,"1"="Ambient","2"="Cold","3"="Hot","4"="Ambient","5"="Cold","6"="Hot")
+
+w.8th <- w.data.treatment[c(1:42),c(1,2:3)]
+w.12th <- w.data.treatment[c(43:84),c(1,2:3)]
+w.15th <- w.data.treatment[c(85:126),c(1,2:3)]
+w.19th <- w.data.treatment[c(127:168),c(1,2:3)]
+w.22nd <- w.data.treatment[c(169:209),c(1,2:3)]
+w.26th <- w.data.treatment[c(210:260),c(1,2:3)]
+
+w8th.bp <- ggplot(data = w.8th, aes(x=as.factor(treatment.tank), y=weight)) + geom_boxplot() + geom_point() + labs(y = "Weight", x = "Treatment") + stat_compare_means() + ggtitle("07/08/2022")
+w12th.bp <- ggplot(data = w.12th, aes(x=as.factor(treatment.tank), y=weight)) + geom_boxplot() + geom_point() + labs(y = "Weight", x = "Treatment") + stat_compare_means() + ggtitle("07/12/2022")
+w15th.bp <- ggplot(data = w.15th, aes(x=as.factor(treatment.tank), y=weight)) + geom_boxplot() + geom_point() + labs(y = "Weight", x = "Treatment") + stat_compare_means() + ggtitle("07/15/2022")
+w19th.bp <- ggplot(data = w.19th, aes(x=as.factor(treatment.tank), y=weight)) + geom_boxplot() + geom_point() + labs(y = "Weight", x = "Treatment") + stat_compare_means() + ggtitle("07/19/2022")
+w22nd.bp <- ggplot(data = w.22nd, aes(x=as.factor(treatment.tank), y=weight)) + geom_boxplot() + geom_point() + labs(y = "Weight", x = "Treatment") + stat_compare_means() + ggtitle("07/22/2022")
+w26th.bp <- ggplot(data = w.26th, aes(x=as.factor(treatment.tank), y=weight)) + geom_boxplot() + geom_point() + labs(y = "Weight", x = "Treatment") + stat_compare_means() + ggtitle("07/26/2022")
+
+p.w.date <- ((w8th.bp | w12th.bp | w15th.bp) / (w19th.bp | w22nd.bp | w26th.bp))
+
+p.w.date + plot_annotation(title = 'Weight Between Treatments')
+
+#########
+ig.data.treatment <- read.csv("integument_color.csv")
+ig.data.treatment$integument_color <- recode(ig.data.treatment$integument.color,"BG"="0.5","G"="1","YG"="1.5","Y"="2","YO"="2.5","O"="3","RO"="3.5")
+ig.data.treatment$treatment_tank <- recode(ig.data.treatment$treatment.tank, "1"="Ambient","2"="Cold","3"="Hot","4"="Ambient","5"="Cold","6"="Hot")
+
+ig.8th <- ig.data.treatment[c(1:42),c(1:5)]
+ig.12th <- ig.data.treatment[c(43:84),c(1:5)]
+ig.15th <- ig.data.treatment[c(85:126),c(1:5)]
+ig.19th <- ig.data.treatment[c(127:168),c(1:5)]
+ig.22nd <- ig.data.treatment[c(169:209),c(1:5)]
+ig.26th <- ig.data.treatment[c(210:260),c(1:5)]
+
+ig8th.bp <- ggplot(data = ig.8th, aes(x=as.factor(treatment_tank), y=treatment.tank, fill = integument.color)) + scale_fill_manual(values = c("#66C2A5","#A6D96A","#D9EF8B","#FFFF99","#FDAE61","#F46D43","#D53E4F")) + geom_bar(position="fill", stat="identity") + theme(legend.position="none") + labs(y = "Percent Composition", x = "Treatment") + ggtitle("07/08/2022")
+ig12th.bp <- ggplot(data = ig.12th, aes(x=as.factor(treatment_tank), y=treatment.tank, fill = integument.color)) + scale_fill_manual(values = c("#66C2A5","#A6D96A","#D9EF8B","#FFFF99","#FDAE61","#F46D43","#D53E4F")) + geom_bar(position="fill", stat="identity") + theme(legend.position="none") + labs(y = "Percent Composition", x = "Treatment") + ggtitle("07/12/2022")
+ig15th.bp <- ggplot(data = ig.15th, aes(x=as.factor(treatment_tank), y=treatment.tank, fill = integument.color)) + scale_fill_manual(values = c("#66C2A5","#A6D96A","#D9EF8B","#FFFF99","#FDAE61","#F46D43","#D53E4F")) + geom_bar(position="fill", stat="identity") + theme(legend.position="none") + labs(y = "Percent Composition", x = "Treatment") + ggtitle("07/15/2022")
+ig19th.bp <- ggplot(data = ig.19th, aes(x=as.factor(treatment_tank), y=treatment.tank, fill = integument.color)) + scale_fill_manual(values = c("#66C2A5","#A6D96A","#D9EF8B","#FFFF99","#FDAE61","#F46D43","#D53E4F")) + geom_bar(position="fill", stat="identity") + theme(legend.position="none") + labs(y = "Percent Composition", x = "Treatment") + ggtitle("07/19/2022")
+ig22nd.bp <- ggplot(data = ig.22nd, aes(x=as.factor(treatment_tank), y=treatment.tank, fill = integument.color)) + scale_fill_manual(values = c("#66C2A5","#A6D96A","#D9EF8B","#FFFF99","#FDAE61","#F46D43","#D53E4F")) + geom_bar(position="fill", stat="identity") + theme(legend.position="none") + labs(y = "Percent Composition", x = "Treatment") + ggtitle("07/22/2022")
+ig26th.bp <- ggplot(data = ig.26th, aes(x=as.factor(treatment_tank), y=treatment.tank, fill = integument.color)) + scale_fill_manual(values = c("#66C2A5","#A6D96A","#D9EF8B","#FFFF99","#FDAE61","#F46D43","#D53E4F")) + geom_bar(position="fill", stat="identity") + theme(legend.position="none") + labs(y = "Percent Composition", x = "Treatment") + ggtitle("07/26/2022")
+
+p.ig.date <- ((ig8th.bp | ig12th.bp | ig15th.bp) / (ig19th.bp | ig22nd.bp | ig26th.bp))
+
+p.ig.date + plot_annotation(title = 'Integument Color Between Treatments')
+
+chi.8th <- chisq.test(ig.8th$treatment.tank,ig.8th$integument_color)
+chi.12th <- chisq.test(ig.12th$treatment.tank,ig.12th$integument_color)
+chi.15th <- chisq.test(ig.15th$treatment.tank,ig.15th$integument_color)
+chi.19th <- chisq.test(ig.19th$treatment.tank,ig.19th$integument_color)
+chi.22nd <- chisq.test(ig.22nd$treatment.tank,ig.22nd$integument_color)
+chi.26th <- chisq.test(ig.26th$treatment.tank,ig.26th$integument_color)
 
 chi_8th
 chi_12th
