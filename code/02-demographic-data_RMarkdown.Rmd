@@ -454,3 +454,54 @@ chi_19th
 chi_22nd
 chi_26th
 ```
+
+```{r Tukey Test and PCA}
+
+#Tukey Test: (lm is for linear regression model, aov is for anova)
+
+hot_lm <- (ig_h$integument_color ~ ig_h$date)#for Integument Color Across Treatments Over Time
+hot_aov = aov(hot_lm)
+summary(hot_aov)
+hot_tukey <- TukeyHSD(x=hot_aov)
+hot_tukey
+plot(hot_tukey) #this plot seems ok - it shows significance between 2 treatment time points
+
+lm_26th <- (ig_26th$treatment.tank ~ ig_26th$integument_color)#for Integument Color Between Tanks for each time point
+aov_26th = aov(lm_26th)
+summary(aov_26th)
+tukey_26th <- TukeyHSD(x=aov_26th)
+tukey_26th
+plot(tukey_26th) #this plot doesn't show any significance between integument colors based on tanks
+
+lm.26th <- (ig.26th$treatment.tank ~ ig.26th$integument_color)#for Integument Color Between Treatments for each time point
+aov.26th = aov(lm.26th)
+summary(aov.26th)
+tukey.26th <- TukeyHSD(x=aov.26th)
+tukey.26th
+plot(tukey.26th) #this plot also doesn't show any significance between integument colors based on treatments
+
+
+#PCA
+all_crab <- read.csv("all_crab_dat.csv") #created a file with all crab data
+all_crab$integument_color <- recode(all_crab$integument.color,"BG"="0.5","G"="1","YG"="1.5","Y"="2","YO"="2.5","O"="3","RO"="3.5") #recoded integument color into values
+crab_dat <- all_crab[c(1:260),c(1,2,3,4,5,7)] #selected columns of data
+dat_all <- crab_dat[3:6] #tried just selecting cw, cl, w, and ig and got rid of treatment tank and date because I thought those might be screwing up the PCA
+
+#dat_all[!(is.na(dat_all$weight) | dat_all$weight==""), ]
+
+pca_res_crab <- prcomp(dat_all, scale. = TRUE)
+#After I run this piece of code I get this error:
+#Error in colMeans(x, na.rm = TRUE) : 'x' must be numeric
+#I then tried to get rid of any non-numeric values (but can't see any when I look at dat_all, so not sure where they are). That code is above.
+#No matter what I do, though, I can't get it to work unless I only select the cw and cl columns. For some reason the weight column won't work (there's a few blank rows, but I tried to get rid of them) and the integument color won't work (even though it is all numeric).
+
+cw.cl.w_all <- crab_dat[3:5] #tried selecting cw, cl, and w
+cw.cl.w_all[!(is.na(dat_all$weight) | dat_all$weight==""), ] #tried getting rid of non-values in weight column
+pca_res_crab_2 <- prcomp(cw.cl.w_all, scale. = TRUE)
+#Error in svd(x, nu = 0, nv = k) : infinite or missing values in 'x'
+
+cw.cl_all <- crab_dat[3:4]#get rid of weight
+pca_res_crab_3 <- prcomp(cw.cl_all, scale. = TRUE)
+autoplot(pca_res_crab_3, data = crab_dat, colour = 'treatment.tank', loadings = TRUE, loadings.colour = 'blue', loadings.label = TRUE, loadings.label.size = 3) #Treatment tank is shown as a scale and points look weirdly distributed. I don't know if I'm selecting the data properly or what is going on..
+
+```
