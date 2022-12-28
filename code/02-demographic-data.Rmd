@@ -35,9 +35,12 @@ library(ggpubr)
 ```
 
 ```{r}
-sessionInfo()
+source("../../code/biostats.R") #Source multivariate analysis functions
 ```
 
+```{r}
+sessionInfo()
+```
 
 # Import data
 
@@ -520,29 +523,42 @@ tukey.26th
 plot(tukey.26th)
 ```
 
+## PCA
+
+```{r PCA data import}
+all_crab <- read.csv("../../data/all_crab_dat.csv") #created a file with all crab data
+all_crab$integument_color <- recode(all_crab$integument.color,"BG"=0.5,"G"=1,"YG"=1.5,"Y"=2,"YO"=2.5,"O"=3,"RO"=3.5) #recoded integument color into values. no quotes around numbers = will be recognized as numeric values
+head(all_crab)
+crab_dat <- all_crab[c(1:260),-c(6)] #selected columns of data (do not include integument color before recoding)
+head(crab_dat)
+```
+
+```{r PCA data formatting}
+dat_all <- crab_dat %>%
+  mutate(day = recode(date, "7/8/22" = 4, "7/12/22" = 8, "7/15/22" = 11, "7/19/22" = 15, "7/22/22" = 18, "7/26/22" = 22)) %>%
+  mutate(temperature = recode(treatment.tank, "1" = 14, "2" = 6, "3" = 31, "4" = 14, "5" = 6, "6" = 31)) %>%
+  select(., -c(treatment.tank, date)) #Make recode dates to days and create a new column for temperature. Drop date and treatment.tank
+head(dat_all)
+```
+
+
 ```{r PCA}
+pca_res_crab <- prcomp(dat_all, scale. = TRUE) #Conduct PCA
+summary(pca_res_crab) #Standard deviations for each PC
+```
 
-#PCA
-all_crab <- read.csv("all_crab_dat.csv") #created a file with all crab data
-all_crab$integument_color <- recode(all_crab$integument.color,"BG"="0.5","G"="1","YG"="1.5","Y"="2","YO"="2.5","O"="3","RO"="3.5") #recoded integument color into values
-crab_dat <- all_crab[c(1:260),c(1,2,3,4,5,7)] #selected columns of data
-dat_all <- crab_dat[3:6] #tried just selecting cw, cl, w, and ig and got rid of treatment tank and date because I thought those might be screwing up the PCA
+```{r PCA interpretation}
+pca.eigenval(pca_res_crab) #Eigenvalues greater than the broken-stick expectation are considered to explain a statistically significance proportion of the variance in the original dataset. PC1 eigenvalue > BSV
+ordi.monte(dat_all, ord = "pca", dim = 6, plot = FALSE) #Conduct monte carlo randomization test using 1000 random permutations of the input data. PC1 and PC2 p-values < 0.05
 
-#dat_all[!(is.na(dat_all$weight) | dat_all$weight==""), ]
+#Support exists for both PC1 and PC2
+```
 
-pca_res_crab <- prcomp(dat_all, scale. = TRUE)
-#After I run this piece of code I get this error:
-#Error in colMeans(x, na.rm = TRUE) : 'x' must be numeric
-#I then tried to get rid of any non-numeric values (but can't see any when I look at dat_all, so not sure where they are). That code is above.
-#No matter what I do, though, I can't get it to work unless I only select the cw and cl columns. For some reason the weight column won't work (there's a few blank rows, but I tried to get rid of them) and the integument color won't work (even though it is all numeric).
+```{r PCA interpretation}
+pca_res_crab$rotation #Correlations between individual variables and PCs
+pca.structure(pca_res_crab, dat_all, dim = 5, cutoff = 0.4) #Structure coefficients between variables and PCs above the given cutoff
+```
 
-cw.cl.w_all <- crab_dat[3:5] #tried selecting cw, cl, and w
-cw.cl.w_all[!(is.na(dat_all$weight) | dat_all$weight==""), ] #tried getting rid of non-values in weight column
-pca_res_crab_2 <- prcomp(cw.cl.w_all, scale. = TRUE)
-#Error in svd(x, nu = 0, nv = k) : infinite or missing values in 'x'
-
-cw.cl_all <- crab_dat[3:4]#get rid of weight
-pca_res_crab_3 <- prcomp(cw.cl_all, scale. = TRUE)
-autoplot(pca_res_crab_3, data = crab_dat, colour = 'treatment.tank', loadings = TRUE, loadings.colour = 'blue', loadings.label = TRUE, loadings.label.size = 3) #Treatment tank is shown as a scale and points look weirdly distributed. I don't know if I'm selecting the data properly or what is going on..
-
+```{r PCA plot}
+autoplot(pca_res_crab, data = dat_all, colour = 'temperature', loadings = TRUE, loadings.colour = 'blue', loadings.label = TRUE, loadings.label.size = 3)
 ```
