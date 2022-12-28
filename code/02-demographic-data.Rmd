@@ -311,6 +311,16 @@ chi_19th
 chi_22nd
 chi_26th
 ```
+### Post-hoc testing
+
+```{r post hoc test}
+lm_26th <- (ig_26th$integument_color ~ as.factor(ig_26th$treatment.tank)) #for Integument Color Between Tanks for each time point
+aov_26th = aov(lm_26th)
+summary(aov_26th)
+tukey_26th <- TukeyHSD(x=aov_26th)
+tukey_26th
+plot(tukey_26th)
+```
 
 # Treatment-level analysis
 
@@ -507,13 +517,6 @@ summary(hot_aov)
 hot_tukey <- TukeyHSD(x=hot_aov)
 hot_tukey
 plot(hot_tukey) #this plot seems ok - it shows significance between 2 treatment time points
-
-lm_26th <- (ig_26th$integument_color ~ as.factor(ig_26th$treatment.tank)) #for Integument Color Between Tanks for each time point
-aov_26th = aov(lm_26th)
-summary(aov_26th)
-tukey_26th <- TukeyHSD(x=aov_26th)
-tukey_26th
-plot(tukey_26th)
 
 lm.26th <- (ig.26th$integument_color ~ ig.26th$treatment_tank) #for Integument Color Between Treatments for each time point
 aov.26th = aov(lm.26th)
