@@ -10,6 +10,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir = normalizePath("../output/02-demographic-data/")) #Set root directory
+setwd("C:/Users/Sara/Documents/GitHub/green-crab-metabolomics/data/") #Set root directory
 ```
 
 ```{r}
@@ -32,6 +33,9 @@ require(cowplot)
 library(ggfortify)
 library(ggplot2)
 library(ggpubr)
+library(usethis)
+edit_git_config()
+use_git()
 ```
 
 ```{r}
