@@ -10,7 +10,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir = normalizePath("../output/02-demographic-data/")) #Set root directory
-#setwd("C:/Users/Sara/Documents/GitHub/green-crab-metabolomics/data/") #Set root directory
+setwd("C:/Users/Sara/Documents/GitHub/green-crab-metabolomics/data/") #Set root directory
 ```
 
 ```{r}
@@ -34,9 +34,6 @@ library(ggfortify)
 library(ggplot2)
 library(ggpubr)
 library(plotly)
-#library(usethis)
-#edit_git_config()
-#use_git()
 ```
 
 ```{r}
@@ -128,53 +125,6 @@ p_w + plot_annotation(title = 'Weight Over Time')
 ```
 
 ## Integument color
-
-```{r Integument Color, echo=FALSE}
-#ig_data$integument_color <- recode(ig_data$integument.color,"BG"="0.5","G"="1","YG"="1.5","Y"="2","YO"="2.5","O"="3","RO"="3.5")
-
-#ig_all <- ig_data[c(1:260),c(1,2,4)]
-
-#ig_1 <- ig_data[c(1:7,43:49,85:91,127:133,169:175,210:220),c(1,2,4)]
-#ig_2 <- ig_data[c(8:14,50:56,92:98,134:140,176:182,221:230),c(1,2,4)]
-#ig_3 <- ig_data[c(15:21,57:63,99:105,141:147,183:188,231:235),c(1,2,4)]
-#ig_4 <- ig_data[c(22:28,64:70,106:112,148:154,189:195,236:245),c(1,2,4)]
-#ig_5 <- ig_data[c(29:35,71:77,113:119,155:161,196:202,246:255),c(1,2,4)]
-#ig_6 <- ig_data[c(36:42,78:84,120:126,162:168,203:209,256:260),c(1,2,4)]
-
-#ig1_bp <- ggplot(data = ig_1, aes(x=factor(as.Date(date,format="%m/%d/%Y")), fill = integument_color)) + scale_fill_manual(values = c("#66C2A5","#A6D96A","#D9EF8B","#FFFF99","#FDAE61","#F46D43","#D53E4F")) + geom_bar() + theme(legend.position="none") + rremove("x.text") + labs(y = "Number of Crabs", x = "Day") + ggtitle("Tank 1")
-#ig2_bp <- ggplot(data = ig_2, aes(x=factor(as.Date(date,format="%m/%d/%Y")), fill = integument_color)) + scale_fill_manual(values = c("#66C2A5","#A6D96A","#D9EF8B","#FFFF99","#FDAE61","#F46D43","#D53E4F")) + geom_bar() + theme(legend.position="none") + rremove("x.text") + labs(y = "Number of Crabs", x = "Day") + ggtitle("Tank 2")
-#ig3_bp <- ggplot(data = ig_3, aes(x=factor(as.Date(date,format="%m/%d/%Y")), fill = integument_color)) + scale_fill_manual(values = c("#A6D96A","#D9EF8B","#FFFF99","#FDAE61","#F46D43","#D53E4F")) + geom_bar() + theme(legend.position="none") + rremove("x.text") + labs(y = "Number of Crabs", x = "Day") + ggtitle("Tank 3")
-#ig4_bp <- ggplot(data = ig_4, aes(x=factor(as.Date(date,format="%m/%d/%Y")), fill = integument_color)) + scale_fill_manual(values = c("#A6D96A","#D9EF8B","#FFFF99","#FDAE61","#F46D43","#D53E4F")) + geom_bar() + theme(legend.position="none") + rremove("x.text") + labs(y = "Number of Crabs", x = "Day") + ggtitle("Tank 4")
-#ig5_bp <- ggplot(data = ig_5, aes(x=factor(as.Date(date,format="%m/%d/%Y")), fill = integument_color)) + scale_fill_manual(values = c("#66C2A5","#A6D96A","#D9EF8B","#FFFF99","#FDAE61","#F46D43","#D53E4F")) + geom_bar() + theme(legend.position="none") + rremove("x.text") + labs(y = "Number of Crabs", x = "Day") + ggtitle("Tank 5")
-#ig6_bp <- ggplot(data = ig_6, aes(x=factor(as.Date(date,format="%m/%d/%Y")), fill = integument_color)) + scale_fill_manual(values = c("#A6D96A","#D9EF8B","#FFFF99","#FDAE61","#F46D43","#D53E4F")) + geom_bar() + theme(legend.position="none") + rremove("x.text") + labs(y = "Number of Crabs", x = "Day") + ggtitle("Tank 6")
-
-#ig_all_bp <- ggplot(data = ig_all, aes(x=factor(as.Date(date,format="%m/%d/%Y")), fill = integument_color)) + scale_fill_manual(values = c("#66C2A5","#A6D96A","#D9EF8B","#FFFF99","#FDAE61","#F46D43","#D53E4F")) + geom_bar() + labs(y = "Number of Crabs", x = "Day")
-#legend_ig <- get_legend(ig_all_bp)
-
-#title_ig <- ggdraw() + draw_label("Integument Color Over Time", fontface='bold')
-
-#ig_plots <- align_plots(ig1_bp, ig2_bp, ig3_bp, ig4_bp, ig5_bp, ig6_bp, align = 'v', axis = '1')
-#ig_top <- plot_grid(ig_plots[[1]], ig_plots[[2]], ig_plots[[3]], legend_ig, labels = c("1","2","3"), rel_widths = c(1, 1, 1, 1), nrow = 1)
-#ig_bottom <- plot_grid(ig_plots[[4]], ig_plots[[5]], ig_plots[[6]], labels = c("4","5","6"), rel_widths = c(1, 1, 1, 1), nrow = 1)
-#plot_grid(title_ig, ig_top, ig_bottom, ncol=1)
-
-
-#chi_1 <- chisq.test(ig_1$date,ig_1$integument_color)
-#chi_2 <- chisq.test(ig_2$date,ig_2$integument_color)
-#chi_3 <- chisq.test(ig_3$date,ig_3$integument_color)
-#chi_4 <- chisq.test(ig_4$date,ig_4$integument_color)
-#chi_5 <- chisq.test(ig_5$date,ig_5$integument_color)
-#chi_6 <- chisq.test(ig_6$date,ig_6$integument_color)
-
-#chi_1
-#chi_2
-#chi_3
-#chi_4
-#chi_5
-#chi_6
-
-```
-
 
 ```{r Integument Color Percent Composition, echo=FALSE}
 ig_data$integument_color <- recode(ig_data$integument.color,"BG"="0.5","G"="1","YG"="1.5","Y"="2","YO"="2.5","O"="3","RO"="3.5")
