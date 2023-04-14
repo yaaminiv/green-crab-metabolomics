@@ -10,7 +10,6 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir = normalizePath("../output/02-demographic-data/")) #Set root directory
-setwd("C:/Users/Sara/Documents/GitHub/green-crab-metabolomics/data/") #Set root directory
 ```
 
 ```{r}
@@ -26,18 +25,24 @@ getwd()
 #install.packages("cowplot")
 #install.packages("ggfortify")
 #install.packages("ggpubr")
+# install.packages("survival")
+# install.packages("ggsurvfit")
+```
+
+```{r}
 require(tidyverse)
 require(RColorBrewer)
 require(patchwork)
 require(cowplot)
 library(ggfortify)
-library(ggplot2)
 library(ggpubr)
 library(plotly)
+require(survival)
+require(ggsurvfit)
 ```
 
 ```{r}
-source("C:/Users/Sara/Documents/GitHub/green-crab-metabolomics/code/biostats.R") #Source multivariate analysis functions
+source("../../code/biostats.R") #Source multivariate analysis functions
 ```
 
 ```{r}
@@ -296,7 +301,7 @@ cw_h_bp <- ggplot(data = cw_h, aes(x=factor(as.Date(date,format="%m/%d/%Y")), y=
 
 cw_treatments_patch <- (cw_c_bp + rremove("x.text") | cw_a_bp + rremove("x.text") | cw_h_bp + rremove("x.text"))
 cw_treatments_patch + plot_annotation(title = 'Carapace Width Across Treatments Over Time')
-                               
+
 ##################
 
 # Carapace Length
@@ -515,7 +520,6 @@ head(dat_wl)
 
 ```
 
-
 ```{r PCA, width/length}
 pca_res_crab_wl <- prcomp(dat_wl, scale. = TRUE) #Conduct PCA
 summary(pca_res_crab_wl) #Standard deviations for each PC
@@ -630,8 +634,123 @@ ____________________
 
 
 #dat_all <- crab_dat %>%
-  #mutate(day = recode(date, "7/8/2022" = 4, "7/12/2022" = 8, "7/15/2022" = 11, "7/19/2022" = 15, "7/22/2022" = 18, "7/26/2022" = 22)) %>%
-  #mutate(temperature = recode(treatment.tank, "1" = 14, "2" = 6, "3" = 31, "4" = 14, "5" = 6, "6" = 31)) %>% mutate(sex = recode(sex, "F"=1, "M"=2)) %>%
-  #select(., -c(carapace.width, carapace.length,treatment.tank, date)) #Make recode dates to days and create a new column for temperature. Drop date and treatment.tank
+#mutate(day = recode(date, "7/8/2022" = 4, "7/12/2022" = 8, "7/15/2022" = 11, "7/19/2022" = 15, "7/22/2022" = 18, "7/26/2022" = 22)) %>%
+#mutate(temperature = recode(treatment.tank, "1" = 14, "2" = 6, "3" = 31, "4" = 14, "5" = 6, "6" = 31)) %>% mutate(sex = recode(sex, "F"=1, "M"=2)) %>%
+#select(., -c(carapace.width, carapace.length,treatment.tank, date)) #Make recode dates to days and create a new column for temperature. Drop date and treatment.tank
 #head(dat_all)
 ```
+
+# Survival analysis
+
+I want to determine if there was a significant difference in survival time between temperature treatments.
+
+## Import data
+
+```{r}
+survivalData <- read.csv("../../data/survivorship.csv", header = TRUE, check.names = FALSE) #Use check.names = FALSE to avoid adding X in front of numerical column names
+head(survivalData)
+```
+
+## Format data
+
+I need to convert `survivalData` into a dataframe with three columns: time (days until death), status (1 = event, 0 = censored), treatment (1 = ambient, 2 = cold, 3 = hot).
+
+```{r}
+mortalityData <- survivalData[NA,] %>%
+  mutate(., tank = survivalData$tank) %>%
+  mutate(., "1" = rep(0, times = 6)) %>%
+  mutate(., "23" = survivalData$`22`) #Create an empty dataframe with the same structure as survivalData. Copy tank column into the new dataframe. First day had 0 mortalities. Add a column with remaining live crabs as day 23.
+rownames(mortalityData) <- rownames(survivalData) #Use the same row names
+for (i in 3:23) {
+  mortalityData[,i] <- survivalData[,(i-1)] - survivalData[,i]
+} #Subtract the number of alive crabs each day from how many there were the day before to calculate how many died each day.
+head(mortalityData) #Confirm dataframe creation
+```
+
+```{r}
+mortalityDataLong <- mortalityData %>%
+  pivot_longer(., cols = -tank, names_to = "day", values_to = "num_died") %>%
+  mutate(status = case_when(day == 4 | day == 23 ~ 0,
+                            day != 4 | day == 23 ~ 1)) %>%
+  mutate(time = as.numeric(day)) %>%
+  select(., -day) %>%
+  filter(., num_died != 0) %>%
+  uncount(., weights = num_died) %>%
+  mutate(., treatment = case_when(tank == "T1" ~ "13C",
+                                  tank == "T2" ~ "5C",
+                                  tank == "T3" ~ "30C",
+                                  tank == "T4" ~ "13C", 
+                                  tank == "T5" ~ "5C",
+                                  tank == "T6" ~ "30C")) %>%
+  select(., -tank) %>%
+  mutate(., time = replace(time, time == 23, 22))
+#Pivot the dataframe longer, using former column names as experimental day indication and values as number of crabs that died each day. Use case_when to assign status information (0 = censored/sampled, 1 = mortality) based on day (day 4 = 3 crabs sampled for metabolomics, day 23 = end of experiment). Create a column "time" which is a numeric version of day, then remove day. Create a duplicate row for each crab that died using uncount. Use case_when to assign treatment information to each tank and remove the tank column. Replace time = 23 with 22, since 23 was to easily separate censored and uncensored crabs.
+tail(mortalityDataLong)
+```
+
+## Compare groups
+
+This analysis is based on [the following tutorial from Dr. Zabor](https://www.emilyzabor.com/tutorials/survival_analysis_in_r_tutorial.html) and a similar analysis of Olympia oyster larval survival in different temperature treatments by Dr. Lindsay Alma.
+
+### Plot Kaplan-Meier curves
+
+```{bash}
+mkdir figures
+```
+
+```{r}
+plotColors <- c(brewer.pal(9, "Reds")[7],
+                brewer.pal(9, "Greys")[7],
+                brewer.pal(9, "Blues")[7]) #Create color scheme
+```
+
+```{r}
+mortalityDataLong %>%
+  survfit2(Surv(time, status, type = "right") ~ treatment, data = .) %>%
+  ggsurvfit(linewidth = 1) +
+  scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]),
+                     labels = c("13", "30", "5"),
+                     name = "Treatment (ºC)") +
+  scale_x_continuous(breaks = seq(0, 22, 2)) +
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
+  labs(x = "Days", y = "Overall Survival Probality") + 
+  theme_classic() #Plot KM curves based on the Surv object analyzing survival time by treatment, with "right" indicating the kind of censoring (samples still alive at the end of the experiment were "right" censored). Customize line width, colors, legend, axes, and labels.
+ggsave("figures/KM-curves.pdf", height = 8.5, width = 11)
+```
+
+### Estimate median survival time
+
+```{r}
+mortalityDataLong %>%
+  survfit(Surv(time, status, type = "right") ~ treatment, data = .) #Use survfit to estimate median survival time. There is not enough data to estimate median survival time for treatments 1 and 2, while median survival time is 21 for treatment 3. Likely not a useful analysis given the low sample size and low mortality data.
+```
+
+### Compare survival times between groups
+
+```{r}
+mortalityDataLong %>%
+  survdiff(Surv(time, status, type = "right") ~ treatment, data = .) #Use a log-rank test to compare temperature treatments. Significant effect of treatment on mortality (Chisq= 18.7  on 2 degrees of freedom, p= 9e-05)
+```
+
+According to L. Alma, "When survival curves cross, the log-rank test should not be used because the probability of a type II error will be increased, and the test has low power." I'll also use a Cox regression model to understand differences in survival by treatment.
+
+```{r}
+coxModel <- mortalityDataLong %>%
+  coxph(Surv(time, status, type = "right") ~ treatment, data = .) #Use a Cox regression model to investigate survival differences by treatment. 
+coxModel #Significant difference between 13 and 30, not between 13 and 5
+
+#                 coef exp(coef) se(coef)     z       p
+# treatment30C 2.11819   8.31608  0.76095 2.784 0.00538
+# treatment5C  0.03381   1.03439  1.00001 0.034 0.97303
+# 
+# Likelihood ratio test=16.69  on 2 df, p=0.0002372
+# n= 86, number of events= 17 
+
+summary(coxModel) #Confidence interval information for each treatment as compared to the base condition (13)
+
+#              exp(coef) exp(-coef) lower .95 upper .95
+# treatment30C     8.316     0.1202    1.8715    36.952
+# treatment5C      1.034     0.9668    0.1457     7.343
+```
+
+The `exp(coef)` parameter is the hazards ratio. The HR means that each additional day is associated with a HR-fold increase in chance of death. A HR > 1 means an increase in the hazard when compared to the control. There is an 8.32-fold increase in death as the experiment progresses for the 30ºC treatment. There is no difference between the HR for 13ºC and 5ºC since the 95% C1 includes 0 (0.1457 < HR < 7.343).
