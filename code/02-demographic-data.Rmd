@@ -692,32 +692,6 @@ tail(mortalityDataLong)
 
 This analysis is based on [the following tutorial from Dr. Zabor](https://www.emilyzabor.com/tutorials/survival_analysis_in_r_tutorial.html) and a similar analysis of Olympia oyster larval survival in different temperature treatments by Dr. Lindsay Alma.
 
-### Plot Kaplan-Meier curves
-
-```{bash}
-mkdir figures
-```
-
-```{r}
-plotColors <- c(brewer.pal(9, "Reds")[7],
-                brewer.pal(9, "Greys")[7],
-                brewer.pal(9, "Blues")[7]) #Create color scheme
-```
-
-```{r}
-mortalityDataLong %>%
-  survfit2(Surv(time, status, type = "right") ~ treatment, data = .) %>%
-  ggsurvfit(linewidth = 1) +
-  scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]),
-                     labels = c("13", "30", "5"),
-                     name = "Treatment (ºC)") +
-  scale_x_continuous(breaks = seq(0, 22, 2)) +
-  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
-  labs(x = "Days", y = "Overall Survival Probality") + 
-  theme_classic() #Plot KM curves based on the Surv object analyzing survival time by treatment, with "right" indicating the kind of censoring (samples still alive at the end of the experiment were "right" censored). Customize line width, colors, legend, axes, and labels.
-ggsave("figures/KM-curves.pdf", height = 8.5, width = 11)
-```
-
 ### Estimate median survival time
 
 ```{r}
@@ -753,4 +727,43 @@ summary(coxModel) #Confidence interval information for each treatment as compare
 # treatment5C      1.034     0.9668    0.1457     7.343
 ```
 
-The `exp(coef)` parameter is the hazards ratio. The HR means that each additional day is associated with a HR-fold increase in chance of death. A HR > 1 means an increase in the hazard when compared to the control. There is an 8.32-fold increase in death as the experiment progresses for the 30ºC treatment. There is no difference between the HR for 13ºC and 5ºC since the 95% C1 includes 0 (0.1457 < HR < 7.343).
+The `exp(coef)` parameter is the hazards ratio. The HR means that each additional day is associated with a HR-fold increase in chance of death. A HR > 1 means an increase in the hazard when compared to the control. There is an 8.32-fold increase in death as the experiment progresses for the 30ºC treatment. There is no difference between the HR for 13ºC and 5ºC since the 95% C1 includes 0 (0.1457, 7.343).
+
+### Plot Kaplan-Meier curves
+
+```{bash}
+mkdir figures
+```
+
+```{r}
+plotColors <- c(brewer.pal(9, "Reds")[7],
+                brewer.pal(9, "Greys")[7],
+                brewer.pal(9, "Blues")[7]) #Create color scheme
+```
+
+```{r}
+mortalityDataLong %>%
+  survfit2(Surv(time, status, type = "right") ~ treatment, data = .) %>%
+  ggsurvfit(linewidth = 1, linetype_aes = TRUE) +
+  scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]),
+                     labels = c("13", "30", "5"),
+                     name = "Treatment (ºC)") +
+  scale_linetype_manual(values = c(1, 6, 4),
+                        labels = c("13", "30", "5"),
+                        name = "Treatment (ºC)") +
+  scale_x_continuous(breaks = seq(0, 22, 2)) +
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
+  labs(x = "Days", y = "Overall Survival Probality") + 
+  annotate(geom = "text", x = 2, y = 0.2, 
+           label = expression(paste(bolditalic("Overall: "), Chi^2, " = 18.7, p = 9 x ", 10^-5)),
+           hjust = 0) +
+  annotate(geom = "text", x = 2, y = 0.16, 
+           label = expression(paste(bolditalic("13ºC vs. 30ºC: "), "HR = 8.32, p = 0.005")),
+           hjust = 0) +
+  annotate(geom = "text", x = 2, y = 0.12, 
+           label = expression(paste(bolditalic("13ºC vs. 5ºC: "), "HR = 1.03, p = 0.97")),
+           hjust = 0) +
+  theme_classic(base_size = 15) #Plot KM curves based on the Surv object analyzing survival time by treatment, with "right" indicating the kind of censoring (samples still alive at the end of the experiment were "right" censored). Customize line width, line type, colors, legend, axes, and labels. Add annotations for statistics. Use default R plotting theme with a base font size of 15.
+ggsave("figures/KM-curves.pdf", height = 8.5, width = 11)
+```
+
