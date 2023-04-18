@@ -653,7 +653,7 @@ head(survivalData)
 
 ## Format data
 
-I need to convert `survivalData` into a dataframe with three columns: time (days until death), status (1 = event, 0 = censored), treatment (1 = ambient, 2 = cold, 3 = hot).
+I need to convert `survivalData` into a dataframe with three columns: time (days until death), status (1 = event, 0 = censored), treatment (13C = ambient, 5C = cold, 30C = hot).
 
 ```{r}
 mortalityData <- survivalData[NA,] %>%
@@ -676,15 +676,12 @@ mortalityDataLong <- mortalityData %>%
   select(., -day) %>%
   filter(., num_died != 0) %>%
   uncount(., weights = num_died) %>%
-  mutate(., treatment = case_when(tank == "T1" ~ "13C",
-                                  tank == "T2" ~ "5C",
-                                  tank == "T3" ~ "30C",
-                                  tank == "T4" ~ "13C", 
-                                  tank == "T5" ~ "5C",
-                                  tank == "T6" ~ "30C")) %>%
+  mutate(., treatment = case_when(tank == "T1" | tank == "T4" ~ "13C",
+                                  tank == "T2" | tank == "T5" ~ "5C",
+                                  tank == "T3" | tank == "T6" ~ "30C")) %>%
   select(., -tank) %>%
   mutate(., time = replace(time, time == 23, 22))
-#Pivot the dataframe longer, using former column names as experimental day indication and values as number of crabs that died each day. Use case_when to assign status information (0 = censored/sampled, 1 = mortality) based on day (day 4 = 3 crabs sampled for metabolomics, day 23 = end of experiment). Create a column "time" which is a numeric version of day, then remove day. Create a duplicate row for each crab that died using uncount. Use case_when to assign treatment information to each tank and remove the tank column. Replace time = 23 with 22, since 23 was to easily separate censored and uncensored crabs.
+#Pivot the dataframe longer, using former column names as experimental day indication and values as number of crabs that died each day. Use case_when to assign status information (0 = censored/sampled, 1 = mortality) based on day (day 4 = 3 crabs sampled for metabolomics, day 23 = end of experiment). Create a column "time" which is a numeric version of day, then remove day. Create a duplicate row for each crab that died using uncount. Use case_when to assign treatment information to each tank and remove the tank column. Replace time = 23 with 22, since 23 was used to easily separate censored and uncensored crabs.
 tail(mortalityDataLong)
 ```
 
