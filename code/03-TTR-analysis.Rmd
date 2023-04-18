@@ -1,0 +1,105 @@
+---
+title: "03-TTR-analysis"
+author: "Yaamini Venkataraman"
+date: '2023-04-10'
+output: html_document
+---
+
+In this document I'll examine how time-to-right (TTR) varies by temperature and time.
+
+# Set up R Markdown document
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = normalizePath("../output/03-TTR-analysis/")) #Set root directory
+```
+
+```{r}
+getwd()
+```
+
+# Install packages
+
+```{r packages, include=FALSE}
+#install.packages("tidyverse")
+#install.packages("plotrix")
+#install.packages("RColorBrewer")
+#install.packages("patchwork")
+#install.packages("ggpubr")
+require(tidyverse)
+require(plotrix)
+require(RColorBrewer)
+require(patchwork)
+require(ggpubr)
+```
+
+```{r}
+sessionInfo()
+```
+
+# Import data
+
+```{r}
+rawTTR <- read.csv("../../data/time-to-right.csv", header = TRUE) #Import raw data
+head(rawTTR) #Confirm import. Trial data is in seconds.
+```
+
+# Format data
+
+CHANGE DATE TO DAY
+
+```{r}
+modTTR <- rawTTR %>%
+  select(., -c(sampling.ID, notes, probe.number)) %>%
+  mutate(., day = case_when(date == "7/8/2022" ~ 4,
+                            date == "7/12/2022" ~ 8,
+                            date == "7/15/2022" ~ 11,
+                            date == "7/19/2022" ~ 15,
+                            date == "7/22/2022" ~ 18,
+                            date == "7/26/2022" ~ 22)) %>%
+  mutate(., treatment = case_when(treatment.tank == "1" | treatment.tank == "4" ~ "13C",
+                                  treatment.tank == "2" | treatment.tank == "5" ~ "5C",
+                                  treatment.tank == "3" | treatment.tank == "6" ~ "30C")) %>%
+  rowwise(.) %>% 
+  mutate(., TTRavg = mean(c(trial.1, trial.2, trial.3), na.rm = TRUE)) %>%
+  mutate(., TTRSE = std.error(c(trial.1, trial.2, trial.3))) #Remove sampling ID and notes columns. Add new column with day information. Add new column with treatment information. Calculate average and SD using data from the three TTR trials using rowwise operations.
+head(modTTR) #Confirm formatting
+```
+
+# Plot data
+
+```{bash}
+mkdir figures
+```
+
+```{r}
+plotColors <- c(brewer.pal(9, "Reds")[7],
+                brewer.pal(9, "Greys")[7],
+                brewer.pal(9, "Blues")[7]) #Create color scheme
+```
+
+```{r}
+modTTR %>%
+  ggplot(., mapping = aes(x = day, y = TTRavg, color = treatment)) +
+  geom_point(shape = 19, alpha = 0.5) +
+  geom_smooth(method = lm, se = FALSE) +
+  scale_x_continuous(name = "Day",
+                     breaks = unique(modTTR$day),
+                     limits = c(4, 22)) +
+  scale_y_continuous(name = "Average Time-to-Right (s)",
+                     breaks = seq(0, 100, 25),
+                     limits = c(0, 100)) +
+  scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
+                    name = "Temperature (ºC)",
+                    breaks = c("13C", "30C", "5C"),
+                    labels = c("13", "30", "5")) +
+theme_classic(base_size = 15) #Plot average TTR and add lm fits without SE bars. Modify x-axis to only show experimental days where TTR was measured. Scale y axis. Assign colors to each treatment. Increase base font size.
+ggsave("figures/time-to-right.pdf", height = 8.5, width = 11)
+```
+
+
+
+
+
+
+
