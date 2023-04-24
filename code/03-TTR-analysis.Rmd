@@ -301,7 +301,6 @@ summary(TTRthreshModel2) #control vs. 5C significantly different, significant im
 write.csv(tidy(TTRthreshModel2), "TTR-binomialModel.csv", quote = FALSE, row.names = FALSE) #Save binomal GLM output
 ```
 
-
 # Final plot
 
 ```{r}
