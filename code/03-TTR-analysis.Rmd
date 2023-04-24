@@ -230,6 +230,10 @@ TTRmodel <- aov(log(TTRavg) ~ treatment + day + treatment*day + as.factor(sex) +
 summary(TTRmodel) #Only treatment is significant
 ```
 
+```{r}
+write.csv(tidy(TTRmodel), "TTR-ANOVA-output.csv", quote = FALSE, row.names = FALSE) #Save table version of ANOVA output
+```
+
 ## Check assumptions
 
 ```{r}
