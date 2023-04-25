@@ -231,7 +231,7 @@ summary(TTRmodel) #Only treatment is significant
 ```
 
 ```{r}
-write.csv(tidy(TTRmodel), "TTR-ANOVA-output.csv", quote = FALSE, row.names = FALSE) #Save table version of ANOVA output
+write.csv(broom::tidy(TTRmodel), "TTR-ANOVA-output.csv", quote = FALSE, row.names = FALSE) #Save table version of ANOVA output
 ```
 
 ## Check assumptions
@@ -250,7 +250,7 @@ TukeyHSD(TTRmodel, "treatment", conf.level = 0.95) #Use TukeyHSD for categorical
 ```
 
 ```{r}
-write.csv(tidy(TukeyHSD(TTRmodel, "treatment", conf.level = 0.95)), "TTR-ANOVA-treatment-Tukey.csv", quote = FALSE, row.names = FALSE) #Save TukeyHSD output
+write.csv(broom::tidy(TukeyHSD(TTRmodel, "treatment", conf.level = 0.95)), "TTR-ANOVA-treatment-Tukey.csv", quote = FALSE, row.names = FALSE) #Save TukeyHSD output
 ```
 
 ```{r}
@@ -258,7 +258,7 @@ pairwise.t.test(x = log(modTTR$TTRavg), modTTR$day, p.adjust.method = "bonferron
 ```
 
 ```{r}
-write.csv(tidy(pairwise.t.test(x = log(modTTR$TTRavg), modTTR$day, p.adjust.method = "bonferroni")), "TTR-ANOVA-day-pairwiset.csv", quote = FALSE, row.names = FALSE) #Save pairwise t-test output
+write.csv(tidy(broom::pairwise.t.test(x = log(modTTR$TTRavg), modTTR$day, p.adjust.method = "bonferroni")), "TTR-ANOVA-day-pairwiset.csv", quote = FALSE, row.names = FALSE) #Save pairwise t-test output
 ```
 
 # Threshold analysis
@@ -298,7 +298,7 @@ summary(TTRthreshModel2) #control vs. 5C significantly different, significant im
 ```
 
 ```{r}
-write.csv(tidy(TTRthreshModel2), "TTR-binomialModel.csv", quote = FALSE, row.names = FALSE) #Save binomal GLM output
+write.csv(broom::tidy(TTRthreshModel2), "TTR-binomialModel.csv", quote = FALSE, row.names = FALSE) #Save binomal GLM output
 ```
 
 # Final plot
@@ -307,7 +307,7 @@ write.csv(tidy(TTRthreshModel2), "TTR-binomialModel.csv", quote = FALSE, row.nam
 modTTR %>%
   dplyr::select(., c(day, treatment, TTRavgFull, TTRavgFullLow, TTRavgFullHigh)) %>%
   distinct(.) %>%
-  ggplot(., mapping = aes(x = day, y = TTRavgFull, color = treatment)) +
+  ggplot(., mapping = aes(x = day, y = TTRavgFull, color = treatment, shape = treatment)) +
   geom_pointrange(aes(ymin = TTRavgFullLow,
                       ymax = TTRavgFullHigh), 
                   size = 0.5, alpha = 0.75) +
@@ -319,6 +319,10 @@ modTTR %>%
                      breaks = c(0, seq(1, 5, 2), seq(5, 20, 5)),
                      limits = c(0, 17)) +
   scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("13C", "30C", "5C"),
+                     labels = c("13", "30", "5")) +
+  scale_shape_manual(values = c(19, 17, 15),
                      name = "Temperature (ºC)",
                      breaks = c("13C", "30C", "5C"),
                      labels = c("13", "30", "5")) +
