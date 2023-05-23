@@ -614,21 +614,28 @@ ggsave("figures/demPCA23.pdf", width = 11, height = 8.5)
 ```
 
 ```{r}
-demPCA12 <- autoplot(pca_res_crab_wl, data = dat_wl, x = 1, y = 2, colour = "temperature", size = 2, loadings = TRUE, loadings.colour = 'black', loadings.label = TRUE, loadings.label.size = 5, loadings.label.colour = 'black') + 
+#Save plot objects
+
+demPCA12 <- autoplot(pca_res_crab_wl, data = dat_wl, x = 1, y = 2, colour = "temperature", shape = "temperature", size = 2, loadings = TRUE, loadings.colour = 'black', loadings.label = TRUE, loadings.label.size = 5, loadings.label.colour = 'black') + 
   scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
                      name = "Temperature (ºC)",
                      breaks = c("13", "30", "5"),
                      labels = c("13", "30", "5"),
-                     guide = FALSE) +
+                     guide = "none") +
   stat_ellipse(geom = "polygon", aes(color = temperature, fill = temperature), linewidth = 0.3, alpha = 0.15) + 
   scale_fill_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
                     name = "Temperature (ºC)",
                     breaks = c("13", "30", "5"),
                     labels = c("13", "30", "5"),
-                    guide = FALSE) + 
-  theme_classic(base_size = 15)
+                    guide = "none") +
+  scale_shape_manual(values = c(19, 17, 15),
+                     name = "Temperature (ºC)",
+                     breaks = c("13", "30", "5"),
+                     labels = c("13", "30", "5"),
+                     guide = "none") +
+  theme_classic(base_size = 15) #Base plot. Don't include legend
 
-demPCA13 <- autoplot(pca_res_crab_wl, data = dat_wl, x = 1, y = 3, colour = "temperature", size = 2, loadings = TRUE, loadings.colour = 'black', loadings.label = TRUE, loadings.label.size = 5, loadings.label.colour = 'black') + 
+demPCA13 <- autoplot(pca_res_crab_wl, data = dat_wl, x = 1, y = 3, colour = "temperature", shape = "temperature", size = 2, loadings = TRUE, loadings.colour = 'black', loadings.label = TRUE, loadings.label.size = 5, loadings.label.colour = 'black') + 
   scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
                      name = "Temperature (ºC)",
                      breaks = c("13", "30", "5"),
@@ -637,10 +644,17 @@ demPCA13 <- autoplot(pca_res_crab_wl, data = dat_wl, x = 1, y = 3, colour = "tem
   scale_fill_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
                     name = "Temperature (ºC)",
                     breaks = c("13", "30", "5"),
-                    labels = c("13", "30", "5")) + 
-  theme_classic(base_size = 15)
+                    labels = c("13", "30", "5")) +
+  scale_shape_manual(values = c(19, 17, 15),
+                     name = "Temperature (ºC)",
+                     breaks = c("13", "30", "5"),
+                     labels = c("13", "30", "5")) +
+  theme_classic(base_size = 15) + theme(legend.justification = c(0,0), legend.position = c(0,0),
+                                        legend.background = element_rect(color = "black", linewidth = 0.5)) #Base plot. Include legends. Anchor legend in the bottom left corner and add a line around the legend.
 
-demPCA12 | demPCA13
+demPCA12 | demPCA13 #Create patchwork plot
+
+ggsave("figures/multipanel-demPCA-12-13.pdf", width = 11, height = 8.5)
 ```
 
 # Survival analysis
