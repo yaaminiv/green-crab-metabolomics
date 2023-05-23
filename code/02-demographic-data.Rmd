@@ -510,7 +510,7 @@ all_crab <- read.csv("../../data/crab-metadata.csv") %>%
   select(., c(date, treatment.tank, carapace.width, carapace.length, weight, integument.color, sex)) %>%
   rbind(., (read.csv("../../data/time-to-right.csv") %>%
               select(., c(date, treatment.tank, carapace.width, carapace.length, weight, integument.color, sex))))
-  #Import original metadata. Add a date column and select the necessary columns. Combine by columns (rbind) with demographic information from the time-to-right datasheet. Recode integument color into values. No quotes around numbers = will be recognized as numeric values. Remove integument.color (not recoded)
+#Import original metadata. Add a date column and select the necessary columns. Combine by columns (rbind) with demographic information from the time-to-right datasheet. Recode integument color into values. No quotes around numbers = will be recognized as numeric values. Remove integument.color (not recoded)
 head(all_crab)
 ```
 
@@ -520,9 +520,9 @@ dat_wl <- all_crab %>%
   mutate(day = recode(date, "7/5/2022" = 1, "7/8/2022" = 4, "7/12/2022" = 8, "7/15/2022" = 11, "7/19/2022" = 15, "7/22/2022" = 18, "7/26/2022" = 22)) %>%
   mutate(temperature = recode(treatment.tank, "1" = 13, "2" = 5, "3" = 30, "4" = 13, "5" = 5, "6" = 30)) %>% 
   mutate(sex = recode(sex, "F" = 1, "M" = 2)) %>%
-  mutate(width_length = carapace.width/carapace.length) %>%
+  mutate(size = carapace.width/carapace.length) %>%
   select(., -c(integument.color, treatment.tank, date, carapace.width, carapace.length))
-  #Recode colors to numbers, dates to days, and create a new column for temperature. Create an index for width/length (autocorrelated). Drop columns prior to recoding and width and length columns.
+#Recode colors to numbers, dates to days, and create a new column for temperature. Create an index for width/length (autocorrelated). Drop columns prior to recoding and width and length columns.
 head(dat_wl)
 ```
 
@@ -540,19 +540,68 @@ ordi.monte(dat_wl, ord = "pca", dim = 6, plot = FALSE) #Conduct monte carlo rand
 
 ```{r PCA interpretation cont., width/length}
 pca_res_crab_wl$rotation #Correlations between individual variables and PCs.
-pca.structure(pca_res_crab_wl, dat_wl, dim = 5, cutoff = 0.4) #Structure coefficients between variables and PCs above the given cutoff
+pca.structure(pca_res_crab_wl, dat_wl, dim = 5, cutoff = 0.4) #Structure coefficients between variables and PCs above the given cutoff. Simple linear correlations between original variables and PC scores. Squared structure coefficients give the percentage of variance in each original variable accounted for by each PC.
+```
+
+### Plot PCA
+
+```{bash}
+mkdir figures
+```
+
+```{r}
+plotColors <- c(brewer.pal(9, "Reds")[7],
+                brewer.pal(9, "Greys")[7],
+                brewer.pal(9, "Blues")[7]) #Create color scheme
+```
+
+```{r}
+dat_wl$temperature <- as.factor(dat_wl$temperature) #Ensure temperature is read as a factor for plotting
 ```
 
 ```{r PCA plot, width/length}
-dat_wl$temperature <- as.factor(dat_wl$temperature)
-head(dat_wl)
+autoplot(pca_res_crab_wl, data = dat_wl, x = 1, y = 2, colour = "temperature", size = 2, loadings = TRUE, loadings.colour = 'black', loadings.label = TRUE, loadings.label.size = 5, loadings.label.colour = 'black') + 
+  scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("13", "30", "5"),
+                     labels = c("13", "30", "5")) +
+  stat_ellipse(geom = "polygon", aes(color = temperature, fill = temperature), linewidth = 0.3, alpha = 0.15) + 
+  scale_fill_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
+                    name = "Temperature (ºC)",
+                    breaks = c("13", "30", "5"),
+                    labels = c("13", "30", "5")) + 
+  theme_classic(base_size = 15) #Create base PCA for PC1 and PC2. Include 95% confidence ellipses around points
+ggsave("figures/demPCA12.pdf", width = 11, height = 8.5)
 
-p <- autoplot(pca_res_crab_wl, data = dat_wl, colour = "temperature", size = 2, loadings = TRUE, loadings.colour = 'purple', loadings.label = TRUE, loadings.label.size = 5, loadings.label.colour = 'black')
+autoplot(pca_res_crab_wl, data = dat_wl, x = 1, y = 3, colour = "temperature", size = 2, loadings = TRUE, loadings.colour = 'black', loadings.label = TRUE, loadings.label.size = 5, loadings.label.colour = 'black') + 
+  scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("13", "30", "5"),
+                     labels = c("13", "30", "5")) +
+  stat_ellipse(geom = "polygon", aes(color = temperature, fill = temperature), linewidth = 0.3, alpha = 0.15) + 
+  scale_fill_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
+                    name = "Temperature (ºC)",
+                    breaks = c("13", "30", "5"),
+                    labels = c("13", "30", "5")) + 
+  theme_classic(base_size = 15) #Create base PCA for PC1 and PC3. Include 95% confidence ellipses around points
 
-p2 <- p + scale_color_manual(values = c("#2171B5","#525252","#CB181D")) + theme(legend.text = element_text(size = 15)) + theme(legend.title = element_text(size = 15)) + stat_ellipse(geom = "polygon", aes(fill = temperature), alpha = 0.25) + guides(shape = "none") + scale_fill_manual(values = c("#2171B5","#525252","#CB181D"), labels=c("Cold 6C", "Ambient 14C", "Hot 31C")) + labs(fill = "Temperature (C)") + guides(color = "none") + ggtitle("PCA, Width/Length")
+autoplot(pca_res_crab_wl, data = dat_wl, x = 2, y = 3, colour = "temperature", size = 2, loadings = TRUE, loadings.colour = 'black', loadings.label = TRUE, loadings.label.size = 5, loadings.label.colour = 'black') + 
+  scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("13", "30", "5"),
+                     labels = c("13", "30", "5")) +
+  stat_ellipse(geom = "polygon", aes(color = temperature, fill = temperature), linewidth = 0.3, alpha = 0.15) + 
+  scale_fill_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
+                    name = "Temperature (ºC)",
+                    breaks = c("13", "30", "5"),
+                    labels = c("13", "30", "5")) + 
+  theme_classic(base_size = 15) #Create base PCA for PC2 and PC3. Include 95% confidence ellipses around points
+```
 
-p2
-
+```{r}
+demPCA12
+demPCA13
+demPCA23
 ```
 
 # Survival analysis
@@ -643,26 +692,16 @@ The `exp(coef)` parameter is the hazards ratio. The HR means that each additiona
 
 ### Plot Kaplan-Meier curves
 
-```{bash}
-mkdir figures
-```
-
-```{r}
-plotColors <- c(brewer.pal(9, "Reds")[7],
-                brewer.pal(9, "Greys")[7],
-                brewer.pal(9, "Blues")[7]) #Create color scheme
-```
-
 ```{r}
 mortalityDataLong %>%
   survfit2(Surv(time, status, type = "right") ~ treatment, data = .) %>%
   ggsurvfit(linewidth = 1, linetype_aes = TRUE) +
   scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]),
                      labels = c("13", "30", "5"),
-                     name = "Treatment (ºC)") +
+                     name = "Temperature (ºC)") +
   scale_linetype_manual(values = c(1, 6, 4),
                         labels = c("13", "30", "5"),
-                        name = "Treatment (ºC)") +
+                        name = "Temperature (ºC)") +
   scale_x_continuous(breaks = seq(0, 22, 2)) +
   scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
   labs(x = "Days", y = "Overall Survival Probality") + 
