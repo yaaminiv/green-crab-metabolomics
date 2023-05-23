@@ -29,7 +29,7 @@ getwd()
 # install.packages("ggsurvfit")
 ```
 
-```{r}
+```{r, include=FALSE}
 require(tidyverse)
 require(RColorBrewer)
 require(patchwork)
@@ -52,10 +52,10 @@ sessionInfo()
 # Import data
 
 ```{r data, echo=FALSE}
-cw_data <- read.csv("carapace_width.csv")
-cl_data <- read.csv("carapace_length.csv")
-ig_data <- read.csv("integument_color.csv")
-w_data <- read.csv("weight.csv")
+cw_data <- read.csv("../../data/carapace_width.csv")
+cl_data <- read.csv("../../data/carapace_length.csv")
+ig_data <- read.csv("../../data/integument_color.csv")
+w_data <- read.csv("../../data/weight.csv")
 ```
 
 # Tank-level analysis
@@ -271,6 +271,7 @@ chi_19th
 chi_22nd
 chi_26th
 ```
+
 ### Post-hoc testing
 
 ```{r post hoc test}
@@ -499,41 +500,46 @@ plot(tukey.26th)
 
 ## PCA
 
+I need the data from the initial crab metadata file, as well as from the time to right file that has sex, weight, size, and integument color for all crabs.
+
+I need date, treatment.tank, carapace.width, carapace.length, weight, integument.color, and sex information all all time points.
+
 ```{r PCA data import}
-all_crab <- read.csv("all_crab_dat.csv") #created a file with all crab data
-all_crab$integument_color <- recode(all_crab$integument.color,"BG"=0.5,"G"=1,"YG"=1.5,"Y"=2,"YO"=2.5,"O"=3,"RO"=3.5) #recoded integument color into values. no quotes around numbers = will be recognized as numeric values
+all_crab <- read.csv("../../data/crab-metadata.csv") %>%
+  mutate(., date = rep("7/5/2022", times = nrow(.))) %>%
+  select(., c(date, treatment.tank, carapace.width, carapace.length, weight, integument.color, sex)) %>%
+  rbind(., (read.csv("../../data/time-to-right.csv") %>%
+              select(., c(date, treatment.tank, carapace.width, carapace.length, weight, integument.color, sex))))
+  #Import original metadata. Add a date column and select the necessary columns. Combine by columns (rbind) with demographic information from the time-to-right datasheet. Recode integument color into values. No quotes around numbers = will be recognized as numeric values. Remove integument.color (not recoded)
 head(all_crab)
-crab_dat <- all_crab[c(1:260),-c(6)] #selected columns of data (do not include integument color before recoding)
-head(crab_dat)
 ```
 
 ```{r PCA data formatting}
-dat_all <- crab_dat %>%
-  mutate(day = recode(date, "7/8/2022" = 4, "7/12/2022" = 8, "7/15/2022" = 11, "7/19/2022" = 15, "7/22/2022" = 18, "7/26/2022" = 22)) %>%
-  mutate(temperature = recode(treatment.tank, "1" = 14, "2" = 6, "3" = 31, "4" = 14, "5" = 6, "6" = 31)) %>% mutate(sex = recode(sex, "F"=1, "M"=2)) %>%
-  select(., -c(treatment.tank, date)) #Make recode dates to days and create a new column for temperature. Drop date and treatment.tank
-head(dat_all)
-dat_wl <- dat_all%>%mutate(width_length = carapace.width/carapace.length) 
+dat_wl <- all_crab %>%
+  mutate(., integument_color = recode(integument.color,"B" = 0, "BG" = 0.5,"G" = 1,"YG" = 1.5,"Y" = 2,"YO" = 2.5,"O" = 3,"RO" = 3.5)) %>%
+  mutate(day = recode(date, "7/5/2022" = 1, "7/8/2022" = 4, "7/12/2022" = 8, "7/15/2022" = 11, "7/19/2022" = 15, "7/22/2022" = 18, "7/26/2022" = 22)) %>%
+  mutate(temperature = recode(treatment.tank, "1" = 13, "2" = 5, "3" = 30, "4" = 13, "5" = 5, "6" = 30)) %>% 
+  mutate(sex = recode(sex, "F" = 1, "M" = 2)) %>%
+  mutate(width_length = carapace.width/carapace.length) %>%
+  select(., -c(integument.color, treatment.tank, date, carapace.width, carapace.length))
+  #Recode colors to numbers, dates to days, and create a new column for temperature. Create an index for width/length (autocorrelated). Drop columns prior to recoding and width and length columns.
 head(dat_wl)
-dat_wl <- dat_wl[c(1:260), c(3:8)]
-head(dat_wl)
-
 ```
 
 ```{r PCA, width/length}
-pca_res_crab_wl <- prcomp(dat_wl, scale. = TRUE) #Conduct PCA
+pca_res_crab_wl <- prcomp(x = dat_wl, scale. = TRUE) #Conduct PCA
 summary(pca_res_crab_wl) #Standard deviations for each PC
 ```
 
 ```{r PCA interpretation, width/length}
-pca.eigenval(pca_res_crab_wl) #Eigenvalues greater than the broken-stick expectation are considered to explain a statistically significance proportion of the variance in the original dataset. PC1 eigenvalue > BSV
-ordi.monte(dat_wl, ord = "pca", dim = 6, plot = FALSE) #Conduct monte carlo randomization test using 1000 random permutations of the input data. PC1 and PC2 p-values < 0.05
+pca.eigenval(pca_res_crab_wl) #Eigenvalues greater than the broken-stick expectation are considered to explain a statistically significance proportion of the variance in the original dataset. PC3 and PC4 eigenvalue > BSV
+ordi.monte(dat_wl, ord = "pca", dim = 6, plot = FALSE) #Conduct monte carlo randomization test using 1000 random permutations of the input data. PC1, PC2, PC3 p-values < 0.05
 
-#Support exists for both PC1 and PC2
+#Will move forward with PC1-3
 ```
 
 ```{r PCA interpretation cont., width/length}
-pca_res_crab_wl$rotation #Correlations between individual variables and PCs
+pca_res_crab_wl$rotation #Correlations between individual variables and PCs.
 pca.structure(pca_res_crab_wl, dat_wl, dim = 5, cutoff = 0.4) #Structure coefficients between variables and PCs above the given cutoff
 ```
 
@@ -547,97 +553,6 @@ p2 <- p + scale_color_manual(values = c("#2171B5","#525252","#CB181D")) + theme(
 
 p2
 
-```
-
-```{r PCA plot, width and lenght separate}
-pca_res_crab <- prcomp(dat_all, scale. = TRUE) #Conduct PCA
-summary(pca_res_crab) #Standard deviations for each PC
-pca.eigenval(pca_res_crab) #Eigenvalues greater than the broken-stick expectation are considered to explain a statistically significance proportion of the variance in the original dataset. PC1 eigenvalue > BSV
-ordi.monte(dat_all, ord = "pca", dim = 6, plot = FALSE) #Conduct monte carlo randomization test using 1000 random permutations of the input data. PC1 and PC2 p-values < 0.05
-
-#Support exists for both PC1 and PC2
-pca_res_crab$rotation #Correlations between individual variables and PCs
-pca.structure(pca_res_crab, dat_all, dim = 5, cutoff = 0.4) #Structure coefficients between variables and PCs above the given cutoff
-
-dat_all$temperature <- as.factor(dat_all$temperature)
-head(dat_all)
-
-p_all <- autoplot(pca_res_crab, data = dat_all, colour = "temperature", size = 2, loadings = TRUE, loadings.colour = 'purple', loadings.label = TRUE, loadings.label.size = 5, loadings.label.colour = 'black')
-
-p2_all <- p_all + scale_color_manual(values = c("#2171B5","#525252","#CB181D")) + theme(legend.text = element_text(size = 15)) + theme(legend.title = element_text(size = 15)) + stat_ellipse(geom = "polygon", aes(fill = temperature), alpha = 0.25) + guides(shape = "none") + scale_fill_manual(values = c("#2171B5","#525252","#CB181D"), labels=c("Cold 6C", "Ambient 14C", "Hot 31C")) + labs(fill = "Temperature (C)") + guides(color = "none") + ggtitle("PCA, Width and Length Separate")
-
-p2_all
-```
-
-
-```{pca practice..}
-#p <- autoplot(pca_res_crab, data = dat_all, colour = 'temperature', shape = 'temperature', loadings = TRUE, loadings.colour = 'blue', loadings.label = TRUE, loadings.label.size = 3, frame = TRUE, frame.type = 'norm', frame.colour = 'temperature')
-
-#p2 <- p + scale_color_manual(values = c("#2171B5","#525252","#CB181D")) + theme(legend.text = element_text(size = 15)) + theme(legend.title = element_text(size = 15)) + stat_ellipse()
-
-#ggplotly(p2) 
-
-#p_ <- autoplot(pca_res_crab, data = dat_all, colour = 'temperature', shape = 'temperature', loadings = TRUE, loadings.colour = 'blue', loadings.label = TRUE, loadings.label.size = 3, ellipse = TRUE,ellipse.level = 0.95,ellipse.type = "norm",ellipse.alpha = 0.1,ellipse.border.remove = FALSE)
-
-#p_2 <- p_ + scale_color_manual(values = c("#2171B5","#525252","#CB181D")) + theme(legend.text = element_text(size = 15)) + theme(legend.title = element_text(size = 15))
-
-#ggplotly(p_2)
-
-#, frame.level = .95, show.legend = FALSE
-# colby = 'temperature', colkey = c('6' = "#2171B5", '14' = "#525252", '31' = "#CB181D"), colLegendTitle = 'Temperature', 
-# + stat_ellipse(type = 'norm', level = 0.95)
-#frame = TRUE, frame.type = 'norm', frame.prob = .95
-#frame = TRUE, frame.type = 'norm'
-#+ scale_fill_discrete(name = "Temperature", labels = c("6C", "14C", "31C"))
-#ggplotly(p) + scale_color_manual(values = c("#2171B5","#525252","#CB181D"))
-#factor(dat_all$temperature)
-#col.hab = c("#2171B5","#525252","#CB181D"),
-#col.var = c("#2171B5","#525252","#CB181D") ,
-#pca_res_crab_i <- data.frame(pca_res_crab$x, temperature=dat_all$temperature)
-
-
-
-#pca
-
-#my_colors <- c("#2171B5","#525252","#CB181D")
-#names(my_colors) <- levels(factor(c(levels(dat_all$temperature))))
-#my_scale <- scale_fill_manual(name = "temperature", values = my_colors)
-
-#p
-#ggplotly(p)
-#p + my_scale
-
-
-############################library(data.table)
-#dat_all <- dat_all%>%mutate(width_length = carapace.width/carapace.length)
-#head(dat_all)
-#dat_all$temperature <- as.factor(dat_all$temperature)
-#pca_res_crab_i <- data.frame(pca_res_crab$x, temperature=dat_all$temperature)
-
-#pca <- ggplot(data = pca_res_crab_i, aes(x = PC1, y = PC2, col = temperature)) + geom_point(size=2) + scale_color_manual(values = c("#2171B5","#525252","#CB181D")) + stat_ellipse(type = 'norm', level = 0.95)
-
-#pca
-#dat_all$width_length <- tapply(dat_all$carapace.width, dat_all$carapace.length, function(x) as.numeric(factor(x)))
-____________________
-
-#, colour = 'temperature'
-#ggplotly(p2) 
-
-#p_ <- autoplot(pca_res_crab, data = dat_all, colour = 'temperature', shape = 'temperature', loadings = TRUE, loadings.colour = 'blue', loadings.label = TRUE, loadings.label.size = 3, ellipse = TRUE,ellipse.level = 0.95,ellipse.type = "norm",ellipse.alpha = 0.1,ellipse.border.remove = FALSE)
-
-#p_2 <- p_ + scale_color_manual(values = c("#2171B5","#525252","#CB181D")) + theme(legend.text = element_text(size = 15)) + theme(legend.title = element_text(size = 15))
-
-#ggplotly(p_2)
-
-##########################
-
-
-
-#dat_all <- crab_dat %>%
-#mutate(day = recode(date, "7/8/2022" = 4, "7/12/2022" = 8, "7/15/2022" = 11, "7/19/2022" = 15, "7/22/2022" = 18, "7/26/2022" = 22)) %>%
-#mutate(temperature = recode(treatment.tank, "1" = 14, "2" = 6, "3" = 31, "4" = 14, "5" = 6, "6" = 31)) %>% mutate(sex = recode(sex, "F"=1, "M"=2)) %>%
-#select(., -c(carapace.width, carapace.length,treatment.tank, date)) #Make recode dates to days and create a new column for temperature. Drop date and treatment.tank
-#head(dat_all)
 ```
 
 # Survival analysis
