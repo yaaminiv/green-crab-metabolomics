@@ -25,6 +25,7 @@ getwd()
 # install.packages("cowplot")
 # install.packages("ggfortify")
 # install.packages("ggpubr")
+# install.packages("vegan")
 # install.packages("patchwork")
 # install.packages("survival")
 # install.packages("ggsurvfit")
@@ -37,6 +38,7 @@ require(patchwork)
 require(cowplot)
 require(ggfortify)
 require(ggpubr)
+require(vegan)
 require(patchwork)
 require(survival)
 require(ggsurvfit)
@@ -534,14 +536,40 @@ summary(pca_res_crab_wl) #Standard deviations for each PC
 
 ```{r PCA interpretation, width/length}
 pca.eigenval(pca_res_crab_wl) #Eigenvalues greater than the broken-stick expectation are considered to explain a statistically significance proportion of the variance in the original dataset. PC3 and PC4 eigenvalue > BSV
-ordi.monte(dat_wl, ord = "pca", dim = 6, plot = FALSE) #Conduct monte carlo randomization test using 1000 random permutations of the input data. PC1, PC2, PC3 p-values < 0.05
+ordiMonteRandTest <- ordi.monte(dat_wl, ord = "pca", dim = 6, plot = FALSE) #Conduct monte carlo randomization test using 1000 random permutations of the input data.
+ordiMonteRandTest # PC1, PC2, PC3 p-values < 0.05
 
 #Will move forward with PC1-3
 ```
 
+```{r}
+write.csv(as.data.frame(pca.eigenval(pca_res_crab_wl)), "PC-importance.csv", quote = FALSE) #Save eigenvalue and BSV table
+write.csv(as.data.frame(ordiMonteRandTest), "PC-randomization-test.csv", quote = FALSE) #Save randomization test results
+```
+
 ```{r PCA interpretation cont., width/length}
-pca_res_crab_wl$rotation #Correlations between individual variables and PCs.
+pca_res_crab_wl$rotation #Correlations between individual variables and PCs, but not correlation coefficients.
 pca.structure(pca_res_crab_wl, dat_wl, dim = 5, cutoff = 0.4) #Structure coefficients between variables and PCs above the given cutoff. Simple linear correlations between original variables and PC scores. Squared structure coefficients give the percentage of variance in each original variable accounted for by each PC.
+```
+
+```{r}
+write.csv(as.data.frame(pca.structure(pca_res_crab_wl, dat_wl, dim = 5, cutoff = 0.4)), "PC-structure-coefficients.csv", quote = FALSE) #Save structure coefficients
+```
+
+```{r}
+vec.sp <- envfit(scores(pca_res_crab_wl), dat_wl, choices = c(1:3), perm = 1000) #Extract scores for first three PCs, since those were determined to be significant. Use a permutation with 1000 iterations to determine significance of variable loadings on the PCs 
+vec.sp #All variables are significant against PCs
+```
+
+```{r}
+as.data.frame(vec.sp$vectors$arrows) %>%
+  cbind(rbind(vec.sp$vectors$r,
+      vec.sp$vectors$pvals) %>%
+  t(.) %>%
+  as.data.frame(.)) %>%
+  dplyr::rename(., "r2" = V1) %>%
+  dplyr::rename(., "Pr(>r)" = V2) %>%
+  write.csv(., "variable-loading-significance.csv", quote = FALSE) #Convert information from vec.sp into a dataframe format and save
 ```
 
 ### Plot PCA
@@ -655,6 +683,53 @@ demPCA13 <- autoplot(pca_res_crab_wl, data = dat_wl, x = 1, y = 3, colour = "tem
 demPCA12 | demPCA13 #Create patchwork plot
 
 ggsave("figures/multipanel-demPCA-12-13.pdf", width = 11, height = 8.5)
+```
+
+## MANOVA
+
+To test the significance of temperature and day on all demographic variables simultaneously, I will use a MANOVA.
+
+```{r}
+demMANOVA <- manova(cbind(weight, size, integument_color) ~ as.factor(temperature)*day*as.factor(sex), data = dat_wl) #Conduct a MANOVA to examine the influence of temperature, day, and sex on weight, size, and integument color.
+summary(demMANOVA) #Significant impact of temperature, day, and sex on demographic variables. Interactions between day and both temperature and sex are significant as well.
+```
+
+```{r}
+as.data.frame(summary(demMANOVA)$stats) %>%
+  write.csv(., "MANOVA-stat-res.csv", quote = FALSE) #Save MANOVA results
+```
+
+### Post-hoc tests
+
+I will use post-hoc single-variable ANOVA tests with Bonferroni corrected P-values to examine the impact of temperature, day, and sex on weight, size, and integument color separately.
+
+```{r}
+#Conduct post-hoc ANOVA tests and look at the statistical results
+
+summary(aov(weight ~ as.factor(temperature)*day*as.factor(sex), data = dat_wl))
+summary(aov(size ~ as.factor(temperature)*day*as.factor(sex), data = dat_wl))
+summary(aov(integument_color ~ as.factor(temperature)*day*as.factor(sex), data = dat_wl))
+```
+
+```{r}
+summary(aov(weight ~ as.factor(temperature)*day*as.factor(sex), data = dat_wl))[[1]] %>%
+  as.data.frame(.) %>%
+  mutate(., padj = p.adjust(p = `Pr(>F)`, method = "bonferroni")) %>%
+  write.csv(., "weight-ANOVA-Bonferroni-res.csv", quote = FALSE) #Isolate the statistical results from the summary object and convert to a data frame. Use padj to perform a Bonferroni correction on p-values. Save the dataframe as a csv
+```
+
+```{r}
+summary(aov(size ~ as.factor(temperature)*day*as.factor(sex), data = dat_wl))[[1]] %>%
+  as.data.frame(.) %>%
+  mutate(., padj = p.adjust(p = `Pr(>F)`, method = "bonferroni")) %>%
+  write.csv(., "size-ANOVA-Bonferroni-res.csv", quote = FALSE) #Isolate the statistical results from the summary object and convert to a data frame. Use padj to perform a Bonferroni correction on p-values. Save the dataframe as a csv
+```
+
+```{r}
+summary(aov(integument_color ~ as.factor(temperature)*day*as.factor(sex), data = dat_wl))[[1]] %>%
+  as.data.frame(.) %>%
+  mutate(., padj = p.adjust(p = `Pr(>F)`, method = "bonferroni")) %>%
+  write.csv(., "integumentColor-ANOVA-Bonferroni-res.csv", quote = FALSE) #Isolate the statistical results from the summary object and convert to a data frame. Use padj to perform a Bonferroni correction on p-values. Save the dataframe as a csv
 ```
 
 # Survival analysis
