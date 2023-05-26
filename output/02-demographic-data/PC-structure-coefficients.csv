@@ -1,7 +1,7 @@
-,PC1,PC2,PC3,PC4,PC5
-weight,0.735,,,,
-sex,0.706,-0.501,,,
-integument_color,-0.602,-0.566,,,-0.468
-day,,-0.585,0.57,,
-temperature,,,-0.697,0.434,
-size,,-0.447,-0.483,-0.717,
+,PC1,PC2,PC3
+weight,0.735,,
+sex,0.706,-0.501,
+integument_color,-0.602,-0.566,
+day,,-0.585,0.57
+temperature,,,-0.697
+size,,-0.447,-0.483

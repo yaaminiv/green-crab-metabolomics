@@ -549,11 +549,11 @@ write.csv(as.data.frame(ordiMonteRandTest), "PC-randomization-test.csv", quote =
 
 ```{r PCA interpretation cont., width/length}
 pca_res_crab_wl$rotation #Correlations between individual variables and PCs, but not correlation coefficients.
-pca.structure(pca_res_crab_wl, dat_wl, dim = 5, cutoff = 0.4) #Structure coefficients between variables and PCs above the given cutoff. Simple linear correlations between original variables and PC scores. Squared structure coefficients give the percentage of variance in each original variable accounted for by each PC.
+pca.structure(pca_res_crab_wl, dat_wl, dim = 3, cutoff = 0.4) #Structure coefficients between variables and PCs above the given cutoff. Simple linear correlations between original variables and PC scores. Squared structure coefficients give the percentage of variance in each original variable accounted for by each PC.
 ```
 
 ```{r}
-write.csv(as.data.frame(pca.structure(pca_res_crab_wl, dat_wl, dim = 5, cutoff = 0.4)), "PC-structure-coefficients.csv", quote = FALSE) #Save structure coefficients
+write.csv(as.data.frame(pca.structure(pca_res_crab_wl, dat_wl, dim = 3, cutoff = 0.4)), "PC-structure-coefficients.csv", quote = FALSE) #Save structure coefficients
 ```
 
 ```{r}
