@@ -23,9 +23,11 @@ getwd()
 ```{r packages, include=FALSE}
 #install.packages("tidyverse")
 #install.packages("RColorBrewer")
+#install.packages("lubridate")
 #install.packages("respirometry")
 require(tidyverse)
 require(RColorBrewer)
+require(lubridate)
 require(respirometry)
 ```
 
@@ -56,12 +58,12 @@ files20220708 #Confirm the list has the correct files
 ```
 
 ```{r}
-dat20220708 <- read_delim(files20220708, id = "tank", delim = "\t", skip = 72, col_names = FALSE)  %>% 
-  select(., c(1:8, 13, 18, 22:26, 31, 36, 40:44, 49, 54)) #Import data from all files in the designated list. Specify tab-delimited files and skip the first 72 lines. There are no column names. Select data from probes 1-3 (probe 4 was neveer used. )
-colnames(dat20220708) <- c("path", "date", "time", 
-                    "dt_s_1", "perc_air_sat_1", "dphi_1", "signal_int_mV_1", "amb_light_mV_1", "temp_C_1", "pressure_mbar_1",
-                    "dt_s_2", "perc_air_sat_2", "dphi_2", "signal_int_mV_2", "amb_light_mV_2", "temp_C_2", "pressure_mbar_2",
-                    "dt_s_3", "perc_air_sat_3", "dphi_3", "signal_int_mV_3", "amb_light_mV_3", "temp_C_3", "pressure_mbar_3") #Rename columns
+dat20220708 <- read_delim(files20220708, id = "tank", delim = "\t", skip = 72, col_names = FALSE) %>% 
+  select(., c(1:8, 13, 18, 20:26, 31, 36, 38:44, 49, 54)) #Import data from all files in the designated list. Specify tab-delimited files and skip the first 72 lines. There are no column names. Select data from probes 1-3 (probe 4 was never used). Use all date/time columns since some probes ran for longer than others.
+colnames(dat20220708) <- c("path", 
+                           "date_1", "time_1", "dt_s_1", "perc_air_sat_1", "dphi_1", "signal_int_mV_1", "amb_light_mV_1", "temp_C_1", "pressure_mbar_1",
+                           "date_2", "time_2", "dt_s_2", "perc_air_sat_2", "dphi_2", "signal_int_mV_2", "amb_light_mV_2", "temp_C_2", "pressure_mbar_2",
+                           "date_3", "time_3", "dt_s_3", "perc_air_sat_3", "dphi_3", "signal_int_mV_3", "amb_light_mV_3", "temp_C_3", "pressure_mbar_3") #Rename columns
 head(dat20220708)
 ```
 
@@ -81,17 +83,17 @@ tail(dat20220708) #Confirm tank and treatment information
 ### 2022-07-12
 
 ```{r}
-files20220712 <- fs::dir_ls("../../data/respiration/2022-07-12-resp//", glob = "*tank?.txt", recurse = TRUE) #Create a list of respirometry files from specified date. Use recurse = TRUE to prompt search through child directories. Only select files that end in tank[NUMBER].txt. ? = single character wildcard
+files20220712 <- fs::dir_ls("../../data/respiration/2022-07-12-resp/", glob = "*tank?.txt", recurse = TRUE) #Create a list of respirometry files from specified date. Use recurse = TRUE to prompt search through child directories. Only select files that end in tank[NUMBER].txt. ? = single character wildcard
 files20220712 #Confirm the list has the correct files
 ```
 
 ```{r}
 dat20220712 <- read_delim(files20220712, id = "tank", delim = "\t", skip = 72, col_names = FALSE)  %>% 
-  select(., c(1:8, 13, 18, 22:26, 31, 36, 40:44, 49, 54)) #Import data from all files in the designated list. Specify tab-delimited files and skip the first 72 lines. There are no column names.  Select data from probes 1-3 (probe 4 was neveer used. )
-colnames(dat20220712) <- c("path", "date", "time", 
-                    "dt_s_1", "perc_air_sat_1", "dphi_1", "signal_int_mV_1", "amb_light_mV_1", "temp_C_1", "pressure_mbar_1",
-                    "dt_s_2", "perc_air_sat_2", "dphi_2", "signal_int_mV_2", "amb_light_mV_2", "temp_C_2", "pressure_mbar_2",
-                    "dt_s_3", "perc_air_sat_3", "dphi_3", "signal_int_mV_3", "amb_light_mV_3", "temp_C_3", "pressure_mbar_3") #Rename columns
+    select(., c(1:8, 13, 18, 20:26, 31, 36, 38:44, 49, 54)) #Import data from all files in the designated list. Specify tab-delimited files and skip the first 72 lines. There are no column names. Select data from probes 1-3 (probe 4 was never used). Use all date/time columns since some probes ran for longer than others.
+colnames(dat20220712) <- c("path", 
+                           "date_1", "time_1", "dt_s_1", "perc_air_sat_1", "dphi_1", "signal_int_mV_1", "amb_light_mV_1", "temp_C_1", "pressure_mbar_1",
+                           "date_2", "time_2", "dt_s_2", "perc_air_sat_2", "dphi_2", "signal_int_mV_2", "amb_light_mV_2", "temp_C_2", "pressure_mbar_2",
+                           "date_3", "time_3", "dt_s_3", "perc_air_sat_3", "dphi_3", "signal_int_mV_3", "amb_light_mV_3", "temp_C_3", "pressure_mbar_3") #Rename columns
 head(dat20220712)
 ```
 
@@ -111,17 +113,17 @@ tail(dat20220712) #Confirm tank and treatment information
 ### 2022-07-19
 
 ```{r}
-files20220719 <- fs::dir_ls("../../data/respiration/2022-07-12-resp//", glob = "*tank?.txt", recurse = TRUE) #Create a list of respirometry files from specified date. Use recurse = TRUE to prompt search through child directories. Only select files that end in tank[NUMBER].txt. ? = single character wildcard
+files20220719 <- fs::dir_ls("../../data/respiration/2022-07-19-resp/", glob = "*Tank_?.txt", recurse = TRUE) #Create a list of respirometry files from specified date. Use recurse = TRUE to prompt search through child directories. Only select files that end in Tank_[NUMBER].txt. ? = single character wildcard
 files20220719 #Confirm the list has the correct files
 ```
 
 ```{r}
 dat20220719 <- read_delim(files20220719, id = "tank", delim = "\t", skip = 72, col_names = FALSE)  %>% 
-  select(., c(1:8, 13, 18, 22:26, 31, 36, 40:44, 49, 54)) #Import data from all files in the designated list. Specify tab-delimited files and skip the first 72 lines. There are no column names. Select data from probes 1-3 (probe 4 was neveer used.)
-colnames(dat20220719) <- c("path", "date", "time", 
-                    "dt_s_1", "perc_air_sat_1", "dphi_1", "signal_int_mV_1", "amb_light_mV_1", "temp_C_1", "pressure_mbar_1",
-                    "dt_s_2", "perc_air_sat_2", "dphi_2", "signal_int_mV_2", "amb_light_mV_2", "temp_C_2", "pressure_mbar_2",
-                    "dt_s_3", "perc_air_sat_3", "dphi_3", "signal_int_mV_3", "amb_light_mV_3", "temp_C_3", "pressure_mbar_3") #Rename columns
+    select(., c(1:8, 13, 18, 20:26, 31, 36, 38:44, 49, 54)) #Import data from all files in the designated list. Specify tab-delimited files and skip the first 72 lines. There are no column names. Select data from probes 1-3 (probe 4 was never used). Use all date/time columns since some probes ran for longer than others.
+colnames(dat20220719) <- c("path", 
+                           "date_1", "time_1", "dt_s_1", "perc_air_sat_1", "dphi_1", "signal_int_mV_1", "amb_light_mV_1", "temp_C_1", "pressure_mbar_1",
+                           "date_2", "time_2", "dt_s_2", "perc_air_sat_2", "dphi_2", "signal_int_mV_2", "amb_light_mV_2", "temp_C_2", "pressure_mbar_2",
+                           "date_3", "time_3", "dt_s_3", "perc_air_sat_3", "dphi_3", "signal_int_mV_3", "amb_light_mV_3", "temp_C_3", "pressure_mbar_3") #Rename columns
 head(dat20220719)
 ```
 
@@ -141,17 +143,17 @@ tail(dat20220719) #Confirm tank and treatment information
 ### 2022-07-26
 
 ```{r}
-files20220726 <- fs::dir_ls("../../data/respiration/2022-07-12-resp//", glob = "*tank?.txt", recurse = TRUE) #Create a list of respirometry files from specified date. Use recurse = TRUE to prompt search through child directories. Only select files that end in tank[NUMBER].txt. ? = single character wildcard
+files20220726 <- fs::dir_ls("../../data/respiration/2022-07-26-resp/", glob = "*Tank_?.txt", recurse = TRUE) #Create a list of respirometry files from specified date. Use recurse = TRUE to prompt search through child directories. Only select files that end in tank[NUMBER].txt. ? = single character wildcard
 files20220726 #Confirm the list has the correct files
 ```
 
 ```{r}
 dat20220726 <- read_delim(files20220726, id = "tank", delim = "\t", skip = 72, col_names = FALSE)  %>% 
-  select(., c(1:8, 13, 18, 22:26, 31, 36, 40:44, 49, 54)) #Import data from all files in the designated list. Specify tab-delimited files and skip the first 72 lines. There are no column names.
-colnames(dat20220726) <- c("path", "date", "time", 
-                    "dt_s_1", "perc_air_sat_1", "dphi_1", "signal_int_mV_1", "amb_light_mV_1", "temp_C_1", "pressure_mbar_1",
-                    "dt_s_2", "perc_air_sat_2", "dphi_2", "signal_int_mV_2", "amb_light_mV_2", "temp_C_2", "pressure_mbar_2",
-                    "dt_s_3", "perc_air_sat_3", "dphi_3", "signal_int_mV_3", "amb_light_mV_3", "temp_C_3", "pressure_mbar_3") #Rename columns
+    select(., c(1:8, 13, 18, 20:26, 31, 36, 38:44, 49, 54)) #Import data from all files in the designated list. Specify tab-delimited files and skip the first 72 lines. There are no column names. Select data from probes 1-3 (probe 4 was never used). Use all date/time columns since some probes ran for longer than others.
+colnames(dat20220726) <- c("path", 
+                           "date_1", "time_1", "dt_s_1", "perc_air_sat_1", "dphi_1", "signal_int_mV_1", "amb_light_mV_1", "temp_C_1", "pressure_mbar_1",
+                           "date_2", "time_2", "dt_s_2", "perc_air_sat_2", "dphi_2", "signal_int_mV_2", "amb_light_mV_2", "temp_C_2", "pressure_mbar_2",
+                           "date_3", "time_3", "dt_s_3", "perc_air_sat_3", "dphi_3", "signal_int_mV_3", "amb_light_mV_3", "temp_C_3", "pressure_mbar_3") #Rename columns
 head(dat20220726)
 ```
 
@@ -170,4 +172,129 @@ tail(dat20220726) #Confirm tank and treatment information
 
 # Format data
 
+I will create a datetime column and add salinity values. I'll also remove any extraneous columns that aren't needed for respirometry analysis.
+
+## 2022-07-08
+
+```{r}
+colnames(dat20220708)
+```
+
+```{r}
+dat20220708mod <- dat20220708 %>%
+  select(., -c(5:7, 14:16, 23:25)) %>%
+  mutate(., date_1 = case_when(is.na(date_1) == FALSE ~ date_1,
+                               is.na(date_1) == TRUE ~ date_2)) %>%
+  mutate(., date_1 = case_when(is.na(date_1) == FALSE ~ date_1,
+                               is.na(date_1) == TRUE ~ date_3)) %>%
+  filter(., is.na(date_1) == FALSE) %>%
+  mutate(., time_1 = case_when(is.na(time_1) == FALSE ~ time_1,
+                               is.na(time_1) == TRUE ~ time_2)) %>%
+  mutate(., time_1 = case_when(is.na(time_1) == FALSE ~ time_1,
+                               is.na(time_1) == TRUE ~ time_3)) %>%
+  mutate(., dt_s_1 = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
+                               is.na(dt_s_1) == TRUE ~ dt_s_2)) %>%
+  mutate(., dt_s_1 = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
+                               is.na(dt_s_1) == TRUE ~ dt_s_3)) %>%
+  mutate(., datetime = dmy_hms(paste(date_1, time_1))) %>%
+  mutate(., salinity = case_when(tank == "tank1" ~ 34,
+                                 tank == "tank2" ~ 37,
+                                 tank == "tank3" ~ 34,
+                                 tank == "tank4" ~ 34,
+                                 tank == "tank5" ~ 37,
+                                 tank == "tank6" ~ 34)) %>%
+  group_by(., treatment, tank) %>% arrange(., .by_group = TRUE) %>% ungroup(.)
+#Remove extraneous columns. Use case_when to combine date information across the different probes. Remove any rows without date. Repeat case_when series for time and delta time. Create a new datetime column for easy plotting. Add salinity information for all tanks based on lab notebook posts. Arrange by treatment and tank.
+head(dat20220708mod)
+```
+
+## 2022-07-12
+
+```{r}
+dat20220712mod <- dat20220712 %>%
+  select(., -c(5:7, 14:16, 23:25)) %>%
+  mutate(., date_1 = case_when(is.na(date_1) == FALSE ~ date_1,
+                               is.na(date_1) == TRUE ~ date_2)) %>%
+  mutate(., date_1 = case_when(is.na(date_1) == FALSE ~ date_1,
+                               is.na(date_1) == TRUE ~ date_3)) %>%
+  filter(., is.na(date_1) == FALSE) %>%
+  mutate(., time_1 = case_when(is.na(time_1) == FALSE ~ time_1,
+                               is.na(time_1) == TRUE ~ time_2)) %>%
+  mutate(., time_1 = case_when(is.na(time_1) == FALSE ~ time_1,
+                               is.na(time_1) == TRUE ~ time_3)) %>%
+  mutate(., dt_s_1 = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
+                               is.na(dt_s_1) == TRUE ~ dt_s_2)) %>%
+  mutate(., dt_s_1 = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
+                               is.na(dt_s_1) == TRUE ~ dt_s_3)) %>%
+  mutate(., datetime = dmy_hms(paste(date_1, time_1))) %>%
+  mutate(., salinity = case_when(tank == "tank1" ~ 34,
+                                 tank == "tank2" ~ 37,
+                                 tank == "tank3" ~ 34,
+                                 tank == "tank4" ~ 34,
+                                 tank == "tank5" ~ 37,
+                                 tank == "tank6" ~ 34)) %>%
+  group_by(., treatment, tank) %>% arrange(., .by_group = TRUE) %>% ungroup(.)
+#Remove extraneous columns. Use case_when to combine date information across the different probes. Remove any rows without date. Repeat case_when series for time and delta time. Create a new datetime column for easy plotting. Add salinity information for all tanks based on lab notebook posts. Arrange by treatment and tank.
+head(dat20220712mod)
+```
+
+## 2022-07-19
+
+```{r}
+dat20220719mod <- dat20220719 %>%
+  select(., -c(5:7, 14:16, 23:25)) %>%
+  mutate(., date_1 = case_when(is.na(date_1) == FALSE ~ date_1,
+                               is.na(date_1) == TRUE ~ date_2)) %>%
+  mutate(., date_1 = case_when(is.na(date_1) == FALSE ~ date_1,
+                               is.na(date_1) == TRUE ~ date_3)) %>%
+  filter(., is.na(date_1) == FALSE) %>%
+  mutate(., time_1 = case_when(is.na(time_1) == FALSE ~ time_1,
+                               is.na(time_1) == TRUE ~ time_2)) %>%
+  mutate(., time_1 = case_when(is.na(time_1) == FALSE ~ time_1,
+                               is.na(time_1) == TRUE ~ time_3)) %>%
+  mutate(., dt_s_1 = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
+                               is.na(dt_s_1) == TRUE ~ dt_s_2)) %>%
+  mutate(., dt_s_1 = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
+                               is.na(dt_s_1) == TRUE ~ dt_s_3)) %>%
+  mutate(., datetime = dmy_hms(paste(date_1, time_1))) %>%
+  mutate(., salinity = case_when(tank == "tank1" ~ 34,
+                                 tank == "tank2" ~ 37,
+                                 tank == "tank3" ~ 34,
+                                 tank == "tank4" ~ 34,
+                                 tank == "tank5" ~ 37,
+                                 tank == "tank6" ~ 34)) %>%
+  group_by(., treatment, tank) %>% arrange(., .by_group = TRUE) %>% ungroup(.)
+#Remove extraneous columns. Use case_when to combine date information across the different probes. Remove any rows without date. Repeat case_when series for time and delta time. Create a new datetime column for easy plotting. Add salinity information for all tanks based on lab notebook posts. Arrange by treatment and tank.
+head(dat20220719mod)
+```
+
+## 2022-07-26
+
+```{r}
+dat20220726mod <- dat20220726 %>%
+  select(., -c(5:7, 14:16, 23:25)) %>%
+  mutate(., date_1 = case_when(is.na(date_1) == FALSE ~ date_1,
+                               is.na(date_1) == TRUE ~ date_2)) %>%
+  mutate(., date_1 = case_when(is.na(date_1) == FALSE ~ date_1,
+                               is.na(date_1) == TRUE ~ date_3)) %>%
+  filter(., is.na(date_1) == FALSE) %>%
+  mutate(., time_1 = case_when(is.na(time_1) == FALSE ~ time_1,
+                               is.na(time_1) == TRUE ~ time_2)) %>%
+  mutate(., time_1 = case_when(is.na(time_1) == FALSE ~ time_1,
+                               is.na(time_1) == TRUE ~ time_3)) %>%
+  mutate(., dt_s_1 = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
+                               is.na(dt_s_1) == TRUE ~ dt_s_2)) %>%
+  mutate(., dt_s_1 = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
+                               is.na(dt_s_1) == TRUE ~ dt_s_3)) %>%
+  mutate(., datetime = dmy_hms(paste(date_1, time_1))) %>%
+  mutate(., salinity = case_when(tank == "tank1" ~ 34,
+                                 tank == "tank2" ~ 37,
+                                 tank == "tank3" ~ 34,
+                                 tank == "tank4" ~ 34,
+                                 tank == "tank5" ~ 37,
+                                 tank == "tank6" ~ 34)) %>%
+  group_by(., treatment, tank) %>% arrange(., .by_group = TRUE) %>% ungroup(.)
+#Remove extraneous columns. Use case_when to combine date information across the different probes. Remove any rows without date. Repeat case_when series for time and delta time. Create a new datetime column for easy plotting. Add salinity information for all tanks based on lab notebook posts. Arrange by treatment and tank.
+head(dat20220726mod)
+```
 
