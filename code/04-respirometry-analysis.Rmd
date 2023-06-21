@@ -403,12 +403,8 @@ plotColors <- c(brewer.pal(9, "Reds")[7],
 ## 2022-07-08
 
 ```{r}
-head(dat20220708mod)
-```
-
-```{r}
 dat20220708mod %>%
-  #filter(., perc_air_sat <= 100) %>% 
+  filter(., perc_air_sat <= 100) %>% 
   ggplot(., mapping = aes(x = (dt_s/60), y = perc_air_sat, color = treatment)) +
   geom_point(size = 0.5) +
   geom_line(y = 80, lty = 1, color = "grey50") +
@@ -425,5 +421,68 @@ dat20220708mod %>%
 ggsave("figures/2022-07-08-perc-air-sat-raw.pdf", height = 8.5, width = 11)
 ```
 
+## 2022-07-12
+
+```{r}
+dat20220712mod %>%
+  filter(., perc_air_sat <= 100) %>% 
+  ggplot(., mapping = aes(x = (dt_s/60), y = perc_air_sat, color = treatment)) +
+  geom_point(size = 0.5) +
+  geom_line(y = 80, lty = 1, color = "grey50") +
+  facet_grid(cols = vars(treatment, tank), rows = vars(probe_num), scales = "free_x") +
+  xlab("Time (min)") + ylab("Oxygen Air Saturation (%)") +
+  scale_y_continuous(breaks = seq(60, 100, 10), 
+                     limits = c(60, 100)) +
+  scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("13C", "30C", "5C"),
+                     labels = c("13", "30", "5")) +
+  theme_classic(base_size = 15) + theme(strip.text = element_blank(),
+                                        axis.line = element_line())
+ggsave("figures/2022-07-12-perc-air-sat-raw.pdf", height = 8.5, width = 11)
+```
+
+## 2022-07-19
+
+```{r}
+dat20220719mod %>%
+  filter(., perc_air_sat <= 100) %>% 
+  ggplot(., mapping = aes(x = (dt_s/60), y = perc_air_sat, color = treatment)) +
+  geom_point(size = 0.5) +
+  geom_line(y = 80, lty = 1, color = "grey50") +
+  facet_grid(cols = vars(treatment, tank), rows = vars(probe_num), scales = "free_x") +
+  xlab("Time (min)") + ylab("Oxygen Air Saturation (%)") +
+  scale_y_continuous(breaks = seq(60, 100, 10), 
+                     limits = c(60, 100)) +
+  scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("13C", "30C", "5C"),
+                     labels = c("13", "30", "5")) +
+  theme_classic(base_size = 15) + theme(strip.text = element_blank(),
+                                        axis.line = element_line())
+ggsave("figures/2022-07-19-perc-air-sat-raw.pdf", height = 8.5, width = 11)
+```
+
+## 2022-07-12
+
+```{r}
+dat20220712mod %>%
+  filter(., perc_air_sat <= 100) %>% 
+  ggplot(., mapping = aes(x = (dt_s/60), y = perc_air_sat, color = treatment)) +
+  geom_point(size = 0.5) +
+  geom_line(y = 80, lty = 1, color = "grey50") +
+  facet_grid(cols = vars(treatment, tank), rows = vars(probe_num), scales = "free_x") +
+  xlab("Time (min)") + ylab("Oxygen Air Saturation (%)") +
+  scale_y_continuous(breaks = seq(60, 100, 10), 
+                     limits = c(60, 100)) +
+  scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("13C", "30C", "5C"),
+                     labels = c("13", "30", "5")) +
+  theme_classic(base_size = 15) + theme(strip.text = element_blank(),
+                                        axis.line = element_line())
+ggsave("figures/2022-07-12-perc-air-sat-raw.pdf", height = 8.5, width = 11)
+```
 
 
+# Clean data
