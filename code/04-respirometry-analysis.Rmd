@@ -25,10 +25,12 @@ getwd()
 #install.packages("RColorBrewer")
 #install.packages("lubridate")
 #install.packages("respirometry")
+#install.packages("gridExtra")
 require(tidyverse)
 require(RColorBrewer)
 require(lubridate)
 require(respirometry)
+require(gridExtra)
 ```
 
 ```{r}
@@ -129,14 +131,14 @@ head(dat20220719)
 
 ```{r}
 dat20220719 <- dat20220719 %>%
-  mutate(., tank = str_sub(path, 82, 86)) %>%
+  mutate(., tank = str_sub(path, 83, 88)) %>%
   select(-path) %>% 
-  mutate(., treatment = case_when(tank == "tank1" ~ "13C",
-                                  tank == "tank2" ~ "5C",
-                                  tank == "tank3" ~ "30C",
-                                  tank == "tank4" ~ "13C",
-                                  tank == "tank5" ~ "5C",
-                                  tank == "tank6" ~ "30C")) #Isolate tank ID from the file path. Remove file path column. Add treatment information
+  mutate(., treatment = case_when(tank == "Tank_1" ~ "13C",
+                                  tank == "Tank_2" ~ "5C",
+                                  tank == "Tank_3" ~ "30C",
+                                  tank == "Tank_4" ~ "13C",
+                                  tank == "Tank_5" ~ "5C",
+                                  tank == "Tank_6" ~ "30C")) #Isolate tank ID from the file path. Remove file path column. Add treatment information
 tail(dat20220719) #Confirm tank and treatment information
 ```
 
@@ -159,20 +161,20 @@ head(dat20220726)
 
 ```{r}
 dat20220726 <- dat20220726 %>%
-  mutate(., tank = str_sub(path, 82, 86)) %>%
+  mutate(., tank = str_sub(path, 83, 88)) %>%
   select(-path) %>% 
-  mutate(., treatment = case_when(tank == "tank1" ~ "13C",
-                                  tank == "tank2" ~ "5C",
-                                  tank == "tank3" ~ "30C",
-                                  tank == "tank4" ~ "13C",
-                                  tank == "tank5" ~ "5C",
-                                  tank == "tank6" ~ "30C")) #Isolate tank ID from the file path. Remove file path column. Add treatment information
+  mutate(., treatment = case_when(tank == "Tank_1" ~ "13C",
+                                  tank == "Tank_2" ~ "5C",
+                                  tank == "Tank_3" ~ "30C",
+                                  tank == "Tank_4" ~ "13C",
+                                  tank == "Tank_5" ~ "5C",
+                                  tank == "Tank_6" ~ "30C")) #Isolate tank ID from the file path. Remove file path column. Add treatment information
 tail(dat20220726) #Confirm tank and treatment information
 ```
 
 # Format data
 
-I will create a datetime column and add salinity values. I'll also remove any extraneous columns that aren't needed for respirometry analysis.
+I will create a datetime column and add salinity values. I'll also remove any extraneous columns that aren't needed for respirometry analysis and pivot the table longer.
 
 ## 2022-07-08
 
@@ -183,28 +185,50 @@ colnames(dat20220708)
 ```{r}
 dat20220708mod <- dat20220708 %>%
   select(., -c(5:7, 14:16, 23:25)) %>%
-  mutate(., date_1 = case_when(is.na(date_1) == FALSE ~ date_1,
+  mutate(., date = case_when(is.na(date_1) == FALSE ~ date_1,
                                is.na(date_1) == TRUE ~ date_2)) %>%
-  mutate(., date_1 = case_when(is.na(date_1) == FALSE ~ date_1,
+  mutate(., date = case_when(is.na(date_1) == FALSE ~ date_1,
                                is.na(date_1) == TRUE ~ date_3)) %>%
   filter(., is.na(date_1) == FALSE) %>%
-  mutate(., time_1 = case_when(is.na(time_1) == FALSE ~ time_1,
+  mutate(., time = case_when(is.na(time_1) == FALSE ~ time_1,
                                is.na(time_1) == TRUE ~ time_2)) %>%
-  mutate(., time_1 = case_when(is.na(time_1) == FALSE ~ time_1,
+  mutate(., time = case_when(is.na(time_1) == FALSE ~ time_1,
                                is.na(time_1) == TRUE ~ time_3)) %>%
-  mutate(., dt_s_1 = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
+  mutate(., dt_s = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
                                is.na(dt_s_1) == TRUE ~ dt_s_2)) %>%
-  mutate(., dt_s_1 = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
+  mutate(., dt_s = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
                                is.na(dt_s_1) == TRUE ~ dt_s_3)) %>%
-  mutate(., datetime = dmy_hms(paste(date_1, time_1))) %>%
+  select(., -c(date_1, date_2, date_3, 
+               time_1, time_2, time_3, 
+               dt_s_1, dt_s_2, dt_s_3)) %>%
+  mutate(., datetime = dmy_hms(paste(date, time))) %>%
   mutate(., salinity = case_when(tank == "tank1" ~ 34,
                                  tank == "tank2" ~ 37,
                                  tank == "tank3" ~ 34,
                                  tank == "tank4" ~ 34,
                                  tank == "tank5" ~ 37,
                                  tank == "tank6" ~ 34)) %>%
-  group_by(., treatment, tank) %>% arrange(., .by_group = TRUE) %>% ungroup(.)
-#Remove extraneous columns. Use case_when to combine date information across the different probes. Remove any rows without date. Repeat case_when series for time and delta time. Create a new datetime column for easy plotting. Add salinity information for all tanks based on lab notebook posts. Arrange by treatment and tank.
+  group_by(., treatment, tank) %>% arrange(., .by_group = TRUE) %>% ungroup(.) %>%
+  pivot_longer(., cols = c(perc_air_sat_1, perc_air_sat_2, perc_air_sat_3), names_to = "og_perc", values_to = "perc_air_sat") %>%
+  pivot_longer(., cols = c(temp_C_1, temp_C_2, temp_C_3), names_to = "og_temp", values_to = "temp_C") %>%
+  pivot_longer(., cols = c(pressure_mbar_1, pressure_mbar_2, pressure_mbar_3), names_to = "og_pressure", values_to = "pressure_mbar") %>%
+  mutate(., og_perc = gsub("perc_air_sat_", replacement = "", x = og_perc)) %>%
+  mutate(., og_temp = gsub("temp_C_", replacement = "", x = og_temp)) %>%
+  mutate(., og_pressure = gsub("pressure_mbar_", replacement = "", x = og_pressure)) %>%
+  filter(., og_perc == og_temp) %>% filter(og_temp == og_pressure) %>%
+  dplyr::rename(., probe_num = og_perc) %>%
+  select(., -c(og_temp, og_pressure))
+#Remove extraneous columns. Use case_when to combine date information across the different probes. Remove any rows without date. Repeat case_when series for time and delta time. Remove extraneous columns. Create a new datetime column for easy plotting. Add salinity information for all tanks based on lab notebook posts. Arrange by treatment and tank. Pivot all air saturation, temperature, and pressure columns, keeping the original column name as a new columm. Remove text before numbers and match based on probe numbers. Rename one column as the probe number and remove the other temperature and pressure columns.
+head(dat20220708mod) #Confirm formatting
+```
+
+```{r}
+dat20220708mod <- dat20220708mod %>%
+  mutate(., DO_umol_L = conv_o2(o2 = perc_air_sat, from = "percent_a.s.",
+                         to = "umol_per_l",
+                         temp = temp_C,
+                         sal = salinity,
+                         atm_pres = pressure_mbar)) #Create a new DO variable in units umol/L from %saturation using the function conv_o2() in the respirometry package
 head(dat20220708mod)
 ```
 
@@ -213,28 +237,50 @@ head(dat20220708mod)
 ```{r}
 dat20220712mod <- dat20220712 %>%
   select(., -c(5:7, 14:16, 23:25)) %>%
-  mutate(., date_1 = case_when(is.na(date_1) == FALSE ~ date_1,
+  mutate(., date = case_when(is.na(date_1) == FALSE ~ date_1,
                                is.na(date_1) == TRUE ~ date_2)) %>%
-  mutate(., date_1 = case_when(is.na(date_1) == FALSE ~ date_1,
+  mutate(., date = case_when(is.na(date_1) == FALSE ~ date_1,
                                is.na(date_1) == TRUE ~ date_3)) %>%
   filter(., is.na(date_1) == FALSE) %>%
-  mutate(., time_1 = case_when(is.na(time_1) == FALSE ~ time_1,
+  mutate(., time = case_when(is.na(time_1) == FALSE ~ time_1,
                                is.na(time_1) == TRUE ~ time_2)) %>%
-  mutate(., time_1 = case_when(is.na(time_1) == FALSE ~ time_1,
+  mutate(., time = case_when(is.na(time_1) == FALSE ~ time_1,
                                is.na(time_1) == TRUE ~ time_3)) %>%
-  mutate(., dt_s_1 = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
+  mutate(., dt_s = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
                                is.na(dt_s_1) == TRUE ~ dt_s_2)) %>%
-  mutate(., dt_s_1 = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
+  mutate(., dt_s = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
                                is.na(dt_s_1) == TRUE ~ dt_s_3)) %>%
-  mutate(., datetime = dmy_hms(paste(date_1, time_1))) %>%
-  mutate(., salinity = case_when(tank == "tank1" ~ 34,
-                                 tank == "tank2" ~ 37,
+  select(., -c(date_1, date_2, date_3, 
+               time_1, time_2, time_3, 
+               dt_s_1, dt_s_2, dt_s_3)) %>%
+  mutate(., datetime = dmy_hms(paste(date, time))) %>%
+  mutate(., salinity = case_when(tank == "tank1" ~ 35,
+                                 tank == "tank2" ~ 36,
                                  tank == "tank3" ~ 34,
-                                 tank == "tank4" ~ 34,
-                                 tank == "tank5" ~ 37,
+                                 tank == "tank4" ~ 35,
+                                 tank == "tank5" ~ 36,
                                  tank == "tank6" ~ 34)) %>%
-  group_by(., treatment, tank) %>% arrange(., .by_group = TRUE) %>% ungroup(.)
-#Remove extraneous columns. Use case_when to combine date information across the different probes. Remove any rows without date. Repeat case_when series for time and delta time. Create a new datetime column for easy plotting. Add salinity information for all tanks based on lab notebook posts. Arrange by treatment and tank.
+  group_by(., treatment, tank) %>% arrange(., .by_group = TRUE) %>% ungroup(.) %>%
+  pivot_longer(., cols = c(perc_air_sat_1, perc_air_sat_2, perc_air_sat_3), names_to = "og_perc", values_to = "perc_air_sat") %>%
+  pivot_longer(., cols = c(temp_C_1, temp_C_2, temp_C_3), names_to = "og_temp", values_to = "temp_C") %>%
+  pivot_longer(., cols = c(pressure_mbar_1, pressure_mbar_2, pressure_mbar_3), names_to = "og_pressure", values_to = "pressure_mbar") %>%
+  mutate(., og_perc = gsub("perc_air_sat_", replacement = "", x = og_perc)) %>%
+  mutate(., og_temp = gsub("temp_C_", replacement = "", x = og_temp)) %>%
+  mutate(., og_pressure = gsub("pressure_mbar_", replacement = "", x = og_pressure)) %>%
+  filter(., og_perc == og_temp) %>% filter(og_temp == og_pressure) %>%
+  dplyr::rename(., probe_num = og_perc) %>%
+  select(., -c(og_temp, og_pressure))
+#Remove extraneous columns. Use case_when to combine date information across the different probes. Remove any rows without date. Repeat case_when series for time and delta time. Remove extraneous columns. Create a new datetime column for easy plotting. Add salinity information for all tanks based on lab notebook posts. Arrange by treatment and tank. Pivot all air saturation, temperature, and pressure columns, keeping the original column name as a new columm. Remove text before numbers and match based on probe numbers. Rename one column as the probe number and remove the other temperature and pressure columns.
+head(dat20220712mod)
+```
+
+```{r}
+dat20220712mod <- dat20220712mod %>%
+  mutate(., DO_umol_L = conv_o2(o2 = perc_air_sat, from = "percent_a.s.",
+                         to = "umol_per_l",
+                         temp = temp_C,
+                         sal = salinity,
+                         atm_pres = pressure_mbar)) #Create a new DO variable in units umol/L from %saturation using the function conv_o2() in the respirometry package
 head(dat20220712mod)
 ```
 
@@ -243,28 +289,50 @@ head(dat20220712mod)
 ```{r}
 dat20220719mod <- dat20220719 %>%
   select(., -c(5:7, 14:16, 23:25)) %>%
-  mutate(., date_1 = case_when(is.na(date_1) == FALSE ~ date_1,
+  mutate(., date = case_when(is.na(date_1) == FALSE ~ date_1,
                                is.na(date_1) == TRUE ~ date_2)) %>%
-  mutate(., date_1 = case_when(is.na(date_1) == FALSE ~ date_1,
+  mutate(., date = case_when(is.na(date_1) == FALSE ~ date_1,
                                is.na(date_1) == TRUE ~ date_3)) %>%
   filter(., is.na(date_1) == FALSE) %>%
-  mutate(., time_1 = case_when(is.na(time_1) == FALSE ~ time_1,
+  mutate(., time = case_when(is.na(time_1) == FALSE ~ time_1,
                                is.na(time_1) == TRUE ~ time_2)) %>%
-  mutate(., time_1 = case_when(is.na(time_1) == FALSE ~ time_1,
+  mutate(., time = case_when(is.na(time_1) == FALSE ~ time_1,
                                is.na(time_1) == TRUE ~ time_3)) %>%
-  mutate(., dt_s_1 = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
+  mutate(., dt_s = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
                                is.na(dt_s_1) == TRUE ~ dt_s_2)) %>%
-  mutate(., dt_s_1 = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
+  mutate(., dt_s = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
                                is.na(dt_s_1) == TRUE ~ dt_s_3)) %>%
-  mutate(., datetime = dmy_hms(paste(date_1, time_1))) %>%
-  mutate(., salinity = case_when(tank == "tank1" ~ 34,
-                                 tank == "tank2" ~ 37,
-                                 tank == "tank3" ~ 34,
-                                 tank == "tank4" ~ 34,
-                                 tank == "tank5" ~ 37,
-                                 tank == "tank6" ~ 34)) %>%
-  group_by(., treatment, tank) %>% arrange(., .by_group = TRUE) %>% ungroup(.)
-#Remove extraneous columns. Use case_when to combine date information across the different probes. Remove any rows without date. Repeat case_when series for time and delta time. Create a new datetime column for easy plotting. Add salinity information for all tanks based on lab notebook posts. Arrange by treatment and tank.
+  select(., -c(date_1, date_2, date_3, 
+               time_1, time_2, time_3, 
+               dt_s_1, dt_s_2, dt_s_3)) %>%
+  mutate(., datetime = dmy_hms(paste(date, time))) %>%
+  mutate(., salinity = case_when(tank == "Tank_1" ~ 35,
+                                 tank == "Tank_2" ~ 36,
+                                 tank == "Tank_3" ~ 35,
+                                 tank == "Tank_4" ~ 35,
+                                 tank == "Tank_5" ~ 36,
+                                 tank == "Tank_6" ~ 35)) %>%
+  group_by(., treatment, tank) %>% arrange(., .by_group = TRUE) %>% ungroup(.) %>%
+  pivot_longer(., cols = c(perc_air_sat_1, perc_air_sat_2, perc_air_sat_3), names_to = "og_perc", values_to = "perc_air_sat") %>%
+  pivot_longer(., cols = c(temp_C_1, temp_C_2, temp_C_3), names_to = "og_temp", values_to = "temp_C") %>%
+  pivot_longer(., cols = c(pressure_mbar_1, pressure_mbar_2, pressure_mbar_3), names_to = "og_pressure", values_to = "pressure_mbar") %>%
+  mutate(., og_perc = gsub("perc_air_sat_", replacement = "", x = og_perc)) %>%
+  mutate(., og_temp = gsub("temp_C_", replacement = "", x = og_temp)) %>%
+  mutate(., og_pressure = gsub("pressure_mbar_", replacement = "", x = og_pressure)) %>%
+  filter(., og_perc == og_temp) %>% filter(og_temp == og_pressure) %>%
+  dplyr::rename(., probe_num = og_perc) %>%
+  select(., -c(og_temp, og_pressure))
+#Remove extraneous columns. Use case_when to combine date information across the different probes. Remove any rows without date. Repeat case_when series for time and delta time. Remove extraneous columns. Create a new datetime column for easy plotting. Add salinity information for all tanks based on lab notebook posts. Arrange by treatment and tank. Pivot all air saturation, temperature, and pressure columns, keeping the original column name as a new columm. Remove text before numbers and match based on probe numbers. Rename one column as the probe number and remove the other temperature and pressure columns.
+head(dat20220719mod)
+```
+
+```{r}
+dat20220719mod <- dat20220719mod %>%
+  mutate(., DO_umol_L = conv_o2(o2 = perc_air_sat, from = "percent_a.s.",
+                         to = "umol_per_l",
+                         temp = temp_C,
+                         sal = salinity,
+                         atm_pres = pressure_mbar)) #Create a new DO variable in units umol/L from %saturation using the function conv_o2() in the respirometry package
 head(dat20220719mod)
 ```
 
@@ -273,28 +341,89 @@ head(dat20220719mod)
 ```{r}
 dat20220726mod <- dat20220726 %>%
   select(., -c(5:7, 14:16, 23:25)) %>%
-  mutate(., date_1 = case_when(is.na(date_1) == FALSE ~ date_1,
+  mutate(., date = case_when(is.na(date_1) == FALSE ~ date_1,
                                is.na(date_1) == TRUE ~ date_2)) %>%
-  mutate(., date_1 = case_when(is.na(date_1) == FALSE ~ date_1,
+  mutate(., date = case_when(is.na(date_1) == FALSE ~ date_1,
                                is.na(date_1) == TRUE ~ date_3)) %>%
   filter(., is.na(date_1) == FALSE) %>%
-  mutate(., time_1 = case_when(is.na(time_1) == FALSE ~ time_1,
+  mutate(., time = case_when(is.na(time_1) == FALSE ~ time_1,
                                is.na(time_1) == TRUE ~ time_2)) %>%
-  mutate(., time_1 = case_when(is.na(time_1) == FALSE ~ time_1,
+  mutate(., time = case_when(is.na(time_1) == FALSE ~ time_1,
                                is.na(time_1) == TRUE ~ time_3)) %>%
-  mutate(., dt_s_1 = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
+  mutate(., dt_s = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
                                is.na(dt_s_1) == TRUE ~ dt_s_2)) %>%
-  mutate(., dt_s_1 = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
+  mutate(., dt_s = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
                                is.na(dt_s_1) == TRUE ~ dt_s_3)) %>%
-  mutate(., datetime = dmy_hms(paste(date_1, time_1))) %>%
-  mutate(., salinity = case_when(tank == "tank1" ~ 34,
-                                 tank == "tank2" ~ 37,
-                                 tank == "tank3" ~ 34,
-                                 tank == "tank4" ~ 34,
-                                 tank == "tank5" ~ 37,
-                                 tank == "tank6" ~ 34)) %>%
-  group_by(., treatment, tank) %>% arrange(., .by_group = TRUE) %>% ungroup(.)
-#Remove extraneous columns. Use case_when to combine date information across the different probes. Remove any rows without date. Repeat case_when series for time and delta time. Create a new datetime column for easy plotting. Add salinity information for all tanks based on lab notebook posts. Arrange by treatment and tank.
+  select(., -c(date_1, date_2, date_3, 
+               time_1, time_2, time_3, 
+               dt_s_1, dt_s_2, dt_s_3)) %>%
+  mutate(., datetime = dmy_hms(paste(date, time))) %>%
+  mutate(., salinity = case_when(tank == "Tank_1" ~ 35,
+                                 tank == "Tank_2" ~ 34,
+                                 tank == "Tank_3" ~ 35,
+                                 tank == "Tank_4" ~ 35,
+                                 tank == "Tank_5" ~ 34,
+                                 tank == "Tank_6" ~ 35)) %>%
+  group_by(., treatment, tank) %>% arrange(., .by_group = TRUE) %>% ungroup(.) %>%
+  pivot_longer(., cols = c(perc_air_sat_1, perc_air_sat_2, perc_air_sat_3), names_to = "og_perc", values_to = "perc_air_sat") %>%
+  pivot_longer(., cols = c(temp_C_1, temp_C_2, temp_C_3), names_to = "og_temp", values_to = "temp_C") %>%
+  pivot_longer(., cols = c(pressure_mbar_1, pressure_mbar_2, pressure_mbar_3), names_to = "og_pressure", values_to = "pressure_mbar") %>%
+  mutate(., og_perc = gsub("perc_air_sat_", replacement = "", x = og_perc)) %>%
+  mutate(., og_temp = gsub("temp_C_", replacement = "", x = og_temp)) %>%
+  mutate(., og_pressure = gsub("pressure_mbar_", replacement = "", x = og_pressure)) %>%
+  filter(., og_perc == og_temp) %>% filter(og_temp == og_pressure) %>%
+  dplyr::rename(., probe_num = og_perc) %>%
+  select(., -c(og_temp, og_pressure))
+#Remove extraneous columns. Use case_when to combine date information across the different probes. Remove any rows without date. Repeat case_when series for time and delta time. Remove extraneous columns. Create a new datetime column for easy plotting. Add salinity information for all tanks based on lab notebook posts. Arrange by treatment and tank. Pivot all air saturation, temperature, and pressure columns, keeping the original column name as a new columm. Remove text before numbers and match based on probe numbers. Rename one column as the probe number and remove the other temperature and pressure columns.
 head(dat20220726mod)
 ```
+
+```{r}
+dat20220726mod <- dat20220726mod %>%
+  mutate(., DO_umol_L = conv_o2(o2 = perc_air_sat, from = "percent_a.s.",
+                         to = "umol_per_l",
+                         temp = temp_C,
+                         sal = salinity,
+                         atm_pres = pressure_mbar)) #Create a new DO variable in units umol/L from %saturation using the function conv_o2() in the respirometry package
+head(dat20220726mod)
+```
+
+# Initial figure
+
+```{bash}
+mkdir figures
+```
+
+```{r}
+plotColors <- c(brewer.pal(9, "Reds")[7],
+                brewer.pal(9, "Greys")[7],
+                brewer.pal(9, "Blues")[7]) #Create color scheme
+```
+
+## 2022-07-08
+
+```{r}
+head(dat20220708mod)
+```
+
+```{r}
+dat20220708mod %>%
+  #filter(., perc_air_sat <= 100) %>% 
+  ggplot(., mapping = aes(x = (dt_s/60), y = perc_air_sat, color = treatment)) +
+  geom_point(size = 0.5) +
+  geom_line(y = 80, lty = 1, color = "grey50") +
+  facet_grid(cols = vars(treatment, tank), rows = vars(probe_num), scales = "free_x") +
+  xlab("Time (min)") + ylab("Oxygen Air Saturation (%)") +
+  scale_y_continuous(breaks = seq(60, 100, 10), 
+                     limits = c(60, 100)) +
+  scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("13C", "30C", "5C"),
+                     labels = c("13", "30", "5")) +
+  theme_classic(base_size = 15) + theme(strip.text = element_blank(),
+                                        axis.line = element_line())
+ggsave("figures/2022-07-08-perc-air-sat-raw.pdf", height = 8.5, width = 11)
+```
+
+
 
