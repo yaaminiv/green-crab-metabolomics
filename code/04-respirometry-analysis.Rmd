@@ -529,10 +529,34 @@ dat20220708mod %>%
                                         axis.line = element_line())
 ```
 
-These are likely due to air bubbles or starting recording before the crabs were fully set up. I am going to remove these measurements.
+...and so does Tank 6
 
 ```{r}
 dat20220708mod %>%
+  filter(., tank == "tank6") %>%
+  filter(., perc_air_sat <= 100) %>% 
+  group_by(tank, probe_num) %>%
+  filter(., cumsum(perc_air_sat <= 80) == 0) %>%
+  ungroup(.) %>%
+  ggplot(., mapping = aes(x = (dt_s), y = perc_air_sat, color = treatment)) +
+  geom_point(size = 0.5) +
+  geom_smooth(method = lm, se = FALSE, lty = 1, color = "grey50")+
+  facet_grid(cols = vars(treatment, tank), rows = vars(probe_num), scales = "free_x") +
+  xlab("Time (s)") + ylab("Oxygen Air Saturation (%)") +
+  scale_y_continuous(breaks = seq(80, 100, 10), 
+                     limits = c(80, 100)) +
+  scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("13C", "30C", "5C"),
+                     labels = c("13", "30", "5")) +
+  theme_classic(base_size = 15) + theme(strip.text = element_blank(),
+                                        axis.line = element_line())
+```
+
+These are likely due to air bubbles or starting recording before the crabs were fully set up. I am going to remove these measurements.
+
+```{r}
+dat20220708clean <- dat20220708mod %>%
   filter(., perc_air_sat <= 100) %>% 
   group_by(tank, probe_num) %>%
   filter(., cumsum(perc_air_sat <= 80) == 0) %>%
@@ -540,14 +564,16 @@ dat20220708mod %>%
   filter(., !(tank == "tank1" & probe_num == 1 & dt_s < 870)) %>%
   filter(., !(tank == "tank1" & probe_num == 2 & dt_s < 1125)) %>%
   filter(., !(tank == "tank1" & probe_num == 3 & dt_s < 1216)) %>%
+  filter(., !(tank == "tank3" & probe_num == 3 & dt_s < 35)) %>%
   mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 1, dt_s - 870, dt_s)) %>%
   mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 2, dt_s - 1125, dt_s)) %>%
   mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 3, dt_s - 1216, dt_s)) %>%
   ggplot(., mapping = aes(x = (dt_s/60), y = perc_air_sat, color = treatment)) +
   geom_point(size = 0.5) +
   geom_smooth(method = lm, se = FALSE, lty = 1, color = "grey50")+
-  facet_grid(cols = vars(treatment, tank), rows = vars(probe_num), scales = "free_x") +
+  facet_grid(cols = vars(treatment, tank), rows = vars(probe_num), scale = "free_x") +
   xlab("Time (min)") + ylab("Oxygen Air Saturation (%)") +
+ scale_x_continuous(breaks = c(0, 5, 10, 15, 20, 30, 60, 90)) +
   scale_y_continuous(breaks = seq(80, 100, 10), 
                      limits = c(80, 100)) +
   scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
@@ -556,6 +582,7 @@ dat20220708mod %>%
                      labels = c("13", "30", "5")) +
   theme_classic(base_size = 15) + theme(strip.text = element_blank(),
                                         axis.line = element_line()) #Filter all air saturation values above 100. Group by tank and probe. Create a conditional to remove all rows after perc_air_sat reaches 80 for the first time. perc_air_sat <= 80 is a logical vector, where TRUE = 0 and FALSE = 80. cumsum calculates the cumulative sum of the logical vector. Once perc_air_sat <= 80 is FALSE, a 1 gets recorded for the cumsum. This effectively removes all rows after 80 is hit for the first time. Check for values where tank == tank 1, probe_num == 1, and dt_s <= 870 Use the sub-conditions in parentheses and negate the condition with ! to retain all rows that don't meet this condition, but modify values for tank 1, probe 1. Do something similar such that tank 1, probe 2 starts at 1125 and tank 1, probe 3 starts at dt_s = 1216. Use an ifelse statement within mutate to change dt_s for tank 1 based on the actual dt_s start time. Modify x and y axis labels, y axis breaks. Facet such that each column is a treatment/tank, and each row is a probe. Use scales = free_x to have x-axes that vary across tanks. This provides two columns per treatment.
+dat20220708clean
 ggsave("figures/2022-07-08-perc-air-sat-clean.pdf", height = 8.5, width = 11)
 ```
 
