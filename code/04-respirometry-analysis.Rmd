@@ -26,11 +26,13 @@ getwd()
 #install.packages("lubridate")
 #install.packages("respirometry")
 #install.packages("gridExtra")
+#install.packages("broom")
 require(tidyverse)
 require(RColorBrewer)
 require(lubridate)
 require(respirometry)
 require(gridExtra)
+require(broom)
 ```
 
 ```{r}
@@ -1079,3 +1081,74 @@ dat20220726cleanDOumol
 ggsave("figures/2022-07-26-perc-air-sat-clean-DOumol.pdf", height = 8.5, width = 11)
 ```
 
+# Extract slopes
+
+Now that I have my data cleaned, I need to get the regression slopes for each line I plotted. This is the information I need to compare across treatments and time.
+
+## 2022-07-08
+
+```{r}
+dat20220708data <- dat20220708mod %>%
+  filter(., perc_air_sat <= 100) %>% 
+  group_by(tank, probe_num) %>%
+  filter(., cumsum(perc_air_sat <= 80) == 0) %>%
+  ungroup(.) %>%
+  filter(., !(tank == "tank1" & probe_num == 1 & dt_s < 870)) %>%
+  filter(., !(tank == "tank1" & probe_num == 2 & dt_s < 1125)) %>%
+  filter(., !(tank == "tank1" & probe_num == 3 & dt_s < 1216)) %>%
+  filter(., !(tank == "tank3" & probe_num == 3 & dt_s < 35)) %>%
+  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 1, dt_s - 870, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 2, dt_s - 1125, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 3, dt_s - 1216, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "tank3" & probe_num == 3, dt_s - 35, dt_s)) #Save cleaned data as a new object
+head(dat20220708data) #Confirm object creation
+```
+
+```{r}
+dat20220708_MO2_slopes <- dat20220708data %>%
+  nest(data = -c(treatment, probe_num)) %>%
+  mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
+  mutate(tidied = map(fit, tidy)) %>%
+  unnest(tidied) #Create a list object that stores the regression results for each chamber. Nest data by treatment and probe number so the regression slopes are calculated appropriately. Use map to extract linear model fit information for DO_umol_L by time. Extract slopes using broom::tidy and unnest.
+dat20220708_MO2_slopes #Confirm dataframe creation
+```
+```{r}
+dat20220708_MO2_glance <- dat20220708data %>%
+  nest(data = -c(treatment, probe_num)) %>%
+  mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
+  mutate(glanced = map(fit, glance)) %>%
+  unnest(glanced) #Similar to above, but calculate the adjusted R-squared values by nesting treatment and probe information
+dat20220708_MO2_glance #Confirm dataframe creation
+```
+
+```{r}
+dat20220708_MO2_slope_results <- dat20220708_MO2_slopes %>%
+  filter(term == "dt_s") %>%
+  mutate(slope_nmol_hr = estimate*1000*60) %>%
+  dplyr::select(treatment, probe_num, slope_nmol_hr, p.value) %>%
+  mutate(r.squared = (dat20220708_MO2_glance$r.squared)) #Get the regression information for dt_s and not the intercept. Creates new a variable for respiration rate as nmol_per_hour (slope_nmol_hr). Select treatment, probe number, slope over the hour, and p-value. Add the r-squared information from glance.
+dat20220708_MO2_slope_results #Confirm dataframe creation
+```
+
+DO SOME BLANK CORRECTION.
+
+```{r}
+dat20220708_MO2_slope_results %>%
+  ggplot(., aes(x = treatment, y = -slope_nmol_hr, color = treatment)) + 
+  geom_boxplot() + geom_point(size = 2) +
+  xlab("Temperature (ºC)") + ylab("Oxygen Consumption (µmol/hr)") +
+  scale_x_discrete(breaks = c("13C", "30C", "5C"),
+                   labels = c("13", "30", "5")) +
+  scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
+                     guide = "none") +
+  theme_classic(base_size = 15)
+  ggsave("figures/2022-07-08-oxygen-consumption-umolhr.pdf", width = 11, height = 8.5) #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. 
+```
+
+# Compare oxygen consumption
+
+## Between treatments within a timepoint
+
+### 2022-07-08
+
+## Across time and treatment
