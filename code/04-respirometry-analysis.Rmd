@@ -1136,13 +1136,13 @@ DO SOME BLANK CORRECTION.
 dat20220708_MO2_slope_results %>%
   ggplot(., aes(x = treatment, y = -slope_nmol_hr, color = treatment)) + 
   geom_boxplot() + geom_point(size = 2) +
-  xlab("Temperature (ºC)") + ylab("Oxygen Consumption (µmol/hr)") +
+  xlab("Temperature (ºC)") + ylab("Oxygen Consumption (nmol/hr)") +
   scale_x_discrete(breaks = c("13C", "30C", "5C"),
                    labels = c("13", "30", "5")) +
   scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
                      guide = "none") +
   theme_classic(base_size = 15)
-  ggsave("figures/2022-07-08-oxygen-consumption-umolhr.pdf", width = 11, height = 8.5) #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. 
+  ggsave("figures/2022-07-08-oxygen-consumption-nmolhr.pdf", width = 11, height = 8.5) #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. 
 ```
 
 # Compare oxygen consumption
@@ -1150,5 +1150,18 @@ dat20220708_MO2_slope_results %>%
 ## Between treatments within a timepoint
 
 ### 2022-07-08
+
+```{r}
+lm20220708 <- lm(slope_nmol_hr ~ treatment, data = dat20220708_MO2_slope_results)
+summary(lm20220708)
+```
+
+
+```{r}
+##analyse blank corrected MO2 by treatment groups
+m1 <- lm(data = MO2_data_478,MO2_nmol_hr~parental_treatment*offspring_treatment)
+Anova(m1,type = "III")
+```
+
 
 ## Across time and treatment
