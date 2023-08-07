@@ -1156,12 +1156,4 @@ lm20220708 <- lm(slope_nmol_hr ~ treatment, data = dat20220708_MO2_slope_results
 summary(lm20220708)
 ```
 
-
-```{r}
-##analyse blank corrected MO2 by treatment groups
-m1 <- lm(data = MO2_data_478,MO2_nmol_hr~parental_treatment*offspring_treatment)
-Anova(m1,type = "III")
-```
-
-
 ## Across time and treatment
