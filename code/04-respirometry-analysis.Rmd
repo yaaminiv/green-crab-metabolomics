@@ -1910,6 +1910,130 @@ dat20220726_MO2_slope_results %>%
 ggsave("figures/2022-07-26-oxygen-consumption-nmolhr-corrected.pdf", width = 11, height = 8.5) #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. 
 ```
 
+## Create multipanel figure
+
+```{r}
+dat20220708_MO2_slope_results_reorder <- dat20220708_MO2_slope_results %>%
+  mutate(., treatment = gsub(x = treatment, pattern = "5C", replacement = "05C"))
+#Reorder temperature treatments for plotting by renaming 5C as 05C so it is the first alphanumerically
+tail(dat20220708_MO2_slope_results_reorder)
+```
+
+```{r}
+dat20220708_corr_fig <- dat20220708_MO2_slope_results_reorder %>%
+  ggplot(., aes(x = treatment, y = -slope_nmol_hr_corrected, color = treatment)) + 
+  geom_boxplot() + geom_point(size = 2) +
+  xlab("") + ylab("") +
+  labs(title = "Day 4") +
+  stat_summary(fun = median,
+               geom = "line",
+               aes(group = 1),
+               col = "black", lty = 2) +
+  scale_x_discrete(breaks = c("05C", "13C", "30C"),
+                   labels = c("5", "13", "30")) +
+  scale_y_continuous(limits = c(0, 20000),
+                     breaks = seq(0, 20000, 5000),
+                     labels = seq(0, 20000, 5000)) +
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
+                     guide = "none") +
+  theme_classic(base_size = 15) + theme(plot.margin = margin(0, 0, 0, 3, "pt")) #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. Add a line connecting each boxplot midpoint. 
+dat20220708_corr_fig
+```
+
+```{r}
+dat20220712_MO2_slope_results_reorder <- dat20220712_MO2_slope_results %>%
+  mutate(., treatment = gsub(x = treatment, pattern = "5C", replacement = "05C"))
+#Reorder temperature treatments for plotting by renaming 5C as 05C so it is the first alphanumerically
+tail(dat20220712_MO2_slope_results_reorder)
+```
+
+```{r}
+dat20220712_corr_fig <- dat20220712_MO2_slope_results_reorder %>%
+  ggplot(., aes(x = treatment, y = -slope_nmol_hr_corrected, color = treatment)) + 
+  geom_boxplot() + geom_point(size = 2) +
+  xlab("") + ylab("") +
+  labs(title = "Day 8") +
+  stat_summary(fun = median,
+               geom = "line",
+               aes(group = 1),
+               col = "black", lty = 2) +
+  scale_x_discrete(breaks = c("05C", "13C", "30C"),
+                   labels = c("5", "13", "30")) +
+  scale_y_continuous(limits = c(0, 20000),
+                     breaks = seq(0, 20000, 5000),
+                     labels = seq(0, 20000, 5000)) +
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
+                     guide = "none") +
+  theme_classic(base_size = 15) + theme(plot.margin = margin(0, 0, 0, 3, "pt")) #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. Add a line connecting each boxplot midpoint. 
+dat20220712_corr_fig
+```
+
+```{r}
+dat20220719_MO2_slope_results_reorder <- dat20220719_MO2_slope_results %>%
+  mutate(., treatment = gsub(x = treatment, pattern = "5C", replacement = "05C"))
+#Reorder temperature treatments for plotting by renaming 5C as 05C so it is the first alphanumerically
+tail(dat20220719_MO2_slope_results_reorder)
+```
+
+```{r}
+dat20220719_corr_fig <- dat20220719_MO2_slope_results_reorder %>%
+  ggplot(., aes(x = treatment, y = -slope_nmol_hr_corrected, color = treatment)) + 
+  geom_boxplot() + geom_point(size = 2) +
+  xlab("") + ylab("") +
+  labs(title = "Day 15") +
+  stat_summary(fun = median,
+               geom = "line",
+               aes(group = 1),
+               col = "black", lty = 2) +
+  scale_x_discrete(breaks = c("05C", "13C", "30C"),
+                   labels = c("5", "13", "30")) +
+  scale_y_continuous(limits = c(0, 20000),
+                     breaks = seq(0, 20000, 5000),
+                     labels = seq(0, 20000, 5000)) +
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
+                     guide = "none") +
+  theme_classic(base_size = 15) + theme(plot.margin = margin(0, 0, 0, 3, "pt")) #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. Add a line connecting each boxplot midpoint.
+dat20220719_corr_fig
+```
+
+```{r}
+dat20220726_MO2_slope_results_reorder <- dat20220726_MO2_slope_results %>%
+  mutate(., treatment = gsub(x = treatment, pattern = "5C", replacement = "05C"))
+#Reorder temperature treatments for plotting by renaming 5C as 05C so it is the first alphanumerically
+tail(dat20220726_MO2_slope_results_reorder)
+```
+
+```{r}
+dat20220726_corr_fig <- dat20220726_MO2_slope_results_reorder %>%
+  ggplot(., aes(x = treatment, y = -slope_nmol_hr_corrected, color = treatment)) + 
+  geom_boxplot() + geom_point(size = 2) +
+  xlab("") + ylab("") +
+  labs(title = "Day 22") +
+  stat_summary(fun = median,
+               geom = "line",
+               aes(group = 1),
+               col = "black", lty = 2) +
+  scale_x_discrete(breaks = c("05C", "13C", "30C"),
+                   labels = c("5", "13", "30")) +
+  scale_y_continuous(limits = c(0, 20000),
+                     breaks = seq(0, 20000, 5000),
+                     labels = seq(0, 20000, 5000)) +
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
+                     guide = "none") +
+  theme_classic(base_size = 15) + theme(plot.margin = margin(0, 0, 0, 3, "pt")) #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. Add a line connecting each boxplot midpoint.
+dat20220726_corr_fig
+```
+
+```{r}
+#pdf("figures/multipanel-oxygen-consumption-corrected.pdf", height = 8.5, width = 11)
+
+dat20220708_corr_fig | dat20220712_corr_fig | dat20220719_corr_fig | dat20220726_corr_fig
+grid::grid.draw(grid::textGrob("Oxygen Consumption (nmol/hr)", x = 0.03, rot = 90, gp = gpar(fontsize = 17)))
+grid::grid.draw(grid::textGrob("Temperature (ºC)", y = 0.04, gp = gpar(fontsize = 17)))
+
+#dev.off()
+```
+
 # Compare blank-corrected oxygen consumption
 
 ## Between treatments within a timepoint
