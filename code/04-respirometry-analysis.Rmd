@@ -2054,8 +2054,8 @@ all_MO2_slope_results_reorder %>%
   theme_classic(base_size = 15) + theme(axis.title = element_blank(), 
                                         axis.ticks.x = element_blank(),
                                         strip.text.x = element_text(size = 15),
-                                        strip.background = element_rect(colour = "white")) +
-  ggsave("figures/multipanel-oxygen-consumption-corrected.pdf", height = 8.5, width = 11)
+                                        strip.background = element_rect(colour = "white"))
+ggsave("figures/multipanel-oxygen-consumption-corrected.pdf", height = 8.5, width = 11)
   #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. Add a line connecting each boxplot midpoint. Facet wrap and use the labeller to relabel facets. Add consistent
 ```
 
