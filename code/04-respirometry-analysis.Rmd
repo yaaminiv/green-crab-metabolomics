@@ -814,8 +814,8 @@ dat20220719mod %>%
   group_by(tank, probe_num) %>%
   filter(., cumsum(perc_air_sat <= 80) == 0) %>%
   ungroup(.) %>%
-  filter(., tank == "Tank_6") %>%
-  filter(., dt_s >= 281) %>%
+  filter(., tank == "Tank_4" & probe_num == 3) %>%
+  filter(., dt_s >= 130) %>%
   ggplot(., mapping = aes(x = (dt_s), y = perc_air_sat, color = treatment)) +
   geom_point(size = 0.5) +
   #geom_smooth(method = lm, se = FALSE, lty = 1, color = "grey50")+
@@ -837,28 +837,30 @@ dat20220719clean <- dat20220719mod %>%
   group_by(tank, probe_num) %>%
   filter(., cumsum(perc_air_sat <= 80) == 0) %>%
   ungroup(.) %>%
-  filter(., !(tank == "tank1" & probe_num == 2 & dt_s < 143)) %>%
-  filter(., !(tank == "tank1" & probe_num == 3 & dt_s < 101)) %>%
-  filter(., !(tank == "tank3" & probe_num == 1 & dt_s < 203)) %>%
-  filter(., !(tank == "tank3" & probe_num == 2 & dt_s < 224)) %>%
-  filter(., !(tank == "tank3" & probe_num == 3 & dt_s < 394)) %>%
-  filter(., !(tank == "tank4" & probe_num == 1 & dt_s < 72)) %>%
-  filter(., !(tank == "tank4" & probe_num == 2 & dt_s < 18)) %>%
-  filter(., !(tank == "tank4" & probe_num == 3 & dt_s < 99)) %>%
-  filter(., !(tank == "tank6" & probe_num == 1 & dt_s < 149)) %>%
-  filter(., !(tank == "tank6" & probe_num == 2 & dt_s < 280)) %>%
-  filter(., !(tank == "tank6" & probe_num == 3 & dt_s < 281)) %>%
-  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 2, dt_s - 143, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 3, dt_s - 101, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank3" & probe_num == 1, dt_s - 203, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank3" & probe_num == 2, dt_s - 224, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank3" & probe_num == 3, dt_s - 394, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank4" & probe_num == 1, dt_s - 72, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank4" & probe_num == 2, dt_s - 18, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank4" & probe_num == 3, dt_s - 99, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank6" & probe_num == 1, dt_s - 149, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank6" & probe_num == 2, dt_s - 280, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank6" & probe_num == 3, dt_s - 281, dt_s)) %>%
+  filter(., !(tank == "Tank_1" & probe_num == 1 & dt_s < 52)) %>%
+  filter(., !(tank == "Tank_1" & probe_num == 2 & dt_s < 181)) %>%
+  filter(., !(tank == "Tank_1" & probe_num == 3 & dt_s < 101)) %>%
+  filter(., !(tank == "Tank_3" & probe_num == 1 & dt_s < 203)) %>%
+  filter(., !(tank == "Tank_3" & probe_num == 2 & dt_s < 224)) %>%
+  filter(., !(tank == "Tank_3" & probe_num == 3 & dt_s < 394)) %>%
+  filter(., !(tank == "Tank_4" & probe_num == 1 & dt_s < 102)) %>%
+  filter(., !(tank == "Tank_4" & probe_num == 2 & dt_s < 18)) %>%
+  filter(., !(tank == "Tank_4" & probe_num == 3 & dt_s < 130)) %>%
+  filter(., !(tank == "Tank_6" & probe_num == 1 & dt_s < 149)) %>%
+  filter(., !(tank == "Tank_6" & probe_num == 2 & dt_s < 280)) %>%
+  filter(., !(tank == "Tank_6" & probe_num == 3 & dt_s < 281)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_1" & probe_num == 1, dt_s - 52, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_1" & probe_num == 2, dt_s - 181, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_1" & probe_num == 3, dt_s - 101, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_3" & probe_num == 1, dt_s - 203, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_3" & probe_num == 2, dt_s - 224, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_3" & probe_num == 3, dt_s - 394, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_4" & probe_num == 1, dt_s - 102, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_4" & probe_num == 2, dt_s - 18, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_4" & probe_num == 3, dt_s - 130, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_6" & probe_num == 1, dt_s - 149, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_6" & probe_num == 2, dt_s - 280, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_6" & probe_num == 3, dt_s - 281, dt_s)) %>%
   ggplot(., mapping = aes(x = (dt_s/60), y = perc_air_sat, color = treatment)) +
   geom_point(size = 0.5) +
   geom_smooth(method = lm, se = FALSE, lty = 1, color = "grey50")+
@@ -882,28 +884,30 @@ dat20220719cleanDOumol <- dat20220719mod %>%
   group_by(tank, probe_num) %>%
   filter(., cumsum(perc_air_sat <= 80) == 0) %>%
   ungroup(.) %>%
-  filter(., !(tank == "tank1" & probe_num == 2 & dt_s < 143)) %>%
-  filter(., !(tank == "tank1" & probe_num == 3 & dt_s < 101)) %>%
-  filter(., !(tank == "tank3" & probe_num == 1 & dt_s < 203)) %>%
-  filter(., !(tank == "tank3" & probe_num == 2 & dt_s < 224)) %>%
-  filter(., !(tank == "tank3" & probe_num == 3 & dt_s < 394)) %>%
-  filter(., !(tank == "tank4" & probe_num == 1 & dt_s < 72)) %>%
-  filter(., !(tank == "tank4" & probe_num == 2 & dt_s < 18)) %>%
-  filter(., !(tank == "tank4" & probe_num == 3 & dt_s < 99)) %>%
-  filter(., !(tank == "tank6" & probe_num == 1 & dt_s < 149)) %>%
-  filter(., !(tank == "tank6" & probe_num == 2 & dt_s < 280)) %>%
-  filter(., !(tank == "tank6" & probe_num == 3 & dt_s < 281)) %>%
-  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 2, dt_s - 143, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 3, dt_s - 101, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank3" & probe_num == 1, dt_s - 203, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank3" & probe_num == 2, dt_s - 224, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank3" & probe_num == 3, dt_s - 394, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank4" & probe_num == 1, dt_s - 72, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank4" & probe_num == 2, dt_s - 18, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank4" & probe_num == 3, dt_s - 99, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank6" & probe_num == 1, dt_s - 149, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank6" & probe_num == 2, dt_s - 280, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank6" & probe_num == 3, dt_s - 281, dt_s)) %>%
+  filter(., !(tank == "Tank_1" & probe_num == 1 & dt_s < 52)) %>%
+  filter(., !(tank == "Tank_1" & probe_num == 2 & dt_s < 181)) %>%
+  filter(., !(tank == "Tank_1" & probe_num == 3 & dt_s < 101)) %>%
+  filter(., !(tank == "Tank_3" & probe_num == 1 & dt_s < 203)) %>%
+  filter(., !(tank == "Tank_3" & probe_num == 2 & dt_s < 224)) %>%
+  filter(., !(tank == "Tank_3" & probe_num == 3 & dt_s < 394)) %>%
+  filter(., !(tank == "Tank_4" & probe_num == 1 & dt_s < 102)) %>%
+  filter(., !(tank == "Tank_4" & probe_num == 2 & dt_s < 18)) %>%
+  filter(., !(tank == "Tank_4" & probe_num == 3 & dt_s < 130)) %>%
+  filter(., !(tank == "Tank_6" & probe_num == 1 & dt_s < 149)) %>%
+  filter(., !(tank == "Tank_6" & probe_num == 2 & dt_s < 280)) %>%
+  filter(., !(tank == "Tank_6" & probe_num == 3 & dt_s < 281)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_1" & probe_num == 1, dt_s - 52, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_1" & probe_num == 2, dt_s - 181, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_1" & probe_num == 3, dt_s - 101, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_3" & probe_num == 1, dt_s - 203, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_3" & probe_num == 2, dt_s - 224, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_3" & probe_num == 3, dt_s - 394, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_4" & probe_num == 1, dt_s - 102, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_4" & probe_num == 2, dt_s - 18, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_4" & probe_num == 3, dt_s - 130, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_6" & probe_num == 1, dt_s - 149, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_6" & probe_num == 2, dt_s - 280, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_6" & probe_num == 3, dt_s - 281, dt_s)) %>%
   ggplot(., mapping = aes(x = (dt_s/60), y = DO_umol_L, color = treatment)) +
   geom_point(size = 0.5) +
   geom_smooth(method = lm, se = FALSE, lty = 1, color = "grey50")+
@@ -950,8 +954,8 @@ dat20220726mod %>%
   group_by(tank, probe_num) %>%
   filter(., cumsum(perc_air_sat <= 80) == 0) %>%
   ungroup(.) %>%
-  filter(., tank == "Tank_6") %>%
-  filter(., dt_s >= 268) %>%
+  filter(., tank == "Tank_4" & probe_num == 3) %>%
+  filter(., dt_s >= 99) %>%
   ggplot(., mapping = aes(x = (dt_s), y = perc_air_sat, color = treatment)) +
   geom_point(size = 0.5) +
   #geom_smooth(method = lm, se = FALSE, lty = 1, color = "grey50")+
@@ -973,42 +977,42 @@ dat20220726clean <- dat20220726mod %>%
   group_by(tank, probe_num) %>%
   filter(., cumsum(perc_air_sat <= 80) == 0) %>%
   ungroup(.) %>%
-  filter(., !(tank == "tank1" & probe_num == 1 & dt_s < 24)) %>%
-  filter(., !(tank == "tank1" & probe_num == 2 & dt_s < 67)) %>%
-  filter(., !(tank == "tank1" & probe_num == 3 & dt_s < 103)) %>%
-  filter(., !(tank == "tank2" & probe_num == 1 & dt_s < 319)) %>%
-  filter(., !(tank == "tank2" & probe_num == 2 & dt_s < 720)) %>%
-  filter(., !(tank == "tank2" & probe_num == 3 & dt_s < 404)) %>%
-  filter(., !(tank == "tank3" & probe_num == 1 & dt_s < 328)) %>%
-  filter(., !(tank == "tank3" & probe_num == 2 & dt_s < 403)) %>%
-  filter(., !(tank == "tank3" & probe_num == 3 & dt_s < 237)) %>%
-  filter(., !(tank == "tank4" & probe_num == 1 & dt_s < 25)) %>%
-  filter(., !(tank == "tank4" & probe_num == 2 & dt_s < 62)) %>%
-  filter(., !(tank == "tank4" & probe_num == 3 & dt_s < 99)) %>%
-  filter(., !(tank == "tank5" & probe_num == 1 & dt_s < 212)) %>%
-  filter(., !(tank == "tank5" & probe_num == 2 & dt_s < 141)) %>%
-  filter(., !(tank == "tank5" & probe_num == 3 & dt_s < 208)) %>%
-  filter(., !(tank == "tank6" & probe_num == 1 & dt_s < 234)) %>%
-  filter(., !(tank == "tank6" & probe_num == 2 & dt_s < 268)) %>%
-  filter(., !(tank == "tank6" & probe_num == 3 & dt_s < 222)) %>%
-  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 1, dt_s - 24, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 2, dt_s - 67, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 3, dt_s - 103, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank2" & probe_num == 1, dt_s - 319, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank2" & probe_num == 2, dt_s - 720, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank2" & probe_num == 3, dt_s - 404, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank3" & probe_num == 1, dt_s - 328, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank3" & probe_num == 2, dt_s - 403, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank3" & probe_num == 3, dt_s - 237, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank4" & probe_num == 1, dt_s - 25, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank4" & probe_num == 2, dt_s - 62, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank4" & probe_num == 3, dt_s - 99, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank5" & probe_num == 1, dt_s - 212, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank5" & probe_num == 2, dt_s - 141, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank5" & probe_num == 3, dt_s - 208, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank6" & probe_num == 1, dt_s - 234, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank6" & probe_num == 2, dt_s - 268, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank6" & probe_num == 3, dt_s - 222, dt_s)) %>%
+  filter(., !(tank == "Tank_1" & probe_num == 1 & dt_s < 39)) %>%
+  filter(., !(tank == "Tank_1" & probe_num == 2 & dt_s < 89)) %>%
+  filter(., !(tank == "Tank_1" & probe_num == 3 & dt_s < 110)) %>%
+  filter(., !(tank == "Tank_2" & probe_num == 1 & dt_s < 319)) %>%
+  filter(., !(tank == "Tank_2" & probe_num == 2 & dt_s < 720)) %>%
+  filter(., !(tank == "Tank_2" & probe_num == 3 & dt_s < 404)) %>%
+  filter(., !(tank == "Tank_3" & probe_num == 1 & dt_s < 328)) %>%
+  filter(., !(tank == "Tank_3" & probe_num == 2 & dt_s < 403)) %>%
+  filter(., !(tank == "Tank_3" & probe_num == 3 & dt_s < 237)) %>%
+  filter(., !(tank == "Tank_4" & probe_num == 1 & dt_s < 32)) %>%
+  filter(., !(tank == "Tank_4" & probe_num == 2 & dt_s < 83)) %>%
+  filter(., !(tank == "Tank_4" & probe_num == 3 & dt_s < 99)) %>%
+  filter(., !(tank == "Tank_5" & probe_num == 1 & dt_s < 212)) %>%
+  filter(., !(tank == "Tank_5" & probe_num == 2 & dt_s < 141)) %>%
+  filter(., !(tank == "Tank_5" & probe_num == 3 & dt_s < 208)) %>%
+  filter(., !(tank == "Tank_6" & probe_num == 1 & dt_s < 234)) %>%
+  filter(., !(tank == "Tank_6" & probe_num == 2 & dt_s < 268)) %>%
+  filter(., !(tank == "Tank_6" & probe_num == 3 & dt_s < 222)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_1" & probe_num == 1, dt_s - 39, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_1" & probe_num == 2, dt_s - 89, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_1" & probe_num == 3, dt_s - 110, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_2" & probe_num == 1, dt_s - 319, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_2" & probe_num == 2, dt_s - 720, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_2" & probe_num == 3, dt_s - 404, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_3" & probe_num == 1, dt_s - 328, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_3" & probe_num == 2, dt_s - 403, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_3" & probe_num == 3, dt_s - 237, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_4" & probe_num == 1, dt_s - 32, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_4" & probe_num == 2, dt_s - 83, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_4" & probe_num == 3, dt_s - 99, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_5" & probe_num == 1, dt_s - 212, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_5" & probe_num == 2, dt_s - 141, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_5" & probe_num == 3, dt_s - 208, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_6" & probe_num == 1, dt_s - 234, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_6" & probe_num == 2, dt_s - 268, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_6" & probe_num == 3, dt_s - 222, dt_s)) %>%
   ggplot(., mapping = aes(x = (dt_s/60), y = perc_air_sat, color = treatment)) +
   geom_point(size = 0.5) +
   geom_smooth(method = lm, se = FALSE, lty = 1, color = "grey50")+
@@ -1032,42 +1036,42 @@ dat20220726cleanDOumol <- dat20220726mod %>%
   group_by(tank, probe_num) %>%
   filter(., cumsum(perc_air_sat <= 80) == 0) %>%
   ungroup(.) %>%
-  filter(., !(tank == "tank1" & probe_num == 1 & dt_s < 24)) %>%
-  filter(., !(tank == "tank1" & probe_num == 2 & dt_s < 67)) %>%
-  filter(., !(tank == "tank1" & probe_num == 3 & dt_s < 103)) %>%
-  filter(., !(tank == "tank2" & probe_num == 1 & dt_s < 319)) %>%
-  filter(., !(tank == "tank2" & probe_num == 2 & dt_s < 720)) %>%
-  filter(., !(tank == "tank2" & probe_num == 3 & dt_s < 404)) %>%
-  filter(., !(tank == "tank3" & probe_num == 1 & dt_s < 328)) %>%
-  filter(., !(tank == "tank3" & probe_num == 2 & dt_s < 403)) %>%
-  filter(., !(tank == "tank3" & probe_num == 3 & dt_s < 237)) %>%
-  filter(., !(tank == "tank4" & probe_num == 1 & dt_s < 25)) %>%
-  filter(., !(tank == "tank4" & probe_num == 2 & dt_s < 62)) %>%
-  filter(., !(tank == "tank4" & probe_num == 3 & dt_s < 99)) %>%
-  filter(., !(tank == "tank5" & probe_num == 1 & dt_s < 212)) %>%
-  filter(., !(tank == "tank5" & probe_num == 2 & dt_s < 141)) %>%
-  filter(., !(tank == "tank5" & probe_num == 3 & dt_s < 208)) %>%
-  filter(., !(tank == "tank6" & probe_num == 1 & dt_s < 234)) %>%
-  filter(., !(tank == "tank6" & probe_num == 2 & dt_s < 268)) %>%
-  filter(., !(tank == "tank6" & probe_num == 3 & dt_s < 222)) %>%
-  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 1, dt_s - 24, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 2, dt_s - 67, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 3, dt_s - 103, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank2" & probe_num == 1, dt_s - 319, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank2" & probe_num == 2, dt_s - 720, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank2" & probe_num == 3, dt_s - 404, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank3" & probe_num == 1, dt_s - 328, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank3" & probe_num == 2, dt_s - 403, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank3" & probe_num == 3, dt_s - 237, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank4" & probe_num == 1, dt_s - 25, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank4" & probe_num == 2, dt_s - 62, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank4" & probe_num == 3, dt_s - 99, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank5" & probe_num == 1, dt_s - 212, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank5" & probe_num == 2, dt_s - 141, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank5" & probe_num == 3, dt_s - 208, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank6" & probe_num == 1, dt_s - 234, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank6" & probe_num == 2, dt_s - 268, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank6" & probe_num == 3, dt_s - 222, dt_s)) %>%
+  filter(., !(tank == "Tank_1" & probe_num == 1 & dt_s < 39)) %>%
+  filter(., !(tank == "Tank_1" & probe_num == 2 & dt_s < 89)) %>%
+  filter(., !(tank == "Tank_1" & probe_num == 3 & dt_s < 110)) %>%
+  filter(., !(tank == "Tank_2" & probe_num == 1 & dt_s < 319)) %>%
+  filter(., !(tank == "Tank_2" & probe_num == 2 & dt_s < 720)) %>%
+  filter(., !(tank == "Tank_2" & probe_num == 3 & dt_s < 404)) %>%
+  filter(., !(tank == "Tank_3" & probe_num == 1 & dt_s < 328)) %>%
+  filter(., !(tank == "Tank_3" & probe_num == 2 & dt_s < 403)) %>%
+  filter(., !(tank == "Tank_3" & probe_num == 3 & dt_s < 237)) %>%
+  filter(., !(tank == "Tank_4" & probe_num == 1 & dt_s < 32)) %>%
+  filter(., !(tank == "Tank_4" & probe_num == 2 & dt_s < 83)) %>%
+  filter(., !(tank == "Tank_4" & probe_num == 3 & dt_s < 99)) %>%
+  filter(., !(tank == "Tank_5" & probe_num == 1 & dt_s < 212)) %>%
+  filter(., !(tank == "Tank_5" & probe_num == 2 & dt_s < 141)) %>%
+  filter(., !(tank == "Tank_5" & probe_num == 3 & dt_s < 208)) %>%
+  filter(., !(tank == "Tank_6" & probe_num == 1 & dt_s < 234)) %>%
+  filter(., !(tank == "Tank_6" & probe_num == 2 & dt_s < 268)) %>%
+  filter(., !(tank == "Tank_6" & probe_num == 3 & dt_s < 222)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_1" & probe_num == 1, dt_s - 39, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_1" & probe_num == 2, dt_s - 89, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_1" & probe_num == 3, dt_s - 110, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_2" & probe_num == 1, dt_s - 319, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_2" & probe_num == 2, dt_s - 720, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_2" & probe_num == 3, dt_s - 404, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_3" & probe_num == 1, dt_s - 328, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_3" & probe_num == 2, dt_s - 403, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_3" & probe_num == 3, dt_s - 237, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_4" & probe_num == 1, dt_s - 32, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_4" & probe_num == 2, dt_s - 83, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_4" & probe_num == 3, dt_s - 99, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_5" & probe_num == 1, dt_s - 212, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_5" & probe_num == 2, dt_s - 141, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_5" & probe_num == 3, dt_s - 208, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_6" & probe_num == 1, dt_s - 234, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_6" & probe_num == 2, dt_s - 268, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_6" & probe_num == 3, dt_s - 222, dt_s)) %>%
   ggplot(., mapping = aes(x = (dt_s/60), y = DO_umol_L, color = treatment)) +
   geom_point(size = 0.5) +
   geom_smooth(method = lm, se = FALSE, lty = 1, color = "grey50")+
@@ -1110,15 +1114,15 @@ head(dat20220708data) #Confirm object creation
 
 ```{r}
 dat20220708_MO2_slopes <- dat20220708data %>%
-  nest(data = -c(treatment, probe_num)) %>%
+  nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
   mutate(tidied = map(fit, tidy)) %>%
-  unnest(tidied) #Create a list object that stores the regression results for each chamber. Nest data by treatment and probe number so the regression slopes are calculated appropriately. Use map to extract linear model fit information for DO_umol_L by time. Extract slopes using broom::tidy and unnest.
+  unnest(tidied) #Create a list object that stores the regression results for each chamber. Nest data by treatment, tank, and probe number so the regression slopes are calculated appropriately. Use map to extract linear model fit information for DO_umol_L by time. Extract slopes using broom::tidy and unnest.
 dat20220708_MO2_slopes #Confirm dataframe creation
 ```
 ```{r}
 dat20220708_MO2_glance <- dat20220708data %>%
-  nest(data = -c(treatment, probe_num)) %>%
+  nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
   mutate(glanced = map(fit, glance)) %>%
   unnest(glanced) #Similar to above, but calculate the adjusted R-squared values by nesting treatment and probe information
@@ -1155,29 +1159,55 @@ dat20220712data <- dat20220712mod %>%
   group_by(tank, probe_num) %>%
   filter(., cumsum(perc_air_sat <= 80) == 0) %>%
   ungroup(.) %>%
-  filter(., !(tank == "tank1" & probe_num == 1 & dt_s < 870)) %>%
-  filter(., !(tank == "tank1" & probe_num == 2 & dt_s < 1125)) %>%
-  filter(., !(tank == "tank1" & probe_num == 3 & dt_s < 1216)) %>%
-  filter(., !(tank == "tank3" & probe_num == 3 & dt_s < 35)) %>%
-  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 1, dt_s - 870, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 2, dt_s - 1125, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 3, dt_s - 1216, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank3" & probe_num == 3, dt_s - 35, dt_s)) #Save cleaned data as a new object
+  filter(., !(tank == "tank1" & probe_num == 1 & dt_s < 180)) %>%
+  filter(., !(tank == "tank1" & probe_num == 2 & dt_s < 180)) %>%
+  filter(., !(tank == "tank1" & probe_num == 3 & dt_s < 257)) %>%
+  filter(., !(tank == "tank2" & probe_num == 1 & dt_s < 267)) %>%
+  filter(., !(tank == "tank2" & probe_num == 2 & dt_s < 411)) %>%
+  filter(., !(tank == "tank2" & probe_num == 3 & dt_s < 842)) %>%
+  filter(., !(tank == "tank3" & probe_num == 1 & dt_s < 305)) %>%
+  filter(., !(tank == "tank3" & probe_num == 2 & dt_s < 246)) %>%
+  filter(., !(tank == "tank3" & probe_num == 3 & dt_s < 240)) %>%
+  filter(., !(tank == "tank4" & probe_num == 1 & dt_s < 278)) %>%
+  filter(., !(tank == "tank4" & probe_num == 2 & dt_s < 132)) %>%
+  filter(., !(tank == "tank4" & probe_num == 3 & dt_s < 347)) %>%
+  filter(., !(tank == "tank5" & probe_num == 2 & dt_s < 577)) %>%
+  filter(., !(tank == "tank5" & probe_num == 3 & dt_s < 219)) %>%
+  filter(., !(tank == "tank6" & probe_num == 1 & dt_s < 271)) %>%
+  filter(., !(tank == "tank6" & probe_num == 2 & dt_s < 268)) %>%
+  filter(., !(tank == "tank6" & probe_num == 3 & dt_s < 248)) %>%
+  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 1, dt_s - 180, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 2, dt_s - 180, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 3, dt_s - 257, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "tank2" & probe_num == 1, dt_s - 267, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "tank2" & probe_num == 2, dt_s - 411, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "tank2" & probe_num == 3, dt_s - 842, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "tank3" & probe_num == 1, dt_s - 305, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "tank3" & probe_num == 2, dt_s - 246, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "tank3" & probe_num == 3, dt_s - 240, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "tank4" & probe_num == 1, dt_s - 278, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "tank4" & probe_num == 2, dt_s - 132, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "tank4" & probe_num == 3, dt_s - 347, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "tank5" & probe_num == 2, dt_s - 577, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "tank5" & probe_num == 3, dt_s - 219, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "tank6" & probe_num == 1, dt_s - 271, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "tank6" & probe_num == 2, dt_s - 268, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "tank6" & probe_num == 3, dt_s - 248, dt_s)) #Save cleaned data as a new object
 head(dat20220712data) #Confirm object creation
 ```
 
 ```{r}
 dat20220712_MO2_slopes <- dat20220712data %>%
-  nest(data = -c(treatment, probe_num)) %>%
+  nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
   mutate(tidied = map(fit, tidy)) %>%
-  unnest(tidied) #Create a list object that stores the regression results for each chamber. Nest data by treatment and probe number so the regression slopes are calculated appropriately. Use map to extract linear model fit information for DO_umol_L by time. Extract slopes using broom::tidy and unnest.
+  unnest(tidied) #Create a list object that stores the regression results for each chamber. Nest data by treatment, tank, and probe number so the regression slopes are calculated appropriately. Use map to extract linear model fit information for DO_umol_L by time. Extract slopes using broom::tidy and unnest.
 dat20220712_MO2_slopes #Confirm dataframe creation
 ```
 
 ```{r}
 dat20220712_MO2_glance <- dat20220712data %>%
-  nest(data = -c(treatment, probe_num)) %>%
+  nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
   mutate(glanced = map(fit, glance)) %>%
   unnest(glanced) #Similar to above, but calculate the adjusted R-squared values by nesting treatment and probe information
@@ -1203,7 +1233,7 @@ dat20220712_MO2_slope_results %>%
   scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
                      guide = "none") +
   theme_classic(base_size = 15)
-ggsave("figures/2022-07-12-oxygen-consumption-nmolhr.pdf", width = 11, height = 8.5) #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. 
+ggsave("figures/2022-07-12-oxygen-consumption-nmolhr.pdf", width = 11, height = 8.5) #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour.
 ```
 
 ## 2022-07-19
@@ -1214,29 +1244,45 @@ dat20220719data <- dat20220719mod %>%
   group_by(tank, probe_num) %>%
   filter(., cumsum(perc_air_sat <= 80) == 0) %>%
   ungroup(.) %>%
-  filter(., !(tank == "tank1" & probe_num == 1 & dt_s < 870)) %>%
-  filter(., !(tank == "tank1" & probe_num == 2 & dt_s < 1125)) %>%
-  filter(., !(tank == "tank1" & probe_num == 3 & dt_s < 1216)) %>%
-  filter(., !(tank == "tank3" & probe_num == 3 & dt_s < 35)) %>%
-  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 1, dt_s - 870, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 2, dt_s - 1125, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 3, dt_s - 1216, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank3" & probe_num == 3, dt_s - 35, dt_s)) #Save cleaned data as a new object
+  filter(., !(tank == "Tank_1" & probe_num == 1 & dt_s < 52)) %>%
+  filter(., !(tank == "Tank_1" & probe_num == 2 & dt_s < 181)) %>%
+  filter(., !(tank == "Tank_1" & probe_num == 3 & dt_s < 101)) %>%
+  filter(., !(tank == "Tank_3" & probe_num == 1 & dt_s < 203)) %>%
+  filter(., !(tank == "Tank_3" & probe_num == 2 & dt_s < 224)) %>%
+  filter(., !(tank == "Tank_3" & probe_num == 3 & dt_s < 394)) %>%
+  filter(., !(tank == "Tank_4" & probe_num == 1 & dt_s < 102)) %>%
+  filter(., !(tank == "Tank_4" & probe_num == 2 & dt_s < 18)) %>%
+  filter(., !(tank == "Tank_4" & probe_num == 3 & dt_s < 130)) %>%
+  filter(., !(tank == "Tank_6" & probe_num == 1 & dt_s < 149)) %>%
+  filter(., !(tank == "Tank_6" & probe_num == 2 & dt_s < 280)) %>%
+  filter(., !(tank == "Tank_6" & probe_num == 3 & dt_s < 281)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_1" & probe_num == 1, dt_s - 52, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_1" & probe_num == 2, dt_s - 181, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_1" & probe_num == 3, dt_s - 101, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_3" & probe_num == 1, dt_s - 203, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_3" & probe_num == 2, dt_s - 224, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_3" & probe_num == 3, dt_s - 394, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_4" & probe_num == 1, dt_s - 102, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_4" & probe_num == 2, dt_s - 18, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_4" & probe_num == 3, dt_s - 130, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_6" & probe_num == 1, dt_s - 149, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_6" & probe_num == 2, dt_s - 280, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_6" & probe_num == 3, dt_s - 281, dt_s)) #Save cleaned data as a new object
 head(dat20220719data) #Confirm object creation
 ```
 
 ```{r}
 dat20220719_MO2_slopes <- dat20220719data %>%
-  nest(data = -c(treatment, probe_num)) %>%
+  nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
   mutate(tidied = map(fit, tidy)) %>%
-  unnest(tidied) #Create a list object that stores the regression results for each chamber. Nest data by treatment and probe number so the regression slopes are calculated appropriately. Use map to extract linear model fit information for DO_umol_L by time. Extract slopes using broom::tidy and unnest.
+  unnest(tidied) #Create a list object that stores the regression results for each chamber. Nest data by treatment, tank, and probe number so the regression slopes are calculated appropriately. Use map to extract linear model fit information for DO_umol_L by time. Extract slopes using broom::tidy and unnest.
 dat20220719_MO2_slopes #Confirm dataframe creation
 ```
 
 ```{r}
 dat20220719_MO2_glance <- dat20220719data %>%
-  nest(data = -c(treatment, probe_num)) %>%
+  nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
   mutate(glanced = map(fit, glance)) %>%
   unnest(glanced) #Similar to above, but calculate the adjusted R-squared values by nesting treatment and probe information
@@ -1262,7 +1308,7 @@ dat20220719_MO2_slope_results %>%
   scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]), 
                      guide = "none") +
   theme_classic(base_size = 15)
-ggsave("figures/2022-07-19-oxygen-consumption-nmolhr.pdf", width = 11, height = 8.5) #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. 
+ggsave("figures/2022-07-19-oxygen-consumption-nmolhr.pdf", width = 11, height = 8.5) #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour.
 ```
 
 ## 2022-07-26
@@ -1273,29 +1319,57 @@ dat20220726data <- dat20220726mod %>%
   group_by(tank, probe_num) %>%
   filter(., cumsum(perc_air_sat <= 80) == 0) %>%
   ungroup(.) %>%
-  filter(., !(tank == "tank1" & probe_num == 1 & dt_s < 870)) %>%
-  filter(., !(tank == "tank1" & probe_num == 2 & dt_s < 1125)) %>%
-  filter(., !(tank == "tank1" & probe_num == 3 & dt_s < 1216)) %>%
-  filter(., !(tank == "tank3" & probe_num == 3 & dt_s < 35)) %>%
-  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 1, dt_s - 870, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 2, dt_s - 1125, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank1" & probe_num == 3, dt_s - 1216, dt_s)) %>%
-  mutate(., dt_s = ifelse(tank == "tank3" & probe_num == 3, dt_s - 35, dt_s)) #Save cleaned data as a new object
+  filter(., !(tank == "Tank_1" & probe_num == 1 & dt_s < 39)) %>%
+  filter(., !(tank == "Tank_1" & probe_num == 2 & dt_s < 89)) %>%
+  filter(., !(tank == "Tank_1" & probe_num == 3 & dt_s < 110)) %>%
+  filter(., !(tank == "Tank_2" & probe_num == 1 & dt_s < 319)) %>%
+  filter(., !(tank == "Tank_2" & probe_num == 2 & dt_s < 720)) %>%
+  filter(., !(tank == "Tank_2" & probe_num == 3 & dt_s < 404)) %>%
+  filter(., !(tank == "Tank_3" & probe_num == 1 & dt_s < 328)) %>%
+  filter(., !(tank == "Tank_3" & probe_num == 2 & dt_s < 403)) %>%
+  filter(., !(tank == "Tank_3" & probe_num == 3 & dt_s < 237)) %>%
+  filter(., !(tank == "Tank_4" & probe_num == 1 & dt_s < 32)) %>%
+  filter(., !(tank == "Tank_4" & probe_num == 2 & dt_s < 83)) %>%
+  filter(., !(tank == "Tank_4" & probe_num == 3 & dt_s < 99)) %>%
+  filter(., !(tank == "Tank_5" & probe_num == 1 & dt_s < 212)) %>%
+  filter(., !(tank == "Tank_5" & probe_num == 2 & dt_s < 141)) %>%
+  filter(., !(tank == "Tank_5" & probe_num == 3 & dt_s < 208)) %>%
+  filter(., !(tank == "Tank_6" & probe_num == 1 & dt_s < 234)) %>%
+  filter(., !(tank == "Tank_6" & probe_num == 2 & dt_s < 268)) %>%
+  filter(., !(tank == "Tank_6" & probe_num == 3 & dt_s < 222)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_1" & probe_num == 1, dt_s - 39, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_1" & probe_num == 2, dt_s - 89, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_1" & probe_num == 3, dt_s - 110, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_2" & probe_num == 1, dt_s - 319, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_2" & probe_num == 2, dt_s - 720, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_2" & probe_num == 3, dt_s - 404, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_3" & probe_num == 1, dt_s - 328, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_3" & probe_num == 2, dt_s - 403, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_3" & probe_num == 3, dt_s - 237, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_4" & probe_num == 1, dt_s - 32, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_4" & probe_num == 2, dt_s - 83, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_4" & probe_num == 3, dt_s - 99, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_5" & probe_num == 1, dt_s - 212, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_5" & probe_num == 2, dt_s - 141, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_5" & probe_num == 3, dt_s - 208, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_6" & probe_num == 1, dt_s - 234, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_6" & probe_num == 2, dt_s - 268, dt_s)) %>%
+  mutate(., dt_s = ifelse(tank == "Tank_6" & probe_num == 3, dt_s - 222, dt_s)) #Save cleaned data as a new object
 head(dat20220726data) #Confirm object creation
 ```
 
 ```{r}
 dat20220726_MO2_slopes <- dat20220726data %>%
-  nest(data = -c(treatment, probe_num)) %>%
+  nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
   mutate(tidied = map(fit, tidy)) %>%
-  unnest(tidied) #Create a list object that stores the regression results for each chamber. Nest data by treatment and probe number so the regression slopes are calculated appropriately. Use map to extract linear model fit information for DO_umol_L by time. Extract slopes using broom::tidy and unnest.
+  unnest(tidied) #Create a list object that stores the regression results for each chamber. Nest data by treatment, tank, and probe number so the regression slopes are calculated appropriately. Use map to extract linear model fit information for DO_umol_L by time. Extract slopes using broom::tidy and unnest.
 dat20220726_MO2_slopes #Confirm dataframe creation
 ```
 
 ```{r}
 dat20220726_MO2_glance <- dat20220726data %>%
-  nest(data = -c(treatment, probe_num)) %>%
+  nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
   mutate(glanced = map(fit, glance)) %>%
   unnest(glanced) #Similar to above, but calculate the adjusted R-squared values by nesting treatment and probe information
@@ -1347,9 +1421,9 @@ dat20220708_uncorr_fig <- dat20220708_MO2_slope_results_reorder %>%
                col = "black", lty = 2) +
   scale_x_discrete(breaks = c("05C", "13C", "30C"),
                    labels = c("5", "13", "30")) +
-  scale_y_continuous(limits = c(0, 20000),
-                     breaks = seq(0, 20000, 5000),
-                     labels = seq(0, 20000, 5000)) +
+  scale_y_continuous(limits = c(0, 30000),
+                     breaks = seq(0, 30000, 5000),
+                     labels = seq(0, 30000, 5000)) +
   scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
                      guide = "none") +
   theme_classic(base_size = 15) + theme(plot.margin = margin(0, 0, 0, 3, "pt")) #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. Add a line connecting each boxplot midpoint. 
@@ -1375,9 +1449,9 @@ dat20220712_uncorr_fig <- dat20220712_MO2_slope_results_reorder %>%
                col = "black", lty = 2) +
   scale_x_discrete(breaks = c("05C", "13C", "30C"),
                    labels = c("5", "13", "30")) +
-  scale_y_continuous(limits = c(0, 20000),
-                     breaks = seq(0, 20000, 5000),
-                     labels = seq(0, 20000, 5000)) +
+  scale_y_continuous(limits = c(0, 30000),
+                     breaks = seq(0, 30000, 5000),
+                     labels = seq(0, 30000, 5000)) +
   scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
                      guide = "none") +
   theme_classic(base_size = 15) + theme(plot.margin = margin(0, 0, 0, 3, "pt")) #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. Add a line connecting each boxplot midpoint. 
@@ -1403,9 +1477,9 @@ dat20220719_uncorr_fig <- dat20220719_MO2_slope_results_reorder %>%
                col = "black", lty = 2) +
   scale_x_discrete(breaks = c("05C", "13C", "30C"),
                    labels = c("5", "13", "30")) +
-  scale_y_continuous(limits = c(0, 20000),
-                     breaks = seq(0, 20000, 5000),
-                     labels = seq(0, 20000, 5000)) +
+  scale_y_continuous(limits = c(0, 30000),
+                     breaks = seq(0, 30000, 5000),
+                     labels = seq(0, 30000, 5000)) +
   scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
                      guide = "none") +
   theme_classic(base_size = 15) + theme(plot.margin = margin(0, 0, 0, 3, "pt")) #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. Add a line connecting each boxplot midpoint.
@@ -1431,9 +1505,9 @@ dat20220726_uncorr_fig <- dat20220726_MO2_slope_results_reorder %>%
                col = "black", lty = 2) +
   scale_x_discrete(breaks = c("05C", "13C", "30C"),
                    labels = c("5", "13", "30")) +
-  scale_y_continuous(limits = c(0, 20000),
-                     breaks = seq(0, 20000, 5000),
-                     labels = seq(0, 20000, 5000)) +
+  scale_y_continuous(limits = c(0, 30000),
+                     breaks = seq(0, 30000, 5000),
+                     labels = seq(0, 30000, 5000)) +
   scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
                      guide = "none") +
   theme_classic(base_size = 15) + theme(plot.margin = margin(0, 0, 0, 3, "pt")) #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. Add a line connecting each boxplot midpoint.
@@ -2078,10 +2152,10 @@ write.csv(broom::tidy(lm20220726), "20220726-model-output.csv", quote = FALSE, r
 
 ```{r}
 all_MO2_slope_results <- bind_rows("4" = dat20220708_MO2_slope_results,
-          "8" = dat20220712_MO2_slope_results,
-          "15" = dat20220719_MO2_slope_results,
-          "22" = dat20220726_MO2_slope_results, 
-          .id = "day") #Create a new dataframe with all uncorrected slope results, including a day
+                                   "8" = dat20220712_MO2_slope_results,
+                                   "15" = dat20220719_MO2_slope_results,
+                                   "22" = dat20220726_MO2_slope_results, 
+                                   .id = "day") #Create a new dataframe with all uncorrected slope results, including a day
 head(all_MO2_slope_results) #Confirm dataframe creation
 ```
 
