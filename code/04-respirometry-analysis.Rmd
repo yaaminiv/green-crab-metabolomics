@@ -2014,7 +2014,7 @@ all_MO2_slope_results <- bind_rows("04" = dat20220708_MO2_slope_results,
                                    "15" = dat20220719_MO2_slope_results,
                                    "22" = dat20220726_MO2_slope_results, 
                                    .id = "day") #Create a new dataframe with all uncorrected slope results, including a day
-head(all_MO2_slope_results) #Confirm dataframe creation
+tail(all_MO2_slope_results) #Confirm dataframe creation
 ```
 
 ```{r}
@@ -2064,7 +2064,13 @@ ggsave("figures/multipanel-oxygen-consumption-corrected.pdf", height = 8.5, widt
 ## Between treatments within a timepoint
 
 ```{r}
-lm20220708 <- lm(-slope_nmol_hr_corrected ~ treatment, data = dat20220708_MO2_slope_results)
+hist(-(dat20220708_MO2_slope_results$slope_nmol_hr_corrected)) #Check distribution
+hist(log(-(dat20220708_MO2_slope_results$slope_nmol_hr_corrected))) #Check log transformation
+hist(sqrt(-(dat20220708_MO2_slope_results$slope_nmol_hr_corrected))) #Check sqrt transformation
+```
+
+```{r}
+lm20220708 <- lm(log(-slope_nmol_hr_corrected) ~ treatment, data = dat20220708_MO2_slope_results)
 summary(lm20220708)
 ```
 
@@ -2073,7 +2079,13 @@ write.csv(broom::tidy(lm20220708), "20220708-model-output.csv", quote = FALSE, r
 ```
 
 ```{r}
-lm20220712 <- lm(-slope_nmol_hr_corrected ~ treatment, data = dat20220712_MO2_slope_results)
+hist(-(dat20220712_MO2_slope_results$slope_nmol_hr_corrected)) #Check distribution
+hist(log(-(dat20220712_MO2_slope_results$slope_nmol_hr_corrected))) #Check log transformation
+hist(sqrt(-(dat20220712_MO2_slope_results$slope_nmol_hr_corrected))) #Check sqrt transformation
+```
+
+```{r}
+lm20220712 <- lm(log(-slope_nmol_hr_corrected) ~ treatment, data = dat20220712_MO2_slope_results)
 summary(lm20220712)
 ```
 
@@ -2082,7 +2094,13 @@ write.csv(broom::tidy(lm20220712), "20220712-model-output.csv", quote = FALSE, r
 ```
 
 ```{r}
-lm20220719 <- lm(-slope_nmol_hr_corrected ~ treatment, data = dat20220719_MO2_slope_results)
+hist(-(dat20220719_MO2_slope_results$slope_nmol_hr_corrected)) #Check distribution
+hist(log(-(dat20220719_MO2_slope_results$slope_nmol_hr_corrected))) #Check log transformation
+hist(sqrt(-(dat20220719_MO2_slope_results$slope_nmol_hr_corrected))) #Check sqrt transformation
+```
+
+```{r}
+lm20220719 <- lm(log(-slope_nmol_hr_corrected) ~ treatment, data = dat20220719_MO2_slope_results)
 summary(lm20220719)
 ```
 
@@ -2091,7 +2109,13 @@ write.csv(broom::tidy(lm20220719), "20220719-model-output.csv", quote = FALSE, r
 ```
 
 ```{r}
-lm20220726 <- lm(-slope_nmol_hr_corrected ~ treatment, data = dat20220726_MO2_slope_results)
+hist(-(dat20220726_MO2_slope_results$slope_nmol_hr_corrected)) #Check distribution
+hist(log(-(dat20220726_MO2_slope_results$slope_nmol_hr_corrected))) #Check log transformation
+hist(sqrt(-(dat20220726_MO2_slope_results$slope_nmol_hr_corrected))) #Check sqrt transformation
+```
+
+```{r}
+lm20220726 <- lm(log(-slope_nmol_hr_corrected) ~ treatment, data = dat20220726_MO2_slope_results)
 summary(lm20220726)
 ```
 
@@ -2101,10 +2125,30 @@ write.csv(broom::tidy(lm20220726), "20220726-model-output.csv", quote = FALSE, r
 
 ## Across time and treatment
 
+### Add demographic information
+
+Sex and integument color can influence respiration rates. Even though all crabs were roughly the same size for the chambers, there is still some variation that may explain differences in respiration rate. I will map this information to the slope results so I can incorporate it my statistical testing.
+
 ```{r}
-lmAllSlopeResults <- lm(-slope_nmol_hr_corrected ~ treatment*as.numeric(day), data = all_MO2_slope_results)
+head(all_MO2_slope_results)
+```
+
+```{r}
+hist(-(all_MO2_slope_results$slope_nmol_hr_corrected)) #Check distribution
+hist(log(-(all_MO2_slope_results$slope_nmol_hr_corrected))) #Check log transformation
+hist(sqrt(-(all_MO2_slope_results$slope_nmol_hr_corrected))) #Check log transformation
+```
+
+
+```{r}
+lmAllSlopeResults <- lm(log(-slope_nmol_hr_corrected) ~ treatment*as.numeric(day), data = all_MO2_slope_results)
 summary(lmAllSlopeResults) #No significant impact of treatment or day on respiration
 ```
+
+```{r}
+Anova(lmAllSlopeResults, type = "III")
+```
+
 
 ```{r}
 write.csv(broom::tidy(lmAllSlopeResults), "all-slope-results-model-output.csv", quote = FALSE, row.names = FALSE)
@@ -2113,4 +2157,6 @@ write.csv(broom::tidy(lmAllSlopeResults), "all-slope-results-model-output.csv", 
 TO DO:
 
 - add sex + size + integument color to the model
+- figure out emmeans code
+- add stat information to the figure
 - find a way to quantify variability in respiration by treatment? "plasticity" score?
