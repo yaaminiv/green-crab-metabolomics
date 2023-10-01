@@ -2157,7 +2157,7 @@ hist(sqrt(-(all_MO2_slope_results$slope_nmol_hr_corrected))) #Check log transfor
 
 ```{r}
 lmAllSlopeResults <- aov(log(-slope_nmol_hr_corrected) ~ treatment*as.numeric(day) + sex + weight + size + integument.color + missing.legs, data = all_MO2_slope_results_demTTRdata) #Examine the influence of treatment, day, and various demographic factors on respiration rate
-summary(lmAllSlopeResults) #No significant impact of treatment or day on respiration
+summary(lmAllSlopeResults) #Significant impact of treatment and day on respiration
 ```
 
 ```{r}
@@ -2238,5 +2238,5 @@ all_MO2_slope_results_reorder %>%
                                         strip.text.x = element_text(size = 15),
                                         strip.background = element_rect(colour = "white"))
 ggsave("figures/multipanel-oxygen-consumption-corrected.pdf", height = 8.5, width = 11)
-#Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. Add a line connecting each boxplot midpoint. Facet wrap and use the labeller to relabel facets. Add consistent
+#Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. Add a line connecting each boxplot midpoint. Facet wrap and use the labeller to relabel facets. Add consistent color and shape scales.
 ```
