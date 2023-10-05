@@ -1639,15 +1639,15 @@ dat20220708_MO2_slopes_blanks_results #Confirm dataframe creation
 ```
 
 ```{r}
-dat20220708_MO2_slope_results <- dat20220708_MO2_slope_results %>%
+dat20220708_MO2_all_slope_results <- dat20220708_MO2_slope_results %>%
   left_join(., dat20220708_MO2_slopes_blanks_results, by = c("treatment", "tank", "probe_num"), suffix = c("", "_blank")) %>%
   mutate(., slope_nmol_hr_corrected = slope_nmol_hr - dat20220708_MO2_slopes_blanks_results$slope_nmol_hr) %>%
-  mutate(., blank_ratio = abs(slope_nmol_hr_blank / slope_nmol_hr_corrected)) #Join dataframes by treatment, tank, and probe_num. Create a new column for the the corrected slope (uncorrected slope - blank slope) and the blank ratio (blank / corrected slope)
-dat20220708_MO2_slope_results
+  mutate(., blank_ratio = abs(slope_nmol_hr_blank / slope_nmol_hr)) #Join dataframes by treatment, tank, and probe_num. Create a new column for the the corrected slope (uncorrected slope - blank slope) and the blank ratio (blank / uncorrected slope)
+dat20220708_MO2_all_slope_results
 ```
 
 ```{r}
-write.csv(dat20220708_MO2_slope_results, "20220708-MO2-slope-results.csv", quote = FALSE, row.names = FALSE) #Save results with uncorrected, blank, and corrected slopes
+write.csv(dat20220708_MO2_all_slope_results, "20220708-MO2-slope-results.csv", quote = FALSE, row.names = FALSE) #Save results with uncorrected, blank, and corrected slopes
 ```
 
 
@@ -1753,15 +1753,15 @@ dat20220712_MO2_slopes_blanks_results #Confirm dataframe creation
 ```
 
 ```{r}
-dat20220712_MO2_slope_results <- dat20220712_MO2_slope_results %>%
+dat20220712_MO2_all_slope_results <- dat20220712_MO2_slope_results %>%
   left_join(., dat20220712_MO2_slopes_blanks_results, by = c("treatment", "tank", "probe_num"), suffix = c("", "_blank")) %>%
   mutate(., slope_nmol_hr_corrected = slope_nmol_hr - dat20220712_MO2_slopes_blanks_results$slope_nmol_hr) %>%
   mutate(., blank_ratio = abs(slope_nmol_hr_blank / slope_nmol_hr)) #Join dataframes by treatment, tank, and probe_num. Create a new column for the the corrected slope (uncorrected slope - blank slope) and the blank ratio (blank / uncorrected slope)
-dat20220712_MO2_slope_results
+dat20220712_MO2_all_slope_results
 ```
 
 ```{r}
-write.csv(dat20220712_MO2_slope_results, "20220712-MO2-slope-results.csv", quote = FALSE, row.names = FALSE) #Save results with uncorrected, blank, and corrected slopes
+write.csv(dat20220712_MO2_all_slope_results, "20220712-MO2-slope-results.csv", quote = FALSE, row.names = FALSE) #Save results with uncorrected, blank, and corrected slopes
 ```
 
 ```{r}
@@ -1866,15 +1866,15 @@ dat20220719_MO2_slopes_blanks_results #Confirm dataframe creation
 ```
 
 ```{r}
-dat20220719_MO2_slope_results <- dat20220719_MO2_slope_results %>%
+dat20220719_MO2_all_slope_results <- dat20220719_MO2_slope_results %>%
   left_join(., dat20220719_MO2_slopes_blanks_results, by = c("treatment", "tank", "probe_num"), suffix = c("", "_blank")) %>%
   mutate(., slope_nmol_hr_corrected = slope_nmol_hr - dat20220719_MO2_slopes_blanks_results$slope_nmol_hr) %>%
   mutate(., blank_ratio = abs(slope_nmol_hr_blank / slope_nmol_hr)) #Join dataframes by treatment, tank, and probe_num. Create a new column for the the corrected slope (uncorrected slope - blank slope) and the blank ratio (blank / uncorrected slope)
-dat20220719_MO2_slope_results
+dat20220719_MO2_all_slope_results
 ```
 
 ```{r}
-write.csv(dat20220719_MO2_slope_results, "20220719-MO2-slope-results.csv", quote = FALSE, row.names = FALSE) #Save results with uncorrected, blank, and corrected slopes
+write.csv(dat20220719_MO2_all_slope_results, "20220719-MO2-slope-results.csv", quote = FALSE, row.names = FALSE) #Save results with uncorrected, blank, and corrected slopes
 ```
 
 ```{r}
@@ -2001,15 +2001,15 @@ dat20220726_MO2_slopes_blanks_results #Confirm dataframe creation
 ```
 
 ```{r}
-dat20220726_MO2_slope_results <- dat20220726_MO2_slope_results %>%
+dat20220726_MO2_all_slope_results <- dat20220726_MO2_slope_results %>%
   left_join(., dat20220726_MO2_slopes_blanks_results, by = c("treatment", "tank", "probe_num"), suffix = c("", "_blank")) %>%
   mutate(., slope_nmol_hr_corrected = slope_nmol_hr - dat20220726_MO2_slopes_blanks_results$slope_nmol_hr) %>%
   mutate(., blank_ratio = abs(slope_nmol_hr_blank / slope_nmol_hr)) #Join dataframes by treatment, tank, and probe_num. Create a new column for the the corrected slope (uncorrected slope - blank slope) and the blank ratio (blank / uncorrected slope)
-dat20220726_MO2_slope_results
+dat20220726_MO2_all_slope_results
 ```
 
 ```{r}
-write.csv(dat20220726_MO2_slope_results, "20220726-MO2-slope-results.csv", quote = FALSE, row.names = FALSE) #Save results with uncorrected, blank, and corrected slopes
+write.csv(dat20220726_MO2_all_slope_results, "20220726-MO2-slope-results.csv", quote = FALSE, row.names = FALSE) #Save results with uncorrected, blank, and corrected slopes
 ```
 
 ```{r}
