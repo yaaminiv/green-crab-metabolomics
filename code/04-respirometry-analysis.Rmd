@@ -2119,10 +2119,10 @@ head(demTTRdata) #Confirm dataframe creation
 ```
 
 ```{r}
-all_MO2_slope_results <- bind_rows("04" = dat20220708_MO2_slope_results,
-                                   "08" = dat20220712_MO2_slope_results,
-                                   "15" = dat20220719_MO2_slope_results,
-                                   "22" = dat20220726_MO2_slope_results, 
+all_MO2_slope_results <- bind_rows("04" = dat20220708_MO2_all_slope_results,
+                                   "08" = dat20220712_MO2_all_slope_results,
+                                   "15" = dat20220719_MO2_all_slope_results,
+                                   "22" = dat20220726_MO2_all_slope_results, 
                                    .id = "day") #Create a new dataframe with all uncorrected slope results, including a day
 tail(all_MO2_slope_results) #Confirm dataframe creation
 ```
@@ -2156,7 +2156,7 @@ hist(sqrt(-(all_MO2_slope_results$slope_nmol_hr_corrected))) #Check log transfor
 
 
 ```{r}
-lmAllSlopeResults <- aov(log(-slope_nmol_hr_corrected) ~ treatment*as.numeric(day) + sex + weight + size + integument.color + missing.legs, data = all_MO2_slope_results_demTTRdata) #Examine the influence of treatment, day, and various demographic factors on respiration rate
+lmAllSlopeResults <- aov(log(-slope_nmol_hr_corrected) ~ treatment*as.numeric(day) + sex + weight + size + integument.color + missing.legs, data = (all_MO2_slope_results_demTTRdata %>% filter(., blank_ratio < 0.10))) #Examine the influence of treatment, day, and various demographic factors on respiration rate. Remove outliers based on blank ratios prior to analysis.
 summary(lmAllSlopeResults) #Significant impact of treatment and day on respiration
 ```
 
@@ -2215,6 +2215,7 @@ facet_labels <- c("04" = "Day 4",
 
 ```{r}
 all_MO2_slope_results_reorder %>%
+  filter(., blank_ratio < 0.10) %>%
   ggplot(., aes(x = treatment, y = -slope_nmol_hr_corrected, color = treatment)) + 
   geom_boxplot() + geom_point(aes(shape = treatment), size = 2) +
   xlab("") + ylab("Oxygen Consumption (nmol/hr)") +
