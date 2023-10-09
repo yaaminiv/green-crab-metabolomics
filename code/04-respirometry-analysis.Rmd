@@ -2197,7 +2197,7 @@ write.csv(broom::tidy(TukeyHSD(lmAllSlopeResultsSig, "treatment", conf.level = 0
 pairwise.t.test(x = log(-(all_MO2_slope_results_demTTRdata$slope_nmol_hr_corrected)), all_MO2_slope_results_demTTRdata$day, p.adjust.method = "bonferroni") #Use pairwise t-test for quantitative variables. Marginal significance between days 4 and 22.
 ```
 
-# Create multipanel figure
+## Create multipanel figure for oxygen consumption
 
 ```{r}
 all_MO2_slope_results_reorder <- all_MO2_slope_results %>%
@@ -2234,10 +2234,84 @@ all_MO2_slope_results_reorder %>%
                      name = "Temperature (ºC)",
                      breaks = c("05C", "13C", "30C"),
                      labels = c("5", "13", "30")) +
-  theme_classic(base_size = 15) + theme(axis.title = element_blank(), 
-                                        axis.ticks.x = element_blank(),
+  theme_classic(base_size = 15) + theme(axis.ticks.x = element_blank(),
+                                        axis.title.x = element_blank(),
                                         strip.text.x = element_text(size = 15),
                                         strip.background = element_rect(colour = "white"))
 ggsave("figures/multipanel-oxygen-consumption-corrected.pdf", height = 8.5, width = 11)
 #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. Add a line connecting each boxplot midpoint. Facet wrap and use the labeller to relabel facets. Add consistent color and shape scales.
 ```
+
+# Within-group variability
+
+The 13ºC and 30ºC treatments have more variability than the 5ºC treatments. To quantify this, I will calculate the coefficient of variation for each treatment x day combination.
+
+```{r}
+head(all_MO2_slope_results)
+```
+
+```{r}
+all_MO2_slope_results_meanSDCV <- all_MO2_slope_results_reorder %>%
+  group_by(., treatment, day) %>%
+  mutate(., slope_nmol_hr_corrected_mean = mean(-slope_nmol_hr_corrected)) %>%
+  mutate(., slope_nmol_hr_corrected_SD = sd(-slope_nmol_hr_corrected)) %>%
+  mutate(., slope_nmol_hr_corrected_CV = (slope_nmol_hr_corrected_SD/slope_nmol_hr_corrected_mean) * 100) %>%
+  ungroup(.) #Take all slope results and group by treatment and day. Calculate the mean, SD, and CV for each treatment x day combination. Ungroup data.
+tail(all_MO2_slope_results_meanSDCV)
+```
+
+```{r}
+all_MO2_slope_results_meanSDCV %>%
+  select(., treatment, day, slope_nmol_hr_corrected_SD) %>%
+  ggplot(., aes(x = day, y = slope_nmol_hr_corrected_SD, group = treatment, color = treatment)) + 
+  geom_line(aes(lty = treatment)) + geom_point(aes(shape = treatment), size = 2) +
+  xlab("Day") + ylab("SD of Oxygen Consumption (nmol/hr)") +
+  scale_x_discrete(breaks = c("04", "08", "15", "22"),
+                   labels = c("4", "8", "15", "22")) +
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("05C", "13C", "30C"),
+                     labels = c("5", "13", "30")) +
+  scale_linetype_manual(values = c(2, 1, 6),
+                     name = "Temperature (ºC)",
+                     breaks = c("05C", "13C", "30C"),
+                     labels = c("5", "13", "30")) +
+  scale_shape_manual(values = c(15, 19, 17),
+                     name = "Temperature (ºC)",
+                     breaks = c("05C", "13C", "30C"),
+                     labels = c("5", "13", "30")) +
+  theme_classic(base_size = 15)
+ggsave("figures/multipanel-oxygen-consumption-corrected-SD.pdf", height = 8.5, width = 11)
+#Create a line graph for the SD of oxygen consumption (nmol/hr) over experimental day. Define color, shape, and line type by treatment.
+```
+
+The line graph shows what was in the boxplot: variability for the 13ºC and 30ºC treatments are much higher, especially at day 22.
+
+```{r}
+all_MO2_slope_results_meanSDCV %>%
+  select(., treatment, day, slope_nmol_hr_corrected_CV) %>%
+  ggplot(., aes(x = day, y = slope_nmol_hr_corrected_CV, group = treatment, color = treatment)) + 
+  geom_line(aes(lty = treatment)) + geom_point(aes(shape = treatment), size = 2) +
+  xlab("Day") + ylab("CV of Oxygen Consumption") +
+  scale_x_discrete(breaks = c("04", "08", "15", "22"),
+                   labels = c("4", "8", "15", "22")) +
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("05C", "13C", "30C"),
+                     labels = c("5", "13", "30")) +
+  scale_linetype_manual(values = c(2, 1, 6),
+                     name = "Temperature (ºC)",
+                     breaks = c("05C", "13C", "30C"),
+                     labels = c("5", "13", "30")) +
+  scale_shape_manual(values = c(15, 19, 17),
+                     name = "Temperature (ºC)",
+                     breaks = c("05C", "13C", "30C"),
+                     labels = c("5", "13", "30")) +
+  theme_classic(base_size = 15)
+ggsave("figures/multipanel-oxygen-consumption-corrected-CV.pdf", height = 8.5, width = 11)
+#Create a line graph for the CV of oxygen consumption over experimental day. Define color, shape, and line type by treatment.
+```
+
+The CV is a ratio between SD and the mean. It's interesting that CV for all three treatments is roughly equal at day 8, and that the 13ºC has a much higher CV than the 30ºC treatment at day 22. These patterns seem to  be more influenced by potential outliers.
+
+
