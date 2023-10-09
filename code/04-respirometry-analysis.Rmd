@@ -2273,9 +2273,9 @@ all_MO2_slope_results_meanSDCV %>%
                      breaks = c("05C", "13C", "30C"),
                      labels = c("5", "13", "30")) +
   scale_linetype_manual(values = c(2, 1, 6),
-                     name = "Temperature (ºC)",
-                     breaks = c("05C", "13C", "30C"),
-                     labels = c("5", "13", "30")) +
+                        name = "Temperature (ºC)",
+                        breaks = c("05C", "13C", "30C"),
+                        labels = c("5", "13", "30")) +
   scale_shape_manual(values = c(15, 19, 17),
                      name = "Temperature (ºC)",
                      breaks = c("05C", "13C", "30C"),
@@ -2300,9 +2300,9 @@ all_MO2_slope_results_meanSDCV %>%
                      breaks = c("05C", "13C", "30C"),
                      labels = c("5", "13", "30")) +
   scale_linetype_manual(values = c(2, 1, 6),
-                     name = "Temperature (ºC)",
-                     breaks = c("05C", "13C", "30C"),
-                     labels = c("5", "13", "30")) +
+                        name = "Temperature (ºC)",
+                        breaks = c("05C", "13C", "30C"),
+                        labels = c("5", "13", "30")) +
   scale_shape_manual(values = c(15, 19, 17),
                      name = "Temperature (ºC)",
                      breaks = c("05C", "13C", "30C"),
@@ -2314,4 +2314,62 @@ ggsave("figures/multipanel-oxygen-consumption-corrected-CV.pdf", height = 8.5, w
 
 The CV is a ratio between SD and the mean. It's interesting that CV for all three treatments is roughly equal at day 8, and that the 13ºC has a much higher CV than the 30ºC treatment at day 22. These patterns seem to  be more influenced by potential outliers.
 
+# Pairwise Q10 calculations
+
+Q10 is a metric used to quantify temperature sensitivity, generally defined as the change in a physiological response over a 10 degree temperature interval. For most organisms, Q10 is around 2 (a two-fold change in a physiological or chemical response due to a 10 degree temperature change). While most studies calculate Q10 metrics for individuals, Glandon et al. (2019) calculates treatment-level Q10 metrics to compare oxygen consumption data from their study exposing juvenile blue crabs to combined temperature x pCO<sub>2</sub> treatments with other decapod crustacean oxygen consumption literature:
+
+Q10 = (R2/R1)^(10/(T2-T1))
+
+where T1 = temperature 1, T2 = temperature 2, R1 = respiration at T1, and R2 = respiration at T2.
+
+I am going to calculate pairwise Q10 metrics for each day with oxygen consumption data. This will provide another metric to compare across treatment x day combinations.
+
+```{r}
+all_MO2_slope_results_Q10output <- all_MO2_slope_results_meanSDCV %>%
+  select(day, treatment, slope_nmol_hr_corrected_mean) %>%
+  unique(.) %>%
+  mutate(temperature = case_when(treatment == "13C" ~ 13,
+                                 treatment == "30C" ~ 30,
+                                 treatment == "05C" ~ 5)) %>% 
+  pivot_wider(., names_from = treatment, values_from = c(slope_nmol_hr_corrected_mean, temperature)) %>%
+  mutate(., Q10_13_30 = Q10(R1 = slope_nmol_hr_corrected_mean_13C, R2 = slope_nmol_hr_corrected_mean_30C, T1 = temperature_13C, T2 = temperature_30C)) %>%
+  mutate(., Q10_13_5 = Q10(R1 = slope_nmol_hr_corrected_mean_05C, R2 = slope_nmol_hr_corrected_mean_13C, T1 = temperature_05C, T2 = temperature_13C)) %>%
+  mutate(., Q10_30_5 = Q10(R1 = slope_nmol_hr_corrected_mean_05C, R2 = slope_nmol_hr_corrected_mean_30C, T1 = temperature_05C, T2 = temperature_30C)) %>%
+  select(., -c(temperature_13C, temperature_30C, temperature_05C)) #Take input dataframe and pivot wider. Use treatment as IDs for new colums, and paste values from mean slope and tmeperature. Use the formula to calculate Q10 for each pairwise temperature comparison. Remove temperature columns.
+all_MO2_slope_results_Q10output #Confirm Q10 calculations
+```
+
+```{r}
+write.csv(all_MO2_slope_results_Q10output, "mean-slope-pairwise-Q10.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+```
+
+I'm going to plot Q10 values for the 13ºC vs. 5ºC or 30ºC comparisons.
+
+```{r}
+all_MO2_slope_results_Q10output %>%
+  pivot_longer(., cols = starts_with("Q10_"), names_to = "comparison", values_to = "Q10") %>%
+  select(., day, comparison, Q10) %>%
+  filter(., comparison != "Q10_30_5") %>%
+  ggplot(., aes(x = day, y = Q10, group = comparison)) +
+  geom_line(aes(color = comparison, lty = comparison)) + geom_point(aes(color = comparison, shape = comparison), size = 2) +
+  geom_line(y = 2, color = "black", lty = 5) +
+  xlab("Day") + ylab("Pairwise Q10") +
+  scale_x_discrete(breaks = c("04", "08", "15", "22"),
+                   labels = c("4", "8", "15", "22")) +
+  scale_color_manual(values = c(plotColors[3], plotColors[1]), 
+                     name = "Comparison",
+                     breaks = c("Q10_13_5", "Q10_13_30"),
+                     labels = c("13ºC vs. 5ºC", "13ºC vs. 30ºC")) +
+  scale_linetype_manual(values = c(2, 6),
+                        name = "Comparison",
+                        breaks = c("Q10_13_5", "Q10_13_30"),
+                        labels = c("13ºC vs. 5ºC", "13ºC vs. 30ºC")) +
+  scale_shape_manual(values = c(15, 17),
+                     name = "Comparison",
+                     breaks = c("Q10_13_5", "Q10_13_30"),
+                     labels = c("13ºC vs. 5ºC", "13ºC vs. 30ºC")) +
+  theme_classic(base_size = 15)
+ggsave("figures/pairwise-Q10.pdf", height = 8.5, width = 11)
+#Create a line graph with pairwise Q10 metrics for control 13ºC vs. either the 5ºC or 30ºC treatments. First, pivot_longer the Q10 calculation table and select columns such that only day, Q10, and comparison information remains. Remove the 30ºC vs. 5ºC Q10 calculations. Plot the data, grouping by Q10 comparison. Assign colors, line type, and shape by comparison. 
+```
 
