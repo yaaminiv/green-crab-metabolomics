@@ -2339,6 +2339,8 @@ all_MO2_slope_results_Q10output <- all_MO2_slope_results_meanSDCV %>%
 all_MO2_slope_results_Q10output #Confirm Q10 calculations
 ```
 
+When Q10 ~ 1, it means that respiration is temperature-independent. As Q10 increases, a process becomes more temperature dependent. Most biological processes have Q10 ~ 2, but processes with large-scale protein conformational changes can have larger Q10 values. Based on this information, it seems like transitioning to a warmer temperature is less temperature dependent, or requires less physiological remodeling, than transitioning to a colder temperature.
+
 ```{r}
 write.csv(all_MO2_slope_results_Q10output, "mean-slope-pairwise-Q10.csv", quote = FALSE, row.names = FALSE) #Save dataframe
 ```
@@ -2354,6 +2356,8 @@ all_MO2_slope_results_Q10output %>%
   geom_line(aes(color = comparison, lty = comparison)) + geom_point(aes(color = comparison, shape = comparison), size = 2) +
   geom_line(y = 2, color = "black", lty = 5) +
   xlab("Day") + ylab("Pairwise Q10") +
+  scale_y_continuous(lim = c(0,10), 
+                     breaks = seq(0,10,2)) +
   scale_x_discrete(breaks = c("04", "08", "15", "22"),
                    labels = c("4", "8", "15", "22")) +
   scale_color_manual(values = c(plotColors[3], plotColors[1]), 
