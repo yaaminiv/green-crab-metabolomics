@@ -2244,11 +2244,7 @@ ggsave("figures/multipanel-oxygen-consumption-corrected.pdf", height = 8.5, widt
 
 # Within-group variability
 
-The 13ºC and 30ºC treatments have more variability than the 5ºC treatments. To quantify this, I will calculate the coefficient of variation for each treatment x day combination.
-
-```{r}
-head(all_MO2_slope_results)
-```
+The 13ºC and 30ºC treatments have more variability than the 5ºC treatments. To quantify this, I will calculate the standard deviation and coefficient of variation for each treatment x day combination.
 
 ```{r}
 all_MO2_slope_results_meanSDCV <- all_MO2_slope_results_reorder %>%
@@ -2258,6 +2254,10 @@ all_MO2_slope_results_meanSDCV <- all_MO2_slope_results_reorder %>%
   mutate(., slope_nmol_hr_corrected_CV = (slope_nmol_hr_corrected_SD/slope_nmol_hr_corrected_mean) * 100) %>%
   ungroup(.) #Take all slope results and group by treatment and day. Calculate the mean, SD, and CV for each treatment x day combination. Ungroup data.
 tail(all_MO2_slope_results_meanSDCV)
+```
+
+```{r}
+write.csv(all_MO2_slope_results_meanSDCV, "all-slope-results-mean-SD-CV.csv", quote = FALSE, row.names = FALSE) #Save dataframe
 ```
 
 ```{r}
