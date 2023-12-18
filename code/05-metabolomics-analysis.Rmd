@@ -1,0 +1,221 @@
+---
+title: "04-respirometry-analysis"
+author: "Yaamini Venkataraman"
+date: '2023-12-18'
+output: html_document
+---
+
+In this script, I will analyze metabolomics data from the West Coast Metabolomics Center (UC Davis). I will conduct an initial assessment of the data (PLS-DA), understand important metabolites and pathways (VIP analysis and WGCNA), and prepare for additional network analysis through MetaboAnalyst. This workflow and script is modified from [Huffmyer et al. (2023)](https://www.biorxiv.org/content/10.1101/2023.03.20.533475v2.full) and [Trigg et al. (2019)](http://dx.doi.org/10.1038/s41598-019-46947-6).
+
+# Set up R Markdown document
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = normalizePath("../output/05-metabolomics-analysis/")) #Set root directory
+```
+
+```{r}
+getwd()
+```
+
+# Install packages
+
+```{r packages, warning = FALSE, message = FALSE}
+# if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse') 
+# if ("vegan" %in% rownames(installed.packages()) == 'FALSE') install.packages('vegan') 
+# if ("factoextra" %in% rownames(installed.packages()) == 'FALSE') install.packages('factoextra') 
+# if ("ggfortify" %in% rownames(installed.packages()) == 'FALSE') install.packages('ggfortify') 
+# if ("naniar" %in% rownames(installed.packages()) == 'FALSE') install.packages('naniar') 
+# if ("cowplot" %in% rownames(installed.packages()) == 'FALSE') install.packages('cowplot') 
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#   install.packages("BiocManager")
+# if ("mixOmics" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("mixOmics") 
+# if ("RVAideMemoire" %in% rownames(installed.packages()) == 'FALSE') install.packages('RVAideMemoire') 
+# if ("VennDiagram" %in% rownames(installed.packages()) == 'FALSE') install.packages('VennDiagram') 
+# if ("broom" %in% rownames(installed.packages()) == 'FALSE') install.packages('broom') 
+# if ("RColorBrewer" %in% rownames(installed.packages()) == 'FALSE') install.packages('RColorBrewer') 
+
+require(tidyverse)
+require(vegan)
+require(factoextra)
+require(ggfortify)
+require(naniar)
+require(cowplot)
+require(mixOmics)
+require(RVAideMemoire)
+require(VennDiagram)
+require(broom)
+require(RColorBrewer)
+```
+
+```{r}
+source("../../code/biostats.R") #Source multivariate analysis functions
+```
+
+```{r}
+sessionInfo()
+```
+
+# Import data
+
+```{r}
+rawMetabolomicsData <- read.csv("../../data/raw_metabolomics_data.csv", header = TRUE) %>% 
+  dplyr::rename_with(~stringr::str_replace_all(., "X", "")) #Import data. Remove the "X" prefix for crab IDs
+head(rawMetabolomicsData) #Confirm import
+```
+
+```{r}
+metabolomicsMetadata <- read.csv("../../data/metabolomics_metadata.csv", header = FALSE) %>% 
+  dplyr::rename_with(~stringr::str_replace_all(., "V", "")) %>%
+  t(.) %>% as.data.frame(.) %>% 
+  purrr::set_names(as.character(dplyr::slice(., 1))) %>%
+  dplyr::slice(., -1) #Import metadata. Do not include any header information. Remove "V" from column names. Transform so crab.ID, treatment, and day are all columns. Set the first row in the dataframe as column names, then remove that row.
+head(metabolomicsMetadata) #Confirm import
+```
+
+# Format data
+
+Before analyzing the data, I will transform the data and match with treatment metadata. The West Coast Metabolomics Center has already normalized data using the average mTIC (sum of all peak heights for *identified* metabolites) of the samples, and I will not perform any additional normalizations. 
+
+```{r}
+transMetabData <- rawMetabolomicsData %>%
+  dplyr::select(., -c(2:8)) %>%
+  column_to_rownames(., var = "BinBase.name") %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(., var = "crab.ID") %>% 
+  left_join(metabolomicsMetadata, ., by = "crab.ID") #Remove columns with MS information, convert BinBase.name to rownames, and transform dataframe. Convert rownames to crab.ID column
+head(transMetabData) #Confirm changes
+```
+
+# Initial data investigation with PCA
+
+```{r}
+scaled.pca <- prcomp(transMetabData[c(4:600)], scale = TRUE, center = TRUE) #Use prcomp to perform a centered and scaled PCA calculation
+summary(scaled.pca) #Standard deviations for each PC
+```
+
+```{r PCA interpretation}
+pca.eigenval(scaled.pca) #Eigenvalues greater than the broken-stick expectation are considered to explain a statistically significance proportion of the variance in the original dataset. PC3 and PC4 eigenvalue > BSV
+ordiMonteRandTest <- ordi.monte(transMetabData[c(4:600)], ord = "pca", dim = 6, plot = FALSE) #Conduct monte carlo randomization test using 1000 random permutations of the input data.
+ordiMonteRandTest
+
+#Will move forward with PC1-2
+```
+
+## Plot PCA
+
+```{bash}
+mkdir figures
+```
+
+```{r}
+plotColors <- c(brewer.pal(9, "Reds")[7],
+                brewer.pal(9, "Greys")[7],
+                brewer.pal(9, "Blues")[7]) #Create color scheme
+```
+
+### All metabolites
+
+```{r}
+pcaPlot1 <- autoplot(scaled.pca, data = transMetabData, x = 1, y = 2,
+                     size = 3, alpha = 0.8, colour = "treatment", shape = "treatment", 
+                     frame = TRUE, frame.colour = "treatment", loadings = FALSE) +
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]),
+                     name = "Temperature (ºC)") +
+  scale_fill_manual(values = c(plotColors[3], plotColors[2], plotColors[1]),
+                    name = "Temperature (ºC)") +
+    scale_shape_manual(values = c(15, 19, 17),
+                     name = "Temperature (ºC)") +
+  theme_classic(base_size = 15) + theme(legend.position = "right",
+                                        plot.background = element_blank()) #Use autoplot to plot the prcomp object. Color points and confidence ellipses by treatment, and have different shapes for each treatment Do not include loadings. Manually define color, fill, and shapes.
+pcaPlot1
+ggsave("figures/all-data-PCA-treatment.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+pcaPlot2 <- autoplot(scaled.pca, data = transMetabData, x = 1, y = 2,
+                     size = 5, alpha = 0.8, colour = "day", shape = "day",
+                     frame = TRUE, frame.colour = "day", loadings = FALSE) +
+  scale_color_manual(values = c("black", "purple"),
+                     name = "Day") +
+  scale_fill_manual(values = c("black", "purple"),
+                    name = "Day") +
+  scale_shape_manual(values = c(20, 18),
+                     name = "Day") +
+  theme_classic(base_size = 15) + theme(legend.position = "right",
+                                        plot.background = element_blank()) #Same as above but color by day and not treatment
+pcaPlot2
+ggsave("figures/all-data-PCA-day.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+pcaPlot3 <- autoplot(scaled.pca, data = transMetabData, x = 1, y = 2,
+                     size = 4, alpha = 0.8, colour = "treatment", shape = "day", 
+                     frame = TRUE, frame.colour = "treatment", loadings = FALSE) +
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]),
+                     name = "Temperature (ºC)") +
+  scale_fill_manual(values = c(plotColors[3], plotColors[2], plotColors[1]),
+                    name = "Temperature (ºC)") +
+  scale_shape_manual(values = c(20, 18),
+                     name = "Day") +
+  theme_classic(base_size = 15) + theme(legend.position = "right",
+                                        plot.background = element_blank()) #Use autoplot to plot the prcomp object. Color points and confidence ellipses by treatment, and have different shapes for each day. Do not include loadings. Manually define color, fill, and shapes.
+pcaPlot3
+ggsave("figures/all-data-PCA-day-treatment.pdf", height = 8.5, width = 11)
+```
+
+Overall, it seems like metabolite profiles are segregating by treatment, with the 30ºC profiles more segregated from the 5ºC and 13ºC profiles. It also seems like metabolite profiles have higher spread over time, potentially due to the impact of prolonged temperature exposure on physiology.
+
+### Identified metabolites
+
+I'm going to make a very similar PCA to the one above, but only using metabolites identified by the sequencer.
+
+```{r}
+scaled.pca.id <- prcomp(transMetabData[c(4:155)], scale = TRUE, center = TRUE) #Use prcomp to perform a centered and scaled PCA calculation
+summary(scaled.pca.id) #Standard deviations for each PC
+```
+
+```{r}
+pcaPlot4 <- autoplot(scaled.pca.id, data = transMetabData, x = 1, y = 2,
+                     size = 4, alpha = 0.8, colour = "treatment", shape = "day", 
+                     frame = TRUE, frame.colour = "treatment", loadings = FALSE) +
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]),
+                     name = "Temperature (ºC)") +
+  scale_fill_manual(values = c(plotColors[3], plotColors[2], plotColors[1]),
+                    name = "Temperature (ºC)") +
+  scale_shape_manual(values = c(20, 18),
+                     name = "Day") +
+  theme_classic(base_size = 15) + theme(legend.position = "right",
+                                        plot.background = element_blank()) #Use autoplot to plot the prcomp object. Color points and confidence ellipses by treatment, and have different shapes for each day. Do not include loadings. Manually define color, fill, and shapes.
+pcaPlot4
+ggsave("figures/all-data-PCA-day-treatment-idOnly.pdf", height = 8.5, width = 11)
+```
+
+## Conduct PERMANOVA
+
+I'll use a global permutational multivariate analysis of variance (PERMANOVA) to determine if treatment and day had a significant influence on metabolite profiles. The significant effects from the PCA will be used in the downstream PLS-DA to interrogate trends.
+
+### All metabolites
+
+```{r}
+permanova.metab <- adonis2(scale(transMetabData[c(4:600)]) ~ treatment*day, data = transMetabData, method = 'eu') #Conduct global PERMANOVA to assess significance of trends in PCA. Scale metabolomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
+permanova.metab #Significant influence of all factors
+```
+
+### Identified metabolites
+
+I'm going to repeat the same analysis, but only look at trends for metabolites identified by the West Coast Metabolomics Center.
+
+```{r}
+permanova.metabid <- adonis2(scale(transMetabData[c(4:155)]) ~ treatment*day, data = transMetabData, method = 'eu') #Conduct global PERMANOVA to assess significance of trends in PCA. Scale metabolomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
+permanova.metabid #Significant influence of all factors
+```
+
+The fact that all three explanatory variables are significant means that the inclusion of unidentified metabolites doesn't drastically influence the results.
+
+# PLS-DA
+
+The next step is for me to conduct a PLS-DA analysis
+
+# sPLS-DA
+
