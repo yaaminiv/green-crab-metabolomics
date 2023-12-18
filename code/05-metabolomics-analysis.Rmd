@@ -188,7 +188,7 @@ pcaPlot4 <- autoplot(scaled.pca.id, data = transMetabData, x = 1, y = 2,
   theme_classic(base_size = 15) + theme(legend.position = "right",
                                         plot.background = element_blank()) #Use autoplot to plot the prcomp object. Color points and confidence ellipses by treatment, and have different shapes for each day. Do not include loadings. Manually define color, fill, and shapes.
 pcaPlot4
-ggsave("figures/all-data-PCA-day-treatment-idOnly.pdf", height = 8.5, width = 11)
+ggsave("figures/known-metabolites-PCA-day-treatment.pdf", height = 8.5, width = 11)
 ```
 
 ## Conduct PERMANOVA
@@ -203,9 +203,9 @@ permanova.metab #Significant influence of all factors
 ```
 
 ```{r}
-broom::tidy(permanova.metab)
+broom::tidy(permanova.metab) %>%
+  write.csv(., "all-data-PERMANOVA-results.csv", quote = FALSE) #Save PERMANOVA output
 ```
-
 
 ### Identified metabolites
 
@@ -214,6 +214,11 @@ I'm going to repeat the same analysis, but only look at trends for metabolites i
 ```{r}
 permanova.metabid <- adonis2(scale(transMetabData[c(4:155)]) ~ treatment*day, data = transMetabData, method = 'eu') #Conduct global PERMANOVA to assess significance of trends in PCA. Scale metabolomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
 permanova.metabid #Significant influence of all factors
+```
+
+```{r}
+broom::tidy(permanova.metab) %>%
+  write.csv(., "known-metabolites-PERMANOVA-results.csv", quote = FALSE) #Save PERMANOVA output
 ```
 
 The fact that all three explanatory variables are significant means that the inclusion of unidentified metabolites doesn't drastically influence the results.
