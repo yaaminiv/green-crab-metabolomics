@@ -213,7 +213,7 @@ broom::tidy(permanova.metab) %>%
 I'm going to repeat the same analysis, but only look at trends for metabolites identified by the West Coast Metabolomics Center.
 
 ```{r}
-permanova.metabid <- adonis2(scale(transMetabData[c(4:155)]) ~ treatment*day, data = transMetabData, method = 'eu') #Conduct global PERMANOVA to assess significance of trends in PCA. Scale metabolomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
+permanova.metabid <- adonis2(scale(transMetabData[c(5:156)]) ~ treatment*day, data = transMetabData, method = 'eu') #Conduct global PERMANOVA to assess significance of trends in PCA. Scale metabolomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
 permanova.metabid #Significant influence of all factors
 ```
 
@@ -224,7 +224,7 @@ broom::tidy(permanova.metab) %>%
 
 The fact that all three explanatory variables are significant means that the inclusion of unidentified metabolites doesn't drastically influence the results.
 
-# PLS-DA
+# PLSDA for all metabolites
 
 The next step is for me to conduct a PLS-DA analysis using the `mixOmics` package. This is a more robust way to analyze differences between treatments and is common in many metabolomics studies. Since both temperature and day were significant in the PCA, I'll use both of those factors in the PLSDA.
 
@@ -248,7 +248,7 @@ plotIndiv(treatment.plsda, comp = c(1,2), ind.names = FALSE,
           cex = 3, col = rev(plotColors), pch = c(15, 17, 19), point.lwd = 0.7,
           ellipse = TRUE, star = TRUE, centroid = FALSE, 
           legend = TRUE, legend.title = "Temperature (ºC)", 
-          title = "PLS-DA by Temperature", X.label = "Component 1: 14% Explained Variance", size.xlabel = 15, Y.label = "Component 2: 4% Explained Variance", size.ylabel = 15, size.axis = 13,
+          title = "PLS-DA by Temperature", X.label = "Component 1: 14% Explained Variance", size.xlabel = 15, Y.label = "Component 2: 6% Explained Variance", size.ylabel = 15, size.axis = 13,
           style = "ggplot2") #Visualize first two components of PLS-DA with no individual sample names. Alter point size, color, shape, and line width. Include 95% confidence ellipses and use star format to visualize sample distance from centroids. Include a legend and specify the legend title. Specify the plot title and text label sizes. Use ggplot style.
 #dev.off()
 ```
@@ -307,7 +307,7 @@ plotIndiv(treatmentday.plsda, comp = c(1,2), ind.names = FALSE,
           cex = 3, col = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"), pch = c(12:17), point.lwd = 0.7,
           ellipse = TRUE, star = TRUE, centroid = FALSE, 
           legend = TRUE, legend.title = "Temperature (ºC) x Day", 
-          title = "PLS-DA by Temperature and Day", X.label = "Component 1: 14% Explained Variance", size.xlabel = 15, Y.label = "Component 2: 8% Explained Variance", size.ylabel = 15, size.axis = 13,
+          title = "PLS-DA by Temperature and Day", X.label = "Component 1: 14% Explained Variance", size.xlabel = 15, Y.label = "Component 2: 6% Explained Variance", size.ylabel = 15, size.axis = 13,
           style = "ggplot2") #Visualize first two components of PLS-DA with no individual sample names. Alter point size, color, shape, and line width. Include 95% confidence ellipses and use star format to visualize sample distance from centroids. Include a legend and specify the legend title. Specify the plot title and text label sizes. Use ggplot style.
 #dev.off()
 ```
@@ -318,7 +318,79 @@ plotIndiv(treatmentday.plsda, comp = c(1,3), ind.names = FALSE,
           cex = 3, col = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"), pch = c(12:17), point.lwd = 0.7,
           ellipse = TRUE, star = TRUE, centroid = FALSE, 
           legend = TRUE, legend.title = "Temperature (ºC) x Day", 
-          title = "PLS-DA by Temperature and Day", X.label = "Component 1: 14% Explained Variance", size.xlabel = 15, Y.label = "Component 3: 4% Explained Variance", size.ylabel = 15, size.axis = 13,
+          title = "PLS-DA by Temperature and Day", X.label = "Component 1: 14% Explained Variance", size.xlabel = 15, Y.label = "Component 3: 11% Explained Variance", size.ylabel = 15, size.axis = 13,
+          style = "ggplot2") #Visualize first two components of PLS-DA with no individual sample names. Alter point size, color, shape, and line width. Include 95% confidence ellipses and use star format to visualize sample distance from centroids. Include a legend and specify the legend title. Specify the plot title and text label sizes. Use ggplot style.
+#dev.off()
+```
+
+```{r}
+pdf("figures/all-data-cimPlot-day-treatment.pdf", height = 8.5, width = 11)
+cim(treatment.plsda, mapping = "Y", row.names = transMetabData$treatment_day, xlab = "Metabolites", ylab = "Temperature (ºC) x Day", margins = c(8, 5), row.cex = 0.5) #Create CIM plot with metabolites on the x-axis and treatment x day on the y-axis. 
+dev.off()
+```
+
+### Extract VIP
+
+```{r}
+treatmentdayVIP <- as.data.frame(PLSDA.VIP(treatmentday.plsda)[["tab"]]) %>%
+  rownames_to_column(., var = "metabolite") #Extract VIP information and save as a dataframe. Convert metabolite rownames to a column, then filter for VIP >1. 
+head(treatmentdayVIP) #Confirm changes
+```
+
+```{r}
+write.csv(treatmentdayVIP, "all-data-VIP-day-treatment.csv", quote = FALSE, row.names = FALSE) #Save VIP scores
+```
+
+```{r}
+treatmentdayVIP %>%
+  filter(VIP >= 1) %>%
+  nrow(.) #251 metabolites have VIP > 1
+251/596 * 100 #42.1% metabolites VIP > 1
+```
+
+```{r}
+treatmentdayVIP %>%
+  filter(VIP >= 1) %>%
+  arrange(VIP) %>%
+  ggplot(aes(x = VIP, y = reorder(metabolite, VIP, sum))) +
+  geom_point() +
+  xlab("VIP Score") + ylab("Metabolite") +
+  theme_classic() + theme(axis.text.y = element_text(size = 5)) #Using only metabolites with VIP > 1, arrange by metabolite name and reorder by cumulative VIP score. Plot points and change x and y axis labels.
+ggsave("figures/all-data-VIP-day-treatment.pdf", height = 8.5, width = 11)
+```
+
+# PLSDA for known features
+
+While I can use the PLSDA with all features to discuss larger patterns and maybe glean insight into functions of unknown metabolites, running the model with only known features will allow me to more confidently assess differences in metabolic pathways due to temperature and time. I will run this PLSDA for both temperature and day.
+
+```{r}
+X <- log(transMetabData[c(5:156)]) #Assign known metabolite data to the X dataframe after log transformation
+Y <- as.factor(transMetabData$treatment_day) #Assign treatment data to the Y dataframe
+```
+
+```{r}
+treatmentday.known.plsda <- plsda(X,Y, ncomp = 5) #ncomp = # treatments - 1
+plotIndiv(treatmentday.known.plsda)
+```
+
+```{r}
+#pdf("figures/known-metabolites-PLSDA-day-treatment-comp12.pdf", height = 8.5, width = 11)
+plotIndiv(treatmentday.known.plsda, comp = c(1,2), ind.names = FALSE,
+          cex = 3, col = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"), pch = c(12:17), point.lwd = 0.7,
+          ellipse = TRUE, star = TRUE, centroid = FALSE, 
+          legend = TRUE, legend.title = "Temperature (ºC) x Day", 
+          title = "PLS-DA by Temperature and Day", X.label = "Component 1: 12% Explained Variance", size.xlabel = 15, Y.label = "Component 2: 12% Explained Variance", size.ylabel = 15, size.axis = 13,
+          style = "ggplot2") #Visualize first two components of PLS-DA with no individual sample names. Alter point size, color, shape, and line width. Include 95% confidence ellipses and use star format to visualize sample distance from centroids. Include a legend and specify the legend title. Specify the plot title and text label sizes. Use ggplot style.
+#dev.off()
+```
+
+```{r}
+#pdf("figures/known-metabolites-PLSDA-day-treatment-comp13.pdf", height = 8.5, width = 11)
+plotIndiv(treatmentday.known.plsda, comp = c(1,3), ind.names = FALSE,
+          cex = 3, col = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"), pch = c(12:17), point.lwd = 0.7,
+          ellipse = TRUE, star = TRUE, centroid = FALSE, 
+          legend = TRUE, legend.title = "Temperature (ºC) x Day", 
+          title = "PLS-DA by Temperature and Day", X.label = "Component 1: 12% Explained Variance", size.xlabel = 15, Y.label = "Component 3: 8% Explained Variance", size.ylabel = 15, size.axis = 13,
           style = "ggplot2") #Visualize first two components of PLS-DA with no individual sample names. Alter point size, color, shape, and line width. Include 95% confidence ellipses and use star format to visualize sample distance from centroids. Include a legend and specify the legend title. Specify the plot title and text label sizes. Use ggplot style.
 #dev.off()
 ```
