@@ -34,18 +34,20 @@ getwd()
 # if ("VennDiagram" %in% rownames(installed.packages()) == 'FALSE') install.packages('VennDiagram') 
 # if ("broom" %in% rownames(installed.packages()) == 'FALSE') install.packages('broom') 
 # if ("RColorBrewer" %in% rownames(installed.packages()) == 'FALSE') install.packages('RColorBrewer') 
+# if ("pheatmap" %in% rownames(installed.packages()) == 'FALSE') install.packages('pheatmap') 
 
 require(tidyverse)
 require(vegan)
-require(factoextra)
-require(ggfortify)
-require(naniar)
-require(cowplot)
+# require(factoextra)
+# require(ggfortify)
+# require(naniar)
+# require(cowplot)
 require(mixOmics)
 require(RVAideMemoire)
-require(VennDiagram)
+# require(VennDiagram)
 require(broom)
 require(RColorBrewer)
+require(pheatmap)
 ```
 
 ```{r}
@@ -70,8 +72,13 @@ metabolomicsMetadata <- read.csv("../../data/metabolomics_metadata.csv", header 
   t(.) %>% as.data.frame(.) %>% 
   purrr::set_names(as.character(dplyr::slice(., 1))) %>%
   dplyr::slice(., -1) %>% 
-  mutate(., unite(., "treatment_day", treatment:day, sep = "_")) #Import metadata. Do not include any header information. Remove "V" from column names. Transform so crab.ID, treatment, and day are all columns. Set the first row in the dataframe as column names, then remove that row.
-head(metabolomicsMetadata) #Confirm import
+  mutate(., unite(., "treatment_day", treatment:day, sep = "_")) %>%
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = "_  3", replacement = "_3")) %>%
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = "_ 22", replacement = "_22")) %>%
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = " 13_", replacement = "13_")) %>%
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = " 30_", replacement = "30_")) %>%
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = "  5_", replacement = "5_")) #Import metadata. Do not include any header information. Remove "V" from column names. Transform so crab.ID, treatment, and day are all columns. Set the first row in the dataframe as column names, then remove that row.
+tail(metabolomicsMetadata) #Confirm import
 ```
 
 # Format data
@@ -125,7 +132,7 @@ pcaPlot1 <- autoplot(scaled.pca, data = transMetabData, x = 1, y = 2,
                      name = "Temperature (ºC)") +
   scale_fill_manual(values = c(plotColors[3], plotColors[2], plotColors[1]),
                     name = "Temperature (ºC)") +
-    scale_shape_manual(values = c(15, 19, 17),
+  scale_shape_manual(values = c(15, 19, 17),
                      name = "Temperature (ºC)") +
   theme_classic(base_size = 15) + theme(legend.position = "right",
                                         plot.background = element_blank()) #Use autoplot to plot the prcomp object. Color points and confidence ellipses by treatment, and have different shapes for each treatment Do not include loadings. Manually define color, fill, and shapes.
@@ -430,5 +437,87 @@ treatmentday.known.VIP %>%
   theme_classic() + theme(axis.text.y = element_text(size = 8)) #Using only metabolites with VIP > 1, arrange by metabolite name and reorder by cumulative VIP score. Plot points and change x and y axis labels.
 ggsave("figures/known-metabolites-VIP-day-treatment.pdf", height = 8.5, width = 11)
 ```
+
+## Pairwise tests for VIP metabolites
+
+We now know which metabolites are most important for separating days and treatments. However, we do not know specifically which VIP distinguish between which treatment x day contrasts. I will use pairwise t-tests to understand 
+
+### Treatment differences at day 3
+
+#### 13_3 vs. 30_3
+
+```{r}
+list <- c("13_3", "30_3") #Assign treatments to examine
+```
+
+```{r}
+X <- transMetabData %>%
+  dplyr::filter(., treatment_day %in% list) %>%
+  droplevels() #Filter transMetabData for desired contrasts
+Y <- as.factor(X$treatment_day) #Treatments for Y
+X <- X[, 5:156] #Retain data only
+```
+
+```{r}
+known.plsda_13v30_day3 <- plsda(X, Y, ncomp = 5) #Run PLSDA for desired contrast
+VIP_13v30_day3 <- as.data.frame(PLSDA.VIP(known.plsda_13v30_day3)[["tab"]]) %>%
+  rownames_to_column(., var = "metabolite") %>%
+  filter(., VIP >= 1) #Extract VIP list and filter for VIP > 1
+```
+
+```{r}
+clean_13v30_day3 <- transMetabData %>%
+  dplyr::filter(., treatment_day %in% list) %>%
+  droplevels() #Filter transMetabData for desired contrasts.
+VIP_select_13v30_day3 <- cbind(clean_13v30_day3[, 1:4], 
+                               log(clean_13v30_day3[, names(clean_13v30_day3) %in% VIP_13v30_day3$metabolite])) %>%
+  pivot_longer(., cols = 5:63, values_to = "log_norm_counts", names_to = "metabolites") %>%
+  group_by(., metabolites) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by metabolites.
+VIP_select_13v30_day3 #Confirm changes
+```
+
+```{r}
+t.test_13v30_day3 <-do(VIP_select_13v30_day3, tidy(t.test(.$log_norm_counts ~ .$treatment_day,
+                 alternative = "two.sided",
+                 mu = 0,
+                 paired = FALSE,
+                 var.equal = FALSE,
+                 conf.level = 0.95
+                 ))) #Looped t-test for all metabolites with VIP > 1
+t.test_13v30_day3$p.adj <- p.adjust(t.test_13v30_day3$p.value, method = c("fdr"), n = length(VIP_13v30_day3$metabolite)) #Adjust p value for the number of comparisons
+t.test_13v30_day3
+```
+
+```{r}
+t.test_13v30_day3 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>%
+  nrow(.) #0 significantly different metabolites
+```
+
+#### 13_3 vs. 5_3
+
+### Treatment differences at day 22
+
+#### 13_22 vs. 30_22
+
+#### 13_22 vs. 5_22
+
+### Day differences for each treatment
+
+#### 5_3 vs. 5_22
+
+#### 13_3 vs. 13_22
+
+#### 30_3 vs. 30_22
+
+# Validate PLSDA model
+
+# WCNA analysis for metabolites
+
+
+
+
+
 
 
