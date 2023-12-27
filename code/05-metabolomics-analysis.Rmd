@@ -471,19 +471,19 @@ clean_13v30_day3 <- transMetabData %>%
   droplevels() #Filter transMetabData for desired contrasts.
 VIP_select_13v30_day3 <- cbind(clean_13v30_day3[, 1:4], 
                                log(clean_13v30_day3[, names(clean_13v30_day3) %in% VIP_13v30_day3$metabolite])) %>%
-  pivot_longer(., cols = 5:63, values_to = "log_norm_counts", names_to = "metabolites") %>%
-  group_by(., metabolites) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by metabolites.
+  pivot_longer(., cols = 5:63, values_to = "log_norm_counts", names_to = "metabolite") %>%
+  group_by(., metabolite) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by metabolites.
 VIP_select_13v30_day3 #Confirm changes
 ```
 
 ```{r}
 t.test_13v30_day3 <-do(VIP_select_13v30_day3, tidy(t.test(.$log_norm_counts ~ .$treatment_day,
-                 alternative = "two.sided",
-                 mu = 0,
-                 paired = FALSE,
-                 var.equal = FALSE,
-                 conf.level = 0.95
-                 ))) #Looped t-test for all metabolites with VIP > 1
+                                                          alternative = "two.sided",
+                                                          mu = 0,
+                                                          paired = FALSE,
+                                                          var.equal = FALSE,
+                                                          conf.level = 0.95
+))) #Looped t-test for all metabolites with VIP > 1
 t.test_13v30_day3$p.adj <- p.adjust(t.test_13v30_day3$p.value, method = c("fdr"), n = length(VIP_13v30_day3$metabolite)) #Adjust p value for the number of comparisons
 t.test_13v30_day3
 ```
@@ -497,11 +497,221 @@ t.test_13v30_day3 %>%
 
 #### 13_3 vs. 5_3
 
+```{r}
+list <- c("13_3", "5_3") #Assign treatments to examine
+```
+
+```{r}
+X <- transMetabData %>%
+  dplyr::filter(., treatment_day %in% list) %>%
+  droplevels() #Filter transMetabData for desired contrasts
+Y <- as.factor(X$treatment_day) #Treatments for Y
+X <- X[, 5:156] #Retain data only
+```
+
+```{r}
+known.plsda_13v5_day3 <- plsda(X, Y, ncomp = 5) #Run PLSDA for desired contrast
+VIP_13v5_day3 <- as.data.frame(PLSDA.VIP(known.plsda_13v5_day3)[["tab"]]) %>%
+  rownames_to_column(., var = "metabolite") %>%
+  filter(., VIP >= 1) #Extract VIP list and filter for VIP > 1
+VIP_13v5_day3
+```
+
+```{r}
+clean_13v5_day3 <- transMetabData %>%
+  dplyr::filter(., treatment_day %in% list) %>%
+  droplevels() #Filter transMetabData for desired contrasts.
+VIP_select_13v5_day3 <- cbind(clean_13v5_day3[, 1:4], 
+                              log(clean_13v5_day3[, names(clean_13v5_day3) %in% VIP_13v5_day3$metabolite])) %>%
+  pivot_longer(., cols = 5:66, values_to = "log_norm_counts", names_to = "metabolite") %>%
+  group_by(., metabolite) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by metabolites.
+VIP_select_13v5_day3 #Confirm changes
+```
+
+```{r}
+t.test_13v5_day3 <-do(VIP_select_13v5_day3, tidy(t.test(.$log_norm_counts ~ .$treatment_day,
+                                                        alternative = "two.sided",
+                                                        mu = 0,
+                                                        paired = FALSE,
+                                                        var.equal = FALSE,
+                                                        conf.level = 0.95
+))) #Looped t-test for all metabolites with VIP > 1
+t.test_13v5_day3$p.adj <- p.adjust(t.test_13v5_day3$p.value, method = c("fdr"), n = length(VIP_13v5_day3$metabolite)) #Adjust p value for the number of comparisons
+t.test_13v5_day3
+```
+
+```{r}
+t.test_13v5_day3 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>%
+  nrow(.) #0 significantly different metabolites
+```
+
 ### Treatment differences at day 22
 
 #### 13_22 vs. 30_22
 
+```{r}
+list <- c("13_22", "30_22") #Assign treatments to examine
+```
+
+```{r}
+X <- transMetabData %>%
+  dplyr::filter(., treatment_day %in% list) %>%
+  droplevels() #Filter transMetabData for desired contrasts
+Y <- as.factor(X$treatment_day) #Treatments for Y
+X <- X[, 5:156] #Retain data only
+```
+
+```{r}
+known.plsda_13v30_day22 <- plsda(X, Y, ncomp = 5) #Run PLSDA for desired contrast
+VIP_13v30_day22 <- as.data.frame(PLSDA.VIP(known.plsda_13v30_day22)[["tab"]]) %>%
+  rownames_to_column(., var = "metabolite") %>%
+  filter(., VIP >= 1) #Extract VIP list and filter for VIP > 1
+VIP_13v30_day22
+```
+
+```{r}
+clean_13v30_day22 <- transMetabData %>%
+  dplyr::filter(., treatment_day %in% list) %>%
+  droplevels() #Filter transMetabData for desired contrasts.
+VIP_select_13v30_day22 <- cbind(clean_13v30_day22[, 1:4], 
+                                log(clean_13v30_day22[, names(clean_13v30_day22) %in% VIP_13v30_day22$metabolite])) %>%
+  pivot_longer(., cols = 5:55, values_to = "log_norm_counts", names_to = "metabolite") %>%
+  group_by(., metabolite) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by metabolites.
+VIP_select_13v30_day22 #Confirm changes
+```
+
+```{r}
+t.test_13v30_day22 <-do(VIP_select_13v30_day22, tidy(t.test(.$log_norm_counts ~ .$treatment_day,
+                                                            alternative = "two.sided",
+                                                            mu = 0,
+                                                            paired = FALSE,
+                                                            var.equal = FALSE,
+                                                            conf.level = 0.95
+))) #Looped t-test for all metabolites with VIP > 1
+t.test_13v30_day22$p.adj <- p.adjust(t.test_13v30_day22$p.value, method = c("fdr"), n = length(VIP_13v30_day22$metabolite)) #Adjust p value for the number of comparisons
+t.test_13v30_day22
+```
+
+```{r}
+t.test_13v30_day22 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>%
+  nrow(.) #29 significantly different metabolites
+t.test_13v30_day22 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>% filter(., estimate1 > estimate2) %>%
+  nrow(.) #16 metabolites higher in 13ºC
+t.test_13v30_day22 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>% filter(., estimate1 < estimate2) %>%
+  nrow(.) #13 metabolites higher in 30ºC
+```
+
+```{r}
+t.test_13v30_day22 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>%
+  left_join(., VIP_13v30_day22, by = "metabolite") %>%
+  mutate(., direction = case_when(estimate > 1 ~ "13",
+                                  estimate < 1 ~ "30")) %>%
+  mutate(., score = case_when(estimate > 1 ~ VIP,
+                              estimate < 1 ~ -VIP)) %>%
+  arrange(score) %>%
+  ggplot(aes(x = score, y = reorder(metabolite, score, sum))) +
+  geom_bar(aes(fill = direction), stat = 'identity') +
+  xlab("VIP Score") + ylab("Metabolite") +
+  scale_x_continuous(limits = c(-2, 2), breaks = seq(-2, 2, 1)) +
+  scale_fill_manual(values = c(plotColors[2], plotColors[1]), 
+                    name = "Temperature (ºC)",
+                    breaks = c("13", "30"),
+                    labels = c("13", "30")) +
+  theme_classic(base_size = 15) + theme() #Take t-test results and filter out significant metabolites. Create two new columns using estimate values: one for the direction of increase, and another for positive or negative VIP. Arrange by metabolite name and reorder by cumulative VIP score. Plot bars and change x and y axis labels. Add scale information.
+ggsave("figures/significant-VIP-13v30-day22.pdf", height = 8.5, width = 11)
+```
+
 #### 13_22 vs. 5_22
+
+```{r}
+list <- c("13_22", "5_22") #Assign treatments to examine
+```
+
+```{r}
+X <- transMetabData %>%
+  dplyr::filter(., treatment_day %in% list) %>%
+  droplevels() #Filter transMetabData for desired contrasts
+Y <- as.factor(X$treatment_day) #Treatments for Y
+X <- X[, 5:156] #Retain data only
+```
+
+```{r}
+known.plsda_13v5_day22 <- plsda(X, Y, ncomp = 5) #Run PLSDA for desired contrast
+VIP_13v5_day22 <- as.data.frame(PLSDA.VIP(known.plsda_13v5_day22)[["tab"]]) %>%
+  rownames_to_column(., var = "metabolite") %>%
+  filter(., VIP >= 1) #Extract VIP list and filter for VIP > 1
+VIP_13v5_day22
+```
+
+```{r}
+clean_13v5_day22 <- transMetabData %>%
+  dplyr::filter(., treatment_day %in% list) %>%
+  droplevels() #Filter transMetabData for desired contrasts.
+VIP_select_13v5_day22 <- cbind(clean_13v5_day22[, 1:4], 
+                                log(clean_13v5_day22[, names(clean_13v5_day22) %in% VIP_13v5_day22$metabolite])) %>%
+  pivot_longer(., cols = 5:46, values_to = "log_norm_counts", names_to = "metabolite") %>%
+  group_by(., metabolite) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by metabolites.
+VIP_select_13v5_day22 #Confirm changes
+```
+
+```{r}
+t.test_13v5_day22 <-do(VIP_select_13v5_day22, tidy(t.test(.$log_norm_counts ~ .$treatment_day,
+                                                            alternative = "two.sided",
+                                                            mu = 0,
+                                                            paired = FALSE,
+                                                            var.equal = FALSE,
+                                                            conf.level = 0.95
+))) #Looped t-test for all metabolites with VIP > 1
+t.test_13v5_day22$p.adj <- p.adjust(t.test_13v5_day22$p.value, method = c("fdr"), n = length(VIP_13v5_day22$metabolite)) #Adjust p value for the number of comparisons
+t.test_13v5_day22
+```
+
+```{r}
+t.test_13v5_day22 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>%
+  nrow(.) #31 significantly different metabolites
+t.test_13v5_day22 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>% filter(., estimate1 > estimate2) %>%
+  nrow(.) #29 metabolites higher in 13ºC
+t.test_13v5_day22 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>% filter(., estimate1 < estimate2) %>%
+  nrow(.) #2 metabolites higher in 30ºC
+```
+
+```{r}
+t.test_13v5_day22 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>%
+  left_join(., VIP_13v5_day22, by = "metabolite") %>%
+  mutate(., direction = case_when(estimate > 1 ~ "13",
+                                  estimate < 1 ~ "5")) %>%
+  mutate(., score = case_when(estimate > 1 ~ VIP,
+                              estimate < 1 ~ -VIP)) %>%
+  arrange(score) %>%
+  ggplot(aes(x = score, y = reorder(metabolite, score, sum))) +
+  geom_bar(aes(fill = direction), stat = 'identity') +
+  xlab("VIP Score") + ylab("Metabolite") +
+  scale_x_continuous(limits = c(-2.5, 2.5), breaks = seq(-2, 2, 1)) +
+  scale_fill_manual(values = c(plotColors[2], plotColors[3]), 
+                    name = "Temperature (ºC)",
+                    breaks = c("13", "5"),
+                    labels = c("13", "5")) +
+  theme_classic(base_size = 15) + theme() #Take t-test results and filter out significant metabolites. Create two new columns using estimate values: one for the direction of increase, and another for positive or negative VIP. Arrange by metabolite name and reorder by cumulative VIP score. Plot bars and change x and y axis labels. Add scale information.
+ggsave("figures/significant-VIP-13v5-day22.pdf", height = 8.5, width = 11)
+```
 
 ### Day differences for each treatment
 
