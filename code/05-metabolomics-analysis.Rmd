@@ -920,6 +920,54 @@ t.test_30_day3v22 %>%
 
 # Validate PLSDA model
 
+It's important to validate the PLSDA model. First, I'll run a permutation test to determine how many components to include.
+
+```{r}
+MyPerf.plsda <- perf(treatmentday.known.plsda, validation = "Mfold", folds = 6,  
+                     progressBar = TRUE, nrepeat = 50) 
+
+plot(MyPerf.plsda, sd = TRUE) #Overall, increasing the number of components decreases the error rate. There doesn't seem to be an exponential reduction of error rate after 3 components.
+```
+
+Next, I'll assess the optimal number of metabolites to keep in the analysis.
+
+```{r}
+list.keepX <- c(5:10,  seq(20, 300, 10)) #list.keepX # to output the grid of values tested
+X <- log(transMetabData[c(5:156)]) #Assign known metabolite data to the X dataframe after log transformation
+Y <- as.factor(transMetabData$treatment_day) #Assign treatment data to the Y dataframe
+```
+
+```{r}
+tune.splsda.srbct <- tune.splsda(X, Y, ncomp = 5, 
+                                 validation = 'Mfold', folds = 6,
+                                 measure = "BER", test.keepX = list.keepX, nrepeat = 50) #More extensive classification performance
+plot(tune.splsda.srbct) #Plot results
+```
+
+```{r}
+error <- tune.splsda.srbct$error.rate #Save error rate
+ncomp <- tune.splsda.srbct$choice.ncomp$ncomp #Optimal number of components based on t-tests on the error rate
+ncomp #5 components! That's how many I have
+
+select.keepX <- tune.splsda.srbct$choice.keepX #Optimal number of variables to select (e.g., number of metabolite features)
+select.keepX #sPLSDA should be run with 40 features
+```
+
+```{r}
+myResult.splsda.final_T <- splsda(X, Y, ncomp = ncomp, keepX = select.keepX) #Use the number of components and meatbolites to keep based on optimization from above  
+```
+
+```{r}
+#pdf("figures/known-metabolites-sPLSDA-day-treatment-comp12.pdf", height = 8.5, width = 11)
+plotIndiv(myResult.splsda.final_T, comp = c(1,2), ind.names = FALSE,
+          cex = 3, col = c("grey80", "#525252", "salmon", "#CB181D", "lightblue", "#2171B5"), pch = c(12:17), point.lwd = 0.7,
+          ellipse = TRUE, star = TRUE, centroid = FALSE, 
+          legend = TRUE, legend.title = "Temperature (ºC) x Day", 
+          title = "sPLS-DA by Temperature and Day", X.label = "Component 1: 9% Explained Variance", size.xlabel = 15, Y.label = "Component 2: 6% Explained Variance", size.ylabel = 15, size.axis = 13,
+          style = "ggplot2")
+#dev.off()
+```
+
 # WCNA analysis for metabolites
 
 
