@@ -1,0 +1,153 @@
+"","Metabolite","colors"
+"xylitol","xylitol",0
+"valine ","valine ",5
+"uridine","uridine",6
+"uric acid","uric acid",0
+"urea","urea",0
+"uracil","uracil",7
+"UDP-N-acetylglucosamine ","UDP-N-acetylglucosamine ",0
+"tyrosine","tyrosine",5
+"tyramine","tyramine",2
+"tryptophan ","tryptophan ",5
+"triethanolamine","triethanolamine",3
+"trans-4-hydroxyproline ","trans-4-hydroxyproline ",0
+"thymine","thymine",2
+"threonine","threonine",2
+"terephthalic acid","terephthalic acid",3
+"taurine","taurine",4
+"tagatose ","tagatose ",1
+"synephrine","synephrine",2
+"sulfuric acid","sulfuric acid",4
+"sucrose","sucrose",0
+"stearic acid","stearic acid",3
+"spermidine ","spermidine ",3
+"sophorose","sophorose",1
+"shikimic acid","shikimic acid",1
+"serotonin","serotonin",2
+"serine","serine",7
+"salicylic acid","salicylic acid",3
+"ribose-5-phosphate","ribose-5-phosphate",5
+"ribonic acid ","ribonic acid ",0
+"ribitol","ribitol",5
+"raffinose","raffinose",8
+"pyrrole-2-carboxylic acid","pyrrole-2-carboxylic acid",0
+"pyrophosphate ","pyrophosphate ",3
+"putrescine","putrescine",3
+"proline","proline",6
+"pinitol","pinitol",1
+"phthalic acid","phthalic acid",3
+"phosphoinositol","phosphoinositol",0
+"phosphoethanolamine","phosphoethanolamine",0
+"phosphate","phosphate",4
+"phenylethylamine","phenylethylamine",2
+"phenylalanine","phenylalanine",5
+"pentadecanoic acid","pentadecanoic acid",1
+"para-xanthine ","para-xanthine ",0
+"pantothenic acid","pantothenic acid",2
+"oxoproline","oxoproline",4
+"ornithine ","ornithine ",4
+"ononitol","ononitol",1
+"octadecanol","octadecanol",0
+"noradrenaline","noradrenaline",4
+"N-methylethanolamine","N-methylethanolamine",2
+"nicotinic acid","nicotinic acid",6
+"n-epsilon-trimethyllysine","n-epsilon-trimethyllysine",0
+"N-alpha-acetyllysine ","N-alpha-acetyllysine ",2
+"N-acetylputrescine ","N-acetylputrescine ",0
+"N-acetylmethionine ","N-acetylmethionine ",4
+"N-acetylglucosamine-6-phosphate ","N-acetylglucosamine-6-phosphate ",7
+"N-acetylgalactosamine","N-acetylgalactosamine",1
+"myo-inositol","myo-inositol",3
+"methionine sulfoxide","methionine sulfoxide",0
+"methionine sulfone ","methionine sulfone ",4
+"methionine","methionine",5
+"methanolphosphate","methanolphosphate",7
+"melezitose","melezitose",8
+"maltotriose","maltotriose",8
+"maltotriitol ","maltotriitol ",1
+"maltitol","maltitol",1
+"malic acid","malic acid",0
+"maleimide","maleimide",1
+"lyxose","lyxose",7
+"lysine","lysine",1
+"loganin","loganin",1
+"levoglucosan","levoglucosan",2
+"leucine","leucine",5
+"lactulose ","lactulose ",8
+"lactose ","lactose ",8
+"lactobionic acid ","lactobionic acid ",1
+"lactitol","lactitol",8
+"lactic acid","lactic acid",6
+"isoxanthopterin","isoxanthopterin",0
+"isothreonic acid ","isothreonic acid ",0
+"isoleucine ","isoleucine ",5
+"isogluconic acid","isogluconic acid",1
+"inosine","inosine",7
+"hypoxanthine","hypoxanthine",0
+"hypotaurine","hypotaurine",0
+"hydroxylamine","hydroxylamine",5
+"hydroxycarbamate ","hydroxycarbamate ",3
+"hydroquinone","hydroquinone",3
+"homocysteine ","homocysteine ",4
+"histamine ","histamine ",4
+"heptadecanoic acid","heptadecanoic acid",3
+"glycyl-proline","glycyl-proline",6
+"glycyl-glycine ","glycyl-glycine ",0
+"glycyl tyrosine","glycyl tyrosine",1
+"glycine","glycine",2
+"glycerol-alpha-phosphate","glycerol-alpha-phosphate",2
+"glycerol-3-galactoside ","glycerol-3-galactoside ",1
+"glycerol","glycerol",0
+"glyceric acid ","glyceric acid ",0
+"glutathione ","glutathione ",2
+"glutaric acid","glutaric acid",3
+"glutamine","glutamine",4
+"glutamate ","glutamate ",4
+"glucose-6-phosphate","glucose-6-phosphate",0
+"glucose-1-phosphate","glucose-1-phosphate",3
+"glucose ","glucose ",1
+"fumaric acid","fumaric acid",1
+"fructose-6-phosphate ","fructose-6-phosphate ",0
+"fructose-1-phosphate","fructose-1-phosphate",0
+"fructose ","fructose ",1
+"ethanolamine","ethanolamine",2
+"dopamine ","dopamine ",2
+"dimethylglycine","dimethylglycine",0
+"cytosine","cytosine",0
+"cystine","cystine",0
+"cysteine","cysteine",0
+"cystathionine","cystathionine",0
+"citrulline","citrulline",0
+"citric acid","citric acid",0
+"ciliatine","ciliatine",0
+"cellobiose","cellobiose",1
+"cadaverine","cadaverine",0
+"beta-glutamic acid","beta-glutamic acid",4
+"beta-alanine","beta-alanine",0
+"aspartate ","aspartate ",6
+"asparagine","asparagine",2
+"arachidic acid","arachidic acid",3
+"arabitol","arabitol",2
+"aminomalonic acid","aminomalonic acid",2
+"alpha-ketoglutarate","alpha-ketoglutarate",6
+"alpha-aminoadipic acid","alpha-aminoadipic acid",0
+"alanine-alanine","alanine-alanine",1
+"alanine","alanine",2
+"adipic acid","adipic acid",3
+"adenosine-5-monophosphate","adenosine-5-monophosphate",7
+"adenosine","adenosine",7
+"adenine","adenine",3
+"5-methoxytryptamine","5-methoxytryptamine",2
+"5-aminovaleric acid","5-aminovaleric acid",4
+"4-hydroxymandelic acid","4-hydroxymandelic acid",2
+"4-hydroxybenzoate","4-hydroxybenzoate",3
+"3-phosphoglycerate","3-phosphoglycerate",6
+"3-Aminopiperidine-2,6-dione ","3-Aminopiperidine-2,6-dione ",2
+"3-aminoisobutyric acid","3-aminoisobutyric acid",0
+"3-Amino-2-piperidone ","3-Amino-2-piperidone ",4
+"3,6-anhydro-D-galactose","3,6-anhydro-D-galactose",1
+"2-picolinic acid","2-picolinic acid",3
+"2-ketoisocaproic acid","2-ketoisocaproic acid",6
+"2-ketoadipic acid ","2-ketoadipic acid ",0
+"2-hydroxyglutaric acid","2-hydroxyglutaric acid",6
+"2-aminobutyric acid","2-aminobutyric acid",0
