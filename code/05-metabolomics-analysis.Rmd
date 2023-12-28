@@ -35,9 +35,10 @@ getwd()
 # if ("broom" %in% rownames(installed.packages()) == 'FALSE') install.packages('broom') 
 # if ("RColorBrewer" %in% rownames(installed.packages()) == 'FALSE') install.packages('RColorBrewer') 
 # if ("pheatmap" %in% rownames(installed.packages()) == 'FALSE') install.packages('pheatmap') 
-if ("genefilter" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("genefilter") 
-if ("WGCNA" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('WGCNA')
-
+# if ("genefilter" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("genefilter") 
+# if ("WGCNA" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('WGCNA')
+if ("dendsort" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('dendsort') 
+if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap') 
 
 require(tidyverse)
 require(vegan)
@@ -53,6 +54,8 @@ require(RColorBrewer)
 require(pheatmap)
 require(genefilter)
 require(WGCNA)
+require(dendsort)
+require(ComplexHeatmap)
 ```
 
 ```{r}
@@ -1209,7 +1212,124 @@ mME %>% ggplot(., aes(x=Sample.ID, y=name, fill=value)) +
 
 ### Relate modules to treatment and day
 
+Prepare trait data. Data has to be numeric, so I will substitute temperatures and days for numeric values. TMake a dataframe that has a column for each treatment or day and a row for samples. Populate a 1 for samples that match each treatment or day and a 0 for samples not matching respective treatments or days This process changes treatments and days from a categorical variable into a binary variable. This will allow for correlations between mean eigengenes and treatment or day.  
+
+```{r}
+head(metabolomicsMetadata)
+```
+
+```{r}
+datTraits <- metabolomicsMetadata %>%
+  mutate(., "13ºC" = case_when(treatment == " 13" ~ 1,
+                               treatment != " 13" ~ 0)) %>%
+  mutate(., "5ºC" = case_when(treatment == "  5" ~ 1,
+                              treatment != "  5 " ~ 0)) %>%
+  mutate(., "30ºC" = case_when(treatment == " 30" ~ 1,
+                               treatment != " 30" ~ 0)) %>%
+  mutate(., "Day 3" = case_when(day == "  3" ~ 1,
+                                day != "  3" ~ 0)) %>%
+  mutate(., "Day 22" = case_when(day == " 22" ~ 1,
+                                 day != " 22" ~ 0)) %>% 
+  dplyr::select(., -c(2:4)) #Copy dataframe into datTraits, then use a series of case_when commands to create individual columns for each treatment or day, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns. 
+rownames(datTraits) <- datTraits$crab.ID #Convert crab.ID into rownames.
+datTraits <- datTraits %>%
+  dplyr::select(., -crab.ID) #Remove the crab.ID column
+head(datTraits) #Confirm dataframe creation
+```
+
+```{r}
+#Define numbers of metabolites and samples and view 
+nMetabolites <- ncol(rowwiseMetabData)
+nSamples <- nrow(rowwiseMetabData)
+
+nMetabolites
+nSamples
+```
+
+We have 152 metabolites and 69 samples.   
+
+Next correlate the trait matrix (treatment, day) with eigengenes (modules).  
+
+```{r}
+moduleTraitCor <- cor(MEs, datTraits, use = "p") #Correlations of traits with eigengenes
+moduleTraitPvalue <- corPvalueStudent(moduleTraitCor, nSamples) #Get p-values for correlations
+head(moduleTraitCor %>% as.data.frame())
+head(moduleTraitPvalue %>% as.data.frame())
+```
+
+```{r}
+moduleTraitTree <- hclust(dist(t(moduleTraitCor)), method = "average") #Create cluster dendogram for module-trait correlations
+```
+
+```{r}
+#pdf(file = "figures/module-trait-cluster-dendogram.pdf", height = 8.5, width = 11)
+plot(moduleTraitTree) #Plot cluster dendogram
+#dev.off()
+```
+
+```{r}
+# Correlations of metabolites with eigengenes. Calculate correlations between ME's and groups 
+moduleGeneCor <- cor(MEs, rowwiseMetabData) #Correlate eigengenes with metabolites
+moduleGenePvalue <- corPvalueStudent(moduleGeneCor, nSamples) #Calculate p-values for metabolite-eigengene correlations
+head(moduleGeneCor %>% as.data.frame)
+head(moduleGenePvalue %>% as.data.frame(.))
+```
+
 ## Plot module-trait associations
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+textMatrix <- paste(signif(moduleTraitCor, 2), "\n(",signif(moduleTraitPvalue, 1), ")", sep = "") #Create a matrix with the module-trait correlation and p-values
+dim(textMatrix) <- dim(moduleTraitCor) #Ensure this matrix has the appropriate dimensions
+head(textMatrix) #Confirm matrix creation
+```
+
+```{r}
+#pdf("figures/module-trait-relationships.pdf", height = 8.5, width = 11)
+labeledHeatmap(Matrix = moduleTraitCor, xLabels = names(datTraits),  yLabels = names(MEs), ySymbols = names(MEs), cex.lab.y = 1.5, cex.lab.x = 1.5, colors = blueWhiteRed(50), textMatrix = textMatrix, setStdMargins = TRUE, cex.text = 1, zlim = c(-1,1), main = paste("Module-trait relationships"), cex.main = 2) #Use the textMatrix to create a heatmap with correlations between modules and the various treatments.
+#dev.off()
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+heatmappval <- signif(moduleTraitPvalue, 1) #Create list of pvalues for eigengene correlation with specific traits
+
+row_dend <- dendsort(hclust(dist(moduleTraitCor))) #Create dendograms for rows
+#col_dend <- dendsort(hclust(dist(t(moduleTraitCor)))) #Create dendograms for columns
+
+trait_order <- c("5ºC", "13ºC", "30ºC", "Day 3", "Day 22") #Order of traits for heatmap
+```
+
+```{r}
+#pdf(file = "figures/module-trait-relationship-heatmap.pdf", height = 8.5, width = 8.5)
+ht <- Heatmap(moduleTraitCor, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
+              col = blueWhiteRed(50), 
+              row_names_side = "left", 
+              row_dend_side = "left",
+              width = unit(5, "in"), 
+              height = unit(4.5, "in"), 
+              #column_dend_reorder = TRUE, 
+              #cluster_columns = col_dend,
+              row_dend_reorder = FALSE,  
+              #column_split = 3, 
+              #row_split = 3, 
+              #column_dend_height = unit(.5, "in"),
+              cluster_rows = row_dend, 
+              column_order = trait_order, 
+              #row_gap = unit(2.5, "mm"), 
+              border = TRUE,
+              cell_fun = function(j, i, x, y, w, h, col) {
+                if(heatmappval[i, j] < 0.05) {
+                  grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+                }
+                else {
+                  grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+                }},
+              column_names_rot = 45,
+              column_names_gp =  gpar(fontsize = 12, border = FALSE),
+              column_title_gp = gpar(fontsize = 20),
+              row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
+draw(ht) #Draw heatmap
+#dev.off()
+```
 
 ## Plot mean eigengene values for each module  
 
