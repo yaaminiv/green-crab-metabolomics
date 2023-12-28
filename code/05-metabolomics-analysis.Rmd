@@ -35,6 +35,9 @@ getwd()
 # if ("broom" %in% rownames(installed.packages()) == 'FALSE') install.packages('broom') 
 # if ("RColorBrewer" %in% rownames(installed.packages()) == 'FALSE') install.packages('RColorBrewer') 
 # if ("pheatmap" %in% rownames(installed.packages()) == 'FALSE') install.packages('pheatmap') 
+if ("genefilter" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("genefilter") 
+if ("WGCNA" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('WGCNA')
+
 
 require(tidyverse)
 require(vegan)
@@ -48,6 +51,8 @@ require(RVAideMemoire)
 require(broom)
 require(RColorBrewer)
 require(pheatmap)
+require(genefilter)
+require(WGCNA)
 ```
 
 ```{r}
@@ -658,7 +663,7 @@ clean_13v5_day22 <- transMetabData %>%
   dplyr::filter(., treatment_day %in% list) %>%
   droplevels() #Filter transMetabData for desired contrasts.
 VIP_select_13v5_day22 <- cbind(clean_13v5_day22[, 1:4], 
-                                log(clean_13v5_day22[, names(clean_13v5_day22) %in% VIP_13v5_day22$metabolite])) %>%
+                               log(clean_13v5_day22[, names(clean_13v5_day22) %in% VIP_13v5_day22$metabolite])) %>%
   pivot_longer(., cols = 5:46, values_to = "log_norm_counts", names_to = "metabolite") %>%
   group_by(., metabolite) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by metabolites.
 VIP_select_13v5_day22 #Confirm changes
@@ -666,11 +671,11 @@ VIP_select_13v5_day22 #Confirm changes
 
 ```{r}
 t.test_13v5_day22 <-do(VIP_select_13v5_day22, tidy(t.test(.$log_norm_counts ~ .$treatment_day,
-                                                            alternative = "two.sided",
-                                                            mu = 0,
-                                                            paired = FALSE,
-                                                            var.equal = FALSE,
-                                                            conf.level = 0.95
+                                                          alternative = "two.sided",
+                                                          mu = 0,
+                                                          paired = FALSE,
+                                                          var.equal = FALSE,
+                                                          conf.level = 0.95
 ))) #Looped t-test for all metabolites with VIP > 1
 t.test_13v5_day22$p.adj <- p.adjust(t.test_13v5_day22$p.value, method = c("fdr"), n = length(VIP_13v5_day22$metabolite)) #Adjust p value for the number of comparisons
 t.test_13v5_day22
@@ -742,7 +747,7 @@ clean_5_day3v22 <- transMetabData %>%
   dplyr::filter(., treatment_day %in% list) %>%
   droplevels() #Filter transMetabData for desired contrasts.
 VIP_select_5_day3v22 <- cbind(clean_5_day3v22[, 1:4], 
-                                log(clean_5_day3v22[, names(clean_5_day3v22) %in% VIP_5_day3v22$metabolite])) %>%
+                              log(clean_5_day3v22[, names(clean_5_day3v22) %in% VIP_5_day3v22$metabolite])) %>%
   pivot_longer(., cols = 5:55, values_to = "log_norm_counts", names_to = "metabolite") %>%
   group_by(., metabolite) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by metabolites.
 VIP_select_5_day3v22 #Confirm changes
@@ -750,11 +755,11 @@ VIP_select_5_day3v22 #Confirm changes
 
 ```{r}
 t.test_5_day3v22 <-do(VIP_select_5_day3v22, tidy(t.test(.$log_norm_counts ~ .$treatment_day,
-                                                            alternative = "two.sided",
-                                                            mu = 0,
-                                                            paired = FALSE,
-                                                            var.equal = FALSE,
-                                                            conf.level = 0.95
+                                                        alternative = "two.sided",
+                                                        mu = 0,
+                                                        paired = FALSE,
+                                                        var.equal = FALSE,
+                                                        conf.level = 0.95
 ))) #Looped t-test for all metabolites with VIP > 1
 t.test_5_day3v22$p.adj <- p.adjust(t.test_5_day3v22$p.value, method = c("fdr"), n = length(VIP_5_day3v22$metabolite)) #Adjust p value for the number of comparisons
 t.test_5_day3v22
@@ -824,7 +829,7 @@ clean_13_day3v22 <- transMetabData %>%
   dplyr::filter(., treatment_day %in% list) %>%
   droplevels() #Filter transMetabData for desired contrasts.
 VIP_select_13_day3v22 <- cbind(clean_13_day3v22[, 1:4], 
-                                log(clean_13_day3v22[, names(clean_13_day3v22) %in% VIP_13_day3v22$metabolite])) %>%
+                               log(clean_13_day3v22[, names(clean_13_day3v22) %in% VIP_13_day3v22$metabolite])) %>%
   pivot_longer(., cols = 5:61, values_to = "log_norm_counts", names_to = "metabolite") %>%
   group_by(., metabolite) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by metabolites.
 VIP_select_13_day3v22 #Confirm changes
@@ -832,11 +837,11 @@ VIP_select_13_day3v22 #Confirm changes
 
 ```{r}
 t.test_13_day3v22 <-do(VIP_select_13_day3v22, tidy(t.test(.$log_norm_counts ~ .$treatment_day,
-                                                            alternative = "two.sided",
-                                                            mu = 0,
-                                                            paired = FALSE,
-                                                            var.equal = FALSE,
-                                                            conf.level = 0.95
+                                                          alternative = "two.sided",
+                                                          mu = 0,
+                                                          paired = FALSE,
+                                                          var.equal = FALSE,
+                                                          conf.level = 0.95
 ))) #Looped t-test for all metabolites with VIP > 1
 t.test_13_day3v22$p.adj <- p.adjust(t.test_13_day3v22$p.value, method = c("fdr"), n = length(VIP_13_day3v22$metabolite)) #Adjust p value for the number of comparisons
 t.test_13_day3v22
@@ -847,23 +852,6 @@ t.test_13_day3v22 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>%
   nrow(.) #0 significantly different metabolites
-```
-
-```{r}
-t.test_13_day3v22 %>%
-  ungroup(.) %>%
-  filter(., p.adj < 0.05) %>%
-  left_join(., VIP_13_day3v22, by = "metabolite") %>%
-  mutate(., direction = case_when(estimate > 1 ~ "22",
-                                  estimate < 1 ~ "3")) %>%
-  mutate(., score = case_when(estimate > 1 ~ VIP,
-                              estimate < 1 ~ -VIP)) %>%
-  arrange(score) %>%
-  ggplot(aes(x = score, y = reorder(metabolite, score, sum))) +
-  geom_bar(aes(fill = direction), stat = 'identity') +
-  xlab("VIP Score") + ylab("Metabolite") +
-  scale_x_continuous(limits = c(-2.5, 2.5), breaks = seq(-2, 2, 1)) +
-  scale_fill_manual(values = c("black", "purple")
 ```
 
 #### 30_3 vs. 30_22
@@ -893,7 +881,7 @@ clean_30_day3v22 <- transMetabData %>%
   dplyr::filter(., treatment_day %in% list) %>%
   droplevels() #Filter transMetabData for desired contrasts.
 VIP_select_30_day3v22 <- cbind(clean_30_day3v22[, 1:4], 
-                                log(clean_30_day3v22[, names(clean_30_day3v22) %in% VIP_30_day3v22$metabolite])) %>%
+                               log(clean_30_day3v22[, names(clean_30_day3v22) %in% VIP_30_day3v22$metabolite])) %>%
   pivot_longer(., cols = 5:67, values_to = "log_norm_counts", names_to = "metabolite") %>%
   group_by(., metabolite) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by metabolites.
 VIP_select_30_day3v22 #Confirm changes
@@ -901,11 +889,11 @@ VIP_select_30_day3v22 #Confirm changes
 
 ```{r}
 t.test_30_day3v22 <-do(VIP_select_30_day3v22, tidy(t.test(.$log_norm_counts ~ .$treatment_day,
-                                                            alternative = "two.sided",
-                                                            mu = 0,
-                                                            paired = FALSE,
-                                                            var.equal = FALSE,
-                                                            conf.level = 0.95
+                                                          alternative = "two.sided",
+                                                          mu = 0,
+                                                          paired = FALSE,
+                                                          var.equal = FALSE,
+                                                          conf.level = 0.95
 ))) #Looped t-test for all metabolites with VIP > 1
 t.test_30_day3v22$p.adj <- p.adjust(t.test_30_day3v22$p.value, method = c("fdr"), n = length(VIP_30_day3v22$metabolite)) #Adjust p value for the number of comparisons
 t.test_30_day3v22
@@ -960,7 +948,7 @@ myResult.splsda.final_T <- splsda(X, Y, ncomp = ncomp, keepX = select.keepX) #Us
 ```{r}
 #pdf("figures/known-metabolites-sPLSDA-day-treatment-comp12.pdf", height = 8.5, width = 11)
 plotIndiv(myResult.splsda.final_T, comp = c(1,2), ind.names = FALSE,
-          cex = 3, col = c("grey80", "#525252", "salmon", "#CB181D", "lightblue", "#2171B5"), pch = c(12:17), point.lwd = 0.7,
+          cex = 3, col = c("#525252", "grey80", "#CB181D", "salmon", "#2171B5", "lightblue"), pch = c(12:17), point.lwd = 0.7,
           ellipse = TRUE, star = TRUE, centroid = FALSE, 
           legend = TRUE, legend.title = "Temperature (ºC) x Day", 
           title = "sPLS-DA by Temperature and Day", X.label = "Component 1: 9% Explained Variance", size.xlabel = 15, Y.label = "Component 2: 6% Explained Variance", size.ylabel = 15, size.axis = 13,
@@ -968,7 +956,225 @@ plotIndiv(myResult.splsda.final_T, comp = c(1,2), ind.names = FALSE,
 #dev.off()
 ```
 
-# WCNA analysis for metabolites
+# WCNA analysis for known metabolites
+
+Although I have lists of VIP associated with each pairwise comparison, there is one additional step I can take to determine which known metabolites are associated with different treatment x day combinations. I will use a Weighted Correlation Network Analysis (similar to a WGCNA for gene expression) to group metabolites together by abundance patterns, then correlate metabolite modules with treatment and day.
+
+## Data preparation
+
+### Format data
+
+I need to convert my dataframe such that samples are columns and metabolites are rows. I also need to have a dataframe without metadata.
+
+```{r}
+head(rawMetabolomicsData)
+head(metabolomicsMetadata)
+```
+
+```{r}
+rowwiseMetabData <- rawMetabolomicsData %>%
+  dplyr::rename(., metabolite = BinBase.name) %>%
+  dplyr::select(., -c(2:8)) %>%
+  column_to_rownames(., var = "metabolite") %>%
+  slice(., c(1:152)) %>%
+  log(.) #Take the raw metabolomics data, since that dataframe already has samples in columns and metabolites in rows. Rename the metabolite column, get rid of extraneous data, and change the metabolite column to rownames. Keep only data from known metabolites. Log transform the data.
+tail(rowwiseMetabData) #Confirm formatting
+```
+
+```{r}
+rowSums(dplyr::count(rowwiseMetabData)) > 0 #Check that there are no metabolites with 0 counts for all samples. Should return TRUE.  
+```
+
+### Data filtering: PoverA and genefilter
+
+*pOverA*: Specifying the minimum count for a proportion of samples for each metabolite. Here, we are using a pOverA of 0.08. This is because we have 69 samples with a minimum of n = 6 samples per treatment x day. Therefore, we will accept metabolites that are present in 6/69 = 0.08 of the samples because we expect different metabolites by temperature and day as demonstrated by PLSDA analysis. We are further setting the minimum value of metabolites to 0.01 (median normalized), such that 8% of the samples must have a non-zero normalized metabolite presence in order for the metabolite to remain in the data set.  
+
+Filter in the package "genefilter". Pre-filtering our dataset to reduce the memory size dataframe, increase the speed of the transformation and testing functions, and improve quality of statistical analysis by removing low-coverage counts. Removed counts could represent outliers in the data and removing these improves sensitivity of statistical tests.
+
+```{r}
+filt <- filterfun(pOverA(0.08, 0.01)) #Define the filter
+gfilt <- genefilter(rowwiseMetabData, filt) #Create filter for the metabolite data
+```
+
+```{r}
+keep <- rowwiseMetabData[gfilt,] #Identify metabolites to keep by count filter
+n.keep <- rownames(keep) #Identify metabolite lists
+
+rowwiseMetabData_filt <- as.data.frame(rowwiseMetabData[which(rownames(rowwiseMetabData) %in% n.keep),]) #Metabolite count data filtered in PoverA, P percent of the samples have counts over A
+```
+
+```{r}
+#How many rows do we have before and after filtering?
+nrow(rowwiseMetabData) #Before
+nrow(rowwiseMetabData_filt) #After
+```
+
+All 152 metabolites will be used in downstream analysis.
+
+```{r}
+#Checking that all row and column names match. Should return "TRUE"
+all(rownames(metabolomicsMetadata$sample_id) %in% colnames(rowwiseMetabData_filt))
+all(rownames(metabolomicsMetadata$sample_id) == colnames(rowwiseMetabData_filt)) 
+```
+
+### Outlier detection
+
+I will identify outliers visually through a clustering analysis.
+
+```{r}
+sampleTree <- hclust(dist(rowwiseMetabData), method = "average") #Perform clustering analysis
+```
+
+```{r}
+#pdf("figures/metabolite-outliers.pdf", height = 8.5, width = 11)
+plot(sampleTree, main = "Sample clustering to detect outliers", sub = "", xlab = "", cex.lab = 0.8, cex.axis = 0.8, cex.main = 2) #Plot cluster dendogram
+#dev.off()
+```
+
+Based on the tree, taurine and sulfuric acid might be outliers.
+
+```{r}
+rowwiseMetabData %>% filter(., rownames(.) == "taurine")
+rowwiseMetabData %>% filter(., rownames(.) == "sulfuric acid")
+```
+
+```{r}
+rowwiseMetabData <- t(rowwiseMetabData) %>% as.data.frame(.) #Transpose such that samples are in rows and metabolites are in columns.  
+head(rowwiseMetabData) #Confirm changes
+```
+
+Construct a new cluster dendogram to visually identify sample outliers.
+
+```{r}
+sampleTree <- hclust(dist(rowwiseMetabData), method = "average") #Perform clustering analysis
+```
+
+```{r}
+#pdf("figures/sample-outliers.pdf", height = 8.5, width = 11)
+plot(sampleTree, main = "Sample clustering to detect outliers", sub = "", xlab = "", cex.lab = 1.5, cex.axis = 1.5, cex.main = 2)
+#dev.off()
+```
+
+There don't seem to be any samples that look like outliers (but it's also interesting how there isn't a clear separation of samples by tank or treatment).
+
+## Network construction and consensus module detection
+
+### Choosing a soft-thresholding power: Analysis of a network topology β  
+
+The soft thresholding power (β) is the number to which the co-expression similarity is raised to calculate adjacency. The function `pickSoftThreshold` performs a network topology analysis. The user chooses a set of candidate powers, however the default parameters are suitable values.  
+
+```{r, message=FALSE, warning=FALSE}
+allowWGCNAThreads()
+powers <- c(c(1:20), seq(from = 12, to=20, by=2)) #Create a string of numbers from 1 through 10, and even numbers from 10 through 20
+sft <-pickSoftThreshold(rowwiseMetabData, powerVector = powers, verbose = 5) # Call the network topology analysis function
+```
+
+```{r}
+sizeGrWindow(9, 5)
+par(mfrow = c(1,2));
+cex1 = 0.9;
+# # # Scale-free topology fit index as a function of the soft-thresholding power
+plot(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2],
+     xlab="Soft Threshold (power)",ylab="Scale Free Topology Model Fit,signed R^2",type="n",
+     main = paste("Scale independence"));
+text(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2],
+     labels=powers,cex=cex1,col="red");
+# # # this line corresponds to using an R^2 cut-off
+abline(h=0.85,col="red")
+# # # Mean connectivity as a function of the soft-thresholding power
+plot(sft$fitIndices[,1], sft$fitIndices[,5],
+     xlab="Soft Threshold (power)",ylab="Mean Connectivity", type="n",
+     main = paste("Mean connectivity"))
+text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1,col="red")
+```
+
+When choosing a soft thresholding power, want to choose the lowest number that reaches the R<sup>2</sup> cutoff. From this data, it appears that the **soft thresholding power is 6**.  
+
+### Identify modules using `blockwiseModules`  
+
+Use `blockwiseModules` to identify modules of metabolites.  
+
+Settings used: 
+
+networkType = "unsigned" 
+deepSplit = 2
+pamRespectsDendro = F
+minModuleSize = 5
+maxBlockSize = 4000
+reassignThreshold = 0
+mergeCutHeight = 0.25
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+
+picked_power = 6
+temp_cor <- cor       
+cor <- WGCNA::cor # Force it to use WGCNA cor function (fix a namespace conflict issue)
+netwk <- blockwiseModules(rowwiseMetabData,                         # <= input here
+                          
+                          # == Adjacency Function ==
+                          power = picked_power,               # <= power here
+                          networkType = "unsigned",
+                          
+                          # == Tree and Block Options ==
+                          deepSplit = 2,
+                          pamRespectsDendro = F,
+                          # detectCutHeight = 0.75,
+                          minModuleSize = 5,                  
+                          maxBlockSize = 4000,
+                          
+                          # == Module Adjustments ==
+                          reassignThreshold = 0,
+                          mergeCutHeight = 0.25,
+                          
+                          # == TOM == Archive the run results in TOM file (saves time) but it doesn't save a file
+                          saveTOMs = F,
+                          saveTOMFileBase = "ER",
+                          
+                          # == Output Options
+                          numericLabels = T,
+                          verbose = 3)
+
+cor <- temp_cor     # Return cor function to original namespace
+```
+
+```{r}
+mergedColors = netwk$colors # Identify labels as numbers 
+table(mergedColors)
+```
+
+Module sizes are as follows: 
+
+0  1  2  3  4  5  6  7  8 
+40 22 22 19 15 10 10  8  6 
+
+```{r}
+# Plot the dendrogram and the module colors underneath
+
+#pdf("figures/cluster-dendogram-mergedME.pdf")
+plotDendroAndColors(
+  netwk$dendrograms[[1]],
+  mergedColors[netwk$blockGenes[[1]]],
+  "Module colors",
+  dendroLabels = FALSE,
+  hang = 0.03,
+  addGuide = TRUE,
+  guideHang = 0.05 )
+#dev.off()
+```
+
+### Relate modules to sample information  
+
+### Relate modules to treatment and day
+
+## Plot module-trait associations
+
+## Plot mean eigengene values for each module  
+
+## Pathway analysis    
+
+
+
+
 
 
 
