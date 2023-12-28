@@ -1220,16 +1220,18 @@ head(metabolomicsMetadata)
 
 ```{r}
 datTraits <- metabolomicsMetadata %>%
-  mutate(., "13ºC" = case_when(treatment == " 13" ~ 1,
-                               treatment != " 13" ~ 0)) %>%
-  mutate(., "5ºC" = case_when(treatment == "  5" ~ 1,
-                              treatment != "  5 " ~ 0)) %>%
-  mutate(., "30ºC" = case_when(treatment == " 30" ~ 1,
-                               treatment != " 30" ~ 0)) %>%
-  mutate(., "Day 3" = case_when(day == "  3" ~ 1,
-                                day != "  3" ~ 0)) %>%
-  mutate(., "Day 22" = case_when(day == " 22" ~ 1,
-                                 day != " 22" ~ 0)) %>% 
+  mutate(., "13ºC at Day 3" = case_when(treatment_day == "13_3" ~ 1,
+                                        treatment_day != "13_3" ~ 0)) %>%
+  mutate(., "5ºC at Day 3" = case_when(treatment_day == "5_3" ~ 1,
+                                        treatment_day != "5_3" ~ 0)) %>%
+  mutate(., "30ºC at Day 3" = case_when(treatment_day == "30_3" ~ 1,
+                                        treatment_day != "30_3" ~ 0)) %>%
+  mutate(., "13ºC at Day 22" = case_when(treatment_day == "13_22" ~ 1,
+                                        treatment_day != "13_22" ~ 0)) %>%
+  mutate(., "5ºC at Day 22" = case_when(treatment_day == "5_22" ~ 1,
+                                        treatment_day != "5_22" ~ 0)) %>%
+  mutate(., "30ºC at Day 22" = case_when(treatment_day == "30_22" ~ 1,
+                                        treatment_day != "30_22" ~ 0)) %>%
   dplyr::select(., -c(2:4)) #Copy dataframe into datTraits, then use a series of case_when commands to create individual columns for each treatment or day, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns. 
 rownames(datTraits) <- datTraits$crab.ID #Convert crab.ID into rownames.
 datTraits <- datTraits %>%
@@ -1262,9 +1264,9 @@ moduleTraitTree <- hclust(dist(t(moduleTraitCor)), method = "average") #Create c
 ```
 
 ```{r}
-#pdf(file = "figures/module-trait-cluster-dendogram.pdf", height = 8.5, width = 11)
+pdf(file = "figures/module-trait-cluster-dendogram.pdf", height = 8.5, width = 11)
 plot(moduleTraitTree) #Plot cluster dendogram
-#dev.off()
+dev.off()
 ```
 
 ```{r}
@@ -1284,36 +1286,36 @@ head(textMatrix) #Confirm matrix creation
 ```
 
 ```{r}
-#pdf("figures/module-trait-relationships.pdf", height = 8.5, width = 11)
+pdf("figures/module-trait-relationships.pdf", height = 8.5, width = 11)
 labeledHeatmap(Matrix = moduleTraitCor, xLabels = names(datTraits),  yLabels = names(MEs), ySymbols = names(MEs), cex.lab.y = 1.5, cex.lab.x = 1.5, colors = blueWhiteRed(50), textMatrix = textMatrix, setStdMargins = TRUE, cex.text = 1, zlim = c(-1,1), main = paste("Module-trait relationships"), cex.main = 2) #Use the textMatrix to create a heatmap with correlations between modules and the various treatments.
-#dev.off()
+dev.off()
 ```
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 heatmappval <- signif(moduleTraitPvalue, 1) #Create list of pvalues for eigengene correlation with specific traits
 
 row_dend <- dendsort(hclust(dist(moduleTraitCor))) #Create dendograms for rows
-#col_dend <- dendsort(hclust(dist(t(moduleTraitCor)))) #Create dendograms for columns
+col_dend <- dendsort(hclust(dist(t(moduleTraitCor)))) #Create dendograms for columns
 
-trait_order <- c("5ºC", "13ºC", "30ºC", "Day 3", "Day 22") #Order of traits for heatmap
+trait_order <- c("5ºC at Day 3", "13ºC at Day 3", "30ºC at Day 3", "5ºC at Day 22", "13ºC at Day 22", "30ºC at Day 22") #Order of traits for heatmap
 ```
 
 ```{r}
-#pdf(file = "figures/module-trait-relationship-heatmap.pdf", height = 8.5, width = 8.5)
+pdf(file = "figures/module-trait-relationship-heatmap.pdf", height = 8.5, width = 8.5)
 ht <- Heatmap(moduleTraitCor, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
               col = blueWhiteRed(50), 
               row_names_side = "left", 
               row_dend_side = "left",
               width = unit(5, "in"), 
               height = unit(4.5, "in"), 
-              #column_dend_reorder = TRUE, 
-              #cluster_columns = col_dend,
+              column_dend_reorder = TRUE, 
+              cluster_columns = col_dend,
               row_dend_reorder = FALSE,  
               #column_split = 3, 
               #row_split = 3, 
               #column_dend_height = unit(.5, "in"),
               cluster_rows = row_dend, 
-              column_order = trait_order, 
+              #column_order = trait_order, 
               #row_gap = unit(2.5, "mm"), 
               border = TRUE,
               cell_fun = function(j, i, x, y, w, h, col) {
@@ -1328,7 +1330,7 @@ ht <- Heatmap(moduleTraitCor, name = "Eigengene", column_title = "Module-Group E
               column_title_gp = gpar(fontsize = 20),
               row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
 draw(ht) #Draw heatmap
-#dev.off()
+dev.off()
 ```
 
 ## Plot mean eigengene values for each module  
