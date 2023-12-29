@@ -1436,6 +1436,10 @@ write.csv(metab_rel_change, "metabolites_relative_change.csv", quote = FALSE, ro
 
 The final step in this workflow is to understand the various metabolic pathways represented in each module eigengene. I'll conduct the majority of this analysis with the MetaboAnalyst GUI interface.
 
+```{bash}
+mkdir metaboanalyst
+```
+
 ## Create lists of metabolites in each module
 
 For each module, I want the metabolite name, but I also want all of the PubChem and KEGG ID information provided by the sequencing facility. This is because common names for metabolties can be different, and using a numerical classifier will ensure the correct compounds are recognized by MetaboAnalyst.
@@ -1449,7 +1453,7 @@ module0_metabolites <- module_df %>%
   dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw metabolomics data to get PubChem and KEGG ids.
 nrow(module0_metabolites) #40 metabolites
 head(module0_metabolites)
-write.csv(module0_metabolites, "module0_metabolites.csv", quote = FALSE, row.names = FALSE)
+write.csv(module0_metabolites, "metaboanalyst/module0_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
@@ -1461,7 +1465,7 @@ module1_metabolites <- module_df %>%
   dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw metabolomics data to get PubChem and KEGG ids.
 nrow(module1_metabolites) #22 metabolites
 head(module1_metabolites)
-write.csv(module1_metabolites, "module1_metabolites.csv", quote = FALSE, row.names = FALSE)
+write.csv(module1_metabolites, "metaboanalyst/module1_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
@@ -1473,7 +1477,7 @@ module2_metabolites <- module_df %>%
   dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw metabolomics data to get PubChem and KEGG ids.
 nrow(module2_metabolites) #22 metabolites
 head(module2_metabolites)
-write.csv(module2_metabolites, "module2_metabolites.csv", quote = FALSE, row.names = FALSE)
+write.csv(module2_metabolites, "metaboanalyst/module2_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
@@ -1485,7 +1489,7 @@ module3_metabolites <- module_df %>%
   dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw metabolomics data to get PubChem and KEGG ids.
 nrow(module3_metabolites) #19 metabolites
 head(module3_metabolites)
-write.csv(module3_metabolites, "module3_metabolites.csv", quote = FALSE, row.names = FALSE)
+write.csv(module3_metabolites, "metaboanalyst/module3_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
@@ -1497,7 +1501,7 @@ module4_metabolites <- module_df %>%
   dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw metabolomics data to get PubChem and KEGG ids.
 nrow(module4_metabolites) #15 metabolites
 head(module4_metabolites)
-write.csv(module4_metabolites, "module4_metabolites.csv", quote = FALSE, row.names = FALSE)
+write.csv(module4_metabolites, "metaboanalyst/module4_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
@@ -1509,7 +1513,7 @@ module5_metabolites <- module_df %>%
   dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw metabolomics data to get PubChem and KEGG ids.
 nrow(module5_metabolites) #10 metabolites
 head(module5_metabolites)
-write.csv(module5_metabolites, "module5_metabolites.csv", quote = FALSE, row.names = FALSE)
+write.csv(module5_metabolites, "metaboanalyst/module5_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
@@ -1521,7 +1525,7 @@ module6_metabolites <- module_df %>%
   dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw metabolomics data to get PubChem and KEGG ids.
 nrow(module6_metabolites) #10 metabolites
 head(module6_metabolites)
-write.csv(module6_metabolites, "module6_metabolites.csv", quote = FALSE, row.names = FALSE)
+write.csv(module6_metabolites, "metaboanalyst/module6_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
@@ -1533,7 +1537,7 @@ module7_metabolites <- module_df %>%
   dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw metabolomics data to get PubChem and KEGG ids.
 nrow(module7_metabolites) #8 metabolites
 head(module7_metabolites)
-write.csv(module7_metabolites, "module7_metabolites.csv", quote = FALSE, row.names = FALSE)
+write.csv(module7_metabolites, "metaboanalyst/module7_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
@@ -1545,49 +1549,22 @@ module8_metabolites <- module_df %>%
   dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw metabolomics data to get PubChem and KEGG ids.
 nrow(module8_metabolites) #6 metabolites
 head(module8_metabolites)
-write.csv(module8_metabolites, "module8_metabolites.csv", quote = FALSE, row.names = FALSE)
+write.csv(module8_metabolites, "metaboanalyst/module8_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
 
-## Enrichment compound class analysis - what types of compounds are enriched? 
+## Enrichment compound class analysis
 
-https://www.metaboanalyst.ca/MetaboAnalyst/upload/EnrichUploadView.xhtml
+The first kind of enrichment analysis I will complete is looking at compound structures. To do this, I will upload the list of metabolite names for each module (generated above) to the [MetaboAnalyst interface](https://www.metaboanalyst.ca/MetaboAnalyst/upload/EnrichUploadView.xhtml). Then, I will conduct an enrichment of *main class chemical structures*. 
 
-Enrichment analysis - Main class chemical structures 
+> Enrichment tests are based on the well-established globaltest to test associations between metabolite sets and the outcome. The algorithm uses a generalized linear model to compute a ‘Q-stat’ for each metabolite set. The Q-stat is calculated as the average of the Q values calculated for the each single metabolites; while the Q value is the squared covariance between the metabolite and the outcome. The globaltest has been shown to exhibit similar or superior performance when tested against several other popular methods.
 
-Loaded list of each module metabolites generated above (name is cluster#_metabolite_list.csv) and corrected metabolite names to match in database. 
-Output table .csv of results saved to Mcap2020/Output/Metabolomics/Metaboanalyst folder.  
+> Metabolite sets: Unlike transcriptomics which allows comprehensive gene expression profiling, targeted metabolomics usually covers only a small percentage of metabolome (the actual coverage is platform/protocol specific). This means that metabolites (defined in our current pathways or metabolite sets) do not have equal probabilities of being measured in your studies, and the enriched functions are the results from both platform/protocol specific effects and biological perturbations. Since the primary interest is to detect the latter, we highly recommend uploading a reference metabolome containing all measurable metabolites from your platform to eliminate the former effects.
 
-*CLUSTER 1*  
-Modifications to chemical names were as follows (listed as original followed by Metaboanalyst corrected version):  
-1-Methylimidazole acetic acid         Methylimidazole acetic acid  
-3-Indo-L-tyrosine                     Iodotyrosine  
-Acetyl glycine                        Phenylacetylglycine    
-Arginine-Valine                       Arginyl-Valine    
-Glutaryl-carnitine                    Glutamylarginine   
-Methylphenyllactate                   3-Methylphenylacetic acid  
-N-carbomoyl-L-aspartate               Ureidosuccinic acid  
-NG-dimethyl-L-arginine                Asymmetric dimethylarginine  
-Ribose phosphate                      Ribose 1-phosphate   
+I don't have a reference metabolome and I didn't perform targeted metabolomics. I used metabolite sets containing at least two entries and all compounds in the selected library as a reference.
 
-*CLUSTER 2*  
-Modifications to chemical names were as follows (listed as original followed by Metaboanalyst corrected version):  
-Cresol                                p-Cresol
-Lysine-Glutamine                      Lysyl-Glutamine
-N-Acetyl-Glucosamine                  N-Acetyl-D-Glucosamine 6-Phosphate
+Certain compounds were not recognized by MetaboAnalyst, or require manual PubChem/KEGG ID correction. The resulting name maps (input names v.s names used for enrichment analysis) from MetaboAnalyst were renamed according to module number and saved [here]().
 
-Montiporic Acid A-D (enriched but no match in database, not used in analysis)  
-
-*CLUSTER 3*  
-2-Furoyl glycine                      2-Furoylglycine                      
-5- Methylthioadenosine                5'-Methylthioadenosine    
-Acetyl-arginine                       N-a-Acetyl-L-arginine  
-Alanine-Alanine                       Alanyl-Alanine    
-Arginine-Alanine                      Arginyl-Alanine  
-Arginine-Glutamine                    Arginyl-Glutamine  
-N N N-Trimethyllysine                 N6,N6,N6-Trimethyl-L-lysine    
-N-acetyl-L-ornithine                  N-Acetylornithine  
-Ophthalmate                           Ophthalmic acid  
-
+The output tables (msea_ora_result.csv files from MetaboAnalyst) were renamed according to module number and saved [here]().  
 
 
 
