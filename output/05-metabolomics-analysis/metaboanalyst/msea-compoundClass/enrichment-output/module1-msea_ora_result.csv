@@ -1,0 +1,4 @@
+"","total","expected","hits","Raw p","Holm p","FDR"
+"Organooxygen compounds",3160,0.212,8,7.71e-12,3.67e-09,3.67e-09
+"Carboxylic acids and derivatives",3740,0.252,4,9.1e-05,0.0432,0.0217
+"Fatty Acyls",4680,0.315,2,0.0386,1,1
