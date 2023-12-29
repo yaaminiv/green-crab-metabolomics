@@ -1579,31 +1579,31 @@ Load data output from Metaboanalyst and join into a single dataframe.
 #Import dataframes from each module. Add a Module column and rename the first column.
 
 module0_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module0-msea_ora_result.csv") %>%
-  mutate(., Module = "Module 0") %>%
+  mutate(., Module = "0") %>%
   dplyr::rename(., compoundClass = X)
 module1_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module1-msea_ora_result.csv") %>%
-  mutate(., Module = "Module 1") %>%
+  mutate(., Module = "1") %>%
   dplyr::rename(., compoundClass = X)
 module2_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module2-msea_ora_result.csv") %>%
-  mutate(., Module = "Module 2") %>%
+  mutate(., Module = "2") %>%
   dplyr::rename(., compoundClass = X)
 module3_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module3-msea_ora_result.csv") %>%
-  mutate(., Module = "Module 3") %>%
+  mutate(., Module = "3") %>%
   dplyr::rename(., compoundClass = X)
 module4_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module4-msea_ora_result.csv") %>%
-  mutate(., Module = "Module 4") %>%
+  mutate(., Module = "4") %>%
   dplyr::rename(., compoundClass = X)
 module5_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module5-msea_ora_result.csv") %>%
-  mutate(., Module = "Module 5") %>%
+  mutate(., Module = "5") %>%
   dplyr::rename(., compoundClass = X)
 module6_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module6-msea_ora_result.csv") %>%
-  mutate(., Module = "Module 6") %>%
+  mutate(., Module = "6") %>%
   dplyr::rename(., compoundClass = X)
 module7_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module7-msea_ora_result.csv") %>%
-  mutate(., Module = "Module 7") %>%
+  mutate(., Module = "7") %>%
   dplyr::rename(., compoundClass = X)
 module8_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module8-msea_ora_result.csv") %>%
-  mutate(., Module = "Module 8") %>%
+  mutate(., Module = "8") %>%
   dplyr::rename(., compoundClass = X)
 ```
 
@@ -1645,10 +1645,10 @@ write.csv(sig_classes_comp, "metaboanalyst/msea-compoundClass/enrichment-output/
 ggplot(sig_classes_comp, aes(x = Module, y = compoundClass)) + 
   geom_point(aes(size = hits)) +
   scale_size(name = "Metabolites",
-             range = c(1,10), 
+             range = c(4,15), 
              limits = c(1,15)) +
   xlab("Module Eigengene") + ylab("Compound Class") +
-  theme_classic(base_size = 15) + theme(axis.text.x = element_text(angle = 35, hjust = 1)) #Plot significantly enriched compound classes for each module. Scale point size by the number of metabolite hits in each category. Define x- and y- axis labels. Change the angle of the x-axis text.
+  theme_classic(base_size = 15) #Plot significantly enriched compound classes for each module. Scale point size by the number of metabolite hits in each category. Define x- and y- axis labels. Change the angle of the x-axis text.
 ggsave("metaboanalyst/figures/compound-class-dotplot.pdf", height = 8.5, width = 11)
 ```
 

@@ -1,59 +1,59 @@
 compoundClass,total,expected,hits,Raw.p,Holm.p,FDR,Module
-Carboxylic acids and derivatives,3740,0.648,12,9.61e-13,4.57e-10,4.57e-10,Module 0
-Organooxygen compounds,3160,0.546,8,5.77e-08,2.74e-05,1.37e-05,Module 0
-Imidazopyrimidines,198,0.0343,3,5.93e-06,0.00281,0.000941,Module 0
-Sulfinic acids and derivatives,4,0.000693,1,0.000692,0.328,0.0824,Module 0
-Carboximidic acids and derivatives,38,0.00658,1,0.00656,1,0.575,Module 0
-Pyrroles,42,0.00727,1,0.00725,1,0.575,Module 0
-Organic phosphonic acids and derivatives,53,0.00918,1,0.00914,1,0.621,Module 0
-Organic carbonic acids and derivatives,63,0.0109,1,0.0109,1,0.646,Module 0
-Pyrimidine nucleotides,77,0.0133,1,0.0132,1,0.701,Module 0
-Organic phosphoric acids and derivatives,93,0.0161,1,0.016,1,0.728,Module 0
-Pteridines and derivatives,100,0.0173,1,0.0172,1,0.728,Module 0
-Keto acids and derivatives,114,0.0197,1,0.0196,1,0.728,Module 0
-Hydroxy acids and derivatives,116,0.0201,1,0.0199,1,0.728,Module 0
-Diazines,342,0.0592,1,0.0575,1,1,Module 0
-Organonitrogen compounds,618,0.107,1,0.102,1,1,Module 0
-Fatty Acyls,4680,0.811,1,0.56,1,1,Module 0
-Organooxygen compounds,3160,0.212,8,7.71e-12,3.67e-09,3.67e-09,Module 1
-Carboxylic acids and derivatives,3740,0.252,4,9.1e-05,0.0432,0.0217,Module 1
-Fatty Acyls,4680,0.315,2,0.0386,1,1,Module 1
-Carboxylic acids and derivatives,3740,0.342,7,2.55e-08,1.21e-05,1.21e-05,Module 2
-Phenols,434,0.0397,3,8.54e-06,0.00405,0.00203,Module 2
-Indoles and derivatives,559,0.0511,2,0.0012,0.567,0.19,Module 2
-Oxepanes,37,0.00338,1,0.00338,1,0.402,Module 2
-Diazines,342,0.0313,1,0.0308,1,1,Module 2
-Benzene and substituted derivatives,3050,0.279,2,0.0312,1,1,Module 2
-Organooxygen compounds,3160,0.288,2,0.0332,1,1,Module 2
-Organonitrogen compounds,618,0.0565,1,0.055,1,1,Module 2
-Organonitrogen compounds,618,0.0535,3,2.06e-05,0.00982,0.00982,Module 3
-Benzene and substituted derivatives,3050,0.264,4,0.00012,0.0571,0.0286,Module 3
-Fatty Acyls,4680,0.406,4,0.000612,0.29,0.097,Module 3
-Non-metal oxoanionic compounds,28,0.00242,1,0.00242,1,0.288,Module 3
-Imidazopyrimidines,198,0.0171,1,0.017,1,1,Module 3
-Organooxygen compounds,3160,0.273,2,0.03,1,1,Module 3
-Pyridines and derivatives,418,0.0362,1,0.0356,1,1,Module 3
-Phenols,434,0.0376,1,0.0369,1,1,Module 3
-Carboxylic acids and derivatives,3740,0.324,1,0.279,1,1,Module 3
-Carboxylic acids and derivatives,3740,0.252,9,3.65e-13,1.74e-10,1.74e-10,Module 4
-Non-metal oxoanionic compounds,28,0.00189,2,1.59e-06,0.000755,0.000378,Module 4
-Organic sulfonic acids and derivatives,48,0.00323,1,0.00323,1,0.512,Module 4
-Phenols,434,0.0292,1,0.0288,1,1,Module 4
-Organonitrogen compounds,618,0.0416,1,0.0408,1,1,Module 4
-Carboxylic acids and derivatives,3740,0.162,6,2.73e-09,1.3e-06,1.3e-06,Module 5
-Homogeneous other non-metal compounds,23,0.000996,1,0.000995,0.473,0.237,Module 5
-Indoles and derivatives,559,0.0242,1,0.0239,1,1,Module 5
-Organooxygen compounds,3160,0.137,1,0.129,1,1,Module 5
-Keto acids and derivatives,114,0.00548,2,1.34e-05,0.00636,0.0033,Module 6
-Hydroxy acids and derivatives,116,0.00558,2,1.38e-05,0.00658,0.0033,Module 6
-Carboxylic acids and derivatives,3740,0.18,3,0.000637,0.302,0.101,Module 6
-Pyrimidine nucleosides,87,0.00418,1,0.00418,1,0.497,Module 6
-Pyridines and derivatives,418,0.0201,1,0.0199,1,1,Module 6
-Organooxygen compounds,3160,0.152,1,0.142,1,1,Module 6
-Purine nucleosides,121,0.00407,2,7.04e-06,0.00335,0.00335,Module 7
-Purine nucleotides,134,0.00451,1,0.0045,1,0.729,Module 7
-Organooxygen compounds,3160,0.106,2,0.00459,1,0.729,Module 7
-Diazines,342,0.0115,1,0.0115,1,1,Module 7
-Carboxylic acids and derivatives,3740,0.126,1,0.119,1,1,Module 7
-Organooxygen compounds,3160,0.091,5,4.75e-09,2.26e-06,2.26e-06,Module 8
-Fatty Acyls,4680,0.135,1,0.128,1,1,Module 8
+Carboxylic acids and derivatives,3740,0.648,12,9.61e-13,4.57e-10,4.57e-10,0
+Organooxygen compounds,3160,0.546,8,5.77e-08,2.74e-05,1.37e-05,0
+Imidazopyrimidines,198,0.0343,3,5.93e-06,0.00281,0.000941,0
+Sulfinic acids and derivatives,4,0.000693,1,0.000692,0.328,0.0824,0
+Carboximidic acids and derivatives,38,0.00658,1,0.00656,1,0.575,0
+Pyrroles,42,0.00727,1,0.00725,1,0.575,0
+Organic phosphonic acids and derivatives,53,0.00918,1,0.00914,1,0.621,0
+Organic carbonic acids and derivatives,63,0.0109,1,0.0109,1,0.646,0
+Pyrimidine nucleotides,77,0.0133,1,0.0132,1,0.701,0
+Organic phosphoric acids and derivatives,93,0.0161,1,0.016,1,0.728,0
+Pteridines and derivatives,100,0.0173,1,0.0172,1,0.728,0
+Keto acids and derivatives,114,0.0197,1,0.0196,1,0.728,0
+Hydroxy acids and derivatives,116,0.0201,1,0.0199,1,0.728,0
+Diazines,342,0.0592,1,0.0575,1,1,0
+Organonitrogen compounds,618,0.107,1,0.102,1,1,0
+Fatty Acyls,4680,0.811,1,0.56,1,1,0
+Organooxygen compounds,3160,0.212,8,7.71e-12,3.67e-09,3.67e-09,1
+Carboxylic acids and derivatives,3740,0.252,4,9.1e-05,0.0432,0.0217,1
+Fatty Acyls,4680,0.315,2,0.0386,1,1,1
+Carboxylic acids and derivatives,3740,0.342,7,2.55e-08,1.21e-05,1.21e-05,2
+Phenols,434,0.0397,3,8.54e-06,0.00405,0.00203,2
+Indoles and derivatives,559,0.0511,2,0.0012,0.567,0.19,2
+Oxepanes,37,0.00338,1,0.00338,1,0.402,2
+Diazines,342,0.0313,1,0.0308,1,1,2
+Benzene and substituted derivatives,3050,0.279,2,0.0312,1,1,2
+Organooxygen compounds,3160,0.288,2,0.0332,1,1,2
+Organonitrogen compounds,618,0.0565,1,0.055,1,1,2
+Organonitrogen compounds,618,0.0535,3,2.06e-05,0.00982,0.00982,3
+Benzene and substituted derivatives,3050,0.264,4,0.00012,0.0571,0.0286,3
+Fatty Acyls,4680,0.406,4,0.000612,0.29,0.097,3
+Non-metal oxoanionic compounds,28,0.00242,1,0.00242,1,0.288,3
+Imidazopyrimidines,198,0.0171,1,0.017,1,1,3
+Organooxygen compounds,3160,0.273,2,0.03,1,1,3
+Pyridines and derivatives,418,0.0362,1,0.0356,1,1,3
+Phenols,434,0.0376,1,0.0369,1,1,3
+Carboxylic acids and derivatives,3740,0.324,1,0.279,1,1,3
+Carboxylic acids and derivatives,3740,0.252,9,3.65e-13,1.74e-10,1.74e-10,4
+Non-metal oxoanionic compounds,28,0.00189,2,1.59e-06,0.000755,0.000378,4
+Organic sulfonic acids and derivatives,48,0.00323,1,0.00323,1,0.512,4
+Phenols,434,0.0292,1,0.0288,1,1,4
+Organonitrogen compounds,618,0.0416,1,0.0408,1,1,4
+Carboxylic acids and derivatives,3740,0.162,6,2.73e-09,1.3e-06,1.3e-06,5
+Homogeneous other non-metal compounds,23,0.000996,1,0.000995,0.473,0.237,5
+Indoles and derivatives,559,0.0242,1,0.0239,1,1,5
+Organooxygen compounds,3160,0.137,1,0.129,1,1,5
+Keto acids and derivatives,114,0.00548,2,1.34e-05,0.00636,0.0033,6
+Hydroxy acids and derivatives,116,0.00558,2,1.38e-05,0.00658,0.0033,6
+Carboxylic acids and derivatives,3740,0.18,3,0.000637,0.302,0.101,6
+Pyrimidine nucleosides,87,0.00418,1,0.00418,1,0.497,6
+Pyridines and derivatives,418,0.0201,1,0.0199,1,1,6
+Organooxygen compounds,3160,0.152,1,0.142,1,1,6
+Purine nucleosides,121,0.00407,2,7.04e-06,0.00335,0.00335,7
+Purine nucleotides,134,0.00451,1,0.0045,1,0.729,7
+Organooxygen compounds,3160,0.106,2,0.00459,1,0.729,7
+Diazines,342,0.0115,1,0.0115,1,1,7
+Carboxylic acids and derivatives,3740,0.126,1,0.119,1,1,7
+Organooxygen compounds,3160,0.091,5,4.75e-09,2.26e-06,2.26e-06,8
+Fatty Acyls,4680,0.135,1,0.128,1,1,8
