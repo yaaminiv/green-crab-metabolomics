@@ -1562,9 +1562,9 @@ The first kind of enrichment analysis I will complete is looking at compound str
 
 I don't have a reference metabolome and I didn't perform targeted metabolomics. I used metabolite sets containing at least two entries and all compounds in the selected library as a reference.
 
-Certain compounds were not recognized by MetaboAnalyst, or require manual PubChem/KEGG ID correction. The resulting name maps (input names v.s names used for enrichment analysis) from MetaboAnalyst were renamed according to module number and saved [here]().
+Certain compounds were not recognized by MetaboAnalyst, or require manual PubChem/KEGG ID correction. The resulting name maps (input names v.s names used for enrichment analysis) from MetaboAnalyst were renamed according to module number and saved [here](https://github.com/yaaminiv/green-crab-metabolomics/tree/main/output/05-metabolomics-analysis/metaboanalyst/msea-compoundClass/name-maps).
 
-The output tables (msea_ora_result.csv files from MetaboAnalyst) were renamed according to module number and saved [here]().  
+The output tables (msea_ora_result.csv files from MetaboAnalyst) were renamed according to module number and saved [here](https://github.com/yaaminiv/green-crab-metabolomics/tree/main/output/05-metabolomics-analysis/metaboanalyst/msea-compoundClass/enrichment-output).
 
 
 
