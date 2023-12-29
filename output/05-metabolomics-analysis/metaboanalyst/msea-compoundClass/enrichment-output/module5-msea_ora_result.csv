@@ -1,0 +1,5 @@
+"","total","expected","hits","Raw p","Holm p","FDR"
+"Carboxylic acids and derivatives",3740,0.162,6,2.73e-09,1.3e-06,1.3e-06
+"Homogeneous other non-metal compounds",23,0.000996,1,0.000995,0.473,0.237
+"Indoles and derivatives",559,0.0242,1,0.0239,1,1
+"Organooxygen compounds",3160,0.137,1,0.129,1,1

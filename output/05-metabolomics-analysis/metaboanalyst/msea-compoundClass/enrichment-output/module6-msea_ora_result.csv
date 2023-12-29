@@ -1,0 +1,7 @@
+"","total","expected","hits","Raw p","Holm p","FDR"
+"Keto acids and derivatives",114,0.00548,2,1.34e-05,0.00636,0.0033
+"Hydroxy acids and derivatives",116,0.00558,2,1.38e-05,0.00658,0.0033
+"Carboxylic acids and derivatives",3740,0.18,3,0.000637,0.302,0.101
+"Pyrimidine nucleosides",87,0.00418,1,0.00418,1,0.497
+"Pyridines and derivatives",418,0.0201,1,0.0199,1,1
+"Organooxygen compounds",3160,0.152,1,0.142,1,1

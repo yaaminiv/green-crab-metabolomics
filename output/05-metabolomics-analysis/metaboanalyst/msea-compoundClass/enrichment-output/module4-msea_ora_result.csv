@@ -1,0 +1,6 @@
+"","total","expected","hits","Raw p","Holm p","FDR"
+"Carboxylic acids and derivatives",3740,0.252,9,3.65e-13,1.74e-10,1.74e-10
+"Non-metal oxoanionic compounds",28,0.00189,2,1.59e-06,0.000755,0.000378
+"Organic sulfonic acids and derivatives",48,0.00323,1,0.00323,1,0.512
+"Phenols",434,0.0292,1,0.0288,1,1
+"Organonitrogen compounds",618,0.0416,1,0.0408,1,1

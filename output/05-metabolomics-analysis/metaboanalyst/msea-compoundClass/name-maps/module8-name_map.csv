@@ -1,0 +1,7 @@
+"Query","Match","HMDB","PubChem","KEGG","SMILES","Comment"
+"raffinose","Raffinose","HMDB0003213","439242","C00492","OC[C@H]1O[C@@](CO)(O[C@H]2O[C@H](CO[C@H]3O[C@H](CO)[C@H](O)[C@H](O)[C@H]3O)[C@@H](O)[C@H](O)[C@H]2O)[C@@H](O)[C@@H]1O","1"
+"melezitose","Melezitose","HMDB0011730","92817","C08243","OC[C@H]1O[C@@](CO)(O[C@H]2O[C@H](CO)[C@@H](O)[C@H](O)[C@H]2O)[C@@H](O[C@H]2O[C@H](CO)[C@@H](O)[C@H](O)[C@H]2O)[C@@H]1O","1"
+"maltotriose","Maltotriose","HMDB0001262","439586","C01835","OC[C@H]1O[C@H](O[C@H]2[C@H](O)[C@@H](O)[C@@H](O[C@H]3[C@H](O)[C@@H](O)C(O)O[C@@H]3CO)O[C@@H]2CO)[C@H](O)[C@@H](O)[C@@H]1O","1"
+"lactulose","Lactulose","HMDB0000740","11333","C07064","OC[C@H]1O[C@](O)(CO)[C@@H](O)[C@@H]1O[C@@H]1O[C@H](CO)[C@H](O)[C@H](O)[C@H]1O","1"
+"lactose","Alpha-Lactose","HMDB0000186","84571","C00243","OC[C@H]1O[C@@H](O[C@H]2[C@H](O)[C@@H](O)[C@@H](O)O[C@@H]2CO)[C@H](O)[C@@H](O)[C@H]1O","1"
+"lactitol","Lactitol","HMDB0040937","157355",NA,"[H][C@@](O[C@@H]1O[C@H](CO)[C@H](O)[C@H](O)[C@H]1O)([C@H](O)CO)[C@H](O)[C@@H](O)CO","1"
