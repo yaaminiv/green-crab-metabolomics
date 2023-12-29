@@ -105,6 +105,11 @@ head(transMetabData) #Confirm changes
 
 # Initial data investigation with PCA
 
+```{bash}
+mkdir PCA
+mkdir PCA/figures
+```
+
 ```{r}
 scaled.pca <- prcomp(transMetabData[c(5:601)], scale = TRUE, center = TRUE) #Use prcomp to perform a centered and scaled PCA calculation
 summary(scaled.pca) #Standard deviations for each PC
@@ -119,10 +124,6 @@ ordiMonteRandTest
 ```
 
 ## Plot PCA
-
-```{bash}
-mkdir figures
-```
 
 ```{r}
 plotColors <- c(brewer.pal(9, "Reds")[7],
@@ -145,7 +146,7 @@ pcaPlot1 <- autoplot(scaled.pca, data = transMetabData, x = 1, y = 2,
   theme_classic(base_size = 15) + theme(legend.position = "right",
                                         plot.background = element_blank()) #Use autoplot to plot the prcomp object. Color points and confidence ellipses by treatment, and have different shapes for each treatment Do not include loadings. Manually define color, fill, and shapes.
 pcaPlot1
-ggsave("figures/all-data-PCA-treatment.pdf", height = 8.5, width = 11)
+ggsave("PCA/figures/all-data-PCA-treatment.pdf", height = 8.5, width = 11)
 ```
 
 ```{r}
@@ -161,7 +162,7 @@ pcaPlot2 <- autoplot(scaled.pca, data = transMetabData, x = 1, y = 2,
   theme_classic(base_size = 15) + theme(legend.position = "right",
                                         plot.background = element_blank()) #Same as above but color by day and not treatment
 pcaPlot2
-ggsave("figures/all-data-PCA-day.pdf", height = 8.5, width = 11)
+ggsave("PCA/figures/all-data-PCA-day.pdf", height = 8.5, width = 11)
 ```
 
 ```{r}
@@ -177,7 +178,7 @@ pcaPlot3 <- autoplot(scaled.pca, data = transMetabData, x = 1, y = 2,
   theme_classic(base_size = 15) + theme(legend.position = "right",
                                         plot.background = element_blank()) #Use autoplot to plot the prcomp object. Color points and confidence ellipses by treatment, and have different shapes for each day. Do not include loadings. Manually define color, fill, and shapes.
 pcaPlot3
-ggsave("figures/all-data-PCA-day-treatment.pdf", height = 8.5, width = 11)
+ggsave("PCA/figures/all-data-PCA-day-treatment.pdf", height = 8.5, width = 11)
 ```
 
 Overall, it seems like metabolite profiles are segregating by treatment, with the 30ºC profiles more segregated from the 5ºC and 13ºC profiles. It also seems like metabolite profiles have higher spread over time, potentially due to the impact of prolonged temperature exposure on physiology.
@@ -204,7 +205,7 @@ pcaPlot4 <- autoplot(scaled.pca.id, data = transMetabData, x = 1, y = 2,
   theme_classic(base_size = 15) + theme(legend.position = "right",
                                         plot.background = element_blank()) #Use autoplot to plot the prcomp object. Color points and confidence ellipses by treatment, and have different shapes for each day. Do not include loadings. Manually define color, fill, and shapes.
 pcaPlot4
-ggsave("figures/known-metabolites-PCA-day-treatment.pdf", height = 8.5, width = 11)
+ggsave("PCA/figures/known-metabolites-PCA-day-treatment.pdf", height = 8.5, width = 11)
 ```
 
 ## Conduct PERMANOVA
@@ -220,7 +221,7 @@ permanova.metab #Significant influence of all factors
 
 ```{r}
 broom::tidy(permanova.metab) %>%
-  write.csv(., "all-data-PERMANOVA-results.csv", quote = FALSE) #Save PERMANOVA output
+  write.csv(., "PCA/all-data-PERMANOVA-results.csv", quote = FALSE) #Save PERMANOVA output
 ```
 
 ### Identified metabolites
@@ -234,7 +235,7 @@ permanova.metabid #Significant influence of all factors
 
 ```{r}
 broom::tidy(permanova.metab) %>%
-  write.csv(., "known-metabolites-PERMANOVA-results.csv", quote = FALSE) #Save PERMANOVA output
+  write.csv(., "PCA/known-metabolites-PERMANOVA-results.csv", quote = FALSE) #Save PERMANOVA output
 ```
 
 The fact that all three explanatory variables are significant means that the inclusion of unidentified metabolites doesn't drastically influence the results.
@@ -242,6 +243,12 @@ The fact that all three explanatory variables are significant means that the inc
 # PLSDA for all metabolites
 
 The next step is for me to conduct a PLS-DA analysis using the `mixOmics` package. This is a more robust way to analyze differences between treatments and is common in many metabolomics studies. Since both temperature and day were significant in the PCA, I'll use both of those factors in the PLSDA.
+
+```{bash}
+mkdir PLSDA
+mkdir PLSDA/figures
+```
+
 
 ## Temperature only
 
@@ -258,7 +265,7 @@ plotIndiv(treatment.plsda)
 ```
 
 ```{r}
-#pdf("figures/all-data-PLSDA-treatment.pdf", height = 8.5, width = 11)
+#pdf("PLSDA/figures/all-data-PLSDA-treatment.pdf", height = 8.5, width = 11)
 plotIndiv(treatment.plsda, comp = c(1,2), ind.names = FALSE,
           cex = 3, col = rev(plotColors), pch = c(15, 17, 19), point.lwd = 0.7,
           ellipse = TRUE, star = TRUE, centroid = FALSE, 
@@ -269,7 +276,7 @@ plotIndiv(treatment.plsda, comp = c(1,2), ind.names = FALSE,
 ```
 
 ```{r}
-pdf("figures/all-data-cimPlot-treatment.pdf", height = 8.5, width = 11)
+pdf("PLSDA/figures/all-data-cimPlot-treatment.pdf", height = 8.5, width = 11)
 cim(treatment.plsda, mapping = "Y", row.names = transMetabData$treatment, xlab = "Metabolites", ylab = "Temperature (ºC)", margins = c(8, 5), row.cex = 0.5) #Create CIM plot with metabolites on the x-axis and treatment on the y-axis. 
 dev.off()
 ```
@@ -285,7 +292,7 @@ head(treatmentVIP) #Confirm changes
 ```
 
 ```{r}
-write.csv(treatmentVIP, "all-data-VIP-treatment.csv", quote = FALSE, row.names = FALSE) #Save VIP scores
+write.csv(treatmentVIP, "PLSDA/all-data-VIP-treatment.csv", quote = FALSE, row.names = FALSE) #Save VIP scores
 ```
 
 ```{r}
@@ -303,7 +310,7 @@ treatmentVIP %>%
   geom_point() +
   xlab("VIP Score") + ylab("Metabolite") +
   theme_classic() + theme(axis.text.y = element_text(size = 5)) #Using only metabolites with VIP > 1, arrange by metabolite name and reorder by cumulative VIP score. Plot points and change x and y axis labels.
-ggsave("figures/all-data-VIP.pdf", height = 8.5, width = 11)
+ggsave("PLSDA/figures/all-data-VIP.pdf", height = 8.5, width = 11)
 ```
 ## Temperature x day
 
@@ -317,7 +324,7 @@ treatmentday.plsda <- plsda(X,Y, ncomp = 5) #ncomp = # treatments - 1
 plotIndiv(treatmentday.plsda)
 ```
 ```{r}
-#pdf("figures/all-data-PLSDA-day-treatment-comp12.pdf", height = 8.5, width = 11)
+#pdf("PLSDA/figures/all-data-PLSDA-day-treatment-comp12.pdf", height = 8.5, width = 11)
 plotIndiv(treatmentday.plsda, comp = c(1,2), ind.names = FALSE,
           cex = 3, col = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"), pch = c(12:17), point.lwd = 0.7,
           ellipse = TRUE, star = TRUE, centroid = FALSE, 
@@ -328,7 +335,7 @@ plotIndiv(treatmentday.plsda, comp = c(1,2), ind.names = FALSE,
 ```
 
 ```{r}
-#pdf("figures/all-data-PLSDA-day-treatment-comp13.pdf", height = 8.5, width = 11)
+#pdf("PLSDA/figures/all-data-PLSDA-day-treatment-comp13.pdf", height = 8.5, width = 11)
 plotIndiv(treatmentday.plsda, comp = c(1,3), ind.names = FALSE,
           cex = 3, col = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"), pch = c(12:17), point.lwd = 0.7,
           ellipse = TRUE, star = TRUE, centroid = FALSE, 
@@ -339,7 +346,7 @@ plotIndiv(treatmentday.plsda, comp = c(1,3), ind.names = FALSE,
 ```
 
 ```{r}
-pdf("figures/all-data-cimPlot-day-treatment.pdf", height = 8.5, width = 11)
+pdf("PLSDA/figures/all-data-cimPlot-day-treatment.pdf", height = 8.5, width = 11)
 cim(treatment.plsda, mapping = "Y", row.names = transMetabData$treatment_day, xlab = "Metabolites", ylab = "Temperature (ºC) x Day", margins = c(8, 5), row.cex = 0.5) #Create CIM plot with metabolites on the x-axis and treatment x day on the y-axis. 
 dev.off()
 ```
@@ -353,7 +360,7 @@ head(treatmentdayVIP) #Confirm changes
 ```
 
 ```{r}
-write.csv(treatmentdayVIP, "all-data-VIP-day-treatment.csv", quote = FALSE, row.names = FALSE) #Save VIP scores
+write.csv(treatmentdayVIP, "PLSDA/all-data-VIP-day-treatment.csv", quote = FALSE, row.names = FALSE) #Save VIP scores
 ```
 
 ```{r}
@@ -371,7 +378,7 @@ treatmentdayVIP %>%
   geom_point() +
   xlab("VIP Score") + ylab("Metabolite") +
   theme_classic() + theme(axis.text.y = element_text(size = 5)) #Using only metabolites with VIP > 1, arrange by metabolite name and reorder by cumulative VIP score. Plot points and change x and y axis labels.
-ggsave("figures/all-data-VIP-day-treatment.pdf", height = 8.5, width = 11)
+ggsave("PLSDA/figures/all-data-VIP-day-treatment.pdf", height = 8.5, width = 11)
 ```
 
 # PLSDA for known features
@@ -389,7 +396,7 @@ plotIndiv(treatmentday.known.plsda)
 ```
 
 ```{r}
-#pdf("figures/known-metabolites-PLSDA-day-treatment-comp12.pdf", height = 8.5, width = 11)
+#pdf("PLSDA/figures/known-metabolites-PLSDA-day-treatment-comp12.pdf", height = 8.5, width = 11)
 plotIndiv(treatmentday.known.plsda, comp = c(1,2), ind.names = FALSE,
           cex = 3, col = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"), pch = c(12:17), point.lwd = 0.7,
           ellipse = TRUE, star = TRUE, centroid = FALSE, 
@@ -400,7 +407,7 @@ plotIndiv(treatmentday.known.plsda, comp = c(1,2), ind.names = FALSE,
 ```
 
 ```{r}
-#pdf("figures/known-metabolites-PLSDA-day-treatment-comp13.pdf", height = 8.5, width = 11)
+#pdf("PLSDA/figures/known-metabolites-PLSDA-day-treatment-comp13.pdf", height = 8.5, width = 11)
 plotIndiv(treatmentday.known.plsda, comp = c(1,3), ind.names = FALSE,
           cex = 3, col = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"), pch = c(12:17), point.lwd = 0.7,
           ellipse = TRUE, star = TRUE, centroid = FALSE, 
@@ -411,7 +418,7 @@ plotIndiv(treatmentday.known.plsda, comp = c(1,3), ind.names = FALSE,
 ```
 
 ```{r}
-pdf("figures/known-metabolites-cimPlot-day-treatment.pdf", height = 8.5, width = 11)
+pdf("PLSDA/figures/known-metabolites-cimPlot-day-treatment.pdf", height = 8.5, width = 11)
 cim(treatmentday.known.plsda, mapping = "Y", row.names = transMetabData$treatment_day, xlab = "Metabolites", ylab = "Temperature (ºC) x Day", margins = c(8, 5), row.cex = 0.5) #Create CIM plot with metabolites on the x-axis and treatment x day on the y-axis. 
 dev.off()
 ```
@@ -425,7 +432,7 @@ head(treatmentdayVIP) #Confirm changes
 ```
 
 ```{r}
-write.csv(treatmentday.known.VIP, "known-metabolites-VIP-day-treatment.csv", quote = FALSE, row.names = FALSE) #Save VIP scores
+write.csv(treatmentday.known.VIP, "PLSDA/known-metabolites-VIP-day-treatment.csv", quote = FALSE, row.names = FALSE) #Save VIP scores
 ```
 
 ```{r}
@@ -443,7 +450,7 @@ treatmentday.known.VIP %>%
   geom_point() +
   xlab("VIP Score") + ylab("Metabolite") +
   theme_classic() + theme(axis.text.y = element_text(size = 8)) #Using only metabolites with VIP > 1, arrange by metabolite name and reorder by cumulative VIP score. Plot points and change x and y axis labels.
-ggsave("figures/known-metabolites-VIP-day-treatment.pdf", height = 8.5, width = 11)
+ggsave("PLSDA/figures/known-metabolites-VIP-day-treatment.pdf", height = 8.5, width = 11)
 ```
 
 ## Pairwise tests for VIP metabolites
@@ -636,7 +643,7 @@ t.test_13v30_day22 %>%
                     breaks = c("13", "30"),
                     labels = c("13", "30")) +
   theme_classic(base_size = 15) + theme() #Take t-test results and filter out significant metabolites. Create two new columns using estimate values: one for the direction of increase, and another for positive or negative VIP. Arrange by metabolite name and reorder by cumulative VIP score. Plot bars and change x and y axis labels. Add scale information.
-ggsave("figures/significant-VIP-13v30-day22.pdf", height = 8.5, width = 11)
+ggsave("PLSDA/figures/significant-VIP-13v30-day22.pdf", height = 8.5, width = 11)
 ```
 
 #### 13_22 vs. 5_22
@@ -718,7 +725,7 @@ t.test_13v5_day22 %>%
                     breaks = c("13", "5"),
                     labels = c("13", "5")) +
   theme_classic(base_size = 15) + theme() #Take t-test results and filter out significant metabolites. Create two new columns using estimate values: one for the direction of increase, and another for positive or negative VIP. Arrange by metabolite name and reorder by cumulative VIP score. Plot bars and change x and y axis labels. Add scale information.
-ggsave("figures/significant-VIP-13v5-day22.pdf", height = 8.5, width = 11)
+ggsave("PLSDA/figures/significant-VIP-13v5-day22.pdf", height = 8.5, width = 11)
 ```
 
 ### Day differences for each treatment
@@ -802,7 +809,7 @@ t.test_5_day3v22 %>%
                     breaks = c("3", "22"),
                     labels = c("3", "22")) +
   theme_classic(base_size = 15) + theme() #Take t-test results and filter out significant metabolites. Create two new columns using estimate values: one for the direction of increase, and another for positive or negative VIP. Arrange by metabolite name and reorder by cumulative VIP score. Plot bars and change x and y axis labels. Add scale information.
-ggsave("figures/significant-VIP-5-day3v22.pdf", height = 8.5, width = 11)
+ggsave("PLSDA/figures/significant-VIP-5-day3v22.pdf", height = 8.5, width = 11)
 ```
 
 #### 13_3 vs. 13_22
@@ -949,7 +956,7 @@ myResult.splsda.final_T <- splsda(X, Y, ncomp = ncomp, keepX = select.keepX) #Us
 ```
 
 ```{r}
-#pdf("figures/known-metabolites-sPLSDA-day-treatment-comp12.pdf", height = 8.5, width = 11)
+#pdf("PLSDA/figures/known-metabolites-sPLSDA-day-treatment-comp12.pdf", height = 8.5, width = 11)
 plotIndiv(myResult.splsda.final_T, comp = c(1,2), ind.names = FALSE,
           cex = 3, col = c("#525252", "grey80", "#CB181D", "salmon", "#2171B5", "lightblue"), pch = c(12:17), point.lwd = 0.7,
           ellipse = TRUE, star = TRUE, centroid = FALSE, 
@@ -962,6 +969,11 @@ plotIndiv(myResult.splsda.final_T, comp = c(1,2), ind.names = FALSE,
 # WCNA analysis for known metabolites
 
 Although I have lists of VIP associated with each pairwise comparison, there is one additional step I can take to determine which known metabolites are associated with different treatment x day combinations. I will use a Weighted Correlation Network Analysis (similar to a WGCNA for gene expression) to group metabolites together by abundance patterns, then correlate metabolite modules with treatment and day.
+
+```{bash}
+mkdir WCNA
+mkdir WCNA/figures
+```
 
 ## Data preparation
 
@@ -1029,7 +1041,7 @@ sampleTree <- hclust(dist(rowwiseMetabData), method = "average") #Perform cluste
 ```
 
 ```{r}
-#pdf("figures/metabolite-outliers.pdf", height = 8.5, width = 11)
+#pdf("WCNA/figures/metabolite-outliers.pdf", height = 8.5, width = 11)
 plot(sampleTree, main = "Sample clustering to detect outliers", sub = "", xlab = "", cex.lab = 0.8, cex.axis = 0.8, cex.main = 2) #Plot cluster dendogram
 #dev.off()
 ```
@@ -1053,7 +1065,7 @@ sampleTree <- hclust(dist(rowwiseMetabData), method = "average") #Perform cluste
 ```
 
 ```{r}
-#pdf("figures/sample-outliers.pdf", height = 8.5, width = 11)
+#pdf("WCNA/figures/sample-outliers.pdf", height = 8.5, width = 11)
 plot(sampleTree, main = "Sample clustering to detect outliers", sub = "", xlab = "", cex.lab = 1.5, cex.axis = 1.5, cex.main = 2)
 #dev.off()
 ```
@@ -1153,7 +1165,7 @@ Module sizes are as follows:
 ```{r}
 # Plot the dendrogram and the module colors underneath
 
-#pdf("figures/cluster-dendogram-mergedME.pdf")
+#pdf("WCNA/figures/cluster-dendogram-mergedME.pdf")
 plotDendroAndColors(
   netwk$dendrograms[[1]],
   mergedColors[netwk$blockGenes[[1]]],
@@ -1176,7 +1188,7 @@ module_df <- data.frame(
 
 module_df[1:5,]
 
-write.csv(module_df, "metabolite_modules.csv")
+write.csv(module_df, "WCNA/metabolite_modules.csv")
 
 # Get Module Eigengenes per cluster
 MEs <- moduleEigengenes(rowwiseMetabData, mergedColors)$eigengenes
@@ -1264,7 +1276,7 @@ moduleTraitTree <- hclust(dist(t(moduleTraitCor)), method = "average") #Create c
 ```
 
 ```{r}
-#pdf(file = "figures/module-trait-cluster-dendogram.pdf", height = 8.5, width = 11)
+#pdf(file = "WCNA/figures/module-trait-cluster-dendogram.pdf", height = 8.5, width = 11)
 plot(moduleTraitTree) #Plot cluster dendogram
 #dev.off()
 ```
@@ -1286,7 +1298,7 @@ head(textMatrix) #Confirm matrix creation
 ```
 
 ```{r}
-#pdf("figures/module-trait-relationships.pdf", height = 8.5, width = 11)
+#pdf("WCNA/figures/module-trait-relationships.pdf", height = 8.5, width = 11)
 labeledHeatmap(Matrix = moduleTraitCor, xLabels = names(datTraits),  yLabels = names(MEs), ySymbols = names(MEs), cex.lab.y = 1.5, cex.lab.x = 1.5, colors = blueWhiteRed(50), textMatrix = textMatrix, setStdMargins = TRUE, cex.text = 1, zlim = c(-1,1), main = paste("Module-trait relationships"), cex.main = 2) #Use the textMatrix to create a heatmap with correlations between modules and the various treatments.
 #dev.off()
 ```
@@ -1301,7 +1313,7 @@ trait_order <- c("5ºC at Day 3", "13ºC at Day 3", "30ºC at Day 3", "5ºC at D
 ```
 
 ```{r}
-#pdf(file = "figures/module-trait-relationship-heatmap.pdf", height = 8.5, width = 8.5)
+#pdf(file = "WCNA/figures/module-trait-relationship-heatmap.pdf", height = 8.5, width = 8.5)
 ht <- Heatmap(moduleTraitCor, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
               col = blueWhiteRed(50), 
               row_names_side = "left", 
@@ -1354,13 +1366,13 @@ levels(mME_meta$treatment_day) #Confirm levels were reordered
 ```
 
 ```{r}
-write.csv(mME_meta, "module-expression.csv", quote = FALSE, row.names = FALSE) #Save module expression dataframe
+write.csv(WCNA/mME_meta, "module-expression.csv", quote = FALSE, row.names = FALSE) #Save module expression dataframe
 ```
 
 First, I'm going to look at boxplots for eigengene expression by treatment x day.
 
 ```{r, warning = FALSE, message = FALSE}
-#pdf("figures/eigengene-expression-boxplot.pdf", height = 8.5, width = 11)
+#pdf("WCNA/figures/eigengene-expression-boxplot.pdf", height = 8.5, width = 11)
 mME_meta %>%
   ggplot(aes(x = treatment_day, y = value, colour = treatment_day)) +
   facet_wrap(~ Module) +
@@ -1384,7 +1396,7 @@ mME_meta %>%
 I'm going to make a similar plot, but use dots instead to see if that makes the trends clearer.
 
 ```{r}
-#pdf("figures/eigengene-expression-dotplot.pdf", height = 8.5, width = 11)
+#pdf("WCNA/figures/eigengene-expression-dotplot.pdf", height = 8.5, width = 11)
 mME_meta %>%
   ggplot(aes(x = treatment_day, y = value)) +
   facet_grid(~Module) +
@@ -1429,7 +1441,7 @@ metab_rel_change #Confirm calculations
 ```
 
 ```{r}
-write.csv(metab_rel_change, "metabolites_relative_change.csv", quote = FALSE, row.names = FALSE)
+write.csv(WCNA/metab_rel_change, "metabolites_relative_change.csv", quote = FALSE, row.names = FALSE)
 ```
 
 # Pathway analysis with MetaboAnalyst
