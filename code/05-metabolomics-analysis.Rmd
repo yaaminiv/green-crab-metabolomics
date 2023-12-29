@@ -1187,17 +1187,17 @@ module_order = names(MEs) %>% gsub("ME","", .)
 
 # Add Sample names
 MEs0 <- MEs
-MEs0$Sample.ID = row.names(MEs)
+MEs0$crab.ID = row.names(MEs)
 
 # tidy & plot data
 mME = MEs0 %>%
-  pivot_longer(-Sample.ID) %>%
+  pivot_longer(-crab.ID) %>%
   mutate(
     name = gsub("ME", "", name),
     name = factor(name, levels = module_order)
   )
 
-mME %>% ggplot(., aes(x=Sample.ID, y=name, fill=value)) +
+mME %>% ggplot(., aes(x=crab.ID, y=name, fill=value)) +
   geom_tile() +
   theme_bw() +
   scale_fill_gradient2(
@@ -1223,15 +1223,15 @@ datTraits <- metabolomicsMetadata %>%
   mutate(., "13ºC at Day 3" = case_when(treatment_day == "13_3" ~ 1,
                                         treatment_day != "13_3" ~ 0)) %>%
   mutate(., "5ºC at Day 3" = case_when(treatment_day == "5_3" ~ 1,
-                                        treatment_day != "5_3" ~ 0)) %>%
+                                       treatment_day != "5_3" ~ 0)) %>%
   mutate(., "30ºC at Day 3" = case_when(treatment_day == "30_3" ~ 1,
                                         treatment_day != "30_3" ~ 0)) %>%
   mutate(., "13ºC at Day 22" = case_when(treatment_day == "13_22" ~ 1,
-                                        treatment_day != "13_22" ~ 0)) %>%
+                                         treatment_day != "13_22" ~ 0)) %>%
   mutate(., "5ºC at Day 22" = case_when(treatment_day == "5_22" ~ 1,
                                         treatment_day != "5_22" ~ 0)) %>%
   mutate(., "30ºC at Day 22" = case_when(treatment_day == "30_22" ~ 1,
-                                        treatment_day != "30_22" ~ 0)) %>%
+                                         treatment_day != "30_22" ~ 0)) %>%
   dplyr::select(., -c(2:4)) #Copy dataframe into datTraits, then use a series of case_when commands to create individual columns for each treatment or day, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns. 
 rownames(datTraits) <- datTraits$crab.ID #Convert crab.ID into rownames.
 datTraits <- datTraits %>%
@@ -1264,9 +1264,9 @@ moduleTraitTree <- hclust(dist(t(moduleTraitCor)), method = "average") #Create c
 ```
 
 ```{r}
-pdf(file = "figures/module-trait-cluster-dendogram.pdf", height = 8.5, width = 11)
+#pdf(file = "figures/module-trait-cluster-dendogram.pdf", height = 8.5, width = 11)
 plot(moduleTraitTree) #Plot cluster dendogram
-dev.off()
+#dev.off()
 ```
 
 ```{r}
@@ -1286,9 +1286,9 @@ head(textMatrix) #Confirm matrix creation
 ```
 
 ```{r}
-pdf("figures/module-trait-relationships.pdf", height = 8.5, width = 11)
+#pdf("figures/module-trait-relationships.pdf", height = 8.5, width = 11)
 labeledHeatmap(Matrix = moduleTraitCor, xLabels = names(datTraits),  yLabels = names(MEs), ySymbols = names(MEs), cex.lab.y = 1.5, cex.lab.x = 1.5, colors = blueWhiteRed(50), textMatrix = textMatrix, setStdMargins = TRUE, cex.text = 1, zlim = c(-1,1), main = paste("Module-trait relationships"), cex.main = 2) #Use the textMatrix to create a heatmap with correlations between modules and the various treatments.
-dev.off()
+#dev.off()
 ```
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
@@ -1301,7 +1301,7 @@ trait_order <- c("5ºC at Day 3", "13ºC at Day 3", "30ºC at Day 3", "5ºC at D
 ```
 
 ```{r}
-pdf(file = "figures/module-trait-relationship-heatmap.pdf", height = 8.5, width = 8.5)
+#pdf(file = "figures/module-trait-relationship-heatmap.pdf", height = 8.5, width = 8.5)
 ht <- Heatmap(moduleTraitCor, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
               col = blueWhiteRed(50), 
               row_names_side = "left", 
@@ -1330,12 +1330,111 @@ ht <- Heatmap(moduleTraitCor, name = "Eigengene", column_title = "Module-Group E
               column_title_gp = gpar(fontsize = 20),
               row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
 draw(ht) #Draw heatmap
-dev.off()
+#dev.off()
 ```
 
-## Plot mean eigengene values for each module  
+## Plot mean eigengene values for each module
 
-## Pathway analysis    
+```{r}
+#Ensure metadata columns are factors
+metabolomicsMetadata$crab.ID <- as.factor(metabolomicsMetadata$crab.ID)
+metabolomicsMetadata$treatment <- as.factor(metabolomicsMetadata$treatment)
+metabolomicsMetadata$day <- as.factor(metabolomicsMetadata$day)
+metabolomicsMetadata$treatment_day <- as.factor(metabolomicsMetadata$treatment_day)
+```
+
+```{r}
+mME_meta <- merge(mME, metabolomicsMetadata, by = "crab.ID") %>%
+  rename(Module = name) #Create new dataframe with metadata
+head(mME_meta) #Confirm dataframe creation
+mME_meta$treatment_day <- factor(mME_meta$treatment_day, levels = c("5_3", "5_22", 
+                                                                    "13_3", "13_22", 
+                                                                    "30_3", "30_22")) #Reorder levels
+levels(mME_meta$treatment_day) #Confirm levels were reordered
+```
+
+```{r}
+write.csv(mME_meta, "module-expression.csv", quote = FALSE, row.names = FALSE) #Save module expression dataframe
+```
+
+First, I'm going to look at boxplots for eigengene expression by treatment x day.
+
+```{r, warning = FALSE, message = FALSE}
+#pdf("figures/eigengene-expression-boxplot.pdf", height = 8.5, width = 11)
+mME_meta %>%
+  ggplot(aes(x = treatment_day, y = value, colour = treatment_day)) +
+  facet_wrap(~ Module) +
+  ylab("Module Expression") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey")+
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
+  stat_summary(fun=mean, geom="line", aes(group = treatment_day, color = treatment_day), position = position_dodge(width = 0.5))  + 
+  geom_point(pch = 21, position = position_dodge(width = 0.5)) +
+  scale_fill_manual(name = "Temperature (ºC) x Day", 
+                    values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                    labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
+  scale_colour_manual(name = "Temperature (ºC) x Day", 
+                      values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                      labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
+  xlab("") + #Axis titles
+  theme_classic(base_size = 15) + theme(axis.text.x = element_text(color = "white"),
+                                        axis.ticks.x = element_blank()) #Create a boxplot with data points for module expression on the y-axis and values for each treatment x day combination. Facet by module eigengene. Add a horizontal line at y = 0.
+#dev.off()
+```
+
+I'm going to make a similar plot, but use dots instead to see if that makes the trends clearer.
+
+```{r}
+#pdf("figures/eigengene-expression-dotplot.pdf", height = 8.5, width = 11)
+mME_meta %>%
+  ggplot(aes(x = treatment_day, y = value)) +
+  facet_grid(~Module) +
+  ylab("Eigengene Expression") +
+  geom_hline(yintercept = 0, linetype ="dashed", color = "grey")+
+  geom_point(aes(fill = treatment_day, color = treatment_day), size = 3, pch = 21, position = position_dodge(width = 0.5)) +
+  geom_smooth(aes(group=1), se=TRUE, show.legend = NA, color="black")+
+  scale_fill_manual(name = "Temperature (ºC) x Day", 
+                    values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                    labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
+  scale_colour_manual(name = "Temperature (ºC) x Day", 
+                      values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                      labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
+  xlab("") + #Axis titles
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.text = element_text(color = "black", size = 12), 
+                                        strip.text.x = element_text(size = 14, color = "black", face="bold"))
+#dev.off()
+```
+
+```{r}
+mME_meta$treatment_day <- factor(mME_meta$treatment_day, levels = c("13_3", "13_22", 
+                                                                    "5_3", "5_22", 
+                                                                    "30_3", "30_22")) #Reorder levels
+levels(mME_meta$treatment_day) #Confirm levels were reordered
+```
+
+
+```{r}
+metab_rel_change <- mME_meta %>%
+  dplyr::select(treatment_day, crab.ID, Module, value) %>%
+  group_by(treatment_day, Module) %>%
+  summarise(mean = mean(value)) %>%
+  group_by(treatment_day, Module) %>%
+  arrange(treatment_day, .by_group = TRUE) %>%
+  group_by(Module) %>%
+  mutate(metabolite_expression = ((mean-dplyr::first(mean))/abs(dplyr::first(mean)))) %>%
+  dplyr::select(Module, treatment_day, metabolite_expression) #Take the dataframe with module information and metadata, and keep only the treatment_day, crab.ID, module, and module eigengene values. Group by treatment_day and Module, then calculate mean eigengene expression. Arrange by treatment_day, group by module again, then calculaterelative change in expression for each module relative to 13ºC at day 3. 
+metab_rel_change #Confirm calculations
+```
+
+```{r}
+write.csv(metab_rel_change, "metabolites_relative_change.csv", quote = FALSE, row.names = FALSE)
+```
+
+# Pathway analysis
+
+The final step in this workflow is to understand the various metabolic pathways represented in each module eigengene.
 
 
 
