@@ -1434,10 +1434,90 @@ write.csv(metab_rel_change, "metabolites_relative_change.csv", quote = FALSE, ro
 
 # Pathway analysis
 
-The final step in this workflow is to understand the various metabolic pathways represented in each module eigengene.
+The final step in this workflow is to understand the various metabolic pathways represented in each module eigengene. I'll conduct the majority of this analysis with the MetaboAnalyst GUI interface.
 
+## Create lists of metabolites in each module
 
+```{r}
+module0_metabolites <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 0) %>%
+  dplyr::select(., Metabolite) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column
+nrow(module0_metabolites) #40 metabolites
+write.csv(module0_metabolites, "module0_metabolites.csv", quote = FALSE, row.names = FALSE)
+```
 
+```{r}
+module1_metabolites <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 1) %>%
+  dplyr::select(., Metabolite) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column
+nrow(module1_metabolites) #22 metabolites
+write.csv(module1_metabolites, "module1_metabolites.csv", quote = FALSE, row.names = FALSE)
+```
+
+```{r}
+module2_metabolites <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 2) %>%
+  dplyr::select(., Metabolite) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column
+nrow(module2_metabolites) #22 metabolites
+write.csv(module2_metabolites, "module2_metabolites.csv", quote = FALSE, row.names = FALSE)
+```
+
+```{r}
+module3_metabolites <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 3) %>%
+  dplyr::select(., Metabolite) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column
+nrow(module3_metabolites) #19 metabolites
+write.csv(module3_metabolites, "module3_metabolites.csv", quote = FALSE, row.names = FALSE)
+```
+
+```{r}
+module4_metabolites <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 4) %>%
+  dplyr::select(., Metabolite) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column
+nrow(module4_metabolites) #15 metabolites
+write.csv(module4_metabolites, "module4_metabolites.csv", quote = FALSE, row.names = FALSE)
+```
+
+```{r}
+module5_metabolites <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 5) %>%
+  dplyr::select(., Metabolite) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column
+nrow(module5_metabolites) #10 metabolites
+write.csv(module5_metabolites, "module5_metabolites.csv", quote = FALSE, row.names = FALSE)
+```
+
+```{r}
+module6_metabolites <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 6) %>%
+  dplyr::select(., Metabolite) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column
+nrow(module6_metabolites) #10 metabolites
+write.csv(module6_metabolites, "module6_metabolites.csv", quote = FALSE, row.names = FALSE)
+```
+
+```{r}
+module7_metabolites <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 7) %>%
+  dplyr::select(., Metabolite) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column
+nrow(module7_metabolites) #8 metabolites
+write.csv(module7_metabolites, "module7_metabolites.csv", quote = FALSE, row.names = FALSE)
+```
+
+```{r}
+module8_metabolites <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 8) %>%
+  dplyr::select(., Metabolite) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column
+nrow(module8_metabolites) #6 metabolites
+write.csv(module8_metabolites, "module8_metabolites.csv", quote = FALSE, row.names = FALSE)
+```
 
 
 
