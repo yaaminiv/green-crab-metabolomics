@@ -1,0 +1,5 @@
+"","total","expected","hits","Raw p","Holm p","FDR"
+"Purine metabolism",70,0.137,2,0.00595,0.476,0.476
+"Pantothenate and CoA biosynthesis",20,0.039,1,0.0385,1,1
+"beta-Alanine metabolism",21,0.041,1,0.0404,1,1
+"Pyrimidine metabolism",39,0.0761,1,0.0742,1,1

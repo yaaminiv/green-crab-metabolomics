@@ -1,0 +1,16 @@
+"","total","expected","hits","Raw p","Holm p","FDR"
+"Taurine and hypotaurine metabolism",8,0.052,2,0.00104,0.0835,0.0835
+"Pantothenate and CoA biosynthesis",20,0.13,2,0.00679,0.537,0.241
+"Galactose metabolism",27,0.176,2,0.0122,0.955,0.241
+"Glutathione metabolism",28,0.182,2,0.0131,1,0.241
+"Glycine, serine and threonine metabolism",33,0.215,2,0.018,1,0.241
+"Cysteine and methionine metabolism",33,0.215,2,0.018,1,0.241
+"Thiamine metabolism",7,0.0455,1,0.0447,1,0.511
+"Purine metabolism",70,0.455,2,0.0726,1,0.726
+"Arginine biosynthesis",14,0.091,1,0.0876,1,0.779
+"Glycerolipid metabolism",16,0.104,1,0.0996,1,0.797
+"Starch and sucrose metabolism",18,0.117,1,0.111,1,0.81
+"beta-Alanine metabolism",21,0.137,1,0.129,1,0.828
+"Propanoate metabolism",22,0.143,1,0.135,1,0.828
+"Arginine and proline metabolism",36,0.234,1,0.211,1,1
+"Pyrimidine metabolism",39,0.254,1,0.227,1,1

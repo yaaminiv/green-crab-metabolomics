@@ -1,0 +1,8 @@
+"","total","expected","hits","Raw p","Holm p","FDR"
+"Glutathione metabolism",28,0.0728,2,0.00188,0.15,0.124
+"Arginine and proline metabolism",36,0.0936,2,0.0031,0.245,0.124
+"Ascorbate and aldarate metabolism",9,0.0234,1,0.0232,1,0.619
+"beta-Alanine metabolism",21,0.0546,1,0.0536,1,1
+"Galactose metabolism",27,0.0702,1,0.0685,1,1
+"Inositol phosphate metabolism",30,0.078,1,0.0758,1,1
+"Purine metabolism",70,0.182,1,0.17,1,1
