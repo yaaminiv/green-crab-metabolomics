@@ -1,20 +1,20 @@
-Metabolite
-triethanolamine
-terephthalic acid
-stearic acid
-spermidine 
-salicylic acid
-pyrophosphate 
-putrescine
-phthalic acid
-myo-inositol
-hydroxycarbamate 
-hydroquinone
-heptadecanoic acid
-glutaric acid
-glucose-1-phosphate
-arachidic acid
-adipic acid
-adenine
-4-hydroxybenzoate
-2-picolinic acid
+Metabolite,PubChem,KEGG
+triethanolamine,7618,C06771
+terephthalic acid,22416364,C06337
+stearic acid,5281,C01530
+spermidine ,1102,C00315
+salicylic acid,338,C00805
+pyrophosphate ,1023,C00013
+putrescine,1045,C00134
+phthalic acid,1017,C01606
+myo-inositol,892,C00137
+hydroxycarbamate ,16639161,
+hydroquinone,785,C00530
+heptadecanoic acid,10465,
+glutaric acid,743,C00489
+glucose-1-phosphate,65533,C00103
+arachidic acid,10467,C06425
+adipic acid,196,C06104
+adenine,190,C00147
+4-hydroxybenzoate,135,C00156
+2-picolinic acid,1018,C10164

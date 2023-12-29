@@ -1,16 +1,16 @@
-Metabolite
-taurine
-sulfuric acid
-phosphate
-oxoproline
-ornithine 
-noradrenaline
-N-acetylmethionine 
-methionine sulfone 
-homocysteine 
-histamine 
-glutamine
-glutamate 
-beta-glutamic acid
-5-aminovaleric acid
-3-Amino-2-piperidone 
+Metabolite,PubChem,KEGG
+taurine,1123,C00245
+sulfuric acid,1118,C00059
+phosphate,1004,C00009
+oxoproline,7405,C01879
+ornithine ,6262,C00077
+noradrenaline,439260,C00547
+N-acetylmethionine ,448580,C02712
+methionine sulfone ,445282,
+homocysteine ,6971015,C00155
+histamine ,774,C00388
+glutamine,5961,C00064
+glutamate ,33032,C00025
+beta-glutamic acid,73064,C05574
+5-aminovaleric acid,138,C00431
+3-Amino-2-piperidone ,5200225,

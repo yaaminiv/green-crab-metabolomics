@@ -1,11 +1,11 @@
-Metabolite
-uridine
-proline
-nicotinic acid
-lactic acid
-glycyl-proline
-aspartate 
-alpha-ketoglutarate
-3-phosphoglycerate
-2-ketoisocaproic acid
-2-hydroxyglutaric acid
+Metabolite,PubChem,KEGG
+uridine,6029,C00299
+proline,145742,C00148
+nicotinic acid,938,C00253
+lactic acid,612,C01432
+glycyl-proline,3013625,
+aspartate ,5960,C00049
+alpha-ketoglutarate,51,C00026
+3-phosphoglycerate,NA,
+2-ketoisocaproic acid,70,C00233
+2-hydroxyglutaric acid,43,C02630

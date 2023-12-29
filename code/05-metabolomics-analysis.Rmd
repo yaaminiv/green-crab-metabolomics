@@ -1438,12 +1438,17 @@ The final step in this workflow is to understand the various metabolic pathways 
 
 ## Create lists of metabolites in each module
 
+For each module, I want the metabolite name, but I also want all of the PubChem and KEGG ID information provided by the sequencing facility. This is because common names for metabolties can be different, and using a numerical classifier will ensure the correct compounds are recognized by MetaboAnalyst.
+
 ```{r}
 module0_metabolites <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 0) %>%
-  dplyr::select(., Metabolite) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column
+  dplyr::select(., Metabolite) %>% 
+  left_join(., (rawMetabolomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
+  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw metabolomics data to get PubChem and KEGG ids.
 nrow(module0_metabolites) #40 metabolites
+head(module0_metabolites)
 write.csv(module0_metabolites, "module0_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
 
@@ -1451,8 +1456,11 @@ write.csv(module0_metabolites, "module0_metabolites.csv", quote = FALSE, row.nam
 module1_metabolites <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 1) %>%
-  dplyr::select(., Metabolite) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column
+  dplyr::select(., Metabolite) %>% 
+  left_join(., (rawMetabolomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
+  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw metabolomics data to get PubChem and KEGG ids.
 nrow(module1_metabolites) #22 metabolites
+head(module1_metabolites)
 write.csv(module1_metabolites, "module1_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
 
@@ -1460,8 +1468,11 @@ write.csv(module1_metabolites, "module1_metabolites.csv", quote = FALSE, row.nam
 module2_metabolites <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 2) %>%
-  dplyr::select(., Metabolite) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column
+    dplyr::select(., Metabolite) %>% 
+  left_join(., (rawMetabolomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
+  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw metabolomics data to get PubChem and KEGG ids.
 nrow(module2_metabolites) #22 metabolites
+head(module2_metabolites)
 write.csv(module2_metabolites, "module2_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
 
@@ -1469,8 +1480,11 @@ write.csv(module2_metabolites, "module2_metabolites.csv", quote = FALSE, row.nam
 module3_metabolites <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 3) %>%
-  dplyr::select(., Metabolite) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column
+    dplyr::select(., Metabolite) %>% 
+  left_join(., (rawMetabolomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
+  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw metabolomics data to get PubChem and KEGG ids.
 nrow(module3_metabolites) #19 metabolites
+head(module3_metabolites)
 write.csv(module3_metabolites, "module3_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
 
@@ -1478,8 +1492,11 @@ write.csv(module3_metabolites, "module3_metabolites.csv", quote = FALSE, row.nam
 module4_metabolites <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 4) %>%
-  dplyr::select(., Metabolite) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column
+  dplyr::select(., Metabolite) %>% 
+  left_join(., (rawMetabolomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
+  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw metabolomics data to get PubChem and KEGG ids.
 nrow(module4_metabolites) #15 metabolites
+head(module4_metabolites)
 write.csv(module4_metabolites, "module4_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
 
@@ -1487,8 +1504,11 @@ write.csv(module4_metabolites, "module4_metabolites.csv", quote = FALSE, row.nam
 module5_metabolites <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 5) %>%
-  dplyr::select(., Metabolite) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column
+  dplyr::select(., Metabolite) %>% 
+  left_join(., (rawMetabolomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
+  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw metabolomics data to get PubChem and KEGG ids.
 nrow(module5_metabolites) #10 metabolites
+head(module5_metabolites)
 write.csv(module5_metabolites, "module5_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
 
@@ -1496,8 +1516,11 @@ write.csv(module5_metabolites, "module5_metabolites.csv", quote = FALSE, row.nam
 module6_metabolites <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 6) %>%
-  dplyr::select(., Metabolite) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column
+  dplyr::select(., Metabolite) %>% 
+  left_join(., (rawMetabolomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
+  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw metabolomics data to get PubChem and KEGG ids.
 nrow(module6_metabolites) #10 metabolites
+head(module6_metabolites)
 write.csv(module6_metabolites, "module6_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
 
@@ -1505,8 +1528,11 @@ write.csv(module6_metabolites, "module6_metabolites.csv", quote = FALSE, row.nam
 module7_metabolites <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 7) %>%
-  dplyr::select(., Metabolite) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column
+  dplyr::select(., Metabolite) %>% 
+  left_join(., (rawMetabolomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
+  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw metabolomics data to get PubChem and KEGG ids.
 nrow(module7_metabolites) #8 metabolites
+head(module7_metabolites)
 write.csv(module7_metabolites, "module7_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
 
@@ -1514,12 +1540,53 @@ write.csv(module7_metabolites, "module7_metabolites.csv", quote = FALSE, row.nam
 module8_metabolites <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 8) %>%
-  dplyr::select(., Metabolite) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column
+  dplyr::select(., Metabolite) %>% 
+  left_join(., (rawMetabolomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
+  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw metabolomics data to get PubChem and KEGG ids.
 nrow(module8_metabolites) #6 metabolites
+head(module8_metabolites)
 write.csv(module8_metabolites, "module8_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
 
+## Enrichment compound class analysis - what types of compounds are enriched? 
 
+https://www.metaboanalyst.ca/MetaboAnalyst/upload/EnrichUploadView.xhtml
+
+Enrichment analysis - Main class chemical structures 
+
+Loaded list of each module metabolites generated above (name is cluster#_metabolite_list.csv) and corrected metabolite names to match in database. 
+Output table .csv of results saved to Mcap2020/Output/Metabolomics/Metaboanalyst folder.  
+
+*CLUSTER 1*  
+Modifications to chemical names were as follows (listed as original followed by Metaboanalyst corrected version):  
+1-Methylimidazole acetic acid         Methylimidazole acetic acid  
+3-Indo-L-tyrosine                     Iodotyrosine  
+Acetyl glycine                        Phenylacetylglycine    
+Arginine-Valine                       Arginyl-Valine    
+Glutaryl-carnitine                    Glutamylarginine   
+Methylphenyllactate                   3-Methylphenylacetic acid  
+N-carbomoyl-L-aspartate               Ureidosuccinic acid  
+NG-dimethyl-L-arginine                Asymmetric dimethylarginine  
+Ribose phosphate                      Ribose 1-phosphate   
+
+*CLUSTER 2*  
+Modifications to chemical names were as follows (listed as original followed by Metaboanalyst corrected version):  
+Cresol                                p-Cresol
+Lysine-Glutamine                      Lysyl-Glutamine
+N-Acetyl-Glucosamine                  N-Acetyl-D-Glucosamine 6-Phosphate
+
+Montiporic Acid A-D (enriched but no match in database, not used in analysis)  
+
+*CLUSTER 3*  
+2-Furoyl glycine                      2-Furoylglycine                      
+5- Methylthioadenosine                5'-Methylthioadenosine    
+Acetyl-arginine                       N-a-Acetyl-L-arginine  
+Alanine-Alanine                       Alanyl-Alanine    
+Arginine-Alanine                      Arginyl-Alanine  
+Arginine-Glutamine                    Arginyl-Glutamine  
+N N N-Trimethyllysine                 N6,N6,N6-Trimethyl-L-lysine    
+N-acetyl-L-ornithine                  N-Acetylornithine  
+Ophthalmate                           Ophthalmic acid  
 
 
 

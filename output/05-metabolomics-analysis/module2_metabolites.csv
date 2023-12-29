@@ -1,23 +1,23 @@
-Metabolite
-tyramine
-thymine
-threonine
-synephrine
-serotonin
-phenylethylamine
-pantothenic acid
-N-methylethanolamine
-N-alpha-acetyllysine 
-levoglucosan
-glycine
-glycerol-alpha-phosphate
-glutathione 
-ethanolamine
-dopamine 
-asparagine
-arabitol
-aminomalonic acid
-alanine
-5-methoxytryptamine
-4-hydroxymandelic acid
-3-Aminopiperidine-2,6-dione 
+Metabolite,PubChem,KEGG
+tyramine,5610,C00483
+thymine,1135,C00178
+threonine,6288,C00188
+synephrine,7172,C04548
+serotonin,5202,C00780
+phenylethylamine,1001,C05332
+pantothenic acid,6613,C00864
+N-methylethanolamine,8016,
+N-alpha-acetyllysine ,192590,
+levoglucosan,2724705,C22350
+glycine,750,C00037
+glycerol-alpha-phosphate,754,C03189
+glutathione ,124886,C00051
+ethanolamine,700,C00189
+dopamine ,661,
+asparagine,6267,C00152
+arabitol,94154,C01904
+aminomalonic acid,100714,C00872
+alanine,5950,C00041
+5-methoxytryptamine,1833,C05659
+4-hydroxymandelic acid,328,C11527
+3-Aminopiperidine-2,6-dione ,134508,

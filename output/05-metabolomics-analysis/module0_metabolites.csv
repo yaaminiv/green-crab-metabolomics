@@ -1,41 +1,41 @@
-Metabolite
-xylitol
-uric acid
-urea
-UDP-N-acetylglucosamine 
-trans-4-hydroxyproline 
-sucrose
-ribonic acid 
-pyrrole-2-carboxylic acid
-phosphoinositol
-phosphoethanolamine
-para-xanthine 
-octadecanol
-n-epsilon-trimethyllysine
-N-acetylputrescine 
-methionine sulfoxide
-malic acid
-isoxanthopterin
-isothreonic acid 
-hypoxanthine
-hypotaurine
-glycyl-glycine 
-glycerol
-glyceric acid 
-glucose-6-phosphate
-fructose-6-phosphate 
-fructose-1-phosphate
-dimethylglycine
-cytosine
-cystine
-cysteine
-cystathionine
-citrulline
-citric acid
-ciliatine
-cadaverine
-beta-alanine
-alpha-aminoadipic acid
-3-aminoisobutyric acid
-2-ketoadipic acid 
-2-aminobutyric acid
+Metabolite,PubChem,KEGG
+xylitol,6912,C00379
+uric acid,1175,C00366
+urea,1176,C00086
+UDP-N-acetylglucosamine ,445675,C00043
+trans-4-hydroxyproline ,5810,C01157
+sucrose,5988,C00089
+ribonic acid ,5460677,C01685
+pyrrole-2-carboxylic acid,12473,C05942
+phosphoinositol,4449629,
+phosphoethanolamine,1015,C00346
+para-xanthine ,53442229,C13747
+octadecanol,8221,
+n-epsilon-trimethyllysine,440121,
+N-acetylputrescine ,122356,C02714
+methionine sulfoxide,158980,C02989
+malic acid,525,C00711
+isoxanthopterin,10729,C03975
+isothreonic acid ,151152,C00639
+hypoxanthine,790,C00262
+hypotaurine,107812,C00519
+glycyl-glycine ,11163,C02037
+glycerol,753,C00116
+glyceric acid ,752,
+glucose-6-phosphate,5958,C00092
+fructose-6-phosphate ,440641,C05345
+fructose-1-phosphate,439394,C01094
+dimethylglycine,673,
+cytosine,597,C00380
+cystine,595,C01420
+cysteine,5862,C00097
+cystathionine,439258,C02291
+citrulline,9750,C00327
+citric acid,311,C00158
+ciliatine,339,C03557
+cadaverine,273,
+beta-alanine,239,C00099
+alpha-aminoadipic acid,92136,C00956
+3-aminoisobutyric acid,64956,C05145
+2-ketoadipic acid ,71,C00322
+2-aminobutyric acid,6657,C02721

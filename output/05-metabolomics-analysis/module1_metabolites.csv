@@ -1,23 +1,23 @@
-Metabolite
-tagatose 
-sophorose
-shikimic acid
-pinitol
-pentadecanoic acid
-ononitol
-N-acetylgalactosamine
-maltotriitol 
-maltitol
-maleimide
-lysine
-loganin
-lactobionic acid 
-isogluconic acid
-glycyl tyrosine
-glycerol-3-galactoside 
-glucose 
-fumaric acid
-fructose 
-cellobiose
-alanine-alanine
-3,6-anhydro-D-galactose
+Metabolite,PubChem,KEGG
+tagatose ,439312,C00795
+sophorose,441432,C08250
+shikimic acid,8742,C00493
+pinitol,164619,
+pentadecanoic acid,13849,C16537
+ononitol,230881,
+N-acetylgalactosamine,440552,C05021
+maltotriitol ,5288441,
+maltitol,493591,D04845
+maleimide,10935,C07272
+lysine,5962,C00047
+loganin,87691,C01433
+lactobionic acid ,7314,C04247
+isogluconic acid,604,C02341
+glycyl tyrosine,92829,
+glycerol-3-galactoside ,16048618,C05401
+glucose ,64689,C00221
+fumaric acid,444972,C00122
+fructose ,439709,C02336
+cellobiose,6255,C01971
+alanine-alanine,5484352,C00993
+3,6-anhydro-D-galactose,16069996,C06474

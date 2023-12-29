@@ -1,11 +1,11 @@
-Metabolite
-valine 
-tyrosine
-tryptophan 
-ribose-5-phosphate
-ribitol
-phenylalanine
-methionine
-leucine
-isoleucine 
-hydroxylamine
+Metabolite,PubChem,KEGG
+valine ,6287,C00183
+tyrosine,6057,C00082
+tryptophan ,6305,C00078
+ribose-5-phosphate,77982,
+ribitol,827,C00474
+phenylalanine,6140,C00079
+methionine,6137,C00073
+leucine,6106,C00123
+isoleucine ,6306,C00407
+hydroxylamine,787,C00192

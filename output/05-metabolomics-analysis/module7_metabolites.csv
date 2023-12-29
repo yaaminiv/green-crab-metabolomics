@@ -1,9 +1,9 @@
-Metabolite
-uracil
-serine
-N-acetylglucosamine-6-phosphate 
-methanolphosphate
-lyxose
-inosine
-adenosine-5-monophosphate
-adenosine
+Metabolite,PubChem,KEGG
+uracil,1174,C00106
+serine,5951,C00065
+N-acetylglucosamine-6-phosphate ,129630434,C00357
+methanolphosphate,13130,
+lyxose,439240,C00476
+inosine,6021,C00294
+adenosine-5-monophosphate,6083,C00020
+adenosine,60961,C00212

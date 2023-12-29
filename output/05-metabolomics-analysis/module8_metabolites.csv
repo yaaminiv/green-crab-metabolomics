@@ -1,7 +1,7 @@
-Metabolite
-raffinose
-melezitose
-maltotriose
-lactulose 
-lactose 
-lactitol
+Metabolite,PubChem,KEGG
+raffinose,439242,C00492
+melezitose,92817,C08243
+maltotriose,439586,C01835
+lactulose ,11333,C07064
+lactose ,440995,C00243
+lactitol,157355,C13542
