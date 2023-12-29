@@ -1,0 +1,58 @@
+KEGG,total,expected,hits,Raw.p,Holm.p,FDR,Module
+Taurine and hypotaurine metabolism,8,0.052,2,0.00104,0.0835,0.0835,0
+Pantothenate and CoA biosynthesis,20,0.13,2,0.00679,0.537,0.241,0
+Galactose metabolism,27,0.176,2,0.0122,0.955,0.241,0
+Glutathione metabolism,28,0.182,2,0.0131,1,0.241,0
+Glycine, serine and threonine metabolism,33,0.215,2,0.018,1,0.241,0
+Cysteine and methionine metabolism,33,0.215,2,0.018,1,0.241,0
+Thiamine metabolism,7,0.0455,1,0.0447,1,0.511,0
+Purine metabolism,70,0.455,2,0.0726,1,0.726,0
+Arginine biosynthesis,14,0.091,1,0.0876,1,0.779,0
+Glycerolipid metabolism,16,0.104,1,0.0996,1,0.797,0
+Starch and sucrose metabolism,18,0.117,1,0.111,1,0.81,0
+beta-Alanine metabolism,21,0.137,1,0.129,1,0.828,0
+Propanoate metabolism,22,0.143,1,0.135,1,0.828,0
+Arginine and proline metabolism,36,0.234,1,0.211,1,1,0
+Pyrimidine metabolism,39,0.254,1,0.227,1,1,0
+Starch and sucrose metabolism,18,0.0351,3,1.35e-06,0.000108,0.000108,1
+Galactose metabolism,27,0.0527,2,0.000881,0.0696,0.0352,1
+Neomycin, kanamycin and gentamicin biosynthesis,2,0.0039,1,0.0039,0.304,0.104,1
+Fructose and mannose metabolism,20,0.039,1,0.0385,1,0.771,1
+Amino sugar and nucleotide sugar metabolism,42,0.0819,1,0.0798,1,1,1
+Alanine, aspartate and glutamate metabolism,28,0.182,2,0.0131,1,0.481,2
+Glutathione metabolism,28,0.182,2,0.0131,1,0.481,2
+Glycine, serine and threonine metabolism,33,0.215,2,0.018,1,0.481,2
+Tyrosine metabolism,42,0.273,2,0.0285,1,0.57,2
+Valine, leucine and isoleucine biosynthesis,8,0.052,1,0.051,1,0.815,2
+Selenocompound metabolism,20,0.13,1,0.123,1,1,2
+Lipoic acid metabolism,28,0.182,1,0.168,1,1,2
+Porphyrin metabolism,31,0.202,1,0.185,1,1,2
+Glyoxylate and dicarboxylate metabolism,32,0.208,1,0.19,1,1,2
+Glycerophospholipid metabolism,36,0.234,1,0.211,1,1,2
+Pyrimidine metabolism,39,0.254,1,0.227,1,1,2
+Tryptophan metabolism,41,0.267,1,0.237,1,1,2
+Primary bile acid biosynthesis,46,0.299,1,0.263,1,1,2
+Glutathione metabolism,28,0.0728,2,0.00188,0.15,0.124,3
+Arginine and proline metabolism,36,0.0936,2,0.0031,0.245,0.124,3
+Ascorbate and aldarate metabolism,9,0.0234,1,0.0232,1,0.619,3
+beta-Alanine metabolism,21,0.0546,1,0.0536,1,1,3
+Galactose metabolism,27,0.0702,1,0.0685,1,1,3
+Inositol phosphate metabolism,30,0.078,1,0.0758,1,1,3
+Purine metabolism,70,0.182,1,0.17,1,1,3
+Taurine and hypotaurine metabolism,8,0.0156,1,0.0155,1,0.621,4
+Sulfur metabolism,8,0.0156,1,0.0155,1,0.621,4
+Histidine metabolism,16,0.0312,1,0.0309,1,0.824,4
+Primary bile acid biosynthesis,46,0.0897,1,0.0871,1,1,4
+Purine metabolism,70,0.137,1,0.131,1,1,4
+Phenylalanine, tyrosine and tryptophan biosynthesis,4,0.0078,1,0.00779,0.623,0.414,5
+Valine, leucine and isoleucine biosynthesis,8,0.0156,1,0.0155,1,0.414,5
+Phenylalanine metabolism,8,0.0156,1,0.0155,1,0.414,5
+Ubiquinone and other terpenoid-quinone biosynthesis,18,0.0351,1,0.0347,1,0.617,5
+Pantothenate and CoA biosynthesis,20,0.039,1,0.0385,1,0.617,5
+Valine, leucine and isoleucine degradation,40,0.078,1,0.0761,1,0.798,5
+Tryptophan metabolism,41,0.08,1,0.0779,1,0.798,5
+Tyrosine metabolism,42,0.0819,1,0.0798,1,0.798,5
+Purine metabolism,70,0.137,2,0.00595,0.476,0.476,7
+Pantothenate and CoA biosynthesis,20,0.039,1,0.0385,1,1,7
+beta-Alanine metabolism,21,0.041,1,0.0404,1,1,7
+Pyrimidine metabolism,39,0.0761,1,0.0742,1,1,7

@@ -1432,9 +1432,9 @@ metab_rel_change #Confirm calculations
 write.csv(metab_rel_change, "metabolites_relative_change.csv", quote = FALSE, row.names = FALSE)
 ```
 
-# Pathway analysis
+# Pathway analysis with MetaboAnalyst
 
-The final step in this workflow is to understand the various metabolic pathways represented in each module eigengene. I'll conduct the majority of this analysis with the MetaboAnalyst GUI interface.
+The final step in this workflow is to understand the various metabolic pathways represented in each module eigengene. I'll conduct the majority of this analysis with the MetaboAnalyst GUI interface, but return here to process results.
 
 ```{bash}
 mkdir metaboanalyst
@@ -1565,15 +1565,13 @@ The first kind of enrichment analysis I will complete is looking at compound str
 
 I don't have a reference metabolome and I didn't perform targeted metabolomics. I used metabolite sets containing at least two entries and all compounds in the selected library as a reference.
 
-Certain compounds were not recognized by MetaboAnalyst, or require manual PubChem/KEGG ID correction. The resulting name maps (input names v.s names used for enrichment analysis) from MetaboAnalyst were renamed according to module number and saved [here](https://github.com/yaaminiv/green-crab-metabolomics/tree/main/output/05-metabolomics-analysis/metaboanalyst/msea-compoundClass/name-maps).
+Certain compounds were not recognized by MetaboAnalyst, or require manual PubChem/KEGG ID correction. The resulting name maps (input names v.s names used for enrichment analysis) from MetaboAnalyst were renamed according to module number and saved [here](https://github.com/yaaminiv/green-crab-metabolomics/tree/main/output/05-metabolomics-analysis/metaboanalyst/name-maps).
 
 The output tables (msea_ora_result.csv files from MetaboAnalyst) were renamed according to module number and saved [here](https://github.com/yaaminiv/green-crab-metabolomics/tree/main/output/05-metabolomics-analysis/metaboanalyst/msea-compoundClass/enrichment-output).
 
 ### View results
 
 #### Import results
-
-Load data output from Metaboanalyst and join into a single dataframe.    
 
 ```{r}
 #Import dataframes from each module. Add a Module column and rename the first column.
@@ -1621,12 +1619,10 @@ head(compound_classes) #Confirm dataframe creation
 ```
 
 ```{r}
-write.csv(compound_classes, "metaboanalyst/msea-compoundClass/enrichment-output/all-module-compound-classes.csv", quote = FALSE, row.names = FALSE) #Save dataframe with all compound classes for all modules
+write.csv(compound_classes, "metaboanalyst/msea-compoundClass/all-module-compound-classes.csv", quote = FALSE, row.names = FALSE) #Save dataframe with all compound classes for all modules
 ```
 
 #### Format results
-
-Filter out pathways that are significantly enriched with FDR p value <0.05.  
 
 ```{r}
 sig_classes_comp <- compound_classes %>%
@@ -1636,7 +1632,7 @@ head(sig_classes_comp)
 ```
 
 ```{r}
-write.csv(sig_classes_comp, "metaboanalyst/msea-compoundClass/enrichment-output/significant-compound-classes.csv", quote = FALSE, row.names = FALSE)
+write.csv(sig_classes_comp, "metaboanalyst/msea-compoundClass/significant-compound-classes.csv", quote = FALSE, row.names = FALSE)
 ```
 
 #### Plot results
@@ -1652,6 +1648,94 @@ ggplot(sig_classes_comp, aes(x = Module, y = compoundClass)) +
 ggsave("metaboanalyst/figures/compound-class-dotplot.pdf", height = 8.5, width = 11)
 ```
 
+## KEGG Pathway Analysis
 
+### Analysis in MetaboAnalyst Interface
+
+I'll return to the [MetaboAnalyst enrichment interface](https://www.metaboanalyst.ca/MetaboAnalyst/upload/EnrichUploadView.xhtml) and use the same steps to conduct a KEGG Pathway enrichment. Again, I will upload metabolite names and correct them as needed within the interface. KEGG Pathway enrichment results are saved [here](https://github.com/yaaminiv/green-crab-metabolomics/tree/main/output/05-metabolomics-analysis/metaboanalyst/msea-KEGG/enrichment-output).
+
+### View results
+
+#### Import results
+
+```{r}
+#Import dataframes from each module. Add a Module column and rename the first column.
+
+module0_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module0-msea_ora_result.csv") %>%
+  mutate(., Module = "0") %>%
+  dplyr::rename(., KEGG = X)
+module1_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module1-msea_ora_result.csv") %>%
+  mutate(., Module = "1") %>%
+  dplyr::rename(., KEGG = X)
+module2_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module2-msea_ora_result.csv") %>%
+  mutate(., Module = "2") %>%
+  dplyr::rename(., KEGG = X)
+module3_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module3-msea_ora_result.csv") %>%
+  mutate(., Module = "3") %>%
+  dplyr::rename(., KEGG = X)
+module4_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module4-msea_ora_result.csv") %>%
+  mutate(., Module = "4") %>%
+  dplyr::rename(., KEGG = X)
+module5_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module5-msea_ora_result.csv") %>%
+  mutate(., Module = "5") %>%
+  dplyr::rename(., KEGG = X)
+# module6_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module6-msea_ora_result.csv") %>%
+#   mutate(., Module = "6") %>%
+#   dplyr::rename(., KEGG = X)
+module7_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module7-msea_ora_result.csv") %>%
+  mutate(., Module = "7") %>%
+  dplyr::rename(., KEGG = X)
+# module8_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module8-msea_ora_result.csv") %>%
+#   mutate(., Module = "8") %>%
+#   dplyr::rename(., KEGG = X)
+```
+
+```{r}
+KEGG_pathways <- rbind(module0_KEGG,
+                       module1_KEGG,
+                       module2_KEGG,
+                       module3_KEGG,
+                       module4_KEGG,
+                       module5_KEGG,
+                       # module6_KEGG,
+                       module7_KEGG
+                       # module8_KEGG
+                       ) #Create dataframe with compound classes
+head(KEGG_pathways) #Confirm dataframe creation
+```
+
+```{r}
+write.csv(KEGG_pathways, "metaboanalyst/msea-KEGG/all-module-KEGG-pathways.csv", quote = FALSE, row.names = FALSE) #Save dataframe with all compound classes for all modules
+```
+
+#### Format results
+
+```{r}
+sig_KEGG_pathways <- KEGG_pathways %>%
+  filter(., FDR < 0.05) %>%
+  dplyr::select(., KEGG, total, hits, FDR, Module) #Filter out only significant compound classes using a FDR < 0.05 threshold. Keep KEGG, total, hits, FDR, and Module columns.
+head(sig_KEGG_pathways) 
+```
+
+```{r}
+write.csv(sig_KEGG_pathways, "metaboanalyst/msea-KEGG/significant-compound-classes.csv", quote = FALSE, row.names = FALSE)
+```
+
+#### Plot results
+
+```{r}
+ggplot(sig_KEGG_pathways, aes(x = Module, y = KEGG)) + 
+  geom_point(aes(size = hits)) +
+  scale_size(name = "Metabolites",
+             range = c(4,15), 
+             limits = c(1,15)) +
+  xlab("Module Eigengene") + ylab("KEGG Pathway") +
+  theme_classic(base_size = 15) #Plot significantly enriched KEGG pathways for each module. Scale point size by the number of metabolite hits in each category. Define x- and y- axis labels. Change the angle of the x-axis text.
+ggsave("metaboanalyst/figures/KEGG-pathway-dotplot.pdf", height = 8.5, width = 11)
+```
+
+**TO DO**:
+
+- figure out why modules 6 and 8 aren't running through KEGG enrichment
 
 
