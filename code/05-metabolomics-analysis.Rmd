@@ -1438,6 +1438,7 @@ The final step in this workflow is to understand the various metabolic pathways 
 
 ```{bash}
 mkdir metaboanalyst
+mkdir metaboanalyst/figures
 ```
 
 ## Create lists of metabolites in each module
@@ -1472,7 +1473,7 @@ write.csv(module1_metabolites, "metaboanalyst/module1_metabolites.csv", quote = 
 module2_metabolites <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 2) %>%
-    dplyr::select(., Metabolite) %>% 
+  dplyr::select(., Metabolite) %>% 
   left_join(., (rawMetabolomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
   dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw metabolomics data to get PubChem and KEGG ids.
 nrow(module2_metabolites) #22 metabolites
@@ -1484,7 +1485,7 @@ write.csv(module2_metabolites, "metaboanalyst/module2_metabolites.csv", quote = 
 module3_metabolites <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 3) %>%
-    dplyr::select(., Metabolite) %>% 
+  dplyr::select(., Metabolite) %>% 
   left_join(., (rawMetabolomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
   dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw metabolomics data to get PubChem and KEGG ids.
 nrow(module3_metabolites) #19 metabolites
@@ -1554,6 +1555,8 @@ write.csv(module8_metabolites, "metaboanalyst/module8_metabolites.csv", quote = 
 
 ## Enrichment compound class analysis
 
+### Analysis in MetaboAnalyst interface
+
 The first kind of enrichment analysis I will complete is looking at compound structures. To do this, I will upload the list of metabolite names for each module (generated above) to the [MetaboAnalyst interface](https://www.metaboanalyst.ca/MetaboAnalyst/upload/EnrichUploadView.xhtml). Then, I will conduct an enrichment of *main class chemical structures*. 
 
 > Enrichment tests are based on the well-established globaltest to test associations between metabolite sets and the outcome. The algorithm uses a generalized linear model to compute a ‘Q-stat’ for each metabolite set. The Q-stat is calculated as the average of the Q values calculated for the each single metabolites; while the Q value is the squared covariance between the metabolite and the outcome. The globaltest has been shown to exhibit similar or superior performance when tested against several other popular methods.
@@ -1566,6 +1569,88 @@ Certain compounds were not recognized by MetaboAnalyst, or require manual PubChe
 
 The output tables (msea_ora_result.csv files from MetaboAnalyst) were renamed according to module number and saved [here](https://github.com/yaaminiv/green-crab-metabolomics/tree/main/output/05-metabolomics-analysis/metaboanalyst/msea-compoundClass/enrichment-output).
 
+### View results
+
+#### Import results
+
+Load data output from Metaboanalyst and join into a single dataframe.    
+
+```{r}
+#Import dataframes from each module. Add a Module column and rename the first column.
+
+module0_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module0-msea_ora_result.csv") %>%
+  mutate(., Module = "Module 0") %>%
+  dplyr::rename(., compoundClass = X)
+module1_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module1-msea_ora_result.csv") %>%
+  mutate(., Module = "Module 1") %>%
+  dplyr::rename(., compoundClass = X)
+module2_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module2-msea_ora_result.csv") %>%
+  mutate(., Module = "Module 2") %>%
+  dplyr::rename(., compoundClass = X)
+module3_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module3-msea_ora_result.csv") %>%
+  mutate(., Module = "Module 3") %>%
+  dplyr::rename(., compoundClass = X)
+module4_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module4-msea_ora_result.csv") %>%
+  mutate(., Module = "Module 4") %>%
+  dplyr::rename(., compoundClass = X)
+module5_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module5-msea_ora_result.csv") %>%
+  mutate(., Module = "Module 5") %>%
+  dplyr::rename(., compoundClass = X)
+module6_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module6-msea_ora_result.csv") %>%
+  mutate(., Module = "Module 6") %>%
+  dplyr::rename(., compoundClass = X)
+module7_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module7-msea_ora_result.csv") %>%
+  mutate(., Module = "Module 7") %>%
+  dplyr::rename(., compoundClass = X)
+module8_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module8-msea_ora_result.csv") %>%
+  mutate(., Module = "Module 8") %>%
+  dplyr::rename(., compoundClass = X)
+```
+
+```{r}
+compound_classes <- rbind(module0_class,
+                          module1_class,
+                          module2_class,
+                          module3_class,
+                          module4_class,
+                          module5_class,
+                          module6_class,
+                          module7_class,
+                          module8_class) #Create dataframe with compound classes
+head(compound_classes) #Confirm dataframe creation
+```
+
+```{r}
+write.csv(compound_classes, "metaboanalyst/msea-compoundClass/enrichment-output/all-module-compound-classes.csv", quote = FALSE, row.names = FALSE) #Save dataframe with all compound classes for all modules
+```
+
+#### Format results
+
+Filter out pathways that are significantly enriched with FDR p value <0.05.  
+
+```{r}
+sig_classes_comp <- compound_classes %>%
+  filter(., FDR < 0.05) %>%
+  dplyr::select(., compoundClass, total, hits, FDR, Module) #Filter out only significant compound classes using a FDR < 0.05 threshold. Keep compoundClass, total, hits, FDR, and Module columns.
+head(sig_classes_comp) 
+```
+
+```{r}
+write.csv(sig_classes_comp, "metaboanalyst/msea-compoundClass/enrichment-output/significant-compound-classes.csv", quote = FALSE, row.names = FALSE)
+```
+
+#### Plot results
+
+```{r}
+ggplot(sig_classes_comp, aes(x = Module, y = compoundClass)) + 
+  geom_point(aes(size = hits)) +
+  scale_size(name = "Metabolites",
+             range = c(1,10), 
+             limits = c(1,15)) +
+  xlab("Module Eigengene") + ylab("Compound Class") +
+  theme_classic(base_size = 15) + theme(axis.text.x = element_text(angle = 35, hjust = 1)) #Plot significantly enriched compound classes for each module. Scale point size by the number of metabolite hits in each category. Define x- and y- axis labels. Change the angle of the x-axis text.
+ggsave("metaboanalyst/figures/compound-class-dotplot.pdf", height = 8.5, width = 11)
+```
 
 
 
