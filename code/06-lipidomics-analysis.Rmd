@@ -1043,6 +1043,7 @@ sampleTree <- hclust(dist(rowwiseLipidData), method = "average") #Perform cluste
 plot(sampleTree, main = "Sample clustering to detect outliers", sub = "", xlab = "", cex.lab = 1.5, cex.axis = 1.5, cex.main = 2)
 #dev.off()
 ```
+103, 303, and 304 look like they could be outliers. I did this analysis with and without those samples and it didn't change the clustering patterns, so I'll keep them.
 
 ## Network construction and consensus module detection
 
@@ -1075,7 +1076,7 @@ plot(sft$fitIndices[,1], sft$fitIndices[,5],
 text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1,col="red")
 ```
 
-When choosing a soft thresholding power, want to choose the lowest number that reaches the R<sup>2</sup> cutoff. From this data, it appears that the **soft thresholding power is 6**.  
+When choosing a soft thresholding power, want to choose the lowest number that reaches but does not pass the R<sup>2</sup> cutoff. From this data, it appears that the **soft thresholding power is 10**.  
 
 ### Identify modules using `blockwiseModules`  
 
@@ -1093,7 +1094,7 @@ mergeCutHeight = 0.25
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 
-picked_power = 6
+picked_power = 10
 temp_cor <- cor       
 cor <- WGCNA::cor # Force it to use WGCNA cor function (fix a namespace conflict issue)
 netwk <- blockwiseModules(rowwiseLipidData,                         # <= input here
@@ -1131,8 +1132,8 @@ table(mergedColors)
 
 Module sizes are as follows: 
 
-0  1  2  3  4  5  6  7  8 
-40 22 22 19 15 10 10  8  6 
+0    1   2   3   4   5   6   7   8   9  10  11  12  13  14  15 
+47 241  75  72  51  28  16  12  12  11  11  11   7   7   6   5 
 
 ```{r}
 # Plot the dendrogram and the module colors underneath
@@ -1160,7 +1161,7 @@ module_df <- data.frame(
 
 module_df[1:5,]
 
-write.csv(module_df, "WCNA/metabolite_modules.csv")
+#write.csv(module_df, "WCNA/lipid_modules.csv")
 
 # Get Module Eigengenes per cluster
 MEs <- moduleEigengenes(rowwiseLipidData, mergedColors)$eigengenes
@@ -1196,11 +1197,7 @@ mME %>% ggplot(., aes(x=crab.ID, y=name, fill=value)) +
 
 ### Relate modules to treatment and day
 
-Prepare trait data. Data has to be numeric, so I will substitute temperatures and days for numeric values. TMake a dataframe that has a column for each treatment or day and a row for samples. Populate a 1 for samples that match each treatment or day and a 0 for samples not matching respective treatments or days This process changes treatments and days from a categorical variable into a binary variable. This will allow for correlations between mean eigengenes and treatment or day.  
-
-```{r}
-head(lipidomicsMetadata)
-```
+Prepare trait data. Data has to be numeric, so I will substitute temperatures and days for numeric values. To do this, I make a dataframe that has a column for each treatment x day and a row for samples. Populate a 1 for samples that match each treatment x day and a 0 for samples not matching respective treatment x day. This process changes treatments and days from a categorical variable into a binary variable. This will allow for correlations between mean eigengenes and treatment or day.  
 
 ```{r}
 datTraits <- lipidomicsMetadata %>%
@@ -1232,7 +1229,7 @@ nMetabolites
 nSamples
 ```
 
-We have 152 lipids and 69 samples.   
+We have 612 lipids and 69 samples.   
 
 Next correlate the trait matrix (treatment, day) with eigengenes (modules).  
 
@@ -1292,7 +1289,7 @@ ht <- Heatmap(moduleTraitCor, name = "Eigengene", column_title = "Module-Group E
               row_dend_side = "left",
               width = unit(5, "in"), 
               height = unit(4.5, "in"), 
-              column_dend_reorder = TRUE, 
+              column_dend_reorder = TRUE,
               cluster_columns = col_dend,
               row_dend_reorder = FALSE,  
               #column_split = 3, 
@@ -1338,7 +1335,7 @@ levels(mME_meta$treatment_day) #Confirm levels were reordered
 ```
 
 ```{r}
-write.csv(WCNA/mME_meta, "module-expression.csv", quote = FALSE, row.names = FALSE) #Save module expression dataframe
+write.csv(mME_meta, "WCNA/module-expression.csv", quote = FALSE, row.names = FALSE) #Save module expression dataframe
 ```
 
 First, I'm going to look at boxplots for eigengene expression by treatment x day.
@@ -1398,22 +1395,21 @@ mME_meta$treatment_day <- factor(mME_meta$treatment_day, levels = c("13_3", "13_
 levels(mME_meta$treatment_day) #Confirm levels were reordered
 ```
 
-
 ```{r}
-metab_rel_change <- mME_meta %>%
+lipid_rel_change <- mME_meta %>%
   dplyr::select(treatment_day, crab.ID, Module, value) %>%
   group_by(treatment_day, Module) %>%
   summarise(mean = mean(value)) %>%
   group_by(treatment_day, Module) %>%
   arrange(treatment_day, .by_group = TRUE) %>%
   group_by(Module) %>%
-  mutate(metabolite_expression = ((mean-dplyr::first(mean))/abs(dplyr::first(mean)))) %>%
-  dplyr::select(Module, treatment_day, metabolite_expression) #Take the dataframe with module information and metadata, and keep only the treatment_day, crab.ID, module, and module eigengene values. Group by treatment_day and Module, then calculate mean eigengene expression. Arrange by treatment_day, group by module again, then calculaterelative change in expression for each module relative to 13ºC at day 3. 
-metab_rel_change #Confirm calculations
+  mutate(lipid_expression = ((mean-dplyr::first(mean))/abs(dplyr::first(mean)))) %>%
+  dplyr::select(Module, treatment_day, lipid_expression) #Take the dataframe with module information and metadata, and keep only the treatment_day, crab.ID, module, and module eigengene values. Group by treatment_day and Module, then calculate mean eigengene expression. Arrange by treatment_day, group by module again, then calculate relative change in expression for each module relative to 13ºC at day 3. 
+lipid_rel_change #Confirm calculations
 ```
 
 ```{r}
-write.csv(WCNA/metab_rel_change, "lipids_relative_change.csv", quote = FALSE, row.names = FALSE)
+write.csv(lipid_rel_change, "WCNA/lipids_relative_change.csv", quote = FALSE, row.names = FALSE)
 ```
 
 # Pathway analysis with MetaboAnalyst
