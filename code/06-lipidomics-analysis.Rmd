@@ -1154,7 +1154,7 @@ plotDendroAndColors(
 
 ``` {r, echo=TRUE, warning=FALSE, message=FALSE}
 module_df <- data.frame(
-  Metabolite = names(netwk$colors),
+  Lipid = names(netwk$colors),
   colors = netwk$colors
   #colors = labels2colors(netwk$colors)
 )
@@ -1423,16 +1423,16 @@ mkdir metaboanalyst/figures
 
 ## Create lists of lipids in each module
 
-For each module, I want the metabolite name, but I also want all of the PubChem and KEGG ID information provided by the sequencing facility. This is because common names for metabolties can be different, and using a numerical classifier will ensure the correct compounds are recognized by MetaboAnalyst.
+For each module, I want the lipid unique ID name, but I also want all of the information provided by the sequencing facility. This is because common names for lipids can be different, and using a numerical classifier will ensure the correct compounds are recognized by MetaboAnalyst.
 
 ```{r}
 module0_lipids <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 0) %>%
-  dplyr::select(., Metabolite) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
-  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
-nrow(module0_lipids) #40 lipids
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = uniqueID)), by = "Lipid") %>%
+  dplyr::select(., 1:5) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information.
+nrow(module0_lipids) #47 lipids
 head(module0_lipids)
 write.csv(module0_lipids, "metaboanalyst/module0_lipids.csv", quote = FALSE, row.names = FALSE)
 ```
@@ -1441,10 +1441,10 @@ write.csv(module0_lipids, "metaboanalyst/module0_lipids.csv", quote = FALSE, row
 module1_lipids <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 1) %>%
-  dplyr::select(., Metabolite) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
-  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
-nrow(module1_lipids) #22 lipids
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = uniqueID)), by = "Lipid") %>%
+  dplyr::select(., 1:5) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information.
+nrow(module1_lipids) #241 lipids
 head(module1_lipids)
 write.csv(module1_lipids, "metaboanalyst/module1_lipids.csv", quote = FALSE, row.names = FALSE)
 ```
@@ -1453,10 +1453,10 @@ write.csv(module1_lipids, "metaboanalyst/module1_lipids.csv", quote = FALSE, row
 module2_lipids <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 2) %>%
-  dplyr::select(., Metabolite) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
-  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
-nrow(module2_lipids) #22 lipids
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = uniqueID)), by = "Lipid") %>%
+  dplyr::select(., 1:5) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information.
+nrow(module2_lipids) #75 lipids
 head(module2_lipids)
 write.csv(module2_lipids, "metaboanalyst/module2_lipids.csv", quote = FALSE, row.names = FALSE)
 ```
@@ -1465,10 +1465,10 @@ write.csv(module2_lipids, "metaboanalyst/module2_lipids.csv", quote = FALSE, row
 module3_lipids <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 3) %>%
-  dplyr::select(., Metabolite) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
-  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
-nrow(module3_lipids) #19 lipids
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = uniqueID)), by = "Lipid") %>%
+  dplyr::select(., 1:5) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information.
+nrow(module3_lipids) #72 lipids
 head(module3_lipids)
 write.csv(module3_lipids, "metaboanalyst/module3_lipids.csv", quote = FALSE, row.names = FALSE)
 ```
@@ -1477,10 +1477,10 @@ write.csv(module3_lipids, "metaboanalyst/module3_lipids.csv", quote = FALSE, row
 module4_lipids <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 4) %>%
-  dplyr::select(., Metabolite) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
-  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
-nrow(module4_lipids) #15 lipids
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = uniqueID)), by = "Lipid") %>%
+  dplyr::select(., 1:5) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information.
+nrow(module4_lipids) #51 lipids
 head(module4_lipids)
 write.csv(module4_lipids, "metaboanalyst/module4_lipids.csv", quote = FALSE, row.names = FALSE)
 ```
@@ -1489,10 +1489,10 @@ write.csv(module4_lipids, "metaboanalyst/module4_lipids.csv", quote = FALSE, row
 module5_lipids <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 5) %>%
-  dplyr::select(., Metabolite) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
-  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
-nrow(module5_lipids) #10 lipids
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = uniqueID)), by = "Lipid") %>%
+  dplyr::select(., 1:5) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information.
+nrow(module5_lipids) #28 lipids
 head(module5_lipids)
 write.csv(module5_lipids, "metaboanalyst/module5_lipids.csv", quote = FALSE, row.names = FALSE)
 ```
@@ -1501,10 +1501,10 @@ write.csv(module5_lipids, "metaboanalyst/module5_lipids.csv", quote = FALSE, row
 module6_lipids <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 6) %>%
-  dplyr::select(., Metabolite) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
-  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
-nrow(module6_lipids) #10 lipids
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = uniqueID)), by = "Lipid") %>%
+  dplyr::select(., 1:5) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information.
+nrow(module6_lipids) #16 lipids
 head(module6_lipids)
 write.csv(module6_lipids, "metaboanalyst/module6_lipids.csv", quote = FALSE, row.names = FALSE)
 ```
@@ -1513,10 +1513,10 @@ write.csv(module6_lipids, "metaboanalyst/module6_lipids.csv", quote = FALSE, row
 module7_lipids <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 7) %>%
-  dplyr::select(., Metabolite) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
-  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
-nrow(module7_lipids) #8 lipids
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = uniqueID)), by = "Lipid") %>%
+  dplyr::select(., 1:5) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information.
+nrow(module7_lipids) #12 lipids
 head(module7_lipids)
 write.csv(module7_lipids, "metaboanalyst/module7_lipids.csv", quote = FALSE, row.names = FALSE)
 ```
@@ -1525,12 +1525,96 @@ write.csv(module7_lipids, "metaboanalyst/module7_lipids.csv", quote = FALSE, row
 module8_lipids <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 8) %>%
-  dplyr::select(., Metabolite) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
-  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
-nrow(module8_lipids) #6 lipids
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = uniqueID)), by = "Lipid") %>%
+  dplyr::select(., 1:5) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information.
+nrow(module8_lipids) #12 lipids
 head(module8_lipids)
 write.csv(module8_lipids, "metaboanalyst/module8_lipids.csv", quote = FALSE, row.names = FALSE)
+```
+
+```{r}
+module9_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 9) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = uniqueID)), by = "Lipid") %>%
+  dplyr::select(., 1:5) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information.
+nrow(module9_lipids) #11 lipids
+head(module9_lipids)
+write.csv(module9_lipids, "metaboanalyst/module9_lipids.csv", quote = FALSE, row.names = FALSE)
+```
+
+```{r}
+module10_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 10) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = uniqueID)), by = "Lipid") %>%
+  dplyr::select(., 1:5) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information.
+nrow(module10_lipids) #11 lipids
+head(module10_lipids)
+write.csv(module10_lipids, "metaboanalyst/module10_lipids.csv", quote = FALSE, row.names = FALSE)
+```
+
+```{r}
+module11_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 11) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = uniqueID)), by = "Lipid") %>%
+  dplyr::select(., 1:5) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information.
+nrow(module11_lipids) #11 lipids
+head(module11_lipids)
+write.csv(module11_lipids, "metaboanalyst/module11_lipids.csv", quote = FALSE, row.names = FALSE)
+```
+
+```{r}
+module12_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 12) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = uniqueID)), by = "Lipid") %>%
+  dplyr::select(., 1:5) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information.
+nrow(module12_lipids) #7 lipids
+head(module12_lipids)
+write.csv(module12_lipids, "metaboanalyst/module12_lipids.csv", quote = FALSE, row.names = FALSE)
+```
+
+```{r}
+module13_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 13) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = uniqueID)), by = "Lipid") %>%
+  dplyr::select(., 1:5) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information.
+nrow(module13_lipids) #7 lipids
+head(module13_lipids)
+write.csv(module13_lipids, "metaboanalyst/module13_lipids.csv", quote = FALSE, row.names = FALSE)
+```
+
+```{r}
+module14_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 14) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = uniqueID)), by = "Lipid") %>%
+  dplyr::select(., 1:5) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information.
+nrow(module14_lipids) #6 lipids
+head(module14_lipids)
+write.csv(module14_lipids, "metaboanalyst/module14_lipids.csv", quote = FALSE, row.names = FALSE)
+```
+
+```{r}
+module15_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 15) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = uniqueID)), by = "Lipid") %>%
+  dplyr::select(., 1:5) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information.
+nrow(module15_lipids) #5 lipids
+head(module15_lipids)
+write.csv(module15_lipids, "metaboanalyst/module15_lipids.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ## Enrichment compound class analysis
