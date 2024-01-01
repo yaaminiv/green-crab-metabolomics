@@ -206,22 +206,21 @@ broom::tidy(permanova.lipid) %>%
   write.csv(., "PCA/all-data-PERMANOVA-results.csv", quote = FALSE) #Save PERMANOVA output
 ```
 
-# PLSDA for all metabolites
+# PLSDA for all lipids
 
-The next step is for me to conduct a PLS-DA analysis using the `mixOmics` package. This is a more robust way to analyze differences between treatments and is common in many lipidomics studies. Since both temperature and day were significant in the PCA, I'll use both of those factors in the PLSDA.
+The next step is for me to conduct a PLS-DA analysis using the `mixOmics` package. This is a more robust way to analyze differences between treatments. Since both temperature and day were significant in the PCA, I'll use both of those factors in the PLSDA.
 
 ```{bash}
 mkdir PLSDA
 mkdir PLSDA/figures
 ```
 
-
 ## Temperature only
 
 I'm still going to run the PLS-DA with temperature only because I suspect the plot will look cleaner this way.
 
 ```{r}
-X <- log(transLipidData[c(5:601)]) #Assign only metabolite data to the X dataframe after log transformation.
+X <- log(transLipidData[c(5:2410)]) #Assign only metabolite data to the X dataframe after log transformation.
 Y <- as.factor(transLipidData$treatment) #Assign treatment data to the Y dataframe
 ```
 
@@ -236,7 +235,7 @@ plotIndiv(treatment.plsda, comp = c(1,2), ind.names = FALSE,
           cex = 3, col = rev(plotColors), pch = c(15, 17, 19), point.lwd = 0.7,
           ellipse = TRUE, star = TRUE, centroid = FALSE, 
           legend = TRUE, legend.title = "Temperature (ºC)", 
-          title = "PLS-DA by Temperature", X.label = "Component 1: 14% Explained Variance", size.xlabel = 15, Y.label = "Component 2: 6% Explained Variance", size.ylabel = 15, size.axis = 13,
+          title = "PLS-DA by Temperature", X.label = "Component 1: 31% Explained Variance", size.xlabel = 15, Y.label = "Component 2: 11% Explained Variance", size.ylabel = 15, size.axis = 13,
           style = "ggplot2") #Visualize first two components of PLS-DA with no individual sample names. Alter point size, color, shape, and line width. Include 95% confidence ellipses and use star format to visualize sample distance from centroids. Include a legend and specify the legend title. Specify the plot title and text label sizes. Use ggplot style.
 #dev.off()
 ```
