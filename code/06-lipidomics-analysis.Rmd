@@ -5,7 +5,7 @@ date: '2023-12-30'
 output: html_document
 ---
 
-In this script, I will analyze lipidomics data from the West Coast Metabolomics Center (UC Davis). I will conduct an initial assessment of the data (PLS-DA), understand important metabolites and pathways (VIP analysis and WGCNA), and prepare for additional network analysis through MetaboAnalyst. This workflow and script is modified from [Huffmyer et al. (2023)](https://www.biorxiv.org/content/10.1101/2023.03.20.533475v2.full) and [Trigg et al. (2019)](http://dx.doi.org/10.1038/s41598-019-46947-6).
+In this script, I will analyze lipidomics data from the West Coast Metabolomics Center (UC Davis). I will conduct an initial assessment of the data (PCA and PLS-DA), understand important lipids and pathways (VIP analysis and WGCNA), and prepare for additional network analysis through MetaboAnalyst. This workflow and script is modified from [Huffmyer et al. (2023)](https://www.biorxiv.org/content/10.1101/2023.03.20.533475v2.full) and [Trigg et al. (2019)](http://dx.doi.org/10.1038/s41598-019-46947-6).
 
 # Set up R Markdown document
 
@@ -42,10 +42,10 @@ getwd()
 
 require(tidyverse)
 require(vegan)
-# require(factoextra)
-# require(ggfortify)
-# require(naniar)
-# require(cowplot)
+require(factoextra)
+require(ggfortify)
+require(naniar)
+require(cowplot)
 require(mixOmics)
 require(RVAideMemoire)
 # require(VennDiagram)
@@ -70,7 +70,9 @@ sessionInfo()
 
 ```{r}
 rawLipidomicsData <- read.csv("../../data/raw_lipidomics_data.csv", header = TRUE) %>% 
-  dplyr::rename_with(~stringr::str_replace_all(., "X", "")) #Import data. Remove the "X" prefix for crab IDs
+  dplyr::rename_with(~stringr::str_replace_all(., "X", "")) %>%
+  rownames_to_column(., var = "uniqueID") #Import data. Remove the "X" prefix for crab IDs. Convert rownames to a new column, uniqueID, since not every lipid has a unique identifier.
+rawLipidomicsData[c(9:77)] <- rawLipidomicsData[c(9:77)] %>% mutate_if(is.character, as.numeric) #Convert data columns to numeric
 head(rawLipidomicsData) #Confirm import
 ```
 
@@ -91,15 +93,17 @@ tail(lipidomicsMetadata) #Confirm import
 
 # Format data
 
-Before analyzing the data, I will transform the data and match with treatment metadata. The West Coast Metabolomics Center has already normalized data using the average mTIC (sum of all peak heights for *identified* metabolites) of the samples. 
+Before analyzing the data, I will transform the data and match with treatment metadata. The West Coast Metabolomics Center has already normalized data. 
 
 ```{r}
 transLipidData <- rawLipidomicsData %>%
   dplyr::select(., -c(2:8)) %>%
-  column_to_rownames(., var = "BinBase.name") %>%
   t(.) %>% as.data.frame(.) %>%
-  rownames_to_column(., var = "crab.ID") %>% 
-  left_join(lipidomicsMetadata, ., by = "crab.ID") #Remove columns with MS information, convert BinBase.name to rownames, and transform dataframe. Convert rownames to crab.ID column
+  purrr::set_names(as.character(dplyr::slice(., 1))) %>%
+  dplyr::slice(., -1) %>%
+  rownames_to_column(., var = "crab.ID") %>%
+  left_join(lipidomicsMetadata, ., by = "crab.ID") #Remove MS information, convert lipid names to rownames, and transform dataframe. Convert rownames to crab.ID column
+transLipidData[, c(5:2410)] <- transLipidData[, c(5:2410)] %>% mutate_if(is.character, as.numeric) #Convert data columns to numeric
 head(transLipidData) #Confirm changes
 ```
 
@@ -111,13 +115,16 @@ mkdir PCA/figures
 ```
 
 ```{r}
-scaled.pca <- prcomp(transLipidData[c(5:601)], scale = TRUE, center = TRUE) #Use prcomp to perform a centered and scaled PCA calculation
+scaled.pca <- prcomp(log(transLipidData[c(5:2410)]) %>%
+                       replace(is.na(.), 0), 
+                     scale = TRUE, center = TRUE) #Use prcomp to perform a centered and scaled PCA calculation. Replace all NA with 0 in the dataframe and log transform prior to performing the PCA calculation
 summary(scaled.pca) #Standard deviations for each PC
 ```
 
 ```{r PCA interpretation}
 pca.eigenval(scaled.pca) #Eigenvalues greater than the broken-stick expectation are considered to explain a statistically significance proportion of the variance in the original dataset. PC3 and PC4 eigenvalue > BSV
-ordiMonteRandTest <- ordi.monte(transLipidData[c(5:601)], ord = "pca", dim = 6, plot = FALSE) #Conduct monte carlo randomization test using 1000 random permutations of the input data.
+ordiMonteRandTest <- ordi.monte((log(transLipidData[c(5:2410)]) %>%
+                                   replace(is.na(.), 0)), ord = "pca", dim = 6, plot = FALSE) #Conduct monte carlo randomization test using 1000 random permutations of the input data.
 ordiMonteRandTest
 
 #Will move forward with PC1-2
@@ -131,8 +138,6 @@ plotColors <- c(brewer.pal(9, "Reds")[7],
                 brewer.pal(9, "Blues")[7]) #Create color scheme
 ```
 
-### All metabolites
-
 ```{r}
 pcaPlot1 <- autoplot(scaled.pca, data = transLipidData, x = 1, y = 2,
                      size = 3, alpha = 0.8, colour = "treatment", shape = "treatment", 
@@ -143,6 +148,7 @@ pcaPlot1 <- autoplot(scaled.pca, data = transLipidData, x = 1, y = 2,
                     name = "Temperature (ºC)") +
   scale_shape_manual(values = c(15, 19, 17),
                      name = "Temperature (ºC)") +
+  scale_size(guide = "none") +
   theme_classic(base_size = 15) + theme(legend.position = "right",
                                         plot.background = element_blank()) #Use autoplot to plot the prcomp object. Color points and confidence ellipses by treatment, and have different shapes for each treatment Do not include loadings. Manually define color, fill, and shapes.
 pcaPlot1
@@ -159,6 +165,7 @@ pcaPlot2 <- autoplot(scaled.pca, data = transLipidData, x = 1, y = 2,
                     name = "Day") +
   scale_shape_manual(values = c(20, 18),
                      name = "Day") +
+  scale_size(guide = "none") +
   theme_classic(base_size = 15) + theme(legend.position = "right",
                                         plot.background = element_blank()) #Same as above but color by day and not treatment
 pcaPlot2
@@ -175,70 +182,29 @@ pcaPlot3 <- autoplot(scaled.pca, data = transLipidData, x = 1, y = 2,
                     name = "Temperature (ºC)") +
   scale_shape_manual(values = c(20, 18),
                      name = "Day") +
+  scale_size(guide = "none") +
   theme_classic(base_size = 15) + theme(legend.position = "right",
                                         plot.background = element_blank()) #Use autoplot to plot the prcomp object. Color points and confidence ellipses by treatment, and have different shapes for each day. Do not include loadings. Manually define color, fill, and shapes.
 pcaPlot3
 ggsave("PCA/figures/all-data-PCA-day-treatment.pdf", height = 8.5, width = 11)
 ```
 
-Overall, it seems like metabolite profiles are segregating by treatment, with the 30ºC profiles more segregated from the 5ºC and 13ºC profiles. It also seems like metabolite profiles have higher spread over time, potentially due to the impact of prolonged temperature exposure on physiology.
-
-### Identified metabolites
-
-I'm going to make a very similar PCA to the one above, but only using metabolites identified by the sequencer.
-
-```{r}
-scaled.pca.id <- prcomp(transLipidData[c(4:155)], scale = TRUE, center = TRUE) #Use prcomp to perform a centered and scaled PCA calculation
-summary(scaled.pca.id) #Standard deviations for each PC
-```
-
-```{r}
-pcaPlot4 <- autoplot(scaled.pca.id, data = transLipidData, x = 1, y = 2,
-                     size = 4, alpha = 0.8, colour = "treatment", shape = "day", 
-                     frame = TRUE, frame.colour = "treatment", loadings = FALSE) +
-  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]),
-                     name = "Temperature (ºC)") +
-  scale_fill_manual(values = c(plotColors[3], plotColors[2], plotColors[1]),
-                    name = "Temperature (ºC)") +
-  scale_shape_manual(values = c(20, 18),
-                     name = "Day") +
-  theme_classic(base_size = 15) + theme(legend.position = "right",
-                                        plot.background = element_blank()) #Use autoplot to plot the prcomp object. Color points and confidence ellipses by treatment, and have different shapes for each day. Do not include loadings. Manually define color, fill, and shapes.
-pcaPlot4
-ggsave("PCA/figures/known-metabolites-PCA-day-treatment.pdf", height = 8.5, width = 11)
-```
+Overall, it seems like lipid profiles are segregating by treatment, with the 30ºC profiles more segregated from the 5ºC and 13ºC profiles.
 
 ## Conduct PERMANOVA
 
 I'll use a global permutational multivariate analysis of variance (PERMANOVA) to determine if treatment and day had a significant influence on metabolite profiles. The significant effects from the PCA will be used in the downstream PLS-DA to interrogate trends.
 
-### All metabolites
-
 ```{r}
-permanova.metab <- adonis2(scale(transLipidData[c(5:601)]) ~ treatment*day, data = transLipidData, method = 'eu') #Conduct global PERMANOVA to assess significance of trends in PCA. Scale lipidomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
-permanova.metab #Significant influence of all factors
+permanova.lipid <- adonis2(scale((log(transLipidData[c(5:2410)]) %>%
+                       replace(is.na(.), 0))) ~ treatment*day, data = transLipidData, method = 'eu') #Conduct global PERMANOVA to assess significance of trends in PCA. Scale lipidomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
+permanova.lipid #Significant influence of all factors
 ```
 
 ```{r}
-broom::tidy(permanova.metab) %>%
+broom::tidy(permanova.lipid) %>%
   write.csv(., "PCA/all-data-PERMANOVA-results.csv", quote = FALSE) #Save PERMANOVA output
 ```
-
-### Identified metabolites
-
-I'm going to repeat the same analysis, but only look at trends for metabolites identified by the West Coast Metabolomics Center.
-
-```{r}
-permanova.metabid <- adonis2(scale(transLipidData[c(5:156)]) ~ treatment*day, data = transLipidData, method = 'eu') #Conduct global PERMANOVA to assess significance of trends in PCA. Scale lipidomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
-permanova.metabid #Significant influence of all factors
-```
-
-```{r}
-broom::tidy(permanova.metab) %>%
-  write.csv(., "PCA/known-metabolites-PERMANOVA-results.csv", quote = FALSE) #Save PERMANOVA output
-```
-
-The fact that all three explanatory variables are significant means that the inclusion of unidentified metabolites doesn't drastically influence the results.
 
 # PLSDA for all metabolites
 
@@ -1712,7 +1678,7 @@ KEGG_pathways <- rbind(module0_KEGG,
                        # module6_KEGG,
                        module7_KEGG
                        # module8_KEGG
-                       ) #Create dataframe with compound classes
+) #Create dataframe with compound classes
 head(KEGG_pathways) #Confirm dataframe creation
 ```
 
