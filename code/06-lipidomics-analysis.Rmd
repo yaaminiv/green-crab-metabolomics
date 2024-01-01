@@ -902,7 +902,7 @@ It's important to validate the PLSDA model. First, I'll run a permutation test t
 MyPerf.plsda <- perf(treatmentday.known.plsda, validation = "Mfold", folds = 6,  
                      progressBar = TRUE, nrepeat = 50) 
 
-plot(MyPerf.plsda, sd = TRUE) #Overall, increasing the number of components decreases the error rate. There doesn't seem to be an exponential reduction of error rate after 3 components.
+plot(MyPerf.plsda, sd = TRUE) #Overall, increasing the number of components decreases the error rate.
 ```
 
 Next, I'll assess the optimal number of metabolites to keep in the analysis.
@@ -926,11 +926,12 @@ ncomp <- tune.splsda.srbct$choice.ncomp$ncomp #Optimal number of components base
 ncomp #5 components! That's how many I have
 
 select.keepX <- tune.splsda.srbct$choice.keepX #Optimal number of variables to select (e.g., number of metabolite features)
-select.keepX #sPLSDA should be run with 40 features
+select.keepX
 ```
 
 ```{r}
-myResult.splsda.final_T <- splsda(X, Y, ncomp = ncomp, keepX = select.keepX) #Use the number of components and meatbolites to keep based on optimization from above  
+myResult.splsda.final_T <- splsda(X, Y, ncomp = ncomp, keepX = select.keepX) #Use the number of components and meatbolites to keep based on optimization from above
+plotIndiv(myResult.splsda.final_T)
 ```
 
 ```{r}
@@ -939,7 +940,7 @@ plotIndiv(myResult.splsda.final_T, comp = c(1,2), ind.names = FALSE,
           cex = 3, col = c("#525252", "grey80", "#CB181D", "salmon", "#2171B5", "lightblue"), pch = c(12:17), point.lwd = 0.7,
           ellipse = TRUE, star = TRUE, centroid = FALSE, 
           legend = TRUE, legend.title = "Temperature (ºC) x Day", 
-          title = "sPLS-DA by Temperature and Day", X.label = "Component 1: 9% Explained Variance", size.xlabel = 15, Y.label = "Component 2: 6% Explained Variance", size.ylabel = 15, size.axis = 13,
+          title = "sPLS-DA by Temperature and Day", X.label = "Component 1: 15% Explained Variance", size.xlabel = 15, Y.label = "Component 2: 9% Explained Variance", size.ylabel = 15, size.axis = 13,
           style = "ggplot2")
 #dev.off()
 ```
