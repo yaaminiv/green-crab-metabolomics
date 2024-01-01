@@ -1,5 +1,5 @@
 ---
-title: "04-respirometry-analysis"
+title: "05-metabolomics-analysis"
 author: "Yaamini Venkataraman"
 date: '2023-12-18'
 output: html_document
@@ -91,7 +91,7 @@ tail(metabolomicsMetadata) #Confirm import
 
 # Format data
 
-Before analyzing the data, I will transform the data and match with treatment metadata. The West Coast Metabolomics Center has already normalized data using the average mTIC (sum of all peak heights for *identified* metabolites) of the samples, and I will not perform any additional normalizations. 
+Before analyzing the data, I will transform the data and match with treatment metadata. The West Coast Metabolomics Center has already normalized data using the average mTIC (sum of all peak heights for *identified* metabolites) of the samples. 
 
 ```{r}
 transMetabData <- rawMetabolomicsData %>%
@@ -455,7 +455,7 @@ ggsave("PLSDA/figures/known-metabolites-VIP-day-treatment.pdf", height = 8.5, wi
 
 ## Pairwise tests for VIP metabolites
 
-We now know which metabolites are most important for separating days and treatments. However, we do not know specifically which VIP distinguish between which treatment x day contrasts. I will use pairwise t-tests to understand 
+We now know which metabolites are most important for separating days and treatments. However, we do not know specifically which VIP distinguish between which treatment x day contrasts. I will use pairwise t-tests to identify which VIP are important for which contrasts. 
 
 ### Treatment differences at day 3
 
