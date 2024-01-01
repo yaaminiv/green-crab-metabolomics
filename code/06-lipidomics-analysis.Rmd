@@ -425,14 +425,15 @@ X <- transLipidData %>%
   dplyr::filter(., treatment_day %in% list) %>%
   droplevels() #Filter transLipidData for desired contrasts
 Y <- as.factor(X$treatment_day) #Treatments for Y
-X <- X[, 5:156] #Retain data only
+X <- X[, 5:617] #Retain data only
 ```
 
 ```{r}
 known.plsda_13v30_day3 <- plsda(X, Y, ncomp = 5) #Run PLSDA for desired contrast
 VIP_13v30_day3 <- as.data.frame(PLSDA.VIP(known.plsda_13v30_day3)[["tab"]]) %>%
-  rownames_to_column(., var = "metabolite") %>%
+  rownames_to_column(., var = "uniqueID") %>%
   filter(., VIP >= 1) #Extract VIP list and filter for VIP > 1
+nrow(VIP_13v30_day3)
 ```
 
 ```{r}
@@ -440,9 +441,9 @@ clean_13v30_day3 <- transLipidData %>%
   dplyr::filter(., treatment_day %in% list) %>%
   droplevels() #Filter transLipidData for desired contrasts.
 VIP_select_13v30_day3 <- cbind(clean_13v30_day3[, 1:4], 
-                               log(clean_13v30_day3[, names(clean_13v30_day3) %in% VIP_13v30_day3$metabolite])) %>%
-  pivot_longer(., cols = 5:63, values_to = "log_norm_counts", names_to = "metabolite") %>%
-  group_by(., metabolite) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by lipids.
+                               log(clean_13v30_day3[, names(clean_13v30_day3) %in% VIP_13v30_day3$uniqueID])) %>%
+  pivot_longer(., cols = 5:269, values_to = "log_norm_counts", names_to = "uniqueID") %>%
+  group_by(., uniqueID) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by lipids.
 VIP_select_13v30_day3 #Confirm changes
 ```
 
@@ -454,7 +455,7 @@ t.test_13v30_day3 <-do(VIP_select_13v30_day3, tidy(t.test(.$log_norm_counts ~ .$
                                                           var.equal = FALSE,
                                                           conf.level = 0.95
 ))) #Looped t-test for all lipids with VIP > 1
-t.test_13v30_day3$p.adj <- p.adjust(t.test_13v30_day3$p.value, method = c("fdr"), n = length(VIP_13v30_day3$metabolite)) #Adjust p value for the number of comparisons
+t.test_13v30_day3$p.adj <- p.adjust(t.test_13v30_day3$p.value, method = c("fdr"), n = length(VIP_13v30_day3$uniqueID)) #Adjust p value for the number of comparisons
 t.test_13v30_day3
 ```
 
@@ -476,15 +477,15 @@ X <- transLipidData %>%
   dplyr::filter(., treatment_day %in% list) %>%
   droplevels() #Filter transLipidData for desired contrasts
 Y <- as.factor(X$treatment_day) #Treatments for Y
-X <- X[, 5:156] #Retain data only
+X <- X[, 5:617] #Retain data only
 ```
 
 ```{r}
 known.plsda_13v5_day3 <- plsda(X, Y, ncomp = 5) #Run PLSDA for desired contrast
 VIP_13v5_day3 <- as.data.frame(PLSDA.VIP(known.plsda_13v5_day3)[["tab"]]) %>%
-  rownames_to_column(., var = "metabolite") %>%
+  rownames_to_column(., var = "uniqueID") %>%
   filter(., VIP >= 1) #Extract VIP list and filter for VIP > 1
-VIP_13v5_day3
+nrow(VIP_13v5_day3)
 ```
 
 ```{r}
@@ -492,9 +493,9 @@ clean_13v5_day3 <- transLipidData %>%
   dplyr::filter(., treatment_day %in% list) %>%
   droplevels() #Filter transLipidData for desired contrasts.
 VIP_select_13v5_day3 <- cbind(clean_13v5_day3[, 1:4], 
-                              log(clean_13v5_day3[, names(clean_13v5_day3) %in% VIP_13v5_day3$metabolite])) %>%
-  pivot_longer(., cols = 5:66, values_to = "log_norm_counts", names_to = "metabolite") %>%
-  group_by(., metabolite) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by lipids.
+                              log(clean_13v5_day3[, names(clean_13v5_day3) %in% VIP_13v5_day3$uniqueID])) %>%
+  pivot_longer(., cols = 5:239, values_to = "log_norm_counts", names_to = "uniqueID") %>%
+  group_by(., uniqueID) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by lipids.
 VIP_select_13v5_day3 #Confirm changes
 ```
 
@@ -506,7 +507,7 @@ t.test_13v5_day3 <-do(VIP_select_13v5_day3, tidy(t.test(.$log_norm_counts ~ .$tr
                                                         var.equal = FALSE,
                                                         conf.level = 0.95
 ))) #Looped t-test for all lipids with VIP > 1
-t.test_13v5_day3$p.adj <- p.adjust(t.test_13v5_day3$p.value, method = c("fdr"), n = length(VIP_13v5_day3$metabolite)) #Adjust p value for the number of comparisons
+t.test_13v5_day3$p.adj <- p.adjust(t.test_13v5_day3$p.value, method = c("fdr"), n = length(VIP_13v5_day3$uniqueID)) #Adjust p value for the number of comparisons
 t.test_13v5_day3
 ```
 
@@ -530,15 +531,15 @@ X <- transLipidData %>%
   dplyr::filter(., treatment_day %in% list) %>%
   droplevels() #Filter transLipidData for desired contrasts
 Y <- as.factor(X$treatment_day) #Treatments for Y
-X <- X[, 5:156] #Retain data only
+X <- X[, 5:617] #Retain data only
 ```
 
 ```{r}
 known.plsda_13v30_day22 <- plsda(X, Y, ncomp = 5) #Run PLSDA for desired contrast
 VIP_13v30_day22 <- as.data.frame(PLSDA.VIP(known.plsda_13v30_day22)[["tab"]]) %>%
-  rownames_to_column(., var = "metabolite") %>%
+  rownames_to_column(., var = "uniqueID") %>%
   filter(., VIP >= 1) #Extract VIP list and filter for VIP > 1
-VIP_13v30_day22
+nrow(VIP_13v30_day22)
 ```
 
 ```{r}
@@ -546,9 +547,9 @@ clean_13v30_day22 <- transLipidData %>%
   dplyr::filter(., treatment_day %in% list) %>%
   droplevels() #Filter transLipidData for desired contrasts.
 VIP_select_13v30_day22 <- cbind(clean_13v30_day22[, 1:4], 
-                                log(clean_13v30_day22[, names(clean_13v30_day22) %in% VIP_13v30_day22$metabolite])) %>%
-  pivot_longer(., cols = 5:55, values_to = "log_norm_counts", names_to = "metabolite") %>%
-  group_by(., metabolite) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by lipids.
+                                log(clean_13v30_day22[, names(clean_13v30_day22) %in% VIP_13v30_day22$uniqueID])) %>%
+  pivot_longer(., cols = 5:250, values_to = "log_norm_counts", names_to = "uniqueID") %>%
+  group_by(., uniqueID) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by lipids.
 VIP_select_13v30_day22 #Confirm changes
 ```
 
@@ -560,7 +561,7 @@ t.test_13v30_day22 <-do(VIP_select_13v30_day22, tidy(t.test(.$log_norm_counts ~ 
                                                             var.equal = FALSE,
                                                             conf.level = 0.95
 ))) #Looped t-test for all lipids with VIP > 1
-t.test_13v30_day22$p.adj <- p.adjust(t.test_13v30_day22$p.value, method = c("fdr"), n = length(VIP_13v30_day22$metabolite)) #Adjust p value for the number of comparisons
+t.test_13v30_day22$p.adj <- p.adjust(t.test_13v30_day22$p.value, method = c("fdr"), n = length(VIP_13v30_day22$uniqueID)) #Adjust p value for the number of comparisons
 t.test_13v30_day22
 ```
 
@@ -568,36 +569,36 @@ t.test_13v30_day22
 t.test_13v30_day22 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>%
-  nrow(.) #29 significantly different lipids
+  nrow(.) #224 significantly different lipids
 t.test_13v30_day22 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>% filter(., estimate1 > estimate2) %>%
-  nrow(.) #16 lipids higher in 13ºC
+  nrow(.) #189 lipids higher in 13ºC
 t.test_13v30_day22 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>% filter(., estimate1 < estimate2) %>%
-  nrow(.) #13 lipids higher in 30ºC
+  nrow(.) #35 lipids higher in 30ºC
 ```
 
 ```{r}
 t.test_13v30_day22 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>%
-  left_join(., VIP_13v30_day22, by = "metabolite") %>%
+  left_join(., VIP_13v30_day22, by = "uniqueID") %>%
   mutate(., direction = case_when(estimate > 1 ~ "13",
                                   estimate < 1 ~ "30")) %>%
   mutate(., score = case_when(estimate > 1 ~ VIP,
                               estimate < 1 ~ -VIP)) %>%
   arrange(score) %>%
-  ggplot(aes(x = score, y = reorder(metabolite, score, sum))) +
+  ggplot(aes(x = score, y = reorder(uniqueID, score, sum))) +
   geom_bar(aes(fill = direction), stat = 'identity') +
-  xlab("VIP Score") + ylab("Metabolite") +
+  xlab("VIP Score") + ylab("Unique Lipid ID") +
   scale_x_continuous(limits = c(-2, 2), breaks = seq(-2, 2, 1)) +
   scale_fill_manual(values = c(plotColors[2], plotColors[1]), 
                     name = "Temperature (ºC)",
                     breaks = c("13", "30"),
                     labels = c("13", "30")) +
-  theme_classic(base_size = 15) + theme() #Take t-test results and filter out significant lipids. Create two new columns using estimate values: one for the direction of increase, and another for positive or negative VIP. Arrange by metabolite name and reorder by cumulative VIP score. Plot bars and change x and y axis labels. Add scale information.
+  theme_classic(base_size = 15) + theme() #Take t-test results and filter out significant lipids. Create two new columns using estimate values: one for the direction of increase, and another for positive or negative VIP. Arrange by uniqueID name and reorder by cumulative VIP score. Plot bars and change x and y axis labels. Add scale information.
 ggsave("PLSDA/figures/significant-VIP-13v30-day22.pdf", height = 8.5, width = 11)
 ```
 
@@ -612,15 +613,15 @@ X <- transLipidData %>%
   dplyr::filter(., treatment_day %in% list) %>%
   droplevels() #Filter transLipidData for desired contrasts
 Y <- as.factor(X$treatment_day) #Treatments for Y
-X <- X[, 5:156] #Retain data only
+X <- X[, 5:617] #Retain data only
 ```
 
 ```{r}
 known.plsda_13v5_day22 <- plsda(X, Y, ncomp = 5) #Run PLSDA for desired contrast
 VIP_13v5_day22 <- as.data.frame(PLSDA.VIP(known.plsda_13v5_day22)[["tab"]]) %>%
-  rownames_to_column(., var = "metabolite") %>%
+  rownames_to_column(., var = "uniqueID") %>%
   filter(., VIP >= 1) #Extract VIP list and filter for VIP > 1
-VIP_13v5_day22
+nrow(VIP_13v5_day22)
 ```
 
 ```{r}
@@ -628,10 +629,10 @@ clean_13v5_day22 <- transLipidData %>%
   dplyr::filter(., treatment_day %in% list) %>%
   droplevels() #Filter transLipidData for desired contrasts.
 VIP_select_13v5_day22 <- cbind(clean_13v5_day22[, 1:4], 
-                               log(clean_13v5_day22[, names(clean_13v5_day22) %in% VIP_13v5_day22$metabolite])) %>%
-  pivot_longer(., cols = 5:46, values_to = "log_norm_counts", names_to = "metabolite") %>%
-  group_by(., metabolite) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by lipids.
-VIP_select_13v5_day22 #Confirm changes
+                               log(clean_13v5_day22[, names(clean_13v5_day22) %in% VIP_13v5_day22$uniqueID])) %>%
+  pivot_longer(., cols = 5:220, values_to = "log_norm_counts", names_to = "uniqueID") %>%
+  group_by(., uniqueID) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by lipids.
+VIP_select_13v5_day22
 ```
 
 ```{r}
@@ -642,7 +643,7 @@ t.test_13v5_day22 <-do(VIP_select_13v5_day22, tidy(t.test(.$log_norm_counts ~ .$
                                                           var.equal = FALSE,
                                                           conf.level = 0.95
 ))) #Looped t-test for all lipids with VIP > 1
-t.test_13v5_day22$p.adj <- p.adjust(t.test_13v5_day22$p.value, method = c("fdr"), n = length(VIP_13v5_day22$metabolite)) #Adjust p value for the number of comparisons
+t.test_13v5_day22$p.adj <- p.adjust(t.test_13v5_day22$p.value, method = c("fdr"), n = length(VIP_13v5_day22$uniqueID)) #Adjust p value for the number of comparisons
 t.test_13v5_day22
 ```
 
@@ -650,36 +651,36 @@ t.test_13v5_day22
 t.test_13v5_day22 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>%
-  nrow(.) #31 significantly different lipids
+  nrow(.) #125 significantly different lipids
 t.test_13v5_day22 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>% filter(., estimate1 > estimate2) %>%
-  nrow(.) #29 lipids higher in 13ºC
+  nrow(.) #109 lipids higher in 13ºC
 t.test_13v5_day22 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>% filter(., estimate1 < estimate2) %>%
-  nrow(.) #2 lipids higher in 30ºC
+  nrow(.) #16 lipids higher in 30ºC
 ```
 
 ```{r}
 t.test_13v5_day22 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>%
-  left_join(., VIP_13v5_day22, by = "metabolite") %>%
+  left_join(., VIP_13v5_day22, by = "uniqueID") %>%
   mutate(., direction = case_when(estimate > 1 ~ "13",
                                   estimate < 1 ~ "5")) %>%
   mutate(., score = case_when(estimate > 1 ~ VIP,
                               estimate < 1 ~ -VIP)) %>%
   arrange(score) %>%
-  ggplot(aes(x = score, y = reorder(metabolite, score, sum))) +
+  ggplot(aes(x = score, y = reorder(uniqueID, score, sum))) +
   geom_bar(aes(fill = direction), stat = 'identity') +
-  xlab("VIP Score") + ylab("Metabolite") +
+  xlab("VIP Score") + ylab("Unique Lipid ID") +
   scale_x_continuous(limits = c(-2.5, 2.5), breaks = seq(-2, 2, 1)) +
   scale_fill_manual(values = c(plotColors[2], plotColors[3]), 
                     name = "Temperature (ºC)",
                     breaks = c("13", "5"),
                     labels = c("13", "5")) +
-  theme_classic(base_size = 15) + theme() #Take t-test results and filter out significant lipids. Create two new columns using estimate values: one for the direction of increase, and another for positive or negative VIP. Arrange by metabolite name and reorder by cumulative VIP score. Plot bars and change x and y axis labels. Add scale information.
+  theme_classic(base_size = 15) + theme() #Take t-test results and filter out significant lipids. Create two new columns using estimate values: one for the direction of increase, and another for positive or negative VIP. Arrange by uniqueID name and reorder by cumulative VIP score. Plot bars and change x and y axis labels. Add scale information.
 ggsave("PLSDA/figures/significant-VIP-13v5-day22.pdf", height = 8.5, width = 11)
 ```
 
@@ -696,15 +697,15 @@ X <- transLipidData %>%
   dplyr::filter(., treatment_day %in% list) %>%
   droplevels() #Filter transLipidData for desired contrasts
 Y <- as.factor(X$treatment_day) #Treatments for Y
-X <- X[, 5:156] #Retain data only
+X <- X[, 5:617] #Retain data only
 ```
 
 ```{r}
 known.plsda_5_day3v22 <- plsda(X, Y, ncomp = 5) #Run PLSDA for desired contrast
 VIP_5_day3v22 <- as.data.frame(PLSDA.VIP(known.plsda_5_day3v22)[["tab"]]) %>%
-  rownames_to_column(., var = "metabolite") %>%
+  rownames_to_column(., var = "uniqueID") %>%
   filter(., VIP >= 1) #Extract VIP list and filter for VIP > 1
-VIP_5_day3v22
+nrow(VIP_5_day3v22)
 ```
 
 ```{r}
@@ -712,9 +713,9 @@ clean_5_day3v22 <- transLipidData %>%
   dplyr::filter(., treatment_day %in% list) %>%
   droplevels() #Filter transLipidData for desired contrasts.
 VIP_select_5_day3v22 <- cbind(clean_5_day3v22[, 1:4], 
-                              log(clean_5_day3v22[, names(clean_5_day3v22) %in% VIP_5_day3v22$metabolite])) %>%
-  pivot_longer(., cols = 5:55, values_to = "log_norm_counts", names_to = "metabolite") %>%
-  group_by(., metabolite) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by lipids.
+                              log(clean_5_day3v22[, names(clean_5_day3v22) %in% VIP_5_day3v22$uniqueID])) %>%
+  pivot_longer(., cols = 5:219, values_to = "log_norm_counts", names_to = "uniqueID") %>%
+  group_by(., uniqueID) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by lipids.
 VIP_select_5_day3v22 #Confirm changes
 ```
 
@@ -726,7 +727,7 @@ t.test_5_day3v22 <-do(VIP_select_5_day3v22, tidy(t.test(.$log_norm_counts ~ .$tr
                                                         var.equal = FALSE,
                                                         conf.level = 0.95
 ))) #Looped t-test for all lipids with VIP > 1
-t.test_5_day3v22$p.adj <- p.adjust(t.test_5_day3v22$p.value, method = c("fdr"), n = length(VIP_5_day3v22$metabolite)) #Adjust p value for the number of comparisons
+t.test_5_day3v22$p.adj <- p.adjust(t.test_5_day3v22$p.value, method = c("fdr"), n = length(VIP_5_day3v22$uniqueID)) #Adjust p value for the number of comparisons
 t.test_5_day3v22
 ```
 
@@ -734,7 +735,7 @@ t.test_5_day3v22
 t.test_5_day3v22 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>%
-  nrow(.) #6 significantly different lipids
+  nrow(.) #1 significantly different lipids
 t.test_5_day3v22 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>% filter(., estimate1 > estimate2) %>%
@@ -742,28 +743,28 @@ t.test_5_day3v22 %>%
 t.test_5_day3v22 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>% filter(., estimate1 < estimate2) %>%
-  nrow(.) #6 lipids higher in day 3
+  nrow(.) #1 lipids higher in day 3
 ```
 
 ```{r}
 t.test_5_day3v22 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>%
-  left_join(., VIP_5_day3v22, by = "metabolite") %>%
+  left_join(., VIP_5_day3v22, by = "uniqueID") %>%
   mutate(., direction = case_when(estimate > 1 ~ "22",
                                   estimate < 1 ~ "3")) %>%
   mutate(., score = case_when(estimate > 1 ~ VIP,
                               estimate < 1 ~ -VIP)) %>%
   arrange(score) %>%
-  ggplot(aes(x = score, y = reorder(metabolite, score, sum))) +
+  ggplot(aes(x = score, y = reorder(uniqueID, score, sum))) +
   geom_bar(aes(fill = direction), stat = 'identity') +
-  xlab("VIP Score") + ylab("Metabolite") +
-  scale_x_continuous(limits = c(-2.5, 2.5), breaks = seq(-2, 2, 1)) +
+  xlab("VIP Score") + ylab("uniqueID") +
+  scale_x_continuous(limits = c(-3, 3), breaks = seq(-3, 3, 1)) +
   scale_fill_manual(values = c("black", "purple"), 
                     name = "Day",
                     breaks = c("3", "22"),
                     labels = c("3", "22")) +
-  theme_classic(base_size = 15) + theme() #Take t-test results and filter out significant lipids. Create two new columns using estimate values: one for the direction of increase, and another for positive or negative VIP. Arrange by metabolite name and reorder by cumulative VIP score. Plot bars and change x and y axis labels. Add scale information.
+  theme_classic(base_size = 15) + theme() #Take t-test results and filter out significant lipids. Create two new columns using estimate values: one for the direction of increase, and another for positive or negative VIP. Arrange by uniqueID name and reorder by cumulative VIP score. Plot bars and change x and y axis labels. Add scale information.
 ggsave("PLSDA/figures/significant-VIP-5-day3v22.pdf", height = 8.5, width = 11)
 ```
 
@@ -778,15 +779,15 @@ X <- transLipidData %>%
   dplyr::filter(., treatment_day %in% list) %>%
   droplevels() #Filter transLipidData for desired contrasts
 Y <- as.factor(X$treatment_day) #Treatments for Y
-X <- X[, 5:156] #Retain data only
+X <- X[, 5:617] #Retain data only
 ```
 
 ```{r}
 known.plsda_13_day3v22 <- plsda(X, Y, ncomp = 5) #Run PLSDA for desired contrast
 VIP_13_day3v22 <- as.data.frame(PLSDA.VIP(known.plsda_13_day3v22)[["tab"]]) %>%
-  rownames_to_column(., var = "metabolite") %>%
+  rownames_to_column(., var = "uniqueID") %>%
   filter(., VIP >= 1) #Extract VIP list and filter for VIP > 1
-VIP_13_day3v22
+nrow(VIP_13_day3v22)
 ```
 
 ```{r}
@@ -794,9 +795,9 @@ clean_13_day3v22 <- transLipidData %>%
   dplyr::filter(., treatment_day %in% list) %>%
   droplevels() #Filter transLipidData for desired contrasts.
 VIP_select_13_day3v22 <- cbind(clean_13_day3v22[, 1:4], 
-                               log(clean_13_day3v22[, names(clean_13_day3v22) %in% VIP_13_day3v22$metabolite])) %>%
-  pivot_longer(., cols = 5:61, values_to = "log_norm_counts", names_to = "metabolite") %>%
-  group_by(., metabolite) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by lipids.
+                               log(clean_13_day3v22[, names(clean_13_day3v22) %in% VIP_13_day3v22$uniqueID])) %>%
+  pivot_longer(., cols = 5:245, values_to = "log_norm_counts", names_to = "uniqueID") %>%
+  group_by(., uniqueID) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by lipids.
 VIP_select_13_day3v22 #Confirm changes
 ```
 
@@ -808,7 +809,7 @@ t.test_13_day3v22 <-do(VIP_select_13_day3v22, tidy(t.test(.$log_norm_counts ~ .$
                                                           var.equal = FALSE,
                                                           conf.level = 0.95
 ))) #Looped t-test for all lipids with VIP > 1
-t.test_13_day3v22$p.adj <- p.adjust(t.test_13_day3v22$p.value, method = c("fdr"), n = length(VIP_13_day3v22$metabolite)) #Adjust p value for the number of comparisons
+t.test_13_day3v22$p.adj <- p.adjust(t.test_13_day3v22$p.value, method = c("fdr"), n = length(VIP_13_day3v22$uniqueID)) #Adjust p value for the number of comparisons
 t.test_13_day3v22
 ```
 
@@ -830,15 +831,15 @@ X <- transLipidData %>%
   dplyr::filter(., treatment_day %in% list) %>%
   droplevels() #Filter transLipidData for desired contrasts
 Y <- as.factor(X$treatment_day) #Treatments for Y
-X <- X[, 5:156] #Retain data only
+X <- X[, 5:617] #Retain data only
 ```
 
 ```{r}
 known.plsda_30_day3v22 <- plsda(X, Y, ncomp = 5) #Run PLSDA for desired contrast
 VIP_30_day3v22 <- as.data.frame(PLSDA.VIP(known.plsda_30_day3v22)[["tab"]]) %>%
-  rownames_to_column(., var = "metabolite") %>%
+  rownames_to_column(., var = "uniqueID") %>%
   filter(., VIP >= 1) #Extract VIP list and filter for VIP > 1
-VIP_30_day3v22
+nrow(VIP_30_day3v22)
 ```
 
 ```{r}
@@ -846,9 +847,9 @@ clean_30_day3v22 <- transLipidData %>%
   dplyr::filter(., treatment_day %in% list) %>%
   droplevels() #Filter transLipidData for desired contrasts.
 VIP_select_30_day3v22 <- cbind(clean_30_day3v22[, 1:4], 
-                               log(clean_30_day3v22[, names(clean_30_day3v22) %in% VIP_30_day3v22$metabolite])) %>%
-  pivot_longer(., cols = 5:67, values_to = "log_norm_counts", names_to = "metabolite") %>%
-  group_by(., metabolite) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by lipids.
+                               log(clean_30_day3v22[, names(clean_30_day3v22) %in% VIP_30_day3v22$uniqueID])) %>%
+  pivot_longer(., cols = 5:256, values_to = "log_norm_counts", names_to = "uniqueID") %>%
+  group_by(., uniqueID) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by lipids.
 VIP_select_30_day3v22 #Confirm changes
 ```
 
@@ -860,7 +861,7 @@ t.test_30_day3v22 <-do(VIP_select_30_day3v22, tidy(t.test(.$log_norm_counts ~ .$
                                                           var.equal = FALSE,
                                                           conf.level = 0.95
 ))) #Looped t-test for all lipids with VIP > 1
-t.test_30_day3v22$p.adj <- p.adjust(t.test_30_day3v22$p.value, method = c("fdr"), n = length(VIP_30_day3v22$metabolite)) #Adjust p value for the number of comparisons
+t.test_30_day3v22$p.adj <- p.adjust(t.test_30_day3v22$p.value, method = c("fdr"), n = length(VIP_30_day3v22$uniqueID)) #Adjust p value for the number of comparisons
 t.test_30_day3v22
 ```
 
@@ -868,7 +869,29 @@ t.test_30_day3v22
 t.test_30_day3v22 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>%
-  nrow(.) #0 significantly different lipids
+  nrow(.) #1 significantly different lipid
+```
+
+```{r}
+t.test_30_day3v22 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>%
+  left_join(., VIP_30_day3v22, by = "uniqueID") %>%
+  mutate(., direction = case_when(estimate > 1 ~ "22",
+                                  estimate < 1 ~ "3")) %>%
+  mutate(., score = case_when(estimate > 1 ~ VIP,
+                              estimate < 1 ~ -VIP)) %>%
+  arrange(score) %>%
+  ggplot(aes(x = score, y = reorder(uniqueID, score, sum))) +
+  geom_bar(aes(fill = direction), stat = 'identity') +
+  xlab("VIP Score") + ylab("uniqueID") +
+  scale_x_continuous(limits = c(-2.5, 2.5), breaks = seq(-2, 2, 1)) +
+  scale_fill_manual(values = c("black", "purple"), 
+                    name = "Day",
+                    breaks = c("3", "22"),
+                    labels = c("3", "22")) +
+  theme_classic(base_size = 15) + theme() #Take t-test results and filter out significant lipids. Create two new columns using estimate values: one for the direction of increase, and another for positive or negative VIP. Arrange by uniqueID name and reorder by cumulative VIP score. Plot bars and change x and y axis labels. Add scale information.
+ggsave("PLSDA/figures/significant-VIP-30-day3v22.pdf", height = 8.5, width = 11)
 ```
 
 # Validate PLSDA model
@@ -886,7 +909,7 @@ Next, I'll assess the optimal number of metabolites to keep in the analysis.
 
 ```{r}
 list.keepX <- c(5:10,  seq(20, 300, 10)) #list.keepX # to output the grid of values tested
-X <- log(transLipidData[c(5:156)]) #Assign known metabolite data to the X dataframe after log transformation
+X <- log(transLipidData[c(5:617)]) #Assign known metabolite data to the X dataframe after log transformation
 Y <- as.factor(transLipidData$treatment_day) #Assign treatment data to the Y dataframe
 ```
 
