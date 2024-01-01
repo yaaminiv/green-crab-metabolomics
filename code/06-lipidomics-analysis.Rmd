@@ -242,13 +242,13 @@ plotIndiv(treatment.plsda, comp = c(1,2), ind.names = FALSE,
 
 ```{r}
 pdf("PLSDA/figures/all-data-cimPlot-treatment.pdf", height = 8.5, width = 11)
-cim(treatment.plsda, mapping = "Y", row.names = transLipidData$treatment, xlab = "Unique Lipid ID", ylab = "Temperature (ºC)", margins = c(8, 5), row.cex = 0.5) #Create CIM plot with metabolites on the x-axis and treatment on the y-axis. 
+cim(treatment.plsda, mapping = "Y", row.names = transLipidData$treatment, xlab = "Unique Lipid ID", ylab = "Temperature (ºC)", margins = c(8, 5), row.cex = 0.5) #Create CIM plot with lipids on the x-axis and treatment on the y-axis. 
 dev.off()
 ```
 
 ### Extract VIP
 
-The VIP are the metabolites most important for distinguishing between treatments.
+The VIP are the lipids most important for distinguishing between treatments.
 
 ```{r}
 treatmentVIP <- as.data.frame(PLSDA.VIP(treatment.plsda)[["tab"]]) %>%
@@ -274,7 +274,7 @@ treatmentVIP %>%
   ggplot(aes(x = VIP, y = reorder(uniqueID, VIP, sum))) +
   geom_point() +
   xlab("VIP Score") + ylab("Unique Lipid ID") +
-  theme_classic() + theme(axis.text.y = element_text(size = 5)) #Using only metabolites with VIP > 1, arrange by metabolite name and reorder by cumulative VIP score. Plot points and change x and y axis labels.
+  theme_classic() + theme(axis.text.y = element_text(size = 5)) #Using only lipids with VIP > 1, arrange by metabolite name and reorder by cumulative VIP score. Plot points and change x and y axis labels.
 ggsave("PLSDA/figures/all-data-VIP.pdf", height = 8.5, width = 11)
 ```
 ## Temperature x day
@@ -302,7 +302,7 @@ plotIndiv(treatmentday.plsda, comp = c(1,2), ind.names = FALSE,
 
 ```{r}
 pdf("PLSDA/figures/all-data-cimPlot-day-treatment.pdf", height = 8.5, width = 11)
-cim(treatment.plsda, mapping = "Y", row.names = transLipidData$treatment_day, xlab = "Unique Lipid ID", ylab = "Temperature (ºC) x Day", margins = c(8, 5), row.cex = 0.5) #Create CIM plot with metabolites on the x-axis and treatment x day on the y-axis. 
+cim(treatment.plsda, mapping = "Y", row.names = transLipidData$treatment_day, xlab = "Unique Lipid ID", ylab = "Temperature (ºC) x Day", margins = c(8, 5), row.cex = 0.5) #Create CIM plot with lipids on the x-axis and treatment x day on the y-axis. 
 dev.off()
 ```
 
@@ -321,8 +321,8 @@ write.csv(treatmentdayVIP, "PLSDA/all-data-VIP-day-treatment.csv", quote = FALSE
 ```{r}
 treatmentdayVIP %>%
   filter(VIP >= 1) %>%
-  nrow(.) #251 metabolites have VIP > 1
-972/2406 * 100 #40.4% metabolites VIP > 1
+  nrow(.) #251 lipids have VIP > 1
+972/2406 * 100 #40.4% lipids VIP > 1
 ```
 
 ```{r}
@@ -332,7 +332,7 @@ treatmentdayVIP %>%
   ggplot(aes(x = VIP, y = reorder(uniqueID, VIP, sum))) +
   geom_point() +
   xlab("VIP Score") + ylab("Unique Lipid ID") +
-  theme_classic() + theme(axis.text.y = element_text(size = 5)) #Using only metabolites with VIP > 1, arrange by metabolite name and reorder by cumulative VIP score. Plot points and change x and y axis labels.
+  theme_classic() + theme(axis.text.y = element_text(size = 5)) #Using only lipids with VIP > 1, arrange by metabolite name and reorder by cumulative VIP score. Plot points and change x and y axis labels.
 ggsave("PLSDA/figures/all-data-VIP-day-treatment.pdf", height = 8.5, width = 11)
 ```
 
@@ -374,7 +374,7 @@ plotIndiv(treatmentday.known.plsda, comp = c(1,3), ind.names = FALSE,
 
 ```{r}
 pdf("PLSDA/figures/known-lipids-cimPlot-day-treatment.pdf", height = 8.5, width = 11)
-cim(treatmentday.known.plsda, mapping = "Y", row.names = transLipidData$treatment_day, xlab = "Metabolites", ylab = "Temperature (ºC) x Day", margins = c(8, 5), row.cex = 0.5) #Create CIM plot with metabolites on the x-axis and treatment x day on the y-axis. 
+cim(treatmentday.known.plsda, mapping = "Y", row.names = transLipidData$treatment_day, xlab = "Metabolites", ylab = "Temperature (ºC) x Day", margins = c(8, 5), row.cex = 0.5) #Create CIM plot with lipids on the x-axis and treatment x day on the y-axis. 
 dev.off()
 ```
 
@@ -393,8 +393,8 @@ write.csv(treatmentday.known.VIP, "PLSDA/known-lipids-VIP-day-treatment.csv", qu
 ```{r}
 treatmentday.known.VIP %>%
   filter(VIP >= 1) %>%
-  nrow(.) #73 metabolites have VIP > 1
-274/612 * 100 #44.8% metabolites VIP > 1
+  nrow(.) #73 lipids have VIP > 1
+274/612 * 100 #44.8% lipids VIP > 1
 ```
 
 ```{r}
@@ -404,7 +404,7 @@ treatmentday.known.VIP %>%
   ggplot(aes(x = VIP, y = reorder(uniqueID, VIP, sum))) +
   geom_point() +
   xlab("VIP Score") + ylab("Unique Lipid ID") +
-  theme_classic() + theme(axis.text.y = element_text(size = 8)) #Using only metabolites with VIP > 1, arrange by metabolite name and reorder by cumulative VIP score. Plot points and change x and y axis labels.
+  theme_classic() + theme(axis.text.y = element_text(size = 8)) #Using only lipids with VIP > 1, arrange by metabolite name and reorder by cumulative VIP score. Plot points and change x and y axis labels.
 ggsave("PLSDA/figures/known-lipids-VIP-day-treatment.pdf", height = 8.5, width = 11)
 ```
 
@@ -905,7 +905,7 @@ MyPerf.plsda <- perf(treatmentday.known.plsda, validation = "Mfold", folds = 6,
 plot(MyPerf.plsda, sd = TRUE) #Overall, increasing the number of components decreases the error rate.
 ```
 
-Next, I'll assess the optimal number of metabolites to keep in the analysis.
+Next, I'll assess the optimal number of lipids to keep in the analysis.
 
 ```{r}
 list.keepX <- c(5:10,  seq(20, 300, 10)) #list.keepX # to output the grid of values tested
@@ -945,9 +945,9 @@ plotIndiv(myResult.splsda.final_T, comp = c(1,2), ind.names = FALSE,
 #dev.off()
 ```
 
-# WCNA analysis for known metabolites
+# WCNA analysis for known lipids
 
-Although I have lists of VIP associated with each pairwise comparison, there is one additional step I can take to determine which known metabolites are associated with different treatment x day combinations. I will use a Weighted Correlation Network Analysis (similar to a WGCNA for gene expression) to group metabolites together by abundance patterns, then correlate metabolite modules with treatment and day.
+Although I have lists of VIP associated with each pairwise comparison, there is one additional step I can take to determine which known lipids are associated with different treatment x day combinations. I will use a Weighted Correlation Network Analysis (similar to a WGCNA for gene expression) to group lipids together by abundance patterns, then correlate metabolite modules with treatment and day.
 
 ```{bash}
 mkdir WCNA
@@ -958,57 +958,57 @@ mkdir WCNA/figures
 
 ### Format data
 
-I need to convert my dataframe such that samples are columns and metabolites are rows. I also need to have a dataframe without metadata.
+I need to convert my dataframe such that samples are columns and lipids are rows. I also need to have a dataframe without metadata.
 
 ```{r}
-head(rawMetabolomicsData)
+head(rawLipidomicsData)
 head(lipidomicsMetadata)
 ```
 
 ```{r}
-rowwiseMetabData <- rawMetabolomicsData %>%
-  dplyr::rename(., metabolite = BinBase.name) %>%
+rowwiseLipidData <- rawLipidomicsData %>%
   dplyr::select(., -c(2:8)) %>%
-  column_to_rownames(., var = "metabolite") %>%
-  slice(., c(1:152)) %>%
-  log(.) #Take the raw lipidomics data, since that dataframe already has samples in columns and metabolites in rows. Rename the metabolite column, get rid of extraneous data, and change the metabolite column to rownames. Keep only data from known metabolites. Log transform the data.
-tail(rowwiseMetabData) #Confirm formatting
+  column_to_rownames(., var = "uniqueID") %>%
+  slice(., c(1:612)) %>%
+  log(.) %>% 
+  replace(is.na(.), 0) #Take the raw lipidomics data, since that dataframe already has samples in columns and lipids in rows. Rename the metabolite column, get rid of extraneous data, and change the metabolite column to rownames. Keep only data from known lipids. Log transform the data. Replace all NA with 0.
+tail(rowwiseLipidData) #Confirm formatting
 ```
 
 ```{r}
-rowSums(dplyr::count(rowwiseMetabData)) > 0 #Check that there are no metabolites with 0 counts for all samples. Should return TRUE.  
+rowSums(dplyr::count(rowwiseLipidData)) > 0 #Check that there are no lipids with 0 counts for all samples. Should return TRUE.  
 ```
 
 ### Data filtering: PoverA and genefilter
 
-*pOverA*: Specifying the minimum count for a proportion of samples for each metabolite. Here, we are using a pOverA of 0.08. This is because we have 69 samples with a minimum of n = 6 samples per treatment x day. Therefore, we will accept metabolites that are present in 6/69 = 0.08 of the samples because we expect different metabolites by temperature and day as demonstrated by PLSDA analysis. We are further setting the minimum value of metabolites to 0.01 (median normalized), such that 8% of the samples must have a non-zero normalized metabolite presence in order for the metabolite to remain in the data set.  
+*pOverA*: Specifying the minimum count for a proportion of samples for each metabolite. Here, we are using a pOverA of 0.08. This is because we have 69 samples with a minimum of n = 6 samples per treatment x day. Therefore, we will accept lipids that are present in 6/69 = 0.08 of the samples because we expect different lipids by temperature and day as demonstrated by PLSDA analysis. We are further setting the minimum value of lipids to 0.01 (median normalized), such that 8% of the samples must have a non-zero normalized metabolite presence in order for the metabolite to remain in the data set.  
 
 Filter in the package "genefilter". Pre-filtering our dataset to reduce the memory size dataframe, increase the speed of the transformation and testing functions, and improve quality of statistical analysis by removing low-coverage counts. Removed counts could represent outliers in the data and removing these improves sensitivity of statistical tests.
 
 ```{r}
 filt <- filterfun(pOverA(0.08, 0.01)) #Define the filter
-gfilt <- genefilter(rowwiseMetabData, filt) #Create filter for the metabolite data
+gfilt <- genefilter(rowwiseLipidData, filt) #Create filter for the metabolite data
 ```
 
 ```{r}
-keep <- rowwiseMetabData[gfilt,] #Identify metabolites to keep by count filter
+keep <- rowwiseLipidData[gfilt,] #Identify lipids to keep by count filter
 n.keep <- rownames(keep) #Identify metabolite lists
 
-rowwiseMetabData_filt <- as.data.frame(rowwiseMetabData[which(rownames(rowwiseMetabData) %in% n.keep),]) #Metabolite count data filtered in PoverA, P percent of the samples have counts over A
+rowwiseLipidData_filt <- as.data.frame(rowwiseLipidData[which(rownames(rowwiseLipidData) %in% n.keep),]) #Metabolite count data filtered in PoverA, P percent of the samples have counts over A
 ```
 
 ```{r}
 #How many rows do we have before and after filtering?
-nrow(rowwiseMetabData) #Before
-nrow(rowwiseMetabData_filt) #After
+nrow(rowwiseLipidData) #Before
+nrow(rowwiseLipidData_filt) #After
 ```
 
-All 152 metabolites will be used in downstream analysis.
+All 612 lipids will be used in downstream analysis.
 
 ```{r}
 #Checking that all row and column names match. Should return "TRUE"
-all(rownames(lipidomicsMetadata$sample_id) %in% colnames(rowwiseMetabData_filt))
-all(rownames(lipidomicsMetadata$sample_id) == colnames(rowwiseMetabData_filt)) 
+all(rownames(lipidomicsMetadata$sample_id) %in% colnames(rowwiseLipidData_filt))
+all(rownames(lipidomicsMetadata$sample_id) == colnames(rowwiseLipidData_filt)) 
 ```
 
 ### Outlier detection
@@ -1016,31 +1016,26 @@ all(rownames(lipidomicsMetadata$sample_id) == colnames(rowwiseMetabData_filt))
 I will identify outliers visually through a clustering analysis.
 
 ```{r}
-sampleTree <- hclust(dist(rowwiseMetabData), method = "average") #Perform clustering analysis
+sampleTree <- hclust(dist(rowwiseLipidData), method = "average") #Perform clustering analysis
 ```
 
 ```{r}
-#pdf("WCNA/figures/metabolite-outliers.pdf", height = 8.5, width = 11)
+#pdf("WCNA/figures/lipid-outliers.pdf", height = 8.5, width = 11)
 plot(sampleTree, main = "Sample clustering to detect outliers", sub = "", xlab = "", cex.lab = 0.8, cex.axis = 0.8, cex.main = 2) #Plot cluster dendogram
 #dev.off()
 ```
 
-Based on the tree, taurine and sulfuric acid might be outliers.
+There's so much data that it's hard to tell if anything is actually an outlier, but most if not all lipids seem to cluster with other lipids.
 
 ```{r}
-rowwiseMetabData %>% filter(., rownames(.) == "taurine")
-rowwiseMetabData %>% filter(., rownames(.) == "sulfuric acid")
-```
-
-```{r}
-rowwiseMetabData <- t(rowwiseMetabData) %>% as.data.frame(.) #Transpose such that samples are in rows and metabolites are in columns.  
-head(rowwiseMetabData) #Confirm changes
+rowwiseLipidData <- t(rowwiseLipidData) %>% as.data.frame(.) #Transpose such that samples are in rows and lipids are in columns.  
+head(rowwiseLipidData) #Confirm changes
 ```
 
 Construct a new cluster dendogram to visually identify sample outliers.
 
 ```{r}
-sampleTree <- hclust(dist(rowwiseMetabData), method = "average") #Perform clustering analysis
+sampleTree <- hclust(dist(rowwiseLipidData), method = "average") #Perform clustering analysis
 ```
 
 ```{r}
@@ -1048,8 +1043,6 @@ sampleTree <- hclust(dist(rowwiseMetabData), method = "average") #Perform cluste
 plot(sampleTree, main = "Sample clustering to detect outliers", sub = "", xlab = "", cex.lab = 1.5, cex.axis = 1.5, cex.main = 2)
 #dev.off()
 ```
-
-There don't seem to be any samples that look like outliers (but it's also interesting how there isn't a clear separation of samples by tank or treatment).
 
 ## Network construction and consensus module detection
 
@@ -1060,7 +1053,7 @@ The soft thresholding power (β) is the number to which the co-expression simila
 ```{r, message=FALSE, warning=FALSE}
 allowWGCNAThreads()
 powers <- c(c(1:20), seq(from = 12, to=20, by=2)) #Create a string of numbers from 1 through 10, and even numbers from 10 through 20
-sft <-pickSoftThreshold(rowwiseMetabData, powerVector = powers, verbose = 5) # Call the network topology analysis function
+sft <-pickSoftThreshold(rowwiseLipidData, powerVector = powers, verbose = 5) # Call the network topology analysis function
 ```
 
 ```{r}
@@ -1086,7 +1079,7 @@ When choosing a soft thresholding power, want to choose the lowest number that r
 
 ### Identify modules using `blockwiseModules`  
 
-Use `blockwiseModules` to identify modules of metabolites.  
+Use `blockwiseModules` to identify modules of lipids.  
 
 Settings used: 
 
@@ -1103,7 +1096,7 @@ mergeCutHeight = 0.25
 picked_power = 6
 temp_cor <- cor       
 cor <- WGCNA::cor # Force it to use WGCNA cor function (fix a namespace conflict issue)
-netwk <- blockwiseModules(rowwiseMetabData,                         # <= input here
+netwk <- blockwiseModules(rowwiseLipidData,                         # <= input here
                           
                           # == Adjacency Function ==
                           power = picked_power,               # <= power here
@@ -1170,7 +1163,7 @@ module_df[1:5,]
 write.csv(module_df, "WCNA/metabolite_modules.csv")
 
 # Get Module Eigengenes per cluster
-MEs <- moduleEigengenes(rowwiseMetabData, mergedColors)$eigengenes
+MEs <- moduleEigengenes(rowwiseLipidData, mergedColors)$eigengenes
 
 # Reorder modules so similar modules are next to each other
 MEs <- orderMEs(MEs)
@@ -1231,15 +1224,15 @@ head(datTraits) #Confirm dataframe creation
 ```
 
 ```{r}
-#Define numbers of metabolites and samples and view 
-nMetabolites <- ncol(rowwiseMetabData)
-nSamples <- nrow(rowwiseMetabData)
+#Define numbers of lipids and samples and view 
+nMetabolites <- ncol(rowwiseLipidData)
+nSamples <- nrow(rowwiseLipidData)
 
 nMetabolites
 nSamples
 ```
 
-We have 152 metabolites and 69 samples.   
+We have 152 lipids and 69 samples.   
 
 Next correlate the trait matrix (treatment, day) with eigengenes (modules).  
 
@@ -1261,8 +1254,8 @@ plot(moduleTraitTree) #Plot cluster dendogram
 ```
 
 ```{r}
-# Correlations of metabolites with eigengenes. Calculate correlations between ME's and groups 
-moduleGeneCor <- cor(MEs, rowwiseMetabData) #Correlate eigengenes with metabolites
+# Correlations of lipids with eigengenes. Calculate correlations between ME's and groups 
+moduleGeneCor <- cor(MEs, rowwiseLipidData) #Correlate eigengenes with lipids
 moduleGenePvalue <- corPvalueStudent(moduleGeneCor, nSamples) #Calculate p-values for metabolite-eigengene correlations
 head(moduleGeneCor %>% as.data.frame)
 head(moduleGenePvalue %>% as.data.frame(.))
@@ -1420,7 +1413,7 @@ metab_rel_change #Confirm calculations
 ```
 
 ```{r}
-write.csv(WCNA/metab_rel_change, "metabolites_relative_change.csv", quote = FALSE, row.names = FALSE)
+write.csv(WCNA/metab_rel_change, "lipids_relative_change.csv", quote = FALSE, row.names = FALSE)
 ```
 
 # Pathway analysis with MetaboAnalyst
@@ -1432,116 +1425,116 @@ mkdir metaboanalyst
 mkdir metaboanalyst/figures
 ```
 
-## Create lists of metabolites in each module
+## Create lists of lipids in each module
 
 For each module, I want the metabolite name, but I also want all of the PubChem and KEGG ID information provided by the sequencing facility. This is because common names for metabolties can be different, and using a numerical classifier will ensure the correct compounds are recognized by MetaboAnalyst.
 
 ```{r}
-module0_metabolites <- module_df %>%
+module0_lipids <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 0) %>%
   dplyr::select(., Metabolite) %>% 
-  left_join(., (rawMetabolomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
-  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
-nrow(module0_metabolites) #40 metabolites
-head(module0_metabolites)
-write.csv(module0_metabolites, "metaboanalyst/module0_metabolites.csv", quote = FALSE, row.names = FALSE)
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
+  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
+nrow(module0_lipids) #40 lipids
+head(module0_lipids)
+write.csv(module0_lipids, "metaboanalyst/module0_lipids.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
-module1_metabolites <- module_df %>%
+module1_lipids <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 1) %>%
   dplyr::select(., Metabolite) %>% 
-  left_join(., (rawMetabolomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
-  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
-nrow(module1_metabolites) #22 metabolites
-head(module1_metabolites)
-write.csv(module1_metabolites, "metaboanalyst/module1_metabolites.csv", quote = FALSE, row.names = FALSE)
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
+  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
+nrow(module1_lipids) #22 lipids
+head(module1_lipids)
+write.csv(module1_lipids, "metaboanalyst/module1_lipids.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
-module2_metabolites <- module_df %>%
+module2_lipids <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 2) %>%
   dplyr::select(., Metabolite) %>% 
-  left_join(., (rawMetabolomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
-  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
-nrow(module2_metabolites) #22 metabolites
-head(module2_metabolites)
-write.csv(module2_metabolites, "metaboanalyst/module2_metabolites.csv", quote = FALSE, row.names = FALSE)
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
+  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
+nrow(module2_lipids) #22 lipids
+head(module2_lipids)
+write.csv(module2_lipids, "metaboanalyst/module2_lipids.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
-module3_metabolites <- module_df %>%
+module3_lipids <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 3) %>%
   dplyr::select(., Metabolite) %>% 
-  left_join(., (rawMetabolomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
-  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
-nrow(module3_metabolites) #19 metabolites
-head(module3_metabolites)
-write.csv(module3_metabolites, "metaboanalyst/module3_metabolites.csv", quote = FALSE, row.names = FALSE)
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
+  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
+nrow(module3_lipids) #19 lipids
+head(module3_lipids)
+write.csv(module3_lipids, "metaboanalyst/module3_lipids.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
-module4_metabolites <- module_df %>%
+module4_lipids <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 4) %>%
   dplyr::select(., Metabolite) %>% 
-  left_join(., (rawMetabolomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
-  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
-nrow(module4_metabolites) #15 metabolites
-head(module4_metabolites)
-write.csv(module4_metabolites, "metaboanalyst/module4_metabolites.csv", quote = FALSE, row.names = FALSE)
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
+  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
+nrow(module4_lipids) #15 lipids
+head(module4_lipids)
+write.csv(module4_lipids, "metaboanalyst/module4_lipids.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
-module5_metabolites <- module_df %>%
+module5_lipids <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 5) %>%
   dplyr::select(., Metabolite) %>% 
-  left_join(., (rawMetabolomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
-  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
-nrow(module5_metabolites) #10 metabolites
-head(module5_metabolites)
-write.csv(module5_metabolites, "metaboanalyst/module5_metabolites.csv", quote = FALSE, row.names = FALSE)
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
+  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
+nrow(module5_lipids) #10 lipids
+head(module5_lipids)
+write.csv(module5_lipids, "metaboanalyst/module5_lipids.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
-module6_metabolites <- module_df %>%
+module6_lipids <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 6) %>%
   dplyr::select(., Metabolite) %>% 
-  left_join(., (rawMetabolomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
-  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
-nrow(module6_metabolites) #10 metabolites
-head(module6_metabolites)
-write.csv(module6_metabolites, "metaboanalyst/module6_metabolites.csv", quote = FALSE, row.names = FALSE)
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
+  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
+nrow(module6_lipids) #10 lipids
+head(module6_lipids)
+write.csv(module6_lipids, "metaboanalyst/module6_lipids.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
-module7_metabolites <- module_df %>%
+module7_lipids <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 7) %>%
   dplyr::select(., Metabolite) %>% 
-  left_join(., (rawMetabolomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
-  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
-nrow(module7_metabolites) #8 metabolites
-head(module7_metabolites)
-write.csv(module7_metabolites, "metaboanalyst/module7_metabolites.csv", quote = FALSE, row.names = FALSE)
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
+  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
+nrow(module7_lipids) #8 lipids
+head(module7_lipids)
+write.csv(module7_lipids, "metaboanalyst/module7_lipids.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
-module8_metabolites <- module_df %>%
+module8_lipids <- module_df %>%
   dplyr::rename(., Module = colors) %>%
   filter(., Module == 8) %>%
   dplyr::select(., Metabolite) %>% 
-  left_join(., (rawMetabolomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
-  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and metabolites, change colors to Module, and select metabolites for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
-nrow(module8_metabolites) #6 metabolites
-head(module8_metabolites)
-write.csv(module8_metabolites, "metaboanalyst/module8_metabolites.csv", quote = FALSE, row.names = FALSE)
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Metabolite = BinBase.name)), by = "Metabolite") %>%
+  dplyr::select(., Metabolite, PubChem, KEGG) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the metabolite column. Then join with the raw lipidomics data to get PubChem and KEGG ids.
+nrow(module8_lipids) #6 lipids
+head(module8_lipids)
+write.csv(module8_lipids, "metaboanalyst/module8_lipids.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ## Enrichment compound class analysis
@@ -1550,9 +1543,9 @@ write.csv(module8_metabolites, "metaboanalyst/module8_metabolites.csv", quote = 
 
 The first kind of enrichment analysis I will complete is looking at compound structures. To do this, I will upload the list of metabolite names for each module (generated above) to the [MetaboAnalyst interface](https://www.metaboanalyst.ca/MetaboAnalyst/upload/EnrichUploadView.xhtml). Then, I will conduct an enrichment of *main class chemical structures*. 
 
-> Enrichment tests are based on the well-established globaltest to test associations between metabolite sets and the outcome. The algorithm uses a generalized linear model to compute a ‘Q-stat’ for each metabolite set. The Q-stat is calculated as the average of the Q values calculated for the each single metabolites; while the Q value is the squared covariance between the metabolite and the outcome. The globaltest has been shown to exhibit similar or superior performance when tested against several other popular methods.
+> Enrichment tests are based on the well-established globaltest to test associations between metabolite sets and the outcome. The algorithm uses a generalized linear model to compute a ‘Q-stat’ for each metabolite set. The Q-stat is calculated as the average of the Q values calculated for the each single lipids; while the Q value is the squared covariance between the metabolite and the outcome. The globaltest has been shown to exhibit similar or superior performance when tested against several other popular methods.
 
-> Metabolite sets: Unlike transcriptomics which allows comprehensive gene expression profiling, targeted lipidomics usually covers only a small percentage of metabolome (the actual coverage is platform/protocol specific). This means that metabolites (defined in our current pathways or metabolite sets) do not have equal probabilities of being measured in your studies, and the enriched functions are the results from both platform/protocol specific effects and biological perturbations. Since the primary interest is to detect the latter, we highly recommend uploading a reference metabolome containing all measurable metabolites from your platform to eliminate the former effects.
+> Metabolite sets: Unlike transcriptomics which allows comprehensive gene expression profiling, targeted lipidomics usually covers only a small percentage of metabolome (the actual coverage is platform/protocol specific). This means that lipids (defined in our current pathways or metabolite sets) do not have equal probabilities of being measured in your studies, and the enriched functions are the results from both platform/protocol specific effects and biological perturbations. Since the primary interest is to detect the latter, we highly recommend uploading a reference metabolome containing all measurable lipids from your platform to eliminate the former effects.
 
 I don't have a reference metabolome and I didn't perform targeted lipidomics. I used metabolite sets containing at least two entries and all compounds in the selected library as a reference.
 
