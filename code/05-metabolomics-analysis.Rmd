@@ -37,8 +37,8 @@ getwd()
 # if ("pheatmap" %in% rownames(installed.packages()) == 'FALSE') install.packages('pheatmap') 
 # if ("genefilter" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("genefilter") 
 # if ("WGCNA" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('WGCNA')
-if ("dendsort" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('dendsort') 
-if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap') 
+# if ("dendsort" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('dendsort') 
+# if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap') 
 
 require(tidyverse)
 require(vegan)
@@ -1736,11 +1736,11 @@ write.csv(sig_KEGG_pathways, "metaboanalyst/msea-KEGG/significant-compound-class
 #### Plot results
 
 ```{r}
-ggplot(sig_KEGG_pathways, aes(x = Module, y = KEGG)) + 
+ggplot(KEGG_pathways, aes(x = Module, y = KEGG)) + 
   geom_point(aes(size = hits)) +
   scale_size(name = "Metabolites",
              range = c(4,15), 
-             limits = c(1,15)) +
+             limits = c(1,5)) +
   xlab("Module Eigengene") + ylab("KEGG Pathway") +
   theme_classic(base_size = 15) #Plot significantly enriched KEGG pathways for each module. Scale point size by the number of metabolite hits in each category. Define x- and y- axis labels. Change the angle of the x-axis text.
 ggsave("metaboanalyst/figures/KEGG-pathway-dotplot.pdf", height = 8.5, width = 11)
