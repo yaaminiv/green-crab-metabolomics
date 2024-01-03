@@ -110,10 +110,6 @@ tail(lipidomicsMetadata) #Confirm import
 
 Before analyzing the data, I will transform the data and match with treatment metadata. The West Coast Metabolomics Center has already normalized data. 
 
-- arrange dataset by pubmed id (NAs to bottom)
-- note number of lipids with name/pubmed id
-- still use unique ID in the analysis
-
 ```{r}
 transLipidData <- rawLipidomicsData %>%
   right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
@@ -123,7 +119,7 @@ transLipidData <- rawLipidomicsData %>%
   purrr::set_names(as.character(dplyr::slice(., 1))) %>%
   dplyr::slice(., -1) %>%
   rownames_to_column(., var = "crab.ID") %>%
-  left_join(lipidomicsMetadata, ., by = "crab.ID") #Remove MS information, convert lipid names to rownames, and transform dataframe. Convert rownames to crab.ID column. First 418 rows will have PubChem CID (and chemical names)
+  left_join(lipidomicsMetadata, ., by = "crab.ID") #Join with inChiKey table and arrange by PubChem CID. This will ensure that any compounds without CID (aka unknowns) are at the bottom. The first 418 rows have PubChem CID (and chemical names). Remove name MS information and keep only the unique IDs (some chemical names and CID are repeated since positive and negative polarities are listed separately). Convert unique IDs to rownames, and transform dataframe. Convert rownames to crab.ID column.
 transLipidData[, c(5:2410)] <- transLipidData[, c(5:2410)] %>% mutate_if(is.character, as.numeric) #Convert data columns to numeric
 head(transLipidData) #Confirm changes
 ```
@@ -958,11 +954,13 @@ head(lipidomicsMetadata)
 
 ```{r}
 rowwiseLipidData <- rawLipidomicsData %>%
-  dplyr::select(., -c(2:8)) %>%
+  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
+  arrange(., "PubChem.ID") %>%
+  slice(., c(1:418)) %>%
+  dplyr::select(., -c(1:3, 5:10)) %>%
   column_to_rownames(., var = "uniqueID") %>%
-  slice(., c(1:612)) %>%
   log(.) %>% 
-  replace(is.na(.), 0) #Take the raw lipidomics data, since that dataframe already has samples in columns and lipids in rows. Rename the metabolite column, get rid of extraneous data, and change the metabolite column to rownames. Keep only data from known lipids. Log transform the data. Replace all NA with 0.
+  replace(is.na(.), 0) #Take the raw lipidomics data, since that dataframe already has samples in columns and lipids in rows. Join with inChiKey table and arrange by CID. Keep the first 418 rows, since those are the known lipids (names and CID included). Change the unique IDs to rownames.  Log transform the data. Replace all NA with 0.
 tail(rowwiseLipidData) #Confirm formatting
 ```
 
@@ -994,7 +992,7 @@ nrow(rowwiseLipidData) #Before
 nrow(rowwiseLipidData_filt) #After
 ```
 
-All 612 lipids will be used in downstream analysis.
+All 418 known lipids will be used in downstream analysis.
 
 ```{r}
 #Checking that all row and column names match. Should return "TRUE"
@@ -1034,7 +1032,13 @@ sampleTree <- hclust(dist(rowwiseLipidData), method = "average") #Perform cluste
 plot(sampleTree, main = "Sample clustering to detect outliers", sub = "", xlab = "", cex.lab = 1.5, cex.axis = 1.5, cex.main = 2)
 #dev.off()
 ```
-103, 303, and 304 look like they could be outliers. I did this analysis with and without those samples and it didn't change the clustering patterns, so I'll keep them.
+
+303, 304, and 606 look like they could be outliers (all from 30ºC treatment at day 3). I did this analysis with and without those samples and it significantly changed the sample clustering, so I'll proceed with outlier removal.
+
+```{r}
+rowwiseLipidData[-c(30, 31, 67),]
+```
+
 
 ## Network construction and consensus module detection
 
@@ -1045,7 +1049,7 @@ The soft thresholding power (β) is the number to which the co-expression simila
 ```{r, message=FALSE, warning=FALSE}
 allowWGCNAThreads()
 powers <- c(c(1:20), seq(from = 12, to=20, by=2)) #Create a string of numbers from 1 through 10, and even numbers from 10 through 20
-sft <-pickSoftThreshold(rowwiseLipidData, powerVector = powers, verbose = 5) # Call the network topology analysis function
+sft <-pickSoftThreshold(rowwiseLipidData[-c(30, 31, 67),], powerVector = powers, verbose = 5) # Call the network topology analysis function
 ```
 
 ```{r}
@@ -1067,7 +1071,7 @@ plot(sft$fitIndices[,1], sft$fitIndices[,5],
 text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1,col="red")
 ```
 
-When choosing a soft thresholding power, want to choose the lowest number that reaches but does not pass the R<sup>2</sup> cutoff. From this data, it appears that the **soft thresholding power is 10**.  
+When choosing a soft thresholding power, want to choose the lowest number that reaches the R<sup>2</sup> cutoff. From this data, it appears that the **soft thresholding power is 9**.  
 
 ### Identify modules using `blockwiseModules`  
 
@@ -1085,10 +1089,10 @@ mergeCutHeight = 0.25
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 
-picked_power = 10
+picked_power = 9
 temp_cor <- cor       
 cor <- WGCNA::cor # Force it to use WGCNA cor function (fix a namespace conflict issue)
-netwk <- blockwiseModules(rowwiseLipidData,                         # <= input here
+netwk <- blockwiseModules(rowwiseLipidData[-c(30, 31, 67),],                         # <= input here
                           
                           # == Adjacency Function ==
                           power = picked_power,               # <= power here
@@ -1123,8 +1127,8 @@ table(mergedColors)
 
 Module sizes are as follows: 
 
-0    1   2   3   4   5   6   7   8   9  10  11  12  13  14  15 
-47 241  75  72  51  28  16  12  12  11  11  11   7   7   6   5 
+ 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15 
+12 144  54  40  26  23  22  22  16  11  10   9   8   8   7   6 
 
 ```{r}
 # Plot the dendrogram and the module colors underneath
@@ -1152,7 +1156,7 @@ module_df <- data.frame(
 
 module_df[1:5,]
 
-#write.csv(module_df, "WCNA/lipid_modules.csv")
+write.csv(module_df, "WCNA/lipid_modules.csv")
 
 # Get Module Eigengenes per cluster
 MEs <- moduleEigengenes(rowwiseLipidData, mergedColors)$eigengenes
@@ -1213,8 +1217,8 @@ head(datTraits) #Confirm dataframe creation
 
 ```{r}
 #Define numbers of lipids and samples and view 
-nMetabolites <- ncol(rowwiseLipidData)
-nSamples <- nrow(rowwiseLipidData)
+nMetabolites <- ncol(rowwiseLipidData[-c(30, 31, 67),])
+nSamples <- nrow(rowwiseLipidData[-c(30, 31, 67),])
 
 nMetabolites
 nSamples
