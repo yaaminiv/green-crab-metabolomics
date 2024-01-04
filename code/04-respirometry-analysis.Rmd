@@ -2219,10 +2219,10 @@ all_MO2_slope_results_reorder %>%
   ggplot(., aes(x = treatment, y = -slope_nmol_hr_corrected, color = treatment)) + 
   geom_boxplot() + geom_point(aes(shape = treatment), size = 2) +
   xlab("") + ylab("Oxygen Consumption (nmol/hr)") +
-  stat_summary(fun = median,
-               geom = "line",
-               aes(group = 1),
-               col = "black", lty = 2) +
+  # stat_summary(fun = median,
+  #              geom = "line",
+  #              aes(group = 1),
+  #              col = "black", lty = 2) +
   facet_wrap(. ~ day, ncol = 4, labeller = labeller (day = facet_labels)) +
   scale_x_discrete(breaks = c("05C", "13C", "30C"),
                    labels = c("", "", "")) +
