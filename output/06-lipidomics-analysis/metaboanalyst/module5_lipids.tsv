@@ -1,0 +1,24 @@
+INCHIKEY	Chemical.Name	PubChem.CID	Lipid	identifier	lipid
+SCBSLJVBXYHZPZ-UHFFFAOYSA-N	HexCer 18:0;2O/14:0	22178811	108	1.88_674.56	HexCer 32:0;O2
+UIXXHROAQSBBOV-UHFFFAOYSA-N	(3-Hexadecanoyloxy-2-tetradecanoyloxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	10190333	153	1.99_706.55	PC 16:0_14:0 
+PZNPLUBHRSSFHT-RRHRGVEJSA-N	1-Hexadecanoyl-2-octadecanoyl-sn-glycero-3-phosphocholine	24778686	189	2.46_762.60	PC 34:0
+ZQGOFPZFTPJOJU-UHFFFAOYSA-N	(2-Henicosanoyloxy-3-octoxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	164505567	306	2.00_678.54	PC O-29:0
+MARQLCZUTCPJHC-UHFFFAOYSA-N	(3-Octoxy-2-tricosanoyloxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	164334893	309	2.21_706.57	PC O-31:0
+RPJBSPVVDIKMBV-UHFFFAOYSA-N	(2-Hexadecanoyloxy-3-pentadecoxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	165289337	310	2.05_706.58	PC O-31:0|PC O-15:0_16:0
+SVWBXNAUENUONE-LDLOPFEMSA-N	1-Palmitoyl-2-hexadecyl-sn-glycero-3-phosphocholine	173570	312	2.30_720.59	PC O-32:0 
+LXEGSWFXNDUGIV-UHFFFAOYSA-N	(3-Octoxy-2-pentacosanoyloxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	164333045	316	2.44_734.60	PC O-33:0 
+SUKSMPBISVBNOS-SDJUKWJGSA-N	Phosphatidylethanolamine 18:0-22:3	134768112	393	2.77_796.59	PE 18:0_22:3 
+HZCLJRFPXMKWHR-FEBLJDHQSA-N	N-(dodecanoyl)-sphing-4-enine-1-phosphocholine	44260123	507	1.54_647.51	SM d30:1 
+FJYURYAFGRADQP-WSYRTZMQSA-N	N-(heptadecanoyl)-4E-tetradecasphingenine-1-phosphocholine	134729785	508	1.65_661.52	SM d31:1 
+MJAFYELZQYPMQG-MPQUPPDSSA-N	C14DH Sphingomyelin	44260138	509	1.82_677.56	SM d32:0 
+OMRILSIMTXCAPB-UHFFFAOYSA-N	[3-Hydroxy-2-(tridecanoylamino)nonadecyl] 2-(trimethylazaniumyl)ethyl phosphate	133040069	510	1.92_735.57	SM d32:0 Isomer B 
+KYICBZWZQPCUMO-PSALXKTOSA-N	C14 Sphingomyelin	11433862	511	1.75_675.54_1.75_697.52	SM d32:1 Isomer A
+KYICBZWZQPCUMO-PSALXKTOSA-N	C14 Sphingomyelin	11433862	512	1.84_733.55	SM d32:1 Isomer B
+PEJGMBUENJSLLH-RHAKMSQVSA-N	N-(tetradecanoyl)-4E,14Z-sphingadienine-1-phosphocholine	52931131	513	1.67_731.53	SM d32:2 
+LQINJRUGTUOHGS-YPDYIYJKSA-N	N-(pentadecanoyl)-sphing-4-enine-1-phosphocholine	52931139	514	1.89_689.56	SM d33:1 
+QHZIGNLCLJPLCU-QPPIDDCLSA-N	N-Palmitoyldihydrosphingomyelin	9939965	515	2.18_763.60	SM d34:0 
+RWKUXQNLWDTSLO-GWQJGLRPSA-N	Palmitoyl sphingomyelin	9939941	516	1.97_703.58	SM d34:1 Isomer A
+RWKUXQNLWDTSLO-GWQJGLRPSA-N	Palmitoyl sphingomyelin	9939941	517	2.09_761.58	SM d34:1 Isomer B
+YLWSJLLZUHSIEA-CKSUKHGVSA-N	N-(hexadecanoyl)-4E,14Z-sphingadienine-1-phosphocholine	52931235	518	1.79_701.56	SM d34:2 
+HVVDGWWLGYBUAB-JYDNXXCZSA-N	[(E)-2-[[(Z)-henicos-9-enoyl]amino]-3-hydroxytetradec-4-enyl] 2-(trimethylazaniumyl)ethyl phosphate	138173078	520	1.89_715.57	SM d35:2 
+GPOGSMIDYBSWAT-UDBQMCEJSA-N	[(4E,8E,12E)-3-hydroxy-2-[[(Z)-tetradec-9-enoyl]amino]docosa-4,8,12-trienyl] 2-(trimethylazaniumyl)ethyl phosphate	138162742	526	1.97_725.56	SM d36:4 

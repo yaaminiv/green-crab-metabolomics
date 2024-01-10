@@ -1,0 +1,3 @@
+"","total","expected","hits","Raw p","Holm p","FDR"
+"Fatty Acyls",4680,0.293,12,2.15e-19,1.02e-16,1.02e-16
+"Glycerophospholipids",40000,2.5,1,0.938,1,1

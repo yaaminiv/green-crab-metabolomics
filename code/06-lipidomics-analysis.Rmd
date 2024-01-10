@@ -1430,7 +1430,7 @@ module0_lipids <- module_df %>%
   dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
 nrow(module0_lipids) #31 lipids
 head(module0_lipids)
-write.csv(module0_lipids, "metaboanalyst/module0_lipids.csv", quote = FALSE, row.names = FALSE)
+write_delim(module0_lipids, "metaboanalyst/module0_lipids.tsv", delim = "\t", col_names = TRUE)
 ```
 
 ```{r}
@@ -1443,7 +1443,7 @@ module1_lipids <- module_df %>%
   dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
 nrow(module1_lipids) #157 lipids
 head(module1_lipids)
-write.csv(module1_lipids, "metaboanalyst/module1_lipids.csv", quote = FALSE, row.names = FALSE)
+write_delim(module1_lipids, "metaboanalyst/module1_lipids.tsv", delim = "\t", col_names = TRUE)
 ```
 
 ```{r}
@@ -1456,7 +1456,7 @@ module2_lipids <- module_df %>%
   dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
 nrow(module2_lipids) #53 lipids
 head(module2_lipids)
-write.csv(module2_lipids, "metaboanalyst/module2_lipids.csv", quote = FALSE, row.names = FALSE)
+write_delim(module2_lipids, "metaboanalyst/module2_lipids.tsv", delim = "\t", col_names = TRUE)
 ```
 
 ```{r}
@@ -1469,7 +1469,7 @@ module3_lipids <- module_df %>%
   dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
 nrow(module3_lipids) #43 lipids
 head(module3_lipids)
-write.csv(module3_lipids, "metaboanalyst/module3_lipids.csv", quote = FALSE, row.names = FALSE)
+write_delim(module3_lipids, "metaboanalyst/module3_lipids.tsv", delim = "\t", col_names = TRUE)
 ```
 
 ```{r}
@@ -1482,7 +1482,7 @@ module4_lipids <- module_df %>%
   dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
 nrow(module4_lipids) #25 lipids
 head(module4_lipids)
-write.csv(module4_lipids, "metaboanalyst/module4_lipids.csv", quote = FALSE, row.names = FALSE)
+write_delim(module4_lipids, "metaboanalyst/module4_lipids.tsv", delim = "\t", col_names = TRUE)
 ```
 
 ```{r}
@@ -1495,7 +1495,7 @@ module5_lipids <- module_df %>%
   dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
 nrow(module5_lipids) #23 lipids
 head(module5_lipids)
-write.csv(module5_lipids, "metaboanalyst/module5_lipids.csv", quote = FALSE, row.names = FALSE)
+write_delim(module5_lipids, "metaboanalyst/module5_lipids.tsv", delim = "\t", col_names = TRUE)
 ```
 
 ```{r}
@@ -1508,7 +1508,7 @@ module6_lipids <- module_df %>%
   dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
 nrow(module6_lipids) #19 lipids
 head(module6_lipids)
-write.csv(module6_lipids, "metaboanalyst/module6_lipids.csv", quote = FALSE, row.names = FALSE)
+write_delim(module6_lipids, "metaboanalyst/module6_lipids.tsv", delim = "\t", col_names = TRUE)
 ```
 
 ```{r}
@@ -1521,7 +1521,7 @@ module7_lipids <- module_df %>%
   dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
 nrow(module7_lipids) #16 lipids
 head(module7_lipids)
-write.csv(module7_lipids, "metaboanalyst/module7_lipids.csv", quote = FALSE, row.names = FALSE)
+write_delim(module7_lipids, "metaboanalyst/module7_lipids.tsv", delim = "\t", col_names = TRUE)
 ```
 
 ```{r}
@@ -1534,7 +1534,7 @@ module8_lipids <- module_df %>%
   dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
 nrow(module8_lipids) #11 lipids
 head(module8_lipids)
-write.csv(module8_lipids, "metaboanalyst/module8_lipids.csv", quote = FALSE, row.names = FALSE)
+write_delim(module8_lipids, "metaboanalyst/module8_lipids.tsv", delim = "\t", col_names = TRUE)
 ```
 
 ```{r}
@@ -1547,7 +1547,7 @@ module9_lipids <- module_df %>%
   dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
 nrow(module9_lipids) #10 lipids
 head(module9_lipids)
-write.csv(module9_lipids, "metaboanalyst/module9_lipids.csv", quote = FALSE, row.names = FALSE)
+write_delim(module9_lipids, "metaboanalyst/module9_lipids.tsv", delim = "\t", col_names = TRUE)
 ```
 
 ```{r}
@@ -1560,7 +1560,7 @@ module10_lipids <- module_df %>%
   dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
 nrow(module10_lipids) #10 lipids
 head(module10_lipids)
-write.csv(module10_lipids, "metaboanalyst/module10_lipids.csv", quote = FALSE, row.names = FALSE)
+write_delim(module10_lipids, "metaboanalyst/module10_lipids.tsv", delim = "\t", col_names = TRUE)
 ```
 
 ```{r}
@@ -1573,7 +1573,7 @@ module11_lipids <- module_df %>%
   dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
 nrow(module11_lipids) #9 lipids
 head(module11_lipids)
-write.csv(module11_lipids, "metaboanalyst/module11_lipids.csv", quote = FALSE, row.names = FALSE)
+write_delim(module11_lipids, "metaboanalyst/module11_lipids.tsv", delim = "\t", col_names = TRUE)
 ```
 
 ```{r}
@@ -1586,7 +1586,7 @@ module12_lipids <- module_df %>%
   dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
 nrow(module12_lipids) #6 lipids
 head(module12_lipids)
-write.csv(module12_lipids, "metaboanalyst/module12_lipids.csv", quote = FALSE, row.names = FALSE)
+write_delim(module12_lipids, "metaboanalyst/module12_lipids.tsv", delim = "\t", col_names = TRUE)
 ```
 
 ```{r}
@@ -1599,7 +1599,7 @@ module13_lipids <- module_df %>%
   dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
 nrow(module13_lipids) #5 lipids
 head(module13_lipids)
-write.csv(module13_lipids, "metaboanalyst/module13_lipids.csv", quote = FALSE, row.names = FALSE)
+write_delim(module13_lipids, "metaboanalyst/module13_lipids.tsv", delim = "\t", col_names = TRUE)
 ```
 
 ## Enrichment compound class analysis
