@@ -243,9 +243,9 @@ write.csv(broom::tidy(TTRmodel2), "TTR-glm-output.csv", quote = FALSE, row.names
 ## Check assumptions
 
 ```{r}
-hist(residuals(TTRmodel)) #Residuals normally distributed
+hist(residuals(TTRmodel2)) #Residuals normally distributed
 
-plot(fitted(TTRmodel), residuals(TTRmodel)) #Borderline heteroskedastic but probably okay? Lack of dispersion across x-axis is likely related to discrete variables
+plot(fitted(TTRmodel2), residuals(TTRmodel2)) #Borderline heteroskedastic but probably okay? Lack of dispersion across x-axis is likely related to discrete variables
 abline(h = 0, lty = 2, col = "grey")
 ```
 
