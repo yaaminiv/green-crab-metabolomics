@@ -260,11 +260,12 @@ head(modTTR) #Confirm changes
 ## Binomial model
 
 ```{r}
-TTRthreshModel <- glm(I(TTRthresh == 1) ~ treatment + day + treatment*day + as.factor(sex) + as.factor(integument.color) + size + weight + as.factor(missing.legs), 
+TTRthreshModel <- glm(I(TTRthresh == 1) ~ treatment + day + treatment*day + as.factor(sex) + as.factor(integument.color) + carapace.width + weight + as.factor(missing.legs), 
                       family = binomial(), 
                       data = modTTR) #Create a binomial model, where 1 = success of righting wihtin the defined threshold
 summary(TTRthreshModel) #Only the contrast bewteen 5C and 13C control is significant
 ```
+
 ```{r}
 step(TTRthreshModel, test = "LRT") #Use likelihood ratio tests and backwards deletion approaches to identify the best model
 ```
@@ -308,3 +309,37 @@ modTTR %>%
   theme_classic(base_size = 15) #Plot average TTR and add lm fits without SE bars. Add vertical line for boxplot outlier threshold. Modify x-axis to only show experimental days where TTR was measured. Scale y axis to include 91 = indication that crabs did not right within 90 s. Assign colors to each treatment. Increase base font size.
 ggsave("figures/time-to-right-avg.pdf", height = 8.5, width = 11)
 ```
+
+- make geom_line show up 
+
+
+```{r}
+modTTR %>%
+  dplyr::select(., c(day, treatment, TTRavg)) %>%
+  distinct(.) %>%
+  mutate(., treatment = gsub(x = treatment, pattern = "5C", replacement = "05C")) %>%
+  mutate(., day = gsub(x = day, pattern = 4, replacement = "04")) %>%
+  mutate(., day = gsub(x = day, pattern = 8, replacement = "08")) %>%
+  mutate(., day = gsub(x = day, pattern = 11, replacement = "11")) %>%
+  mutate(., day = gsub(x = day, pattern = 108, replacement = "18")) %>%
+  mutate(., day = gsub(x = day, pattern = 15, replacement = "15")) %>%
+  mutate(., day = gsub(x = day, pattern = 22, replacement = "22")) %>%
+  ggplot(mapping = aes(x = day, y = TTRavg, color = treatment, shape = treatment)) +
+  geom_boxplot(outlier.shape = NA) + geom_jitter(position = position_dodge(width = 0.75)) +
+  geom_hline(aes(yintercept = boxplot.stats(modTTR$TTRavg)$stats[5]), lty = 2, color = "black") +
+  ylab("Average Time-to-Right (s)") +
+  scale_x_discrete(name = "Day",
+                   breaks = c("04", "08", "11", "18", "15", "22"),
+                   labels = c("4", "8", "11", "18", "15", "22")) +
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("05C", "13C", "30C"),
+                     labels = c("5", "13", "30")) +
+  scale_shape_manual(values = c(15, 19, 17),
+                     name = "Temperature (ºC)",
+                     breaks = c("05C", "13C", "30C"),
+                     labels = c("5", "13", "30")) +
+  theme_classic(base_size = 15) #Select unique day, treatment, and TTRavg data. Replace numbers with characters to facilitate better ordering. Plot average TTR for each crab in a boxplot. Do not show outliers with the OG boxplot, but add them in with geom_jitter. Add horizontal line for boxplot outlier threshold. Assign colors to each treatment. Increase base font size.
+ggsave("figures/time-to-right-avg-boxplot.pdf", height = 8.5, width = 11)
+```
+
