@@ -224,11 +224,20 @@ hist(x = log(modTTR$TTRavg)) #Log transformation helps normalize data
 
 ```{r}
 TTRmodel <- glm(log(TTRavg) ~ treatment + day + treatment*day + as.factor(sex) + as.factor(integument.color) + carapace.width + weight + as.factor(missing.legs), data = modTTR) #GLM, with log(TTRavg) as the response variable, and treatment, day, the interaction between treatment and day, sex, integument color, carapace width, weight, and whether or not a crab is missing legs as explanatory variables.
-summary(TTRmodel) #Only treatment is significant
+summary(TTRmodel) #5C different than control, 30C marg different than control
 ```
 
 ```{r}
-write.csv(broom::tidy(TTRmodel), "TTR-glm-output.csv", quote = FALSE, row.names = FALSE) #Save table version of glm output
+step(TTRmodel, direction = "backward") #Use a backwards deletion approach and AIC to identify best fit model
+```
+
+```{r}
+TTRmodel2 <- glm(log(TTRavg) ~ treatment + day + weight, data = modTTR) #Run the best fit model
+summary(TTRmodel2) #Both treatments are significantly different from the control. Day and weight are not significant
+```
+
+```{r}
+write.csv(broom::tidy(TTRmodel2), "TTR-glm-output.csv", quote = FALSE, row.names = FALSE) #Save table version of glm output
 ```
 
 ## Check assumptions
