@@ -45,10 +45,6 @@ require(ggsurvfit)
 ```
 
 ```{r}
-source("../../code/biostats.R") #Source multivariate analysis functions
-```
-
-```{r}
 sessionInfo()
 ```
 
@@ -59,6 +55,39 @@ cw_data <- read.csv("../../data/carapace_width.csv")
 cl_data <- read.csv("../../data/carapace_length.csv")
 ig_data <- read.csv("../../data/integument_color.csv")
 w_data <- read.csv("../../data/weight.csv")
+```
+
+```{r data import}
+all_crab <- read.csv("../../data/crab-metadata.csv") %>%
+  mutate(., date = rep("7/5/2022", times = nrow(.))) %>%
+  select(., c(date, treatment.tank, carapace.width, carapace.length, weight, integument.color, sex)) %>%
+  rbind(., (read.csv("../../data/time-to-right.csv") %>%
+              select(., c(date, treatment.tank, carapace.width, carapace.length, weight, integument.color, sex)))) %>%
+  mutate(., integument.cont = recode(integument.color,
+                                     "B" = 0,
+                                     "BG" = 0.5,
+                                     "G" = 1, 
+                                     "YG" = 1.5, 
+                                     "Y" = 2, 
+                                     "YO" = 2.5 , 
+                                     "O" = 3, 
+                                     "RO" = 3.5)) %>%
+  mutate(., treatment = case_when(treatment.tank == 1 ~ "13",
+                                  treatment.tank == 2 ~ "05",
+                                  treatment.tank == 3 ~ "30",
+                                  treatment.tank == 4 ~ "13",
+                                  treatment.tank == 5 ~ "05",
+                                  treatment.tank == 6 ~ "30")) %>%
+  mutate(day = recode(date, 
+                      "7/5/2022" = 1, 
+                      "7/8/2022" = 4, 
+                      "7/12/2022" = 8, 
+                      "7/15/2022" = 11, 
+                      "7/19/2022" = 15, 
+                      "7/22/2022" = 18, 
+                      "7/26/2022" = 22))
+#Import original metadata. Add a date column and select the necessary columns. Combine by columns (rbind) with demographic information from the time-to-right datasheet. Recode integument color into numerical values since it is continuous. No quotes around numbers = will be recognized as numeric values. Use case_when to reassign tanks as treatment temperatures. Recode dates as experimental day
+head(all_crab)
 ```
 
 # Tank-level analysis
@@ -364,52 +393,104 @@ chi_h
 
 ## Across-treatment differences at individual time points
 
+- crab metadata: day 1
+- TTR for final crab data: day 22
+- appropriately color code
+
+```{bash}
+mkdir figures
+```
+
+```{r}
+plotColors <- c(brewer.pal(9, "Reds")[7],
+                brewer.pal(9, "Greys")[7],
+                brewer.pal(9, "Blues")[7]) #Create color scheme
+```
+
+```{r}
+facet_labels <- c("1" = "Day 1",
+                  "22" = "Day 22") #Assign labels for facets
+```
+
+```{r}
+all_crab %>%
+  select(., day, treatment, carapace.width) %>%
+  filter(., day == 1 | day == 22) %>%
+  ggplot(., aes(x = treatment, y = carapace.width, color = treatment, shape = treatment)) +
+  geom_boxplot() + geom_point() + 
+  facet_wrap( ~ day, labeller = labeller(day = facet_labels)) +
+  stat_compare_means() +
+  ylim(35, 60) +
+  labs(x = "", y = "Carapace Width (mm)") +
+  scale_x_discrete(breaks = c("05C", "13C", "30C"),
+                   labels = c("", "", "")) +
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("05", "13", "30"),
+                     labels = c("5", "13", "30")) +
+  scale_shape_manual(values = c(15, 19, 17),
+                     name = "Temperature (ºC)",
+                     breaks = c("05", "13", "30"),
+                     labels = c("5", "13", "30")) +
+  theme_classic(base_size = 15) + theme(axis.ticks.x = element_blank(),
+                                        axis.title.x = element_blank(),
+                                        strip.text.x = element_text(size = 15)) #Select day 1 and day 22 data for factor of interest. Plot boxplot and points with treatment on the x-axis and factor on the y-axis, with shape and color defined  by treatment. Facet wrap by day and add specific facet labels. Add stats for comparisons between means and modify y-axis limits to fit statistical testing output at the top. Relabel x and y axes. Remove x-axis labels. Manually add color and shape legend. Set theme and modify bckground colors and strip text size.
+ggsave("figures/carapace-width-comparison.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+all_crab %>%
+  select(., day, treatment, carapace.length) %>%
+  filter(., day == 1 | day == 22) %>%
+  ggplot(., aes(x = treatment, y = carapace.length, color = treatment, shape = treatment)) +
+  geom_boxplot() + geom_point() + 
+  facet_wrap( ~ day, labeller = labeller(day = facet_labels)) +
+  stat_compare_means() +
+  ylim(25, 50) +
+  labs(x = "", y = "Carapace Length (mm)") +
+  scale_x_discrete(breaks = c("05C", "13C", "30C"),
+                   labels = c("", "", "")) +
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("05", "13", "30"),
+                     labels = c("5", "13", "30")) +
+  scale_shape_manual(values = c(15, 19, 17),
+                     name = "Temperature (ºC)",
+                     breaks = c("05", "13", "30"),
+                     labels = c("5", "13", "30")) +
+  theme_classic(base_size = 15) + theme(axis.ticks.x = element_blank(),
+                                        axis.title.x = element_blank(),
+                                        strip.text.x = element_text(size = 15)) #Select day 1 and day 22 data for factor of interest. Plot boxplot and points with treatment on the x-axis and factor on the y-axis, with shape and color defined  by treatment. Facet wrap by day and add specific facet labels. Add stats for comparisons between means and modify y-axis limits to fit statistical testing output at the top. Relabel x and y axes. Remove x-axis labels. Manually add color and shape legend. Set theme and modify bckground colors and strip text size.
+ggsave("figures/carapace-length-comparison.pdf", height = 8.5, width = 11)
+```
+```{r}
+all_crab %>%
+  select(., day, treatment, weight) %>%
+  filter(., day == 1 | day == 22) %>%
+  ggplot(., aes(x = treatment, y = weight, color = treatment, shape = treatment)) +
+  geom_boxplot(outlier.shape = NA) + geom_point() + 
+  facet_wrap( ~ day, labeller = labeller(day = facet_labels)) +
+  stat_compare_means() +
+  ylim(10, 55) +
+  labs(x = "", y = "Weight (g)") +
+  scale_x_discrete(breaks = c("05C", "13C", "30C"),
+                   labels = c("", "", "")) +
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("05", "13", "30"),
+                     labels = c("5", "13", "30")) +
+  scale_shape_manual(values = c(15, 19, 17),
+                     name = "Temperature (ºC)",
+                     breaks = c("05", "13", "30"),
+                     labels = c("5", "13", "30")) +
+  theme_classic(base_size = 15) + theme(axis.ticks.x = element_blank(),
+                                        axis.title.x = element_blank(),
+                                        strip.text.x = element_text(size = 15)) #Select day 1 and day 22 data for factor of interest. Plot boxplot and points with treatment on the x-axis and factor on the y-axis, with shape and color defined  by treatment. Facet wrap by day and add specific facet labels. Add stats for comparisons between means and modify y-axis limits to fit statistical testing output at the top. Relabel x and y axes. Remove x-axis labels. Manually add color and shape legend. Set theme and modify bckground colors and strip text size.
+ggsave("figures/weight-comparison.pdf", height = 8.5, width = 11)
+```
+
+
 ```{r Comparison between treatments across individual time points, echo=FALSE}
-cw.data.treatment <- read.csv("../../data/carapace_width.csv")
-cw.data.treatment$treatment.tank <- recode(cw.data.treatment$treatment.tank,"1"="Ambient","2"="Cold","3"="Hot","4"="Ambient","5"="Cold","6"="Hot")
-
-cw.8th <- cw.data.treatment[c(1:42),c(1,2:3)]
-cw.12th <- cw.data.treatment[c(43:84),c(1,2:3)]
-cw.15th <- cw.data.treatment[c(85:126),c(1,2:3)]
-cw.19th <- cw.data.treatment[c(127:168),c(1,2:3)]
-cw.22nd <- cw.data.treatment[c(169:209),c(1,2:3)]
-cw.26th <- cw.data.treatment[c(210:260),c(1,2:3)]
-
-cw8th.bp <- ggplot(data = cw.8th, aes(x=as.factor(treatment.tank), y=carapace.width)) + geom_boxplot() + geom_point() + labs(y = "Carapace Width", x = "Treatment") + stat_compare_means() + ggtitle("07/08/2022")
-cw12th.bp <- ggplot(data = cw.12th, aes(x=as.factor(treatment.tank), y=carapace.width)) + geom_boxplot() + geom_point() + labs(y = "Carapace Width", x = "Treatment") + stat_compare_means() + ggtitle("07/12/2022")
-cw15th.bp <- ggplot(data = cw.15th, aes(x=as.factor(treatment.tank), y=carapace.width)) + geom_boxplot() + geom_point() + labs(y = "Carapace Width", x = "Treatment") + stat_compare_means() + ggtitle("07/15/2022")
-cw19th.bp <- ggplot(data = cw.19th, aes(x=as.factor(treatment.tank), y=carapace.width)) + geom_boxplot() + geom_point() + labs(y = "Carapace Width", x = "Treatment") + stat_compare_means() + ggtitle("07/19/2022")
-cw22nd.bp <- ggplot(data = cw.22nd, aes(x=as.factor(treatment.tank), y=carapace.width)) + geom_boxplot() + geom_point() + labs(y = "Carapace Width", x = "Treatment") + stat_compare_means() + ggtitle("07/22/2022")
-cw26th.bp <- ggplot(data = cw.26th, aes(x=as.factor(treatment.tank), y=carapace.width)) + geom_boxplot() + geom_point() + labs(y = "Carapace Width", x = "Treatment") + stat_compare_means() + ggtitle("07/26/2022")
-
-p.cw.date <- ((cw8th.bp | cw12th.bp | cw15th.bp) / (cw19th.bp | cw22nd.bp | cw26th.bp))
-
-p.cw.date + plot_annotation(title = 'Carapace Width Between Treatments')
-
-#####
-cl.data.treatment <- read.csv("../../data/carapace_length.csv")
-cl.data.treatment$treatment.tank <- recode(cl.data.treatment$treatment.tank,"1"="Ambient","2"="Cold","3"="Hot","4"="Ambient","5"="Cold","6"="Hot")
-
-
-cl.8th <- cl.data.treatment[c(1:42),c(1,2:3)]
-cl.12th <- cl.data.treatment[c(43:84),c(1,2:3)]
-cl.15th <- cl.data.treatment[c(85:126),c(1,2:3)]
-cl.19th <- cl.data.treatment[c(127:168),c(1,2:3)]
-cl.22nd <- cl.data.treatment[c(169:209),c(1,2:3)]
-cl.26th <- cl.data.treatment[c(210:260),c(1,2:3)]
-
-cl8th.bp <- ggplot(data = cl.8th, aes(x=as.factor(treatment.tank), y=carapace.length)) + geom_boxplot() + geom_point() + labs(y = "Carapace Length", x = "Treatment") + stat_compare_means() + ggtitle("07/08/2022")
-cl12th.bp <- ggplot(data = cl.12th, aes(x=as.factor(treatment.tank), y=carapace.length)) + geom_boxplot() + geom_point() + labs(y = "Carapace Length", x = "Treatment") + stat_compare_means() + ggtitle("07/12/2022")
-cl15th.bp <- ggplot(data = cl.15th, aes(x=as.factor(treatment.tank), y=carapace.length)) + geom_boxplot() + geom_point() + labs(y = "Carapace Length", x = "Treatment") + stat_compare_means() + ggtitle("07/15/2022")
-cl19th.bp <- ggplot(data = cl.19th, aes(x=as.factor(treatment.tank), y=carapace.length)) + geom_boxplot() + geom_point() + labs(y = "Carapace Length", x = "Treatment") + stat_compare_means() + ggtitle("07/19/2022")
-cl22nd.bp <- ggplot(data = cl.22nd, aes(x=as.factor(treatment.tank), y=carapace.length)) + geom_boxplot() + geom_point() + labs(y = "Carapace Length", x = "Treatment") + stat_compare_means() + ggtitle("07/22/2022")
-cl26th.bp <- ggplot(data = cl.26th, aes(x=as.factor(treatment.tank), y=carapace.length)) + geom_boxplot() + geom_point() + labs(y = "Carapace Length", x = "Treatment") + stat_compare_means() + ggtitle("07/26/2022")
-
-p.cl.date <- ((cl8th.bp | cl12th.bp | cl15th.bp) / (cl19th.bp | cl22nd.bp | cl26th.bp))
-
-p.cl.date + plot_annotation(title = 'Carapace Length Between Treatments')
-
-########
 w.data.treatment <- read.csv("../../data/weight.csv")
 w.data.treatment$treatment.tank <- recode(w.data.treatment$treatment.tank,"1"="Ambient","2"="Cold","3"="Hot","4"="Ambient","5"="Cold","6"="Hot")
 
@@ -430,8 +511,9 @@ w26th.bp <- ggplot(data = w.26th, aes(x=as.factor(treatment.tank), y=weight)) + 
 p.w.date <- ((w8th.bp | w12th.bp | w15th.bp) / (w19th.bp | w22nd.bp | w26th.bp))
 
 p.w.date + plot_annotation(title = 'Weight Between Treatments')
+```
 
-#########
+```{r Comparison between treatments across individual time points, echo=FALSE}
 ig.data.treatment <- read.csv("../../data/integument_color.csv")
 ig.data.treatment$integument_color <- recode(ig.data.treatment$integument.color,"BG"="0.5","G"="1","YG"="1.5","Y"="2","YO"="2.5","O"="3","RO"="3.5")
 ig.data.treatment$treatment_tank <- recode(ig.data.treatment$treatment.tank, "1"="Ambient","2"="Cold","3"="Hot","4"="Ambient","5"="Cold","6"="Hot")
