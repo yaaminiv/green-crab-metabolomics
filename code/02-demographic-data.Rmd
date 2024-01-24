@@ -515,16 +515,6 @@ integumentColorDay22 <- all_crab %>%
 integumentColorDay22
 ```
 
-
-```{r}
-all_crab %>%
-  select(., day, treatment, integument.cont) %>%
-  filter(., day == 1 | day == 22) %>%
-  arrange(day, treatment, integument.cont) %>%
-  group_by(day, treatment, integument.cont) %>%
-  summarize(., count = n()) 
-```
-
 ```{r}
 signif(integumentColorDay1$pvalDay1[1], 2)
 signif(integumentColorDay22$pvalDay22[1], 1)
@@ -554,7 +544,7 @@ all_crab %>%
   scale_fill_manual(name = "Integument Color",
                     values = c("darkturquoise", "#66C2A5", "#A6D96A", "#D9EF8B", "#FFFF99", "#FDAE61", "#F46D43", "#D53E4F"),
                     labels = c("B", "BG", "G", "YG", "Y", "YO", "O", "RO")) +
-  geom_text(data = integumentColor_text, mapping = aes(x = x, y = y, label = label, fill = NA), show.legend = FALSE) +
+  geom_text(data = integumentColor_text, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE) +
   theme_classic(base_size = 15) + theme(axis.ticks.x = element_blank(),
                                         axis.title.x = element_blank(),
                                         strip.text.x = element_text(size = 15)) #Select day, treatment, and integument color (continuous) for days 1 and 22. Arrange and group by selected variables. Summarize by grouped variables to get counts. Plot counts as a stacked barplot. Modify labels and specify a color scale.
@@ -563,6 +553,65 @@ ggsave("figures/integument-color-comparison.pdf", height = 8.5, width = 11)
 
 
 ### Sex
+
+```{r}
+sexDay1 <- all_crab %>%
+  select(., day, treatment, sex) %>%
+  filter(., day == 1 ) %>%
+  arrange(day, treatment, sex) %>%
+  group_by(day, treatment, sex) %>%
+  ungroup %>%
+  summarize(., pvalDay1 = chisq.test(x = treatment, y = as.factor(sex))$p.value) %>%
+  as.data.frame() #Take day 1 data and arrange and group by relevant variables. Ungroup and use summarize to perform a chi-squared test examining differences in sex by treatment. Extract p-value and save as a dataframe
+sexDay1
+```
+
+```{r}
+sexDay22 <- all_crab %>%
+  select(., day, treatment, sex) %>%
+  filter(., day == 22) %>%
+  arrange(day, treatment, sex) %>%
+  group_by(day, treatment, sex) %>%
+  ungroup %>%
+  summarize(., pvalDay22 = chisq.test(x = treatment, y = as.factor(sex))$p.value) %>%
+  as.data.frame() #Take day 22 data and arrange and group by relevant variables. Ungroup and use summarize to perform a chi-squared test examining differences in sex by treatment. Extract p-value and save as a dataframe
+sexDay22
+```
+
+```{r}
+signif(sexDay1$pvalDay1[1], 2)
+signif(sexDay22$pvalDay22[1], 2)
+```
+
+```{r}
+sex_text <- data.frame(label = c("Chi-squared, p = 0.96", "Chi-squared, p = 0.83"),
+                                   day = c(1, 22),
+                                   x = c(1.42, 1.42), 
+                                   y = c(1.07, 1.07))
+```
+
+
+```{r}
+all_crab %>%
+  select(., day, treatment, sex) %>%
+  filter(., day == 1 | day == 22) %>%
+  arrange(day, treatment, sex) %>%
+  group_by(day, treatment, sex) %>%
+  summarize(., count = n()) %>%
+  ggplot(., aes(x = treatment, y = count, fill = as.factor(sex))) +
+  geom_bar(position = "fill", stat = "identity") +
+  facet_wrap( ~ day, labeller = labeller(day = facet_labels)) +
+  labs(y = "Percent of Crabs") + coord_cartesian(ylim = c(0, 1.06)) +
+  scale_x_discrete(breaks = c("05", "13", "30"),
+                   labels = c("5ºC ", "13ºC ", "30ºC")) +
+  labs(fill = "Sex") +
+  geom_text(data = sex_text, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE) +
+  theme_classic(base_size = 15) + theme(axis.ticks.x = element_blank(),
+                                        axis.title.x = element_blank(),
+                                        strip.text.x = element_text(size = 15)) #Select day, treatment, and sex for days 1 and 22. Arrange and group by selected variables. Summarize by grouped variables to get counts. Plot counts as a stacked barplot. Modify labels and specify a color scale.
+ggsave("figures/sex-comparison.pdf", height = 8.5, width = 11)
+```
+
 
 ## PCA
 
