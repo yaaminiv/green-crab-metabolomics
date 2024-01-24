@@ -393,10 +393,6 @@ chi_h
 
 ## Across-treatment differences at individual time points
 
-- crab metadata: day 1
-- TTR for final crab data: day 22
-- appropriately color code
-
 ```{bash}
 mkdir figures
 ```
@@ -412,6 +408,8 @@ facet_labels <- c("1" = "Day 1",
                   "22" = "Day 22") #Assign labels for facets
 ```
 
+### Carapace width
+
 ```{r}
 all_crab %>%
   select(., day, treatment, carapace.width) %>%
@@ -422,8 +420,7 @@ all_crab %>%
   stat_compare_means() +
   ylim(35, 60) +
   labs(x = "", y = "Carapace Width (mm)") +
-  scale_x_discrete(breaks = c("05C", "13C", "30C"),
-                   labels = c("", "", "")) +
+  scale_x_discrete(labels = c("", "", "")) +
   scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
                      name = "Temperature (ºC)",
                      breaks = c("05", "13", "30"),
@@ -438,6 +435,8 @@ all_crab %>%
 ggsave("figures/carapace-width-comparison.pdf", height = 8.5, width = 11)
 ```
 
+### Carapace length
+
 ```{r}
 all_crab %>%
   select(., day, treatment, carapace.length) %>%
@@ -448,8 +447,7 @@ all_crab %>%
   stat_compare_means() +
   ylim(25, 50) +
   labs(x = "", y = "Carapace Length (mm)") +
-  scale_x_discrete(breaks = c("05C", "13C", "30C"),
-                   labels = c("", "", "")) +
+  scale_x_discrete(labels = c("", "", "")) +
   scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
                      name = "Temperature (ºC)",
                      breaks = c("05", "13", "30"),
@@ -463,6 +461,9 @@ all_crab %>%
                                         strip.text.x = element_text(size = 15)) #Select day 1 and day 22 data for factor of interest. Plot boxplot and points with treatment on the x-axis and factor on the y-axis, with shape and color defined  by treatment. Facet wrap by day and add specific facet labels. Add stats for comparisons between means and modify y-axis limits to fit statistical testing output at the top. Relabel x and y axes. Remove x-axis labels. Manually add color and shape legend. Set theme and modify bckground colors and strip text size.
 ggsave("figures/carapace-length-comparison.pdf", height = 8.5, width = 11)
 ```
+
+### Weight
+
 ```{r}
 all_crab %>%
   select(., day, treatment, weight) %>%
@@ -473,8 +474,7 @@ all_crab %>%
   stat_compare_means() +
   ylim(10, 55) +
   labs(x = "", y = "Weight (g)") +
-  scale_x_discrete(breaks = c("05C", "13C", "30C"),
-                   labels = c("", "", "")) +
+  scale_x_discrete(labels = c("", "", "")) +
   scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
                      name = "Temperature (ºC)",
                      breaks = c("05", "13", "30"),
@@ -489,99 +489,80 @@ all_crab %>%
 ggsave("figures/weight-comparison.pdf", height = 8.5, width = 11)
 ```
 
+### Integument color
 
-```{r Comparison between treatments across individual time points, echo=FALSE}
-w.data.treatment <- read.csv("../../data/weight.csv")
-w.data.treatment$treatment.tank <- recode(w.data.treatment$treatment.tank,"1"="Ambient","2"="Cold","3"="Hot","4"="Ambient","5"="Cold","6"="Hot")
-
-w.8th <- w.data.treatment[c(1:42),c(1,2:3)]
-w.12th <- w.data.treatment[c(43:84),c(1,2:3)]
-w.15th <- w.data.treatment[c(85:126),c(1,2:3)]
-w.19th <- w.data.treatment[c(127:168),c(1,2:3)]
-w.22nd <- w.data.treatment[c(169:209),c(1,2:3)]
-w.26th <- w.data.treatment[c(210:260),c(1,2:3)]
-
-w8th.bp <- ggplot(data = w.8th, aes(x=as.factor(treatment.tank), y=weight)) + geom_boxplot() + geom_point() + labs(y = "Weight", x = "Treatment") + stat_compare_means() + ggtitle("07/08/2022")
-w12th.bp <- ggplot(data = w.12th, aes(x=as.factor(treatment.tank), y=weight)) + geom_boxplot() + geom_point() + labs(y = "Weight", x = "Treatment") + stat_compare_means() + ggtitle("07/12/2022")
-w15th.bp <- ggplot(data = w.15th, aes(x=as.factor(treatment.tank), y=weight)) + geom_boxplot() + geom_point() + labs(y = "Weight", x = "Treatment") + stat_compare_means() + ggtitle("07/15/2022")
-w19th.bp <- ggplot(data = w.19th, aes(x=as.factor(treatment.tank), y=weight)) + geom_boxplot() + geom_point() + labs(y = "Weight", x = "Treatment") + stat_compare_means() + ggtitle("07/19/2022")
-w22nd.bp <- ggplot(data = w.22nd, aes(x=as.factor(treatment.tank), y=weight)) + geom_boxplot() + geom_point() + labs(y = "Weight", x = "Treatment") + stat_compare_means() + ggtitle("07/22/2022")
-w26th.bp <- ggplot(data = w.26th, aes(x=as.factor(treatment.tank), y=weight)) + geom_boxplot() + geom_point() + labs(y = "Weight", x = "Treatment") + stat_compare_means() + ggtitle("07/26/2022")
-
-p.w.date <- ((w8th.bp | w12th.bp | w15th.bp) / (w19th.bp | w22nd.bp | w26th.bp))
-
-p.w.date + plot_annotation(title = 'Weight Between Treatments')
+```{r}
+integumentColorDay1 <- all_crab %>%
+  select(., day, treatment, integument.cont) %>%
+  filter(., day == 1 ) %>%
+  arrange(day, treatment, integument.cont) %>%
+  group_by(day, treatment, integument.cont) %>%
+  ungroup %>%
+  summarize(., pvalDay1 = chisq.test(x = treatment, y = as.factor(integument.cont))$p.value) %>%
+  as.data.frame() #Take day 1 data and arrange and group by relevant variables. Ungroup and use summarize to perform a chi-squared test examining differences in integument color by treatment. Extract p-value and save as a dataframe
+integumentColorDay1
 ```
 
-```{r Comparison between treatments across individual time points, echo=FALSE}
-ig.data.treatment <- read.csv("../../data/integument_color.csv")
-ig.data.treatment$integument_color <- recode(ig.data.treatment$integument.color,"BG"="0.5","G"="1","YG"="1.5","Y"="2","YO"="2.5","O"="3","RO"="3.5")
-ig.data.treatment$treatment_tank <- recode(ig.data.treatment$treatment.tank, "1"="Ambient","2"="Cold","3"="Hot","4"="Ambient","5"="Cold","6"="Hot")
-
-ig.8th <- ig.data.treatment[c(1:42),c(1:5)]
-ig.12th <- ig.data.treatment[c(43:84),c(1:5)]
-ig.15th <- ig.data.treatment[c(85:126),c(1:5)]
-ig.19th <- ig.data.treatment[c(127:168),c(1:5)]
-ig.22nd <- ig.data.treatment[c(169:209),c(1:5)]
-ig.26th <- ig.data.treatment[c(210:260),c(1:5)]
-
-ig8th.bp <- ggplot(data = ig.8th, aes(x=as.factor(treatment_tank), y=treatment.tank, fill = integument.color)) + scale_fill_manual(values = c("#66C2A5","#A6D96A","#D9EF8B","#FFFF99","#FDAE61","#F46D43","#D53E4F")) + geom_bar(position="fill", stat="identity") + theme(legend.position="none") + labs(y = "Percent Composition", x = "Treatment") + ggtitle("07/08/2022")
-ig12th.bp <- ggplot(data = ig.12th, aes(x=as.factor(treatment_tank), y=treatment.tank, fill = integument.color)) + scale_fill_manual(values = c("#66C2A5","#A6D96A","#D9EF8B","#FFFF99","#FDAE61","#F46D43","#D53E4F")) + geom_bar(position="fill", stat="identity") + theme(legend.position="none") + labs(y = "Percent Composition", x = "Treatment") + ggtitle("07/12/2022")
-ig15th.bp <- ggplot(data = ig.15th, aes(x=as.factor(treatment_tank), y=treatment.tank, fill = integument.color)) + scale_fill_manual(values = c("#66C2A5","#A6D96A","#D9EF8B","#FFFF99","#FDAE61","#F46D43","#D53E4F")) + geom_bar(position="fill", stat="identity") + theme(legend.position="none") + labs(y = "Percent Composition", x = "Treatment") + ggtitle("07/15/2022")
-ig19th.bp <- ggplot(data = ig.19th, aes(x=as.factor(treatment_tank), y=treatment.tank, fill = integument.color)) + scale_fill_manual(values = c("#66C2A5","#A6D96A","#D9EF8B","#FFFF99","#FDAE61","#F46D43","#D53E4F")) + geom_bar(position="fill", stat="identity") + theme(legend.position="none") + labs(y = "Percent Composition", x = "Treatment") + ggtitle("07/19/2022")
-ig22nd.bp <- ggplot(data = ig.22nd, aes(x=as.factor(treatment_tank), y=treatment.tank, fill = integument.color)) + scale_fill_manual(values = c("#66C2A5","#A6D96A","#D9EF8B","#FFFF99","#FDAE61","#F46D43","#D53E4F")) + geom_bar(position="fill", stat="identity") + theme(legend.position="none") + labs(y = "Percent Composition", x = "Treatment") + ggtitle("07/22/2022")
-ig26th.bp <- ggplot(data = ig.26th, aes(x=as.factor(treatment_tank), y=treatment.tank, fill = integument.color)) + scale_fill_manual(values = c("#66C2A5","#A6D96A","#D9EF8B","#FFFF99","#FDAE61","#F46D43","#D53E4F")) + geom_bar(position="fill", stat="identity") + theme(legend.position="none") + labs(y = "Percent Composition", x = "Treatment") + ggtitle("07/26/2022")
-
-p.ig.date <- ((ig8th.bp | ig12th.bp | ig15th.bp) / (ig19th.bp | ig22nd.bp | ig26th.bp))
-
-p.ig.date + plot_annotation(title = 'Integument Color Between Treatments')
-
-chi.8th <- chisq.test(ig.8th$treatment.tank,ig.8th$integument_color)
-chi.12th <- chisq.test(ig.12th$treatment.tank,ig.12th$integument_color)
-chi.15th <- chisq.test(ig.15th$treatment.tank,ig.15th$integument_color)
-chi.19th <- chisq.test(ig.19th$treatment.tank,ig.19th$integument_color)
-chi.22nd <- chisq.test(ig.22nd$treatment.tank,ig.22nd$integument_color)
-chi.26th <- chisq.test(ig.26th$treatment.tank,ig.26th$integument_color)
-
-chi_8th
-chi_12th
-chi_15th
-chi_19th
-chi_22nd
-chi_26th
+```{r}
+integumentColorDay22 <- all_crab %>%
+  select(., day, treatment, integument.cont) %>%
+  filter(., day == 22) %>%
+  arrange(day, treatment, integument.cont) %>%
+  group_by(day, treatment, integument.cont) %>%
+  ungroup %>%
+  summarize(., pvalDay22 = chisq.test(x = treatment, y = as.factor(integument.cont))$p.value) %>%
+  as.data.frame() #Take day 22 data and arrange and group by relevant variables. Ungroup and use summarize to perform a chi-squared test examining differences in integument color by treatment. Extract p-value and save as a dataframe
+integumentColorDay22
 ```
 
-## Post-hoc testing
 
-```{r Tukey Test}
-
-#Tukey Test: (lm is for linear regression model, aov is for anova)
-
-hot_lm <- (ig_h$integument_color ~ ig_h$date)#for Integument Color Across Treatments Over Time
-hot_aov = aov(hot_lm)
-summary(hot_aov)
-hot_tukey <- TukeyHSD(x=hot_aov)
-hot_tukey
-plot(hot_tukey) #this plot seems ok - it shows significance between 2 treatment time points
-
-#<<<<<<< Updated upstream:code/02-demographic-data.Rmd
-#lm.26th <- (ig.26th$integument_color ~ ig.26th$treatment_tank) #for Integument Color Between Treatments for each time point
-#=======
-#lm_26th <- (ig_26th$integument_color ~ as.factor(ig_26th$treatment.tank))#for Integument Color Between Tanks for each time point
-#aov_26th = aov(lm_26th)
-#summary(aov_26th)
-#tukey_26th <- TukeyHSD(x=aov_26th)
-#tukey_26th
-#plot(tukey_26th) #this plot doesn't show any significance between integument colors based on tanks
-
-lm.26th <- (ig.26th$integument_color ~ as.factor(ig.26th$treatment_tank))#for Integument Color Between Treatments for each time point
-#>>>>>>> Stashed changes:code/02-demographic-data_RMarkdown.Rmd
-aov.26th = aov(lm.26th)
-summary(aov.26th)
-tukey.26th <- TukeyHSD(x=aov.26th)
-tukey.26th
-plot(tukey.26th)
+```{r}
+all_crab %>%
+  select(., day, treatment, integument.cont) %>%
+  filter(., day == 1 | day == 22) %>%
+  arrange(day, treatment, integument.cont) %>%
+  group_by(day, treatment, integument.cont) %>%
+  summarize(., count = n()) 
 ```
+
+```{r}
+signif(integumentColorDay1$pvalDay1[1], 2)
+signif(integumentColorDay22$pvalDay22[1], 1)
+```
+
+```{r}
+integumentColor_text <- data.frame(label = c("Chi-squared, p = 0.74", "Chi-squared, p = 0.003"),
+                                   day = c(1, 22),
+                                   x = c(1.65, 1.7), 
+                                   y = c(1.07, 1.07))
+```
+
+
+```{r}
+all_crab %>%
+  select(., day, treatment, integument.cont) %>%
+  filter(., day == 1 | day == 22) %>%
+  arrange(day, treatment, integument.cont) %>%
+  group_by(day, treatment, integument.cont) %>%
+  summarize(., count = n()) %>%
+  ggplot(., aes(x = treatment, y = count, fill = as.factor(integument.cont))) +
+  geom_bar(position = "fill", stat = "identity") +
+  facet_wrap( ~ day, labeller = labeller(day = facet_labels)) +
+  labs(y = "Percent of Crabs") + coord_cartesian(ylim = c(0, 1.06)) +
+  scale_x_discrete(breaks = c("05", "13", "30"),
+                   labels = c("5ºC ", "13ºC ", "30ºC")) +
+  scale_fill_manual(name = "Integument Color",
+                    values = c("darkturquoise", "#66C2A5", "#A6D96A", "#D9EF8B", "#FFFF99", "#FDAE61", "#F46D43", "#D53E4F"),
+                    labels = c("B", "BG", "G", "YG", "Y", "YO", "O", "RO")) +
+  geom_text(data = integumentColor_text, mapping = aes(x = x, y = y, label = label, fill = NA), show.legend = FALSE) +
+  theme_classic(base_size = 15) + theme(axis.ticks.x = element_blank(),
+                                        axis.title.x = element_blank(),
+                                        strip.text.x = element_text(size = 15)) #Select day, treatment, and integument color (continuous) for days 1 and 22. Arrange and group by selected variables. Summarize by grouped variables to get counts. Plot counts as a stacked barplot. Modify labels and specify a color scale.
+ggsave("figures/integument-color-comparison.pdf", height = 8.5, width = 11)
+```
+
+
+### Sex
 
 ## PCA
 
@@ -646,9 +627,9 @@ vec.sp #All variables are significant against PCs
 ```{r}
 as.data.frame(vec.sp$vectors$arrows) %>%
   cbind(rbind(vec.sp$vectors$r,
-      vec.sp$vectors$pvals) %>%
-  t(.) %>%
-  as.data.frame(.)) %>%
+              vec.sp$vectors$pvals) %>%
+          t(.) %>%
+          as.data.frame(.)) %>%
   dplyr::rename(., "r2" = V1) %>%
   dplyr::rename(., "Pr(>r)" = V2) %>%
   write.csv(., "variable-loading-significance.csv", quote = FALSE) #Convert information from vec.sp into a dataframe format and save
