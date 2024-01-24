@@ -612,6 +612,130 @@ all_crab %>%
 ggsave("figures/sex-comparison.pdf", height = 8.5, width = 11)
 ```
 
+### Multipanel figure
+
+I want to make a multipanel figure with carapace width, weight, integument color, and sex ratio. I'm excluding carapace length since carapace width is generally used for analyses.
+
+```{r}
+carapaceWidthFig <- all_crab %>%
+  select(., day, treatment, carapace.width) %>%
+  filter(., day == 1 | day == 22) %>%
+  ggplot(., aes(x = treatment, y = carapace.width, color = treatment, shape = treatment)) +
+  geom_boxplot() + geom_point() + 
+  facet_wrap( ~ day, labeller = labeller(day = facet_labels)) +
+  stat_compare_means() +
+  ylim(35, 60) +
+  labs(x = "", y = "Carapace Width (mm)", title = "A") +
+  scale_x_discrete(labels = c("5ºC", "13ºC", "30ºC")) +
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
+                     guide = "none") +
+  scale_shape_manual(values = c(15, 19, 17),
+                     guide = "none") +
+  theme_classic(base_size = 15) + theme(axis.ticks.x = element_blank(),
+                                        axis.title.x = element_blank(),
+                                        strip.text.x = element_text(size = 15),
+                                        plot.margin = margin(t = 20, r = 20, b = 20, l = 20, 
+                                                             unit = "pt"),
+                                        plot.title.position = "plot") #Select day 1 and day 22 data for factor of interest. Plot boxplot and points with treatment on the x-axis and factor on the y-axis, with shape and color defined  by treatment. Facet wrap by day and add specific facet labels. Add stats for comparisons between means and modify y-axis limits to fit statistical testing output at the top. Relabel x and y axes and add a plot title. Specify x-axis labels. Specify colors and shapes but remove legend. Set theme and modify background colors and strip text size. Modify plot margins and alignment of the plot title.
+carapaceWidthFig
+```
+
+```{r}
+weightFig <- all_crab %>%
+  select(., day, treatment, weight) %>%
+  filter(., day == 1 | day == 22) %>%
+  ggplot(., aes(x = treatment, y = weight, color = treatment, shape = treatment)) +
+  geom_boxplot(outlier.shape = NA) + geom_point() + 
+  facet_wrap( ~ day, labeller = labeller(day = facet_labels)) +
+  stat_compare_means() +
+  ylim(10, 55) +
+  labs(x = "", y = "Weight (g)", title = "B") +
+  scale_x_discrete(labels = c("5ºC", "13ºC", "30ºC")) +
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
+                     guide = "none") +
+  scale_shape_manual(values = c(15, 19, 17),
+                     guide = "none") +
+  theme_classic(base_size = 15) + theme(axis.ticks.x = element_blank(),
+                                        axis.title.x = element_blank(),
+                                        strip.text.x = element_text(size = 15),
+                                        plot.margin = margin(t = 20, r = 20, b = 20, l = 20, 
+                                                             unit = "pt"),
+                                        plot.title.position = "plot") #Select day 1 and day 22 data for factor of interest. Plot boxplot and points with treatment on the x-axis and factor on the y-axis, with shape and color defined  by treatment. Facet wrap by day and add specific facet labels. Add stats for comparisons between means and modify y-axis limits to fit statistical testing output at the top. Relabel x and y axes and add a plot title. Specify x-axis labels. Specify colors and shapes but remove legend. Set theme and modify background colors and strip text size. Modify plot margins and alignment of the plot title.
+weightFig
+```
+
+```{r}
+integumentColor_textMultipanel <- data.frame(label = c("Chi-squared, p = 0.74", "Chi-squared, p = 0.003"),
+                                   day = c(1, 22),
+                                   x = c(1.65, 1.7), 
+                                   y = c(1.08, 1.08))
+```
+
+```{r, message = FALSE}
+integumentColorFig <- all_crab %>%
+  select(., day, treatment, integument.cont) %>%
+  filter(., day == 1 | day == 22) %>%
+  arrange(day, treatment, integument.cont) %>%
+  group_by(day, treatment, integument.cont) %>%
+  summarize(., count = n()) %>%
+  ggplot(., aes(x = treatment, y = count, fill = as.factor(integument.cont))) +
+  geom_bar(position = "fill", stat = "identity") +
+  facet_wrap( ~ day, labeller = labeller(day = facet_labels)) +
+  labs(y = "Percent of Crabs", title = "C") + coord_cartesian(ylim = c(0, 1.06)) +
+  scale_x_discrete(breaks = c("05", "13", "30"),
+                   labels = c("5ºC ", "13ºC ", "30ºC")) +
+  scale_fill_manual(name = "Integument Color",
+                    values = c("darkturquoise", "#66C2A5", "#A6D96A", "#D9EF8B", "#FFFF99", "#FDAE61", "#F46D43", "#D53E4F"),
+                    labels = c("B", "BG", "G", "YG", "Y", "YO", "O", "RO")) +
+  geom_text(data = integumentColor_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE) +
+  theme_classic(base_size = 15) + theme(axis.ticks.x = element_blank(),
+                                        axis.title.x = element_blank(),
+                                        strip.text.x = element_text(size = 15),
+                                        legend.position = "bottom",
+                                        plot.margin = margin(t = 20, r = 20, b = 20, l = 20, 
+                                                             unit = "pt"),
+                                        plot.title.position = "plot") #Select day, treatment, and integument color (continuous) for days 1 and 22. Arrange and group by selected variables. Summarize by grouped variables to get counts. Plot counts as a stacked barplot. Modify labels, add a title, and specify a color scale. Use geom_text to add specific text to each ggplot facet. Set theme and modify background colors and strip text size. Modify plot margins and alignment of the plot title.
+integumentColorFig
+```
+
+```{r}
+sex_textMultipanel <- data.frame(label = c("Chi-squared, p = 0.96", "Chi-squared, p = 0.83"),
+                                   day = c(1, 22),
+                                   x = c(1.65, 1.65), 
+                                   y = c(1.08, 1.08))
+```
+
+```{r, message = FALSE}
+sexFig <- all_crab %>%
+  select(., day, treatment, sex) %>%
+  filter(., day == 1 | day == 22) %>%
+  arrange(day, treatment, sex) %>%
+  group_by(day, treatment, sex) %>%
+  summarize(., count = n()) %>%
+  ggplot(., aes(x = treatment, y = count, fill = as.factor(sex))) +
+  geom_bar(position = "fill", stat = "identity") +
+  facet_wrap( ~ day, labeller = labeller(day = facet_labels)) +
+  labs(y = "Percent of Crabs", title = "D") + coord_cartesian(ylim = c(0, 1.06)) +
+  scale_x_discrete(breaks = c("05", "13", "30"),
+                   labels = c("5ºC ", "13ºC ", "30ºC")) +
+  labs(fill = "Sex") +
+  geom_text(data = sex_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE) +
+  theme_classic(base_size = 15) + theme(axis.ticks.x = element_blank(),
+                                        axis.title.x = element_blank(),
+                                        strip.text.x = element_text(size = 15),
+                                        legend.position = "bottom",
+                                        plot.margin = margin(t = 20, r = 20, b = 20, l = 20, 
+                                                             unit = "pt"),
+                                        plot.title.position = "plot") #Select day, treatment, and sex for days 1 and 22. Arrange and group by selected variables. Arrange and group by selected variables. Summarize by grouped variables to get counts. Plot counts as a stacked barplot. Modify labels, add a title, and specify a color scale. Use geom_text to add specific text to each ggplot facet. Set theme and modify background colors and strip text size. Modify plot margins and alignment of the plot title.
+sexFig
+```
+
+- add panel numbers
+
+```{r}
+(carapaceWidthFig | weightFig) / (integumentColorFig | sexFig)
+ggsave("figures/multipanel-demData-comparison.pdf", height = 8.5, width = 11)
+```
 
 ## PCA
 
