@@ -585,9 +585,9 @@ signif(sexDay22$pvalDay22[1], 2)
 
 ```{r}
 sex_text <- data.frame(label = c("Chi-squared, p = 0.96", "Chi-squared, p = 0.83"),
-                                   day = c(1, 22),
-                                   x = c(1.42, 1.42), 
-                                   y = c(1.07, 1.07))
+                       day = c(1, 22),
+                       x = c(1.42, 1.42), 
+                       y = c(1.07, 1.07))
 ```
 
 
@@ -634,7 +634,7 @@ carapaceWidthFig <- all_crab %>%
   theme_classic(base_size = 15) + theme(axis.ticks.x = element_blank(),
                                         axis.title.x = element_blank(),
                                         strip.text.x = element_text(size = 15),
-                                        plot.margin = margin(t = 20, r = 20, b = 20, l = 20, 
+                                        plot.margin = margin(t = 5, r = 20, b = 20, l = 20, 
                                                              unit = "pt"),
                                         plot.title.position = "plot") #Select day 1 and day 22 data for factor of interest. Plot boxplot and points with treatment on the x-axis and factor on the y-axis, with shape and color defined  by treatment. Facet wrap by day and add specific facet labels. Add stats for comparisons between means and modify y-axis limits to fit statistical testing output at the top. Relabel x and y axes and add a plot title. Specify x-axis labels. Specify colors and shapes but remove legend. Set theme and modify background colors and strip text size. Modify plot margins and alignment of the plot title.
 carapaceWidthFig
@@ -658,7 +658,7 @@ weightFig <- all_crab %>%
   theme_classic(base_size = 15) + theme(axis.ticks.x = element_blank(),
                                         axis.title.x = element_blank(),
                                         strip.text.x = element_text(size = 15),
-                                        plot.margin = margin(t = 20, r = 20, b = 20, l = 20, 
+                                        plot.margin = margin(t = 5, r = 20, b = 20, l = 20, 
                                                              unit = "pt"),
                                         plot.title.position = "plot") #Select day 1 and day 22 data for factor of interest. Plot boxplot and points with treatment on the x-axis and factor on the y-axis, with shape and color defined  by treatment. Facet wrap by day and add specific facet labels. Add stats for comparisons between means and modify y-axis limits to fit statistical testing output at the top. Relabel x and y axes and add a plot title. Specify x-axis labels. Specify colors and shapes but remove legend. Set theme and modify background colors and strip text size. Modify plot margins and alignment of the plot title.
 weightFig
@@ -666,9 +666,9 @@ weightFig
 
 ```{r}
 integumentColor_textMultipanel <- data.frame(label = c("Chi-squared, p = 0.74", "Chi-squared, p = 0.003"),
-                                   day = c(1, 22),
-                                   x = c(1.65, 1.7), 
-                                   y = c(1.08, 1.08))
+                                             day = c(1, 22),
+                                             x = c(1.65, 1.7), 
+                                             y = c(1.08, 1.08))
 ```
 
 ```{r, message = FALSE}
@@ -692,7 +692,7 @@ integumentColorFig <- all_crab %>%
                                         axis.title.x = element_blank(),
                                         strip.text.x = element_text(size = 15),
                                         legend.position = "bottom",
-                                        plot.margin = margin(t = 20, r = 20, b = 20, l = 20, 
+                                        plot.margin = margin(t = 5, r = 20, b = 20, l = 20, 
                                                              unit = "pt"),
                                         plot.title.position = "plot") #Select day, treatment, and integument color (continuous) for days 1 and 22. Arrange and group by selected variables. Summarize by grouped variables to get counts. Plot counts as a stacked barplot. Modify labels, add a title, and specify a color scale. Use geom_text to add specific text to each ggplot facet. Set theme and modify background colors and strip text size. Modify plot margins and alignment of the plot title.
 integumentColorFig
@@ -700,9 +700,9 @@ integumentColorFig
 
 ```{r}
 sex_textMultipanel <- data.frame(label = c("Chi-squared, p = 0.96", "Chi-squared, p = 0.83"),
-                                   day = c(1, 22),
-                                   x = c(1.65, 1.65), 
-                                   y = c(1.08, 1.08))
+                                 day = c(1, 22),
+                                 x = c(1.65, 1.65), 
+                                 y = c(1.08, 1.08))
 ```
 
 ```{r, message = FALSE}
@@ -724,13 +724,11 @@ sexFig <- all_crab %>%
                                         axis.title.x = element_blank(),
                                         strip.text.x = element_text(size = 15),
                                         legend.position = "bottom",
-                                        plot.margin = margin(t = 20, r = 20, b = 20, l = 20, 
+                                        plot.margin = margin(t = 5, r = 20, b = 20, l = 20, 
                                                              unit = "pt"),
                                         plot.title.position = "plot") #Select day, treatment, and sex for days 1 and 22. Arrange and group by selected variables. Arrange and group by selected variables. Summarize by grouped variables to get counts. Plot counts as a stacked barplot. Modify labels, add a title, and specify a color scale. Use geom_text to add specific text to each ggplot facet. Set theme and modify background colors and strip text size. Modify plot margins and alignment of the plot title.
 sexFig
 ```
-
-- add panel numbers
 
 ```{r}
 (carapaceWidthFig | weightFig) / (integumentColorFig | sexFig)
