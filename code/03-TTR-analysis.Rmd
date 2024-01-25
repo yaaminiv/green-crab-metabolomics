@@ -91,6 +91,24 @@ rawTTR %>%
                                   treatment.tank == "3" | treatment.tank == "6" ~ "30C")) %>%
   mutate(., missing.legs = case_when(number.legs < 10 ~ "Y",
                                      number.legs == 10 ~ "N")) %>%
+  filter(., trial.1 == 91 | trial.2 == 91 | trial.3 == 91)
+```
+
+
+```{r}
+rawTTR %>%
+  dplyr::select(., -c(sampling.ID, notes, probe.number)) %>%
+  mutate(., day = case_when(date == "7/8/2022" ~ 4,
+                            date == "7/12/2022" ~ 8,
+                            date == "7/15/2022" ~ 11,
+                            date == "7/19/2022" ~ 15,
+                            date == "7/22/2022" ~ 18,
+                            date == "7/26/2022" ~ 22)) %>%
+  mutate(., treatment = case_when(treatment.tank == "1" | treatment.tank == "4" ~ "13C",
+                                  treatment.tank == "2" | treatment.tank == "5" ~ "5C",
+                                  treatment.tank == "3" | treatment.tank == "6" ~ "30C")) %>%
+  mutate(., missing.legs = case_when(number.legs < 10 ~ "Y",
+                                     number.legs == 10 ~ "N")) %>%
   filter(., trial.1 == 91 | trial.2 == 91 | trial.3 == 91) %>%
   write.csv(., "TTR-no-flips.csv", quote = FALSE, row.names = FALSE)
 ```
