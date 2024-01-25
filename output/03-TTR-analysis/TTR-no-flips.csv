@@ -1,0 +1,6 @@
+date,treatment.tank,trial.1,trial.2,trial.3,sex,integument.color,carapace.width,carapace.length,weight,number.legs,day,treatment,missing.legs
+7/15/2022,2,91,91,91,M,YG,50,39,25.83,10,11,5C,N
+7/19/2022,5,72.81,91,91,M,YG,43,36,18.63,7,15,5C,Y
+7/26/2022,3,91,91,91,M,YO,53,43,36.12,10,22,30C,N
+7/26/2022,3,91,91,91,F,O,40,30,13.17,10,22,30C,N
+7/26/2022,5,91,91,91,M,YG,43,36,19.14,7,22,5C,Y
