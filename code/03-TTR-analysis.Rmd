@@ -94,7 +94,6 @@ rawTTR %>%
   filter(., trial.1 == 91 | trial.2 == 91 | trial.3 == 91)
 ```
 
-
 ```{r}
 rawTTR %>%
   dplyr::select(., -c(sampling.ID, notes, probe.number)) %>%
