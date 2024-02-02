@@ -2111,10 +2111,18 @@ demTTRdata <- read.csv("../../data/time-to-right.csv", header = TRUE) %>%
                                   treatment.tank == "2" | treatment.tank == "5" ~ "5C",
                                   treatment.tank == "3" | treatment.tank == "6" ~ "30C")) %>%
   dplyr::rename(., tank = treatment.tank) %>%
-  mutate(., size = carapace.width/carapace.length) %>%
+  mutate(., integument.cont = recode(integument.color,
+                                     "B" = 0,
+                                     "BG" = 0.5,
+                                     "G" = 1, 
+                                     "YG" = 1.5, 
+                                     "Y" = 2, 
+                                     "YO" = 2.5 , 
+                                     "O" = 3, 
+                                     "RO" = 3.5)) %>%
   mutate(., missing.legs = case_when(number.legs < 10 ~ "Y",
                                      number.legs == 10 ~ "N")) %>%
-  select(., c(day, treatment, tank, probe_num, sex, integument.color, weight, carapace.width, missing.legs)) #Import TTR data and modify to include only the desired demographic data and average TTR data for crabs used during respiration trials
+  select(., c(day, treatment, tank, probe_num, sex, integument.cont, weight, carapace.width, missing.legs)) #Import TTR data and modify to include only the desired demographic data and average TTR data for crabs used during respiration trials
 head(demTTRdata) #Confirm dataframe creation
 ```
 
@@ -2146,7 +2154,7 @@ all_MO2_slope_results_demTTRdata <- all_MO2_slope_results %>%
 head(all_MO2_slope_results_demTTRdata) #Confirm dataframe creation
 ```
 
-### ANOVA
+### GLM
 
 ```{r}
 hist(-(all_MO2_slope_results$slope_nmol_hr_corrected)) #Check distribution
@@ -2156,17 +2164,17 @@ hist(sqrt(-(all_MO2_slope_results$slope_nmol_hr_corrected))) #Check log transfor
 
 
 ```{r}
-lmAllSlopeResults <- aov(log(-slope_nmol_hr_corrected) ~ treatment*as.numeric(day) + sex + weight + carapace.width + integument.color + missing.legs, data = (all_MO2_slope_results_demTTRdata %>% filter(., blank_ratio < 0.10))) #Examine the influence of treatment, day, and various demographic factors on respiration rate. Remove outliers based on blank ratios prior to analysis.
+lmAllSlopeResults <- glm(log(-slope_nmol_hr_corrected) ~ treatment*as.numeric(day) + sex + weight + carapace.width + integument.cont + missing.legs, data = (all_MO2_slope_results_demTTRdata %>% filter(., blank_ratio < 0.10))) #Examine the influence of treatment, day, and various demographic factors on respiration rate. Remove outliers based on blank ratios prior to analysis.
 summary(lmAllSlopeResults) #Significant impact of treatment and day on respiration
 ```
 
 ```{r}
 lmAllSlopeResultsStep <- step(lmAllSlopeResults, direction = "backward") #Use backwards-deletion approach to identify the most significant model (lowest AIC)
-summary(lmAllSlopeResultsStep) #The most significant model is one that includes treatment and day, but not the interaction between the two. None of the other demographic terms are significant
+summary(lmAllSlopeResultsStep)
 ```
 
 ```{r}
-lmAllSlopeResultsSig <- aov(log(-slope_nmol_hr_corrected) ~ treatment + as.numeric(day), data = all_MO2_slope_results_demTTRdata) #Run the most significant model identified by step
+lmAllSlopeResultsSig <- glm(log(-slope_nmol_hr_corrected) ~ treatment + as.numeric(day), data = all_MO2_slope_results_demTTRdata) #Run the most significant model identified by step
 summary(lmAllSlopeResultsSig) #Significant impact of treatment and day (not not day x treatment)
 ```
 
@@ -2181,20 +2189,6 @@ hist(residuals(lmAllSlopeResultsSig)) #Residuals normally distributed
 
 plot(fitted(lmAllSlopeResultsSig), residuals(lmAllSlopeResultsSig)) #No heteroskedasticity 
 abline(h = 0, lty = 2, col = "grey")
-```
-
-### Post-hoc tests
-
-```{r}
-TukeyHSD(lmAllSlopeResultsSig, "treatment", conf.level = 0.95) #Use TukeyHSD for categorical variables. Significant difference between 5C and other treatments, marginial significance between 30C and 13C.
-```
-
-```{r}
-write.csv(broom::tidy(TukeyHSD(lmAllSlopeResultsSig, "treatment", conf.level = 0.95)), "all-slope-reuslts-ANOVA-treatment-Tukey.csv", quote = FALSE, row.names = FALSE) #Save TukeyHSD output
-```
-
-```{r}
-pairwise.t.test(x = log(-(all_MO2_slope_results_demTTRdata$slope_nmol_hr_corrected)), all_MO2_slope_results_demTTRdata$day, p.adjust.method = "bonferroni") #Use pairwise t-test for quantitative variables. Marginal significance between days 4 and 22.
 ```
 
 ## Create multipanel figure for oxygen consumption
