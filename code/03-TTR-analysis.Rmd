@@ -56,6 +56,15 @@ modTTR <- rawTTR %>%
                                   treatment.tank == "3" | treatment.tank == "6" ~ "30C")) %>%
   mutate(., missing.legs = case_when(number.legs < 10 ~ "Y",
                                      number.legs == 10 ~ "N")) %>%
+  mutate(., integument.cont = recode(integument.color,
+                                     "B" = 0,
+                                     "BG" = 0.5,
+                                     "G" = 1, 
+                                     "YG" = 1.5, 
+                                     "Y" = 2, 
+                                     "YO" = 2.5 , 
+                                     "O" = 3, 
+                                     "RO" = 3.5)) %>%
   mutate(., trial.1 = na_if(trial.1, 91.00)) %>%
   mutate(., trial.2 = na_if(trial.2, 91.00)) %>%
   mutate(., trial.3 = na_if(trial.3, 91.00)) %>%
@@ -262,7 +271,7 @@ hist(x = log(modTTR$TTRavg)) #Log transformation helps normalize data
 ## GLM
 
 ```{r}
-TTRmodel <- glm(log(TTRavg) ~ treatment + day + treatment*day + as.factor(sex) + as.factor(integument.color) + carapace.width + weight + as.factor(missing.legs), data = modTTR) #GLM, with log(TTRavg) as the response variable, and treatment, day, the interaction between treatment and day, sex, integument color, carapace width, weight, and whether or not a crab is missing legs as explanatory variables.
+TTRmodel <- glm(log(TTRavg) ~ treatment + day + treatment*day + as.factor(sex) + integument.cont + carapace.width + weight + as.factor(missing.legs), data = modTTR) #GLM, with log(TTRavg) as the response variable, and treatment, day, the interaction between treatment and day, sex, integument color, carapace width, weight, and whether or not a crab is missing legs as explanatory variables.
 summary(TTRmodel) #5C different than control, 30C marg different than control
 ```
 
