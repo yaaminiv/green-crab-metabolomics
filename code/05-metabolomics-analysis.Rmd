@@ -1444,16 +1444,44 @@ metab_rel_change #Confirm calculations
 write.csv(WCNA/metab_rel_change, "metabolites_relative_change.csv", quote = FALSE, row.names = FALSE)
 ```
 
-# Pathway analysis with MetaboAnalyst
+# Pathway analysis
 
 The final step in this workflow is to understand the various metabolic pathways represented in each module eigengene. I'll conduct the majority of this analysis with the MetaboAnalyst GUI interface, but return here to process results.
+
+## Anaerobic respiration
+
+I want to do a rough quantification of molecules related to lactose and anaerobic respiration.
+
+```{r}
+transMetabData %>%
+  dplyr::select(., c(1:4, 79:83)) %>%
+  pivot_longer(., cols = c(5:9), names_to = "metabolite", values_to = "value") %>%
+  ggplot(., mapping = aes(x = treatment_day, y = value, color = treatment_day)) +
+  facet_wrap(~metabolite, scales = "free_y") +
+  ylab("Metabolite Abundance") +
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
+  geom_point(pch = 21, position = position_dodge(width = 0.5)) +
+  scale_fill_manual(name = "Temperature (ºC) x Day", 
+                    values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                    labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
+  scale_colour_manual(name = "Temperature (ºC) x Day", 
+                      values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                      labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
+  xlab("") + #Axis titles
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.text = element_text(color = "black", size = 12), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"))
+ggsave("metaboanalyst/figures/anaerobic-metabolism-plot.pdf", height = 8.5, width = 11)
+```
+
+## Create lists of metabolites in each module
 
 ```{bash}
 mkdir metaboanalyst
 mkdir metaboanalyst/figures
 ```
-
-## Create lists of metabolites in each module
 
 For each module, I want the metabolite name, but I also want all of the PubChem and KEGG ID information provided by the sequencing facility. This is because common names for metabolties can be different, and using a numerical classifier will ensure the correct compounds are recognized by MetaboAnalyst.
 
