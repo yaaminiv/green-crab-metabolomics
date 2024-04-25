@@ -1474,6 +1474,8 @@ transMetabData %>%
   dplyr::select(., c(1:4, 
                      `glucose-6-phosphate`, `glucose-1-phosphate`, `glucose `, `fructose-6-phosphate `, `fructose-1-phosphate`, `pyrophosphate `, phosphate, `3-phosphoglycerate`)) %>%
   pivot_longer(., cols = c(5:12), names_to = "metabolite", values_to = "value") %>%
+  mutate(., treatment_day = gsub(pattern = "_3", replacement = "_03", x = treatment_day)) %>%
+  mutate(., treatment_day = gsub(pattern = "5_", replacement = "05_", x = treatment_day)) %>%
   ggplot(., mapping = aes(x = treatment_day, y = value, color = treatment_day)) +
   facet_wrap(~metabolite, scales = "free_y") +
   ylab("Metabolite Abundance") +
@@ -1505,6 +1507,8 @@ ggsave("metaboanalyst/figures/glycolysis-plot.pdf", height = 8.5, width = 11)
 transMetabData %>%
   dplyr::select(., c(1:4, `citric acid`, `fumaric acid`, `alpha-ketoglutarate`, `malic acid`)) %>%
   pivot_longer(., cols = c(5:8), names_to = "metabolite", values_to = "value") %>%
+  mutate(., treatment_day = gsub(pattern = "_3", replacement = "_03", x = treatment_day)) %>%
+  mutate(., treatment_day = gsub(pattern = "5_", replacement = "05_", x = treatment_day)) %>%
   ggplot(., mapping = aes(x = treatment_day, y = value, color = treatment_day)) +
   facet_wrap(~metabolite, scales = "free_y") +
   ylab("Metabolite Abundance") +
@@ -1538,6 +1542,8 @@ transMetabData %>%
   dplyr::select(., c(1:4,
                      `glucose-6-phosphate`, `glucose-1-phosphate`, `glucose `, `lactic acid`)) %>%
   pivot_longer(., cols = c(5:8), names_to = "metabolite", values_to = "value") %>%
+  mutate(., treatment_day = gsub(pattern = "_3", replacement = "_03", x = treatment_day)) %>%
+  mutate(., treatment_day = gsub(pattern = "5_", replacement = "05_", x = treatment_day)) %>%
   ggplot(., mapping = aes(x = treatment_day, y = value, color = treatment_day)) +
   facet_wrap(~metabolite, scales = "free_y") +
   ylab("Metabolite Abundance") +
@@ -1577,6 +1583,8 @@ transMetabData %>%
   dplyr::select(., c(1:4,
                      `UDP-N-acetylglucosamine `, tyrosine, `tryptophan `, threonine, serine, phosphoinositol, `citric acid`, `glutathione `, glutamine, `glutamate `)) %>%
   pivot_longer(., cols = c(5:14), names_to = "metabolite", values_to = "value") %>%
+  mutate(., treatment_day = gsub(pattern = "_3", replacement = "_03", x = treatment_day)) %>%
+  mutate(., treatment_day = gsub(pattern = "5_", replacement = "05_", x = treatment_day)) %>%
   ggplot(., mapping = aes(x = treatment_day, y = value, color = treatment_day)) +
   facet_wrap(~metabolite, scales = "free_y") +
   ylab("Metabolite Abundance") +
