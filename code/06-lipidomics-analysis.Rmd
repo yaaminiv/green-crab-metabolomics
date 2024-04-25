@@ -1407,7 +1407,70 @@ lipid_rel_change #Confirm calculations
 write.csv(lipid_rel_change, "WCNA/lipids_relative_change.csv", quote = FALSE, row.names = FALSE)
 ```
 
-# Pathway analysis with MetaboAnalyst
+# Pathway analysis
+
+## Comparing with Chapelle results
+
+I want to do a rough analysis with phosphatidylethanolamine (PE) and phosphatidylcholines (PC) compounds, since Chapelle 1978 and 1986 found them most responsive to temperature.
+
+### PC compounds
+
+```{r}
+PCData <- rawLipidomicsData %>%
+  slice(., 151:390) %>%
+  dplyr::select(., -c(identifier, Ion.species, INCHIKEY, m.z, RT, ESI.mode)) %>%
+  unite(., "lipid-uniqueID", lipid:uniqueID, sep = "-") %>%
+  column_to_rownames(., var = "lipid-uniqueID") %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(., var = "crab.ID") %>%
+  left_join(lipidomicsMetadata, ., by = "crab.ID") #Slice PC data from the raw dataframe and remove extraneous columns. Unite lipid and uniqueID column to make unique column names. Transpose dataframe and convert crab ID to a column. Join with metadata
+head(PCData) #Confirm dataframe creation
+```
+
+```{r}
+heatmapAnnot <- lipidomicsMetadata %>%
+  mutate(., Temperature = as.character(treatment)) %>%
+  mutate(., Day = as.character(day)) %>%
+  dplyr::select(., Temperature, Day) #Retain treatment and day informationonly
+head(heatmapAnnot) #Column annotation information
+```
+
+```{r}
+heatmapAnnotColors <- list(Day = c("3" = "grey80",
+                                  "22" = "grey20"),
+                           Temperature = c("5" = plotColors[1],
+                                           "13" = plotColors[2],
+                                           "30" = plotColors[3])) #List of colors for column annotations
+heatmapAnnotColors #Column annotation colors
+```
+
+```{r}
+# pdf("metaboanalyst/figures/PC-heatmap.pdf", width = 11, height = 8.5)
+pheatmap(t(log(PCData[, 5:244])), cluster_row = TRUE, show_rownames = FALSE, cluster_cols = TRUE, show_colnames = FALSE, annotation_col = heatmapAnnot)
+# dev.off()
+```
+
+### PE compounds
+
+```{r}
+PEData <- rawLipidomicsData %>%
+  slice(., 391:447) %>%
+  dplyr::select(., -c(identifier, Ion.species, INCHIKEY, m.z, RT, ESI.mode)) %>%
+  unite(., "lipid-uniqueID", lipid:uniqueID, sep = "-") %>%
+  column_to_rownames(., var = "lipid-uniqueID") %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(., var = "crab.ID") %>%
+  left_join(lipidomicsMetadata, ., by = "crab.ID") #Slice PE data from the raw dataframe and remove extraneous columns. Unite lipid and uniqueID column to make unique column names. Transpose dataframe and convert crab ID to a column. Join with metadata
+head(PEData) #Confirm dataframe creation
+```
+
+```{r}
+# pdf("metaboanalyst/figures/PE-heatmap.pdf", width = 11, height = 8.5)
+pheatmap(t(log(PEData[, 5:61])), cluster_row = TRUE, show_rownames = FALSE, cluster_cols = TRUE, show_colnames = FALSE, annotation_col = heatmapAnnot)
+# dev.off()
+```
+
+## Create lists of lipids in each module
 
 The final step in this workflow is to understand the various metabolic pathways represented in each module eigengene. I'll conduct the majority of this analysis with the MetaboAnalyst GUI interface, but return here to process results.
 
@@ -1415,8 +1478,6 @@ The final step in this workflow is to understand the various metabolic pathways 
 mkdir metaboanalyst
 mkdir metaboanalyst/figures
 ```
-
-## Create lists of lipids in each module
 
 For each module, I want the lipid unique ID name, but I also want all of the information provided by the sequencing facility. This is because common names for lipids can be different, and using a numerical classifier will ensure the correct compounds are recognized by MetaboAnalyst.
 
