@@ -21,34 +21,24 @@ getwd()
 # Install packages
 
 ```{r packages, warning = FALSE, message = FALSE}
-# if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse') 
-# if ("vegan" %in% rownames(installed.packages()) == 'FALSE') install.packages('vegan') 
-# if ("factoextra" %in% rownames(installed.packages()) == 'FALSE') install.packages('factoextra') 
-# if ("ggfortify" %in% rownames(installed.packages()) == 'FALSE') install.packages('ggfortify') 
-# if ("naniar" %in% rownames(installed.packages()) == 'FALSE') install.packages('naniar') 
-# if ("cowplot" %in% rownames(installed.packages()) == 'FALSE') install.packages('cowplot') 
+# if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse')
+# if ("vegan" %in% rownames(installed.packages()) == 'FALSE') install.packages('vegan')
 # if (!requireNamespace("BiocManager", quietly = TRUE))
 #   install.packages("BiocManager")
-# if ("mixOmics" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("mixOmics") 
-# if ("RVAideMemoire" %in% rownames(installed.packages()) == 'FALSE') install.packages('RVAideMemoire') 
-# if ("VennDiagram" %in% rownames(installed.packages()) == 'FALSE') install.packages('VennDiagram') 
-# if ("broom" %in% rownames(installed.packages()) == 'FALSE') install.packages('broom') 
-# if ("RColorBrewer" %in% rownames(installed.packages()) == 'FALSE') install.packages('RColorBrewer') 
-# if ("pheatmap" %in% rownames(installed.packages()) == 'FALSE') install.packages('pheatmap') 
-# if ("genefilter" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("genefilter") 
+# if ("mixOmics" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("mixOmics")
+# if ("RVAideMemoire" %in% rownames(installed.packages()) == 'FALSE') install.packages('RVAideMemoire')
+# if ("broom" %in% rownames(installed.packages()) == 'FALSE') install.packages('broom')
+# if ("RColorBrewer" %in% rownames(installed.packages()) == 'FALSE') install.packages('RColorBrewer')
+# if ("pheatmap" %in% rownames(installed.packages()) == 'FALSE') install.packages('pheatmap')
+# if ("genefilter" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("genefilter")
 # if ("WGCNA" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('WGCNA')
-# if ("dendsort" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('dendsort') 
-# if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap') 
+# if ("dendsort" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('dendsort')
+# if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap')
 
 require(tidyverse)
 require(vegan)
-# require(factoextra)
-# require(ggfortify)
-# require(naniar)
-# require(cowplot)
 require(mixOmics)
 require(RVAideMemoire)
-# require(VennDiagram)
 require(broom)
 require(RColorBrewer)
 require(pheatmap)
@@ -1446,7 +1436,7 @@ write.csv(WCNA/metab_rel_change, "metabolites_relative_change.csv", quote = FALS
 
 # Pathway analysis
 
-The final step in this workflow is to understand the various metabolic pathways represented in each module eigengene. I'll conduct the majority of this analysis with the MetaboAnalyst GUI interface, but return here to process results.
+The final step in this workflow is to understand the various metabolic pathways represented in each module eigengene.
 
 ## Manual pathway analysis
 
@@ -1460,24 +1450,37 @@ head(transMetabData)
 
 #### Glycolysis
 
-- Glucose-6-phosphate: It is the first intermediate in glycolysis, formed from glucose by hexokinase. It is subsequently converted into fructose-6-phosphate.
-- Glucose-1-phosphate: Glucose-1-phosphate is an intermediate in the breakdown of glycogen, which can be converted into glucose-6-phosphate before entering glycolysis.
-- Glucose: Glucose is the starting substrate for glycolysis. It is phosphorylated to form glucose-6-phosphate by hexokinase or glucokinase.
-- Fructose-6-phosphate: It is an intermediate in glycolysis, formed from glucose-6-phosphate by phosphoglucose isomerase. It is subsequently phosphorylated to fructose-1,6-bisphosphate.
-- Fructose-1-phosphate: Fructose-1-phosphate is an intermediate in fructose metabolism. It is converted into glyceraldehyde-3-phosphate (an intermediate in glycolysis) and dihydroxyacetone phosphate by aldolase.
-- Pyrophosphate (PPi): Pyrophosphate is produced in the reaction catalyzed by phosphofructokinase-1 (PFK-1) during glycolysis. It is subsequently hydrolyzed to two molecules of phosphate (Pi), driving the irreversible step of glycolysis forward.
-- Phosphate (Pi): In glycolysis, phosphate ions (Pi) are involved in several steps as reactants or products, including the phosphorylation of glucose to form glucose-6-phosphate and the hydrolysis of pyrophosphate to form inorganic phosphate (Pi).
-- 3-Phosphoglycerate: It is an intermediate in glycolysis, formed from 1,3-bisphosphoglycerate by phosphoglycerate kinase. It is subsequently converted into 2-phosphoglycerate.
+1. Glucose: Glucose is the starting substrate for glycolysis. It is phosphorylated to form glucose-6-phosphate by hexokinase or glucokinase.
+2. Glucose-1-phosphate: Glucose-1-phosphate is an intermediate in the breakdown of glycogen, which can be converted into glucose-6-phosphate before entering glycolysis.
+3. Glucose-6-phosphate: It is the first intermediate in glycolysis, formed from glucose by hexokinase. It is subsequently converted into fructose-6-phosphate.
+4. Fructose-6-phosphate: It is an intermediate in glycolysis, formed from glucose-6-phosphate by phosphoglucose isomerase. It is subsequently phosphorylated to fructose-1,6-bisphosphate.
+5. Fructose-1-phosphate: Fructose-1-phosphate is an intermediate in fructose metabolism. It is converted into glyceraldehyde-3-phosphate (an intermediate in glycolysis) and dihydroxyacetone phosphate by aldolase.
+6. 3-Phosphoglycerate: It is an intermediate in glycolysis, formed from 1,3-bisphosphoglycerate by phosphoglycerate kinase. It is subsequently converted into 2-phosphoglycerate.
+
+```{r}
+glycolysis_facets <- c("1" = "glucose",
+                       "2" = "glucose-1-phosphate",
+                       "3" = "glucose-6-phosphate",
+                       "4" = "fructose-6-phosphate",
+                       "5" = "fructose-1-phosphate",
+                       "6" = "3-phosphoglycerate") #Assign labels for facets
+```
 
 ```{r}
 transMetabData %>%
   dplyr::select(., c(1:4, 
-                     `glucose-6-phosphate`, `glucose-1-phosphate`, `glucose `, `fructose-6-phosphate `, `fructose-1-phosphate`, `pyrophosphate `, phosphate, `3-phosphoglycerate`)) %>%
-  pivot_longer(., cols = c(5:12), names_to = "metabolite", values_to = "value") %>%
+                     `glucose `, `glucose-1-phosphate`, `glucose-6-phosphate`, `fructose-6-phosphate `, `fructose-1-phosphate`, `3-phosphoglycerate`)) %>%
+  pivot_longer(., cols = c(5:10), names_to = "metabolite", values_to = "value") %>%
   mutate(., treatment_day = gsub(pattern = "_3", replacement = "_03", x = treatment_day)) %>%
   mutate(., treatment_day = gsub(pattern = "5_", replacement = "05_", x = treatment_day)) %>%
+  mutate(., order = case_when(metabolite == "glucose " ~ 1,
+                              metabolite == "glucose-1-phosphate" ~ 2,
+                              metabolite == "glucose-6-phosphate" ~ 3,
+                              metabolite == "fructose-6-phosphate " ~ 4,
+                              metabolite == "fructose-1-phosphate" ~ 5,
+                              metabolite == "3-phosphoglycerate" ~ 6)) %>%
   ggplot(., mapping = aes(x = treatment_day, y = value, color = treatment_day)) +
-  facet_wrap(~metabolite, scales = "free_y") +
+  facet_wrap(~order, scales = "free_y", labeller = labeller(order = glycolysis_facets)) +
   ylab("Metabolite Abundance") +
   geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
   geom_point(pch = 21, position = position_dodge(width = 0.5)) +
@@ -1499,18 +1502,30 @@ ggsave("metaboanalyst/figures/glycolysis-plot.pdf", height = 8.5, width = 11)
 #### TCA cycle
 
 - Citric acid: Also known as citrate, it is the first intermediate in the TCA cycle. It is formed from acetyl-CoA and oxaloacetate and undergoes a series of reactions to regenerate oxaloacetate, producing NADH, FADH2, and GTP in the process.
-- Fumaric acid: Fumarate is an intermediate in the TCA cycle, formed by the hydration of fumarate catalyzed by fumarase. It is subsequently converted into malate.
 - Alpha-ketoglutarate: Also known as 2-oxoglutarate, it is an intermediate in the TCA cycle. It is formed from isocitrate by isocitrate dehydrogenase and is subsequently converted into succinyl-CoA.
+- Fumaric acid: Fumarate is an intermediate in the TCA cycle, formed by the hydration of fumarate catalyzed by fumarase. It is subsequently converted into malate.
 - Malic acid: Malate is an intermediate in the TCA cycle, formed from fumarate by fumarase. It is subsequently converted into oxaloacetate.
 
 ```{r}
+TCA_facets <- c("1" = "citric acid",
+                "2" = "alpha-ketoglutarate",
+                "3" = "fumaric acid",
+                "4" = "malic acid") #Assign labels for facets
+```
+
+```{r}
 transMetabData %>%
-  dplyr::select(., c(1:4, `citric acid`, `fumaric acid`, `alpha-ketoglutarate`, `malic acid`)) %>%
+  dplyr::select(., c(1:4, 
+                     `citric acid`, `alpha-ketoglutarate`, `fumaric acid`, `malic acid`)) %>%
   pivot_longer(., cols = c(5:8), names_to = "metabolite", values_to = "value") %>%
   mutate(., treatment_day = gsub(pattern = "_3", replacement = "_03", x = treatment_day)) %>%
   mutate(., treatment_day = gsub(pattern = "5_", replacement = "05_", x = treatment_day)) %>%
+  mutate(., order = case_when(metabolite == "citric acid" ~ 1,
+                              metabolite == "alpha-ketoglutarate" ~ 2,
+                              metabolite == "fumaric acid" ~ 3,
+                              metabolite == "malic acid" ~ 4)) %>%
   ggplot(., mapping = aes(x = treatment_day, y = value, color = treatment_day)) +
-  facet_wrap(~metabolite, scales = "free_y") +
+  facet_wrap(~order, scales = "free_y", labeller = labeller(order = TCA_facets)) +
   ylab("Metabolite Abundance") +
   geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
   geom_point(pch = 21, position = position_dodge(width = 0.5)) +
@@ -1531,21 +1546,32 @@ ggsave("metaboanalyst/figures/TCA-plot.pdf", height = 8.5, width = 11)
 
 ### Anaerobic respiration
 
-- Glucose-6-phosphate: This molecule is an intermediate in the glycolysis pathway, which produces pyruvate, the precursor of lactic acid in anaerobic conditions.
-- Glucose-1-phosphate: Similar to glucose-6-phosphate, glucose-1-phosphate is an intermediate in glycolysis and contributes to the production of pyruvate.
 - Glucose: Glucose is the starting substrate for glycolysis, the metabolic pathway that generates pyruvate, the precursor of lactic acid.
-- Pyruvate: Pyruvate is the key intermediate in glycolysis, and under anaerobic conditions, it is converted into lactic acid by lactate dehydrogenase.
+- Glucose-1-phosphate: Similar to glucose-6-phosphate, glucose-1-phosphate is an intermediate in glycolysis and contributes to the production of pyruvate.
+- Glucose-6-phosphate: This molecule is an intermediate in the glycolysis pathway, which produces pyruvate, the precursor of lactic acid in anaerobic conditions.
 - Lactic acid: The end product of lactic acid fermentation, formed from the reduction of pyruvate.
+
+```{r}
+anaerobic_facets <- c("1" = "glucose ",
+                      "2" = "glucose-1-phosphate",
+                      "3" = "glucose-6-phosphate ",
+                      "4" = "lactic acid") #Make facet labels
+```
+
 
 ```{r}
 transMetabData %>%
   dplyr::select(., c(1:4,
-                     `glucose-6-phosphate`, `glucose-1-phosphate`, `glucose `, `lactic acid`)) %>%
+                     `glucose `, `glucose-1-phosphate`, `glucose-6-phosphate`, `lactic acid`)) %>%
   pivot_longer(., cols = c(5:8), names_to = "metabolite", values_to = "value") %>%
   mutate(., treatment_day = gsub(pattern = "_3", replacement = "_03", x = treatment_day)) %>%
   mutate(., treatment_day = gsub(pattern = "5_", replacement = "05_", x = treatment_day)) %>%
+  mutate(., order = case_when(metabolite == "glucose " ~ 1,
+                              metabolite == "glucose-1-phosphate" ~ 2,
+                              metabolite == "glucose-6-phosphate" ~ 3,
+                              metabolite == "lactic acid" ~ 4)) %>%
   ggplot(., mapping = aes(x = treatment_day, y = value, color = treatment_day)) +
-  facet_wrap(~metabolite, scales = "free_y") +
+  facet_wrap(~order, scales = "free_y", labeller = labeller(order = anaerobic_facets)) +
   ylab("Metabolite Abundance") +
   geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
   geom_point(pch = 21, position = position_dodge(width = 0.5)) +
@@ -1721,190 +1747,3 @@ nrow(module8_metabolites) #6 metabolites
 head(module8_metabolites)
 write.csv(module8_metabolites, "metaboanalyst/module8_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
-
-## Enrichment compound class analysis
-
-### Analysis in MetaboAnalyst interface
-
-The first kind of enrichment analysis I will complete is looking at compound structures. To do this, I will upload the list of metabolite names for each module (generated above) to the [MetaboAnalyst interface](https://www.metaboanalyst.ca/MetaboAnalyst/upload/EnrichUploadView.xhtml). Then, I will conduct an enrichment of *main class chemical structures*. 
-
-> Enrichment tests are based on the well-established globaltest to test associations between metabolite sets and the outcome. The algorithm uses a generalized linear model to compute a ‘Q-stat’ for each metabolite set. The Q-stat is calculated as the average of the Q values calculated for the each single metabolites; while the Q value is the squared covariance between the metabolite and the outcome. The globaltest has been shown to exhibit similar or superior performance when tested against several other popular methods.
-
-> Metabolite sets: Unlike transcriptomics which allows comprehensive gene expression profiling, targeted metabolomics usually covers only a small percentage of metabolome (the actual coverage is platform/protocol specific). This means that metabolites (defined in our current pathways or metabolite sets) do not have equal probabilities of being measured in your studies, and the enriched functions are the results from both platform/protocol specific effects and biological perturbations. Since the primary interest is to detect the latter, we highly recommend uploading a reference metabolome containing all measurable metabolites from your platform to eliminate the former effects.
-
-I don't have a reference metabolome and I didn't perform targeted metabolomics. I used metabolite sets containing at least two entries and all compounds in the selected library as a reference.
-
-Certain compounds were not recognized by MetaboAnalyst, or require manual PubChem/KEGG ID correction. The resulting name maps (input names v.s names used for enrichment analysis) from MetaboAnalyst were renamed according to module number and saved [here](https://github.com/yaaminiv/green-crab-metabolomics/tree/main/output/05-metabolomics-analysis/metaboanalyst/name-maps).
-
-The output tables (msea_ora_result.csv files from MetaboAnalyst) were renamed according to module number and saved [here](https://github.com/yaaminiv/green-crab-metabolomics/tree/main/output/05-metabolomics-analysis/metaboanalyst/msea-compoundClass/enrichment-output).
-
-### View results
-
-#### Import results
-
-```{r}
-#Import dataframes from each module. Add a Module column and rename the first column.
-
-module0_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module0-msea_ora_result.csv") %>%
-  mutate(., Module = "0") %>%
-  dplyr::rename(., compoundClass = X)
-module1_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module1-msea_ora_result.csv") %>%
-  mutate(., Module = "1") %>%
-  dplyr::rename(., compoundClass = X)
-module2_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module2-msea_ora_result.csv") %>%
-  mutate(., Module = "2") %>%
-  dplyr::rename(., compoundClass = X)
-module3_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module3-msea_ora_result.csv") %>%
-  mutate(., Module = "3") %>%
-  dplyr::rename(., compoundClass = X)
-module4_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module4-msea_ora_result.csv") %>%
-  mutate(., Module = "4") %>%
-  dplyr::rename(., compoundClass = X)
-module5_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module5-msea_ora_result.csv") %>%
-  mutate(., Module = "5") %>%
-  dplyr::rename(., compoundClass = X)
-module6_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module6-msea_ora_result.csv") %>%
-  mutate(., Module = "6") %>%
-  dplyr::rename(., compoundClass = X)
-module7_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module7-msea_ora_result.csv") %>%
-  mutate(., Module = "7") %>%
-  dplyr::rename(., compoundClass = X)
-module8_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module8-msea_ora_result.csv") %>%
-  mutate(., Module = "8") %>%
-  dplyr::rename(., compoundClass = X)
-```
-
-```{r}
-compound_classes <- rbind(module0_class,
-                          module1_class,
-                          module2_class,
-                          module3_class,
-                          module4_class,
-                          module5_class,
-                          module6_class,
-                          module7_class,
-                          module8_class) #Create dataframe with compound classes
-head(compound_classes) #Confirm dataframe creation
-```
-
-```{r}
-write.csv(compound_classes, "metaboanalyst/msea-compoundClass/all-module-compound-classes.csv", quote = FALSE, row.names = FALSE) #Save dataframe with all compound classes for all modules
-```
-
-#### Format results
-
-```{r}
-sig_classes_comp <- compound_classes %>%
-  filter(., FDR < 0.05) %>%
-  dplyr::select(., compoundClass, total, hits, FDR, Module) #Filter out only significant compound classes using a FDR < 0.05 threshold. Keep compoundClass, total, hits, FDR, and Module columns.
-head(sig_classes_comp) 
-```
-
-```{r}
-write.csv(sig_classes_comp, "metaboanalyst/msea-compoundClass/significant-compound-classes.csv", quote = FALSE, row.names = FALSE)
-```
-
-#### Plot results
-
-```{r}
-ggplot(sig_classes_comp, aes(x = Module, y = compoundClass)) + 
-  geom_point(aes(size = hits)) +
-  scale_size(name = "Metabolites",
-             range = c(4,15), 
-             limits = c(1,15)) +
-  xlab("Module Eigengene") + ylab("Compound Class") +
-  theme_classic(base_size = 15) #Plot significantly enriched compound classes for each module. Scale point size by the number of metabolite hits in each category. Define x- and y- axis labels. Change the angle of the x-axis text.
-ggsave("metaboanalyst/figures/compound-class-dotplot.pdf", height = 8.5, width = 11)
-```
-
-## KEGG Pathway Analysis
-
-### Analysis in MetaboAnalyst Interface
-
-I'll return to the [MetaboAnalyst enrichment interface](https://www.metaboanalyst.ca/MetaboAnalyst/upload/EnrichUploadView.xhtml) and use the same steps to conduct a KEGG Pathway enrichment. Again, I will upload metabolite names and correct them as needed within the interface. KEGG Pathway enrichment results are saved [here](https://github.com/yaaminiv/green-crab-metabolomics/tree/main/output/05-metabolomics-analysis/metaboanalyst/msea-KEGG/enrichment-output).
-
-### View results
-
-#### Import results
-
-```{r}
-#Import dataframes from each module. Add a Module column and rename the first column.
-
-module0_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module0-msea_ora_result.csv") %>%
-  mutate(., Module = "0") %>%
-  dplyr::rename(., KEGG = X)
-module1_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module1-msea_ora_result.csv") %>%
-  mutate(., Module = "1") %>%
-  dplyr::rename(., KEGG = X)
-module2_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module2-msea_ora_result.csv") %>%
-  mutate(., Module = "2") %>%
-  dplyr::rename(., KEGG = X)
-module3_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module3-msea_ora_result.csv") %>%
-  mutate(., Module = "3") %>%
-  dplyr::rename(., KEGG = X)
-module4_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module4-msea_ora_result.csv") %>%
-  mutate(., Module = "4") %>%
-  dplyr::rename(., KEGG = X)
-module5_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module5-msea_ora_result.csv") %>%
-  mutate(., Module = "5") %>%
-  dplyr::rename(., KEGG = X)
-# module6_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module6-msea_ora_result.csv") %>%
-#   mutate(., Module = "6") %>%
-#   dplyr::rename(., KEGG = X)
-module7_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module7-msea_ora_result.csv") %>%
-  mutate(., Module = "7") %>%
-  dplyr::rename(., KEGG = X)
-# module8_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module8-msea_ora_result.csv") %>%
-#   mutate(., Module = "8") %>%
-#   dplyr::rename(., KEGG = X)
-```
-
-```{r}
-KEGG_pathways <- rbind(module0_KEGG,
-                       module1_KEGG,
-                       module2_KEGG,
-                       module3_KEGG,
-                       module4_KEGG,
-                       module5_KEGG,
-                       # module6_KEGG,
-                       module7_KEGG
-                       # module8_KEGG
-                       ) #Create dataframe with compound classes
-head(KEGG_pathways) #Confirm dataframe creation
-```
-
-```{r}
-write.csv(KEGG_pathways, "metaboanalyst/msea-KEGG/all-module-KEGG-pathways.csv", quote = FALSE, row.names = FALSE) #Save dataframe with all compound classes for all modules
-```
-
-#### Format results
-
-```{r}
-sig_KEGG_pathways <- KEGG_pathways %>%
-  filter(., FDR < 0.05) %>%
-  dplyr::select(., KEGG, total, hits, FDR, Module) #Filter out only significant compound classes using a FDR < 0.05 threshold. Keep KEGG, total, hits, FDR, and Module columns.
-head(sig_KEGG_pathways) 
-```
-
-```{r}
-write.csv(sig_KEGG_pathways, "metaboanalyst/msea-KEGG/significant-compound-classes.csv", quote = FALSE, row.names = FALSE)
-```
-
-#### Plot results
-
-```{r}
-ggplot(KEGG_pathways, aes(x = Module, y = KEGG)) + 
-  geom_point(aes(size = hits)) +
-  scale_size(name = "Metabolites",
-             range = c(4,15), 
-             limits = c(1,5)) +
-  xlab("Module Eigengene") + ylab("KEGG Pathway") +
-  theme_classic(base_size = 15) #Plot significantly enriched KEGG pathways for each module. Scale point size by the number of metabolite hits in each category. Define x- and y- axis labels. Change the angle of the x-axis text.
-ggsave("metaboanalyst/figures/KEGG-pathway-dotplot.pdf", height = 8.5, width = 11)
-```
-
-**TO DO**:
-
-- figure out why modules 6 and 8 aren't running through KEGG enrichment
-
-
