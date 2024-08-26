@@ -34,7 +34,6 @@ getwd()
 # if ("WGCNA" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('WGCNA')
 # if ("dendsort" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('dendsort')
 # if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap')
-
 require(tidyverse)
 require(vegan)
 require(mixOmics)
@@ -1588,6 +1587,79 @@ transMetabData %>%
                                         legend.text = element_text(color = "black", size = 12), 
                                         strip.text.x = element_text(size = 10, color = "black", face="bold"))
 ggsave("metaboanalyst/figures/anaerobic-metabolism-plot.pdf", height = 8.5, width = 11)
+```
+
+### Combined respiration plot
+
+I'm going to combine metabolite abundance information from aerobic and anaerobic respiration pathways using InDesign. To do this, I need individual plots for each metabolite that are the same size.
+
+```{r}
+transMetabData %>%
+  dplyr::select(., c(1:4,
+                     `glucose `, `glucose-1-phosphate`, `glucose-6-phosphate`, `fructose-6-phosphate `, `fructose-1-phosphate`, `3-phosphoglycerate`,
+                     `lactic acid`,
+                     `citric acid`, `alpha-ketoglutarate`, `fumaric acid`, `malic acid`)) %>%
+  pivot_longer(., cols = c(5:15), names_to = "metabolite", values_to = "value") %>%
+  mutate(., treatment_day = gsub(pattern = "_3", replacement = "_03", x = treatment_day)) %>%
+  mutate(., treatment_day = gsub(pattern = "5_", replacement = "05_", x = treatment_day)) %>%
+  ggplot(., mapping = aes(x = treatment_day, y = value, color = treatment_day)) +
+  facet_wrap(~metabolite, scales = "free") +
+  ylab("Metabolite Abundance") +
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
+  geom_point(pch = 21, position = position_dodge(width = 0.5)) +
+  scale_fill_manual(name = "Temperature (ºC) x Day", 
+                    values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                    labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
+  scale_colour_manual(name = "Temperature (ºC) x Day", 
+                      values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                      labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
+  xlab("") + #Axis titles
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.text = element_text(color = "black", size = 12), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"))
+ggsave("metaboanalyst/figures/combined-respiration-inputs.pdf", height = 8.5, width = 11)
+```
+```{r}
+respirationMetabolites <- c("glucose ", "glucose-1-phosphate", "glucose-6-phosphate", "fructose-6-phosphate ", "fructose-1-phosphate", "3-phosphoglycerate",
+                            "lactic acid",
+                            "citric acid", "alpha-ketoglutarate", "fumaric acid", "malic acid") #Make a vector with metabolites of interest
+```
+
+```{r}
+VIP_respirationMetabolites <- rbind(t.test_13v30_day3 %>%
+        mutate(., comparison = "13v30_day3") %>%
+        filter(., p.adj < 0.05) %>%
+        filter(., metabolite %in% respirationMetabolites),
+      t.test_13v5_day3 %>%
+        mutate(., comparison = "13v5_day3") %>%
+        filter(., p.adj < 0.05) %>%
+        filter(., metabolite %in% respirationMetabolites),
+      t.test_13v30_day22 %>%
+        mutate(., comparison = "13v30_day22") %>%
+        filter(., p.adj < 0.05) %>%
+        filter(., metabolite %in% respirationMetabolites),
+      t.test_13v5_day22 %>%
+        mutate(., comparison = "13v5_day22") %>%
+        filter(., p.adj < 0.05) %>%
+        filter(., metabolite %in% respirationMetabolites),
+      t.test_5_day3v22 %>%
+        mutate(., comparison = "5_day3v22") %>%
+        filter(., p.adj < 0.05) %>%
+        filter(., metabolite %in% respirationMetabolites),
+      t.test_13_day3v22 %>%
+        mutate(., comparison = "13_day3v22") %>%
+        filter(., p.adj < 0.05) %>%
+        filter(., metabolite %in% respirationMetabolites),
+      t.test_30_day3v22 %>%
+        mutate(., comparison = "30_day3v22") %>%
+        filter(., p.adj < 0.05) %>%
+        filter(., metabolite %in% respirationMetabolites))
+```
+
+```{r}
+write.table(VIP_respirationMetabolites, "metaboanalyst/combined-respiration-VIP.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 ```
 
 ### Calcium signaling
