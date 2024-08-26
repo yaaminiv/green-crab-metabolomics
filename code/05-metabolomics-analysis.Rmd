@@ -1656,6 +1656,7 @@ VIP_respirationMetabolites <- rbind(t.test_13v30_day3 %>%
         mutate(., comparison = "30_day3v22") %>%
         filter(., p.adj < 0.05) %>%
         filter(., metabolite %in% respirationMetabolites))
+VIP_respirationMetabolites
 ```
 
 ```{r}
