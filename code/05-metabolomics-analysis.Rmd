@@ -1435,7 +1435,12 @@ write.csv(WCNA/metab_rel_change, "metabolites_relative_change.csv", quote = FALS
 
 # Pathway analysis
 
-The final step in this workflow is to understand the various metabolic pathways represented in each module eigengene.
+The final step in this workflow is to understand the various metabolic pathways represented in each module eigengene. To do this, I will conduct a manual pathway analysis and identify VIP present in each significant cluster.
+
+```{bash}
+mkdir metaboanalyst
+mkdir metaboanalyst/figures
+```
 
 ## Manual pathway analysis
 
@@ -1770,14 +1775,13 @@ transMetabData %>%
 ggsave("metaboanalyst/figures/calcium-signaling-plot.pdf", height = 8.5, width = 11)
 ```
 
-## Create lists of metabolites in each module
+## VIP "enrichment" analysis
 
-```{bash}
-mkdir metaboanalyst
-mkdir metaboanalyst/figures
-```
+The second step of this workflow is to determine which VIP are present in each WCNA cluster. This will allow me to hone in on biological processes overrepresented in each cluster.
 
-For each module, I want the metabolite name, but I also want all of the PubChem and KEGG ID information provided by the sequencing facility. This is because common names for metabolties can be different, and using a numerical classifier will ensure the correct compounds are recognized by MetaboAnalyst.
+### Create lists of metabolites in each module
+
+For each module, I want the metabolite name, but I also want all of the PubChem and KEGG ID information provided by the sequencing facility.
 
 ```{r}
 module0_metabolites <- module_df %>%
@@ -1886,3 +1890,320 @@ nrow(module8_metabolites) #6 metabolites
 head(module8_metabolites)
 write.csv(module8_metabolites, "metaboanalyst/module8_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
+
+### Identify VIP in each module
+
+Modules 1 and 8 are not significantly correlated with any treatment x day condition, but I will identify VIP in these modules anyways.
+
+```{r}
+VIP_module0 <- rbind(t.test_13v30_day3 %>%
+                       mutate(., comparison = "13v30_day3") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module0_metabolites$Metabolite),
+                     t.test_13v5_day3 %>%
+                       mutate(., comparison = "13v5_day3") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module0_metabolites$Metabolite),
+                     t.test_13v30_day22 %>%
+                       mutate(., comparison = "13v30_day22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module0_metabolites$Metabolite),
+                     t.test_13v5_day22 %>%
+                       mutate(., comparison = "13v5_day22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module0_metabolites$Metabolite),
+                     t.test_5_day3v22 %>%
+                       mutate(., comparison = "5_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module0_metabolites$Metabolite),
+                     t.test_13_day3v22 %>%
+                       mutate(., comparison = "13_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module0_metabolites$Metabolite),
+                     t.test_30_day3v22 %>%
+                       mutate(., comparison = "30_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module0_metabolites$Metabolite)) %>% 
+  mutate(module = "module0") #Identify VIP present in module 0 across all pairwise comparisons
+VIP_module0
+```
+
+```{r}
+VIP_module1 <- rbind(t.test_13v30_day3 %>%
+                       mutate(., comparison = "13v30_day3") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module1_metabolites$Metabolite),
+                     t.test_13v5_day3 %>%
+                       mutate(., comparison = "13v5_day3") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module1_metabolites$Metabolite),
+                     t.test_13v30_day22 %>%
+                       mutate(., comparison = "13v30_day22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module1_metabolites$Metabolite),
+                     t.test_13v5_day22 %>%
+                       mutate(., comparison = "13v5_day22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module1_metabolites$Metabolite),
+                     t.test_5_day3v22 %>%
+                       mutate(., comparison = "5_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module1_metabolites$Metabolite),
+                     t.test_13_day3v22 %>%
+                       mutate(., comparison = "13_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module1_metabolites$Metabolite),
+                     t.test_30_day3v22 %>%
+                       mutate(., comparison = "30_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module1_metabolites$Metabolite))  %>% 
+  mutate(module = "module1") #Identify VIP present in module 0 across all pairwise comparisons
+VIP_module1
+```
+```{r}
+VIP_module2 <- rbind(t.test_13v30_day3 %>%
+                       mutate(., comparison = "13v30_day3") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module2_metabolites$Metabolite),
+                     t.test_13v5_day3 %>%
+                       mutate(., comparison = "13v5_day3") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module2_metabolites$Metabolite),
+                     t.test_13v30_day22 %>%
+                       mutate(., comparison = "13v30_day22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module2_metabolites$Metabolite),
+                     t.test_13v5_day22 %>%
+                       mutate(., comparison = "13v5_day22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module2_metabolites$Metabolite),
+                     t.test_5_day3v22 %>%
+                       mutate(., comparison = "5_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module2_metabolites$Metabolite),
+                     t.test_13_day3v22 %>%
+                       mutate(., comparison = "13_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module2_metabolites$Metabolite),
+                     t.test_30_day3v22 %>%
+                       mutate(., comparison = "30_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module2_metabolites$Metabolite))  %>% 
+  mutate(module = "module2") #Identify VIP present in module 0 across all pairwise comparisons
+VIP_module2
+```
+
+```{r}
+VIP_module3 <- rbind(t.test_13v30_day3 %>%
+                       mutate(., comparison = "13v30_day3") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module3_metabolites$Metabolite),
+                     t.test_13v5_day3 %>%
+                       mutate(., comparison = "13v5_day3") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module3_metabolites$Metabolite),
+                     t.test_13v30_day22 %>%
+                       mutate(., comparison = "13v30_day22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module3_metabolites$Metabolite),
+                     t.test_13v5_day22 %>%
+                       mutate(., comparison = "13v5_day22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module3_metabolites$Metabolite),
+                     t.test_5_day3v22 %>%
+                       mutate(., comparison = "5_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module3_metabolites$Metabolite),
+                     t.test_13_day3v22 %>%
+                       mutate(., comparison = "13_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module3_metabolites$Metabolite),
+                     t.test_30_day3v22 %>%
+                       mutate(., comparison = "30_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module3_metabolites$Metabolite))  %>% 
+  mutate(module = "module3") #Identify VIP present in module 0 across all pairwise comparisons
+VIP_module3
+```
+
+```{r}
+VIP_module4 <- rbind(t.test_13v30_day3 %>%
+                       mutate(., comparison = "13v30_day3") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module4_metabolites$Metabolite),
+                     t.test_13v5_day3 %>%
+                       mutate(., comparison = "13v5_day3") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module4_metabolites$Metabolite),
+                     t.test_13v30_day22 %>%
+                       mutate(., comparison = "13v30_day22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module4_metabolites$Metabolite),
+                     t.test_13v5_day22 %>%
+                       mutate(., comparison = "13v5_day22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module4_metabolites$Metabolite),
+                     t.test_5_day3v22 %>%
+                       mutate(., comparison = "5_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module4_metabolites$Metabolite),
+                     t.test_13_day3v22 %>%
+                       mutate(., comparison = "13_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module4_metabolites$Metabolite),
+                     t.test_30_day3v22 %>%
+                       mutate(., comparison = "30_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module4_metabolites$Metabolite))  %>% 
+  mutate(module = "module4") #Identify VIP present in module 0 across all pairwise comparisons
+VIP_module4
+```
+
+```{r}
+VIP_module5 <- rbind(t.test_13v30_day3 %>%
+                       mutate(., comparison = "13v30_day3") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module5_metabolites$Metabolite),
+                     t.test_13v5_day3 %>%
+                       mutate(., comparison = "13v5_day3") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module5_metabolites$Metabolite),
+                     t.test_13v30_day22 %>%
+                       mutate(., comparison = "13v30_day22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module5_metabolites$Metabolite),
+                     t.test_13v5_day22 %>%
+                       mutate(., comparison = "13v5_day22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module5_metabolites$Metabolite),
+                     t.test_5_day3v22 %>%
+                       mutate(., comparison = "5_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module5_metabolites$Metabolite),
+                     t.test_13_day3v22 %>%
+                       mutate(., comparison = "13_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module5_metabolites$Metabolite),
+                     t.test_30_day3v22 %>%
+                       mutate(., comparison = "30_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module5_metabolites$Metabolite))  %>% 
+  mutate(module = "module5") #Identify VIP present in module 0 across all pairwise comparisons
+VIP_module5
+```
+
+```{r}
+VIP_module6 <- rbind(t.test_13v30_day3 %>%
+                       mutate(., comparison = "13v30_day3") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module6_metabolites$Metabolite),
+                     t.test_13v5_day3 %>%
+                       mutate(., comparison = "13v5_day3") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module6_metabolites$Metabolite),
+                     t.test_13v30_day22 %>%
+                       mutate(., comparison = "13v30_day22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module6_metabolites$Metabolite),
+                     t.test_13v5_day22 %>%
+                       mutate(., comparison = "13v5_day22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module6_metabolites$Metabolite),
+                     t.test_5_day3v22 %>%
+                       mutate(., comparison = "5_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module6_metabolites$Metabolite),
+                     t.test_13_day3v22 %>%
+                       mutate(., comparison = "13_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module6_metabolites$Metabolite),
+                     t.test_30_day3v22 %>%
+                       mutate(., comparison = "30_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module6_metabolites$Metabolite))  %>% 
+  mutate(module = "module6") #Identify VIP present in module 0 across all pairwise comparisons
+VIP_module6
+```
+```{r}
+VIP_module7 <- rbind(t.test_13v30_day3 %>%
+                       mutate(., comparison = "13v30_day3") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module7_metabolites$Metabolite),
+                     t.test_13v5_day3 %>%
+                       mutate(., comparison = "13v5_day3") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module7_metabolites$Metabolite),
+                     t.test_13v30_day22 %>%
+                       mutate(., comparison = "13v30_day22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module7_metabolites$Metabolite),
+                     t.test_13v5_day22 %>%
+                       mutate(., comparison = "13v5_day22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module7_metabolites$Metabolite),
+                     t.test_5_day3v22 %>%
+                       mutate(., comparison = "5_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module7_metabolites$Metabolite),
+                     t.test_13_day3v22 %>%
+                       mutate(., comparison = "13_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module7_metabolites$Metabolite),
+                     t.test_30_day3v22 %>%
+                       mutate(., comparison = "30_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module7_metabolites$Metabolite))  %>% 
+  mutate(module = "module7") #Identify VIP present in module 0 across all pairwise comparisons
+VIP_module7
+```
+```{r}
+VIP_module8 <- rbind(t.test_13v30_day3 %>%
+                       mutate(., comparison = "13v30_day3") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module8_metabolites$Metabolite),
+                     t.test_13v5_day3 %>%
+                       mutate(., comparison = "13v5_day3") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module8_metabolites$Metabolite),
+                     t.test_13v30_day22 %>%
+                       mutate(., comparison = "13v30_day22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module8_metabolites$Metabolite),
+                     t.test_13v5_day22 %>%
+                       mutate(., comparison = "13v5_day22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module8_metabolites$Metabolite),
+                     t.test_5_day3v22 %>%
+                       mutate(., comparison = "5_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module8_metabolites$Metabolite),
+                     t.test_13_day3v22 %>%
+                       mutate(., comparison = "13_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module8_metabolites$Metabolite),
+                     t.test_30_day3v22 %>%
+                       mutate(., comparison = "30_day3v22") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., metabolite %in% module8_metabolites$Metabolite))  %>% 
+  mutate(module = "module8") #Identify VIP present in module 0 across all pairwise comparisons
+VIP_module8
+```
+
+```{r}
+VIP_allModules <- rbind(VIP_module0,
+                        VIP_module1,
+                        VIP_module2,
+                        VIP_module3,
+                        VIP_module4,
+                        VIP_module5,
+                        VIP_module6,
+                        VIP_module7,
+                        VIP_module8) #Combine all VIP lists
+```
+
+```{r}
+write.table(VIP_allModules, "metaboanalyst/all-module-VIP.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+```
+
+
+
