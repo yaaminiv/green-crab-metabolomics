@@ -2205,5 +2205,100 @@ VIP_allModules <- rbind(VIP_module0,
 write.table(VIP_allModules, "metaboanalyst/all-module-VIP.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 ```
 
+### Make heatmaps of each module's VIP
+
+I'm only going to make heatmaps for the modules significantly correlated to a treatment x day condition.
+
+```{r}
+heatmapColors <- brewer.pal("RdPu", n = 9)
+```
+
+```{r}
+metabolomicsAnnotation <- metabolomicsMetadata %>%
+  mutate(., Treatment = case_when(treatment_day == "13_3" ~ "13ºC at Day 3",
+                                  treatment_day == "13_22" ~ "13ºC at Day 22",
+                                  treatment_day == "5_3" ~ "5ºC at Day 3",
+                                  treatment_day == "5_22" ~ "5ºC at Day 22",
+                                  treatment_day == "30_3" ~ "30ºC at Day 3",
+                                  treatment_day == "30_22" ~ "30ºC at Day 22"))
+rownames(metabolomicsAnnotation) <- metabolomicsAnnotation$crab.ID #Change crab ID to rownames
+metabolomicsAnnotation <- metabolomicsAnnotation %>%
+  dplyr::select(Treatment) #Remove crab ID column
+head(metabolomicsAnnotation) #Confirm changes
+```
+
+```{r}
+metabolomicsColors <- list(Treatment = c("13ºC at Day 3" = "grey80",
+                                         "13ºC at Day 22" = "#525252",
+                                         "5ºC at Day 3" = "lightblue",
+                                         "5ºC at Day 22" = "#2171B5",
+                                         "30ºC at Day 3" = "salmon",
+                                         "30ºC at Day 22" = "#CB181D")) #List of colors for column annotations
+metabolomicsColors #Column annotation colors
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module0_VIP.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+  dplyr::select(., c(crab.ID, any_of(VIP_module0$metabolite))) %>%
+  column_to_rownames(var = "crab.ID") %>%
+  t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module2_VIP.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+  dplyr::select(., c(crab.ID, any_of(VIP_module2$metabolite))) %>%
+  column_to_rownames(var = "crab.ID") %>%
+  t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module3_VIP.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+  dplyr::select(., c(crab.ID, any_of(VIP_module3$metabolite))) %>%
+  column_to_rownames(var = "crab.ID") %>%
+  t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module4_VIP.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+  dplyr::select(., c(crab.ID, any_of(VIP_module4$metabolite))) %>%
+  column_to_rownames(var = "crab.ID") %>%
+  t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module5_VIP.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+  dplyr::select(., c(crab.ID, any_of(VIP_module5$metabolite))) %>%
+  column_to_rownames(var = "crab.ID") %>%
+  t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module6_VIP.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+  dplyr::select(., c(crab.ID, any_of(VIP_module6$metabolite))) %>%
+  column_to_rownames(var = "crab.ID") %>%
+  t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module7_VIP.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+  dplyr::select(., c(crab.ID, any_of(VIP_module7$metabolite))) %>%
+  column_to_rownames(var = "crab.ID") %>%
+  t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
+#dev.off()
+```
+
 
 
