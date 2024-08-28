@@ -441,6 +441,49 @@ treatmentday.known.VIP %>%
   theme_classic() + theme(axis.text.y = element_text(size = 8)) #Using only metabolites with VIP > 1, arrange by metabolite name and reorder by cumulative VIP score. Plot points and change x and y axis labels.
 ggsave("PLSDA/figures/known-metabolites-VIP-day-treatment.pdf", height = 8.5, width = 11)
 ```
+```{r}
+significantVIP <- treatmentday.known.VIP %>%
+  filter(VIP >= 1) #Save significant VIP
+```
+
+### Make heatmap
+
+```{r}
+heatmapColors <- brewer.pal("RdPu", n = 9)
+```
+
+```{r}
+metabolomicsAnnotation <- metabolomicsMetadata %>%
+  mutate(., Treatment = case_when(treatment_day == "13_3" ~ "13ºC at Day 3",
+                                  treatment_day == "13_22" ~ "13ºC at Day 22",
+                                  treatment_day == "5_3" ~ "5ºC at Day 3",
+                                  treatment_day == "5_22" ~ "5ºC at Day 22",
+                                  treatment_day == "30_3" ~ "30ºC at Day 3",
+                                  treatment_day == "30_22" ~ "30ºC at Day 22"))
+rownames(metabolomicsAnnotation) <- metabolomicsAnnotation$crab.ID #Change crab ID to rownames
+metabolomicsAnnotation <- metabolomicsAnnotation %>%
+  dplyr::select(Treatment) #Remove crab ID column
+head(metabolomicsAnnotation) #Confirm changes
+```
+
+```{r}
+metabolomicsColors <- list(Treatment = c("13ºC at Day 3" = "grey80",
+                                         "13ºC at Day 22" = "#525252",
+                                         "5ºC at Day 3" = "lightblue",
+                                         "5ºC at Day 22" = "#2171B5",
+                                         "30ºC at Day 3" = "salmon",
+                                         "30ºC at Day 22" = "#CB181D")) #List of colors for column annotations
+metabolomicsColors #Column annotation colors
+```
+
+```{r}
+#pdf("metaboanalyst/figures/all_VIP.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+            dplyr::select(crab.ID, any_of(significantVIP$metabolite)) %>%
+            column_to_rownames(var = "crab.ID") %>%
+            t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
+#dev.off()
+```
 
 ## Pairwise tests for VIP metabolites
 
@@ -1893,18 +1936,18 @@ write.csv(module8_metabolites, "metaboanalyst/module8_metabolites.csv", quote = 
 
 ### Identify VIP in each module
 
-Modules 1 and 8 are not significantly correlated with any treatment x day condition, but I will identify VIP in these modules anyways.
+I'm only interested in the following modules significantly correlated with specific treatment conditions:
+
+- Module 0: 5 and 30 at day 22
+- Module 2: 5 at day 3 and 30 at day 22
+- Module 3: 5 and 30 at day 22
+- Module 4: 30 at a day 22
+- Module 5: 5 at day 22, 30 at day 22, 30 at day 3
+- Module 6: 13 at day 22
+- Module 7: 13 and 5 at day 22
 
 ```{r}
-VIP_module0 <- rbind(t.test_13v30_day3 %>%
-                       mutate(., comparison = "13v30_day3") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module0_metabolites$Metabolite),
-                     t.test_13v5_day3 %>%
-                       mutate(., comparison = "13v5_day3") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module0_metabolites$Metabolite),
-                     t.test_13v30_day22 %>%
+VIP_module0 <- rbind(t.test_13v30_day22 %>%
                        mutate(., comparison = "13v30_day22") %>%
                        filter(., p.adj < 0.05) %>%
                        filter(., metabolite %in% module0_metabolites$Metabolite),
@@ -1914,10 +1957,6 @@ VIP_module0 <- rbind(t.test_13v30_day3 %>%
                        filter(., metabolite %in% module0_metabolites$Metabolite),
                      t.test_5_day3v22 %>%
                        mutate(., comparison = "5_day3v22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module0_metabolites$Metabolite),
-                     t.test_13_day3v22 %>%
-                       mutate(., comparison = "13_day3v22") %>%
                        filter(., p.adj < 0.05) %>%
                        filter(., metabolite %in% module0_metabolites$Metabolite),
                      t.test_30_day3v22 %>%
@@ -1929,43 +1968,7 @@ VIP_module0
 ```
 
 ```{r}
-VIP_module1 <- rbind(t.test_13v30_day3 %>%
-                       mutate(., comparison = "13v30_day3") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module1_metabolites$Metabolite),
-                     t.test_13v5_day3 %>%
-                       mutate(., comparison = "13v5_day3") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module1_metabolites$Metabolite),
-                     t.test_13v30_day22 %>%
-                       mutate(., comparison = "13v30_day22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module1_metabolites$Metabolite),
-                     t.test_13v5_day22 %>%
-                       mutate(., comparison = "13v5_day22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module1_metabolites$Metabolite),
-                     t.test_5_day3v22 %>%
-                       mutate(., comparison = "5_day3v22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module1_metabolites$Metabolite),
-                     t.test_13_day3v22 %>%
-                       mutate(., comparison = "13_day3v22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module1_metabolites$Metabolite),
-                     t.test_30_day3v22 %>%
-                       mutate(., comparison = "30_day3v22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module1_metabolites$Metabolite))  %>% 
-  mutate(module = "module1") #Identify VIP present in module 0 across all pairwise comparisons
-VIP_module1
-```
-```{r}
-VIP_module2 <- rbind(t.test_13v30_day3 %>%
-                       mutate(., comparison = "13v30_day3") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module2_metabolites$Metabolite),
-                     t.test_13v5_day3 %>%
+VIP_module2 <- rbind(t.test_13v5_day3 %>%
                        mutate(., comparison = "13v5_day3") %>%
                        filter(., p.adj < 0.05) %>%
                        filter(., metabolite %in% module2_metabolites$Metabolite),
@@ -1973,36 +1976,20 @@ VIP_module2 <- rbind(t.test_13v30_day3 %>%
                        mutate(., comparison = "13v30_day22") %>%
                        filter(., p.adj < 0.05) %>%
                        filter(., metabolite %in% module2_metabolites$Metabolite),
-                     t.test_13v5_day22 %>%
-                       mutate(., comparison = "13v5_day22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module2_metabolites$Metabolite),
                      t.test_5_day3v22 %>%
                        mutate(., comparison = "5_day3v22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module2_metabolites$Metabolite),
-                     t.test_13_day3v22 %>%
-                       mutate(., comparison = "13_day3v22") %>%
                        filter(., p.adj < 0.05) %>%
                        filter(., metabolite %in% module2_metabolites$Metabolite),
                      t.test_30_day3v22 %>%
                        mutate(., comparison = "30_day3v22") %>%
                        filter(., p.adj < 0.05) %>%
                        filter(., metabolite %in% module2_metabolites$Metabolite))  %>% 
-  mutate(module = "module2") #Identify VIP present in module 0 across all pairwise comparisons
+  mutate(module = "module2") #Identify VIP present in module 2 across all pairwise comparisons
 VIP_module2
 ```
 
 ```{r}
-VIP_module3 <- rbind(t.test_13v30_day3 %>%
-                       mutate(., comparison = "13v30_day3") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module3_metabolites$Metabolite),
-                     t.test_13v5_day3 %>%
-                       mutate(., comparison = "13v5_day3") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module3_metabolites$Metabolite),
-                     t.test_13v30_day22 %>%
+VIP_module3 <- rbind(t.test_13v30_day22 %>%
                        mutate(., comparison = "13v30_day22") %>%
                        filter(., p.adj < 0.05) %>%
                        filter(., metabolite %in% module3_metabolites$Metabolite),
@@ -2012,50 +1999,26 @@ VIP_module3 <- rbind(t.test_13v30_day3 %>%
                        filter(., metabolite %in% module3_metabolites$Metabolite),
                      t.test_5_day3v22 %>%
                        mutate(., comparison = "5_day3v22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module3_metabolites$Metabolite),
-                     t.test_13_day3v22 %>%
-                       mutate(., comparison = "13_day3v22") %>%
                        filter(., p.adj < 0.05) %>%
                        filter(., metabolite %in% module3_metabolites$Metabolite),
                      t.test_30_day3v22 %>%
                        mutate(., comparison = "30_day3v22") %>%
                        filter(., p.adj < 0.05) %>%
                        filter(., metabolite %in% module3_metabolites$Metabolite))  %>% 
-  mutate(module = "module3") #Identify VIP present in module 0 across all pairwise comparisons
+  mutate(module = "module3") #Identify VIP present in module 3 across all pairwise comparisons
 VIP_module3
 ```
 
 ```{r}
-VIP_module4 <- rbind(t.test_13v30_day3 %>%
-                       mutate(., comparison = "13v30_day3") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module4_metabolites$Metabolite),
-                     t.test_13v5_day3 %>%
-                       mutate(., comparison = "13v5_day3") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module4_metabolites$Metabolite),
-                     t.test_13v30_day22 %>%
+VIP_module4 <- rbind(t.test_13v30_day22 %>%
                        mutate(., comparison = "13v30_day22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module4_metabolites$Metabolite),
-                     t.test_13v5_day22 %>%
-                       mutate(., comparison = "13v5_day22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module4_metabolites$Metabolite),
-                     t.test_5_day3v22 %>%
-                       mutate(., comparison = "5_day3v22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module4_metabolites$Metabolite),
-                     t.test_13_day3v22 %>%
-                       mutate(., comparison = "13_day3v22") %>%
                        filter(., p.adj < 0.05) %>%
                        filter(., metabolite %in% module4_metabolites$Metabolite),
                      t.test_30_day3v22 %>%
                        mutate(., comparison = "30_day3v22") %>%
                        filter(., p.adj < 0.05) %>%
                        filter(., metabolite %in% module4_metabolites$Metabolite))  %>% 
-  mutate(module = "module4") #Identify VIP present in module 0 across all pairwise comparisons
+  mutate(module = "module4") #Identify VIP present in module 4 across all pairwise comparisons
 VIP_module4
 ```
 
@@ -2064,44 +2027,24 @@ VIP_module5 <- rbind(t.test_13v30_day3 %>%
                        mutate(., comparison = "13v30_day3") %>%
                        filter(., p.adj < 0.05) %>%
                        filter(., metabolite %in% module5_metabolites$Metabolite),
-                     t.test_13v5_day3 %>%
-                       mutate(., comparison = "13v5_day3") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module5_metabolites$Metabolite),
                      t.test_13v30_day22 %>%
                        mutate(., comparison = "13v30_day22") %>%
                        filter(., p.adj < 0.05) %>%
                        filter(., metabolite %in% module5_metabolites$Metabolite),
                      t.test_13v5_day22 %>%
                        mutate(., comparison = "13v5_day22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module5_metabolites$Metabolite),
-                     t.test_5_day3v22 %>%
-                       mutate(., comparison = "5_day3v22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module5_metabolites$Metabolite),
-                     t.test_13_day3v22 %>%
-                       mutate(., comparison = "13_day3v22") %>%
                        filter(., p.adj < 0.05) %>%
                        filter(., metabolite %in% module5_metabolites$Metabolite),
                      t.test_30_day3v22 %>%
                        mutate(., comparison = "30_day3v22") %>%
                        filter(., p.adj < 0.05) %>%
                        filter(., metabolite %in% module5_metabolites$Metabolite))  %>% 
-  mutate(module = "module5") #Identify VIP present in module 0 across all pairwise comparisons
+  mutate(module = "module5") #Identify VIP present in module 5 across all pairwise comparisons
 VIP_module5
 ```
 
 ```{r}
-VIP_module6 <- rbind(t.test_13v30_day3 %>%
-                       mutate(., comparison = "13v30_day3") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module6_metabolites$Metabolite),
-                     t.test_13v5_day3 %>%
-                       mutate(., comparison = "13v5_day3") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module6_metabolites$Metabolite),
-                     t.test_13v30_day22 %>%
+VIP_module6 <- rbind(t.test_13v30_day22 %>%
                        mutate(., comparison = "13v30_day22") %>%
                        filter(., p.adj < 0.05) %>%
                        filter(., metabolite %in% module6_metabolites$Metabolite),
@@ -2109,96 +2052,34 @@ VIP_module6 <- rbind(t.test_13v30_day3 %>%
                        mutate(., comparison = "13v5_day22") %>%
                        filter(., p.adj < 0.05) %>%
                        filter(., metabolite %in% module6_metabolites$Metabolite),
-                     t.test_5_day3v22 %>%
-                       mutate(., comparison = "5_day3v22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module6_metabolites$Metabolite),
                      t.test_13_day3v22 %>%
                        mutate(., comparison = "13_day3v22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module6_metabolites$Metabolite),
-                     t.test_30_day3v22 %>%
-                       mutate(., comparison = "30_day3v22") %>%
                        filter(., p.adj < 0.05) %>%
                        filter(., metabolite %in% module6_metabolites$Metabolite))  %>% 
   mutate(module = "module6") #Identify VIP present in module 0 across all pairwise comparisons
 VIP_module6
 ```
 ```{r}
-VIP_module7 <- rbind(t.test_13v30_day3 %>%
-                       mutate(., comparison = "13v30_day3") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module7_metabolites$Metabolite),
-                     t.test_13v5_day3 %>%
-                       mutate(., comparison = "13v5_day3") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module7_metabolites$Metabolite),
-                     t.test_13v30_day22 %>%
-                       mutate(., comparison = "13v30_day22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module7_metabolites$Metabolite),
-                     t.test_13v5_day22 %>%
+VIP_module7 <- rbind(t.test_13v5_day22 %>%
                        mutate(., comparison = "13v5_day22") %>%
                        filter(., p.adj < 0.05) %>%
                        filter(., metabolite %in% module7_metabolites$Metabolite),
                      t.test_5_day3v22 %>%
                        mutate(., comparison = "5_day3v22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module7_metabolites$Metabolite),
-                     t.test_13_day3v22 %>%
-                       mutate(., comparison = "13_day3v22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module7_metabolites$Metabolite),
-                     t.test_30_day3v22 %>%
-                       mutate(., comparison = "30_day3v22") %>%
                        filter(., p.adj < 0.05) %>%
                        filter(., metabolite %in% module7_metabolites$Metabolite))  %>% 
   mutate(module = "module7") #Identify VIP present in module 0 across all pairwise comparisons
 VIP_module7
 ```
-```{r}
-VIP_module8 <- rbind(t.test_13v30_day3 %>%
-                       mutate(., comparison = "13v30_day3") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module8_metabolites$Metabolite),
-                     t.test_13v5_day3 %>%
-                       mutate(., comparison = "13v5_day3") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module8_metabolites$Metabolite),
-                     t.test_13v30_day22 %>%
-                       mutate(., comparison = "13v30_day22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module8_metabolites$Metabolite),
-                     t.test_13v5_day22 %>%
-                       mutate(., comparison = "13v5_day22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module8_metabolites$Metabolite),
-                     t.test_5_day3v22 %>%
-                       mutate(., comparison = "5_day3v22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module8_metabolites$Metabolite),
-                     t.test_13_day3v22 %>%
-                       mutate(., comparison = "13_day3v22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module8_metabolites$Metabolite),
-                     t.test_30_day3v22 %>%
-                       mutate(., comparison = "30_day3v22") %>%
-                       filter(., p.adj < 0.05) %>%
-                       filter(., metabolite %in% module8_metabolites$Metabolite))  %>% 
-  mutate(module = "module8") #Identify VIP present in module 0 across all pairwise comparisons
-VIP_module8
-```
 
 ```{r}
 VIP_allModules <- rbind(VIP_module0,
-                        VIP_module1,
                         VIP_module2,
                         VIP_module3,
                         VIP_module4,
                         VIP_module5,
                         VIP_module6,
-                        VIP_module7,
-                        VIP_module8) #Combine all VIP lists
+                        VIP_module7) #Combine all VIP lists
 ```
 
 ```{r}
@@ -2210,93 +2091,65 @@ write.table(VIP_allModules, "metaboanalyst/all-module-VIP.txt", sep = "\t", quot
 I'm only going to make heatmaps for the modules significantly correlated to a treatment x day condition.
 
 ```{r}
-heatmapColors <- brewer.pal("RdPu", n = 9)
-```
-
-```{r}
-metabolomicsAnnotation <- metabolomicsMetadata %>%
-  mutate(., Treatment = case_when(treatment_day == "13_3" ~ "13ºC at Day 3",
-                                  treatment_day == "13_22" ~ "13ºC at Day 22",
-                                  treatment_day == "5_3" ~ "5ºC at Day 3",
-                                  treatment_day == "5_22" ~ "5ºC at Day 22",
-                                  treatment_day == "30_3" ~ "30ºC at Day 3",
-                                  treatment_day == "30_22" ~ "30ºC at Day 22"))
-rownames(metabolomicsAnnotation) <- metabolomicsAnnotation$crab.ID #Change crab ID to rownames
-metabolomicsAnnotation <- metabolomicsAnnotation %>%
-  dplyr::select(Treatment) #Remove crab ID column
-head(metabolomicsAnnotation) #Confirm changes
-```
-
-```{r}
-metabolomicsColors <- list(Treatment = c("13ºC at Day 3" = "grey80",
-                                         "13ºC at Day 22" = "#525252",
-                                         "5ºC at Day 3" = "lightblue",
-                                         "5ºC at Day 22" = "#2171B5",
-                                         "30ºC at Day 3" = "salmon",
-                                         "30ºC at Day 22" = "#CB181D")) #List of colors for column annotations
-metabolomicsColors #Column annotation colors
-```
-
-```{r}
 #pdf("metaboanalyst/figures/module0_VIP.pdf", height = 8.5, width = 11)
 pheatmap((transMetabData %>%
-  dplyr::select(., c(crab.ID, any_of(VIP_module0$metabolite))) %>%
-  column_to_rownames(var = "crab.ID") %>%
-  t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
+            dplyr::select(., c(crab.ID, any_of(VIP_module0$metabolite))) %>%
+            column_to_rownames(var = "crab.ID") %>%
+            t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
 #dev.off()
 ```
 
 ```{r}
 #pdf("metaboanalyst/figures/module2_VIP.pdf", height = 8.5, width = 11)
 pheatmap((transMetabData %>%
-  dplyr::select(., c(crab.ID, any_of(VIP_module2$metabolite))) %>%
-  column_to_rownames(var = "crab.ID") %>%
-  t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
+            dplyr::select(., c(crab.ID, any_of(VIP_module2$metabolite))) %>%
+            column_to_rownames(var = "crab.ID") %>%
+            t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
 #dev.off()
 ```
 
 ```{r}
 #pdf("metaboanalyst/figures/module3_VIP.pdf", height = 8.5, width = 11)
 pheatmap((transMetabData %>%
-  dplyr::select(., c(crab.ID, any_of(VIP_module3$metabolite))) %>%
-  column_to_rownames(var = "crab.ID") %>%
-  t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
+            dplyr::select(., c(crab.ID, any_of(VIP_module3$metabolite))) %>%
+            column_to_rownames(var = "crab.ID") %>%
+            t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
 #dev.off()
 ```
 
 ```{r}
 #pdf("metaboanalyst/figures/module4_VIP.pdf", height = 8.5, width = 11)
 pheatmap((transMetabData %>%
-  dplyr::select(., c(crab.ID, any_of(VIP_module4$metabolite))) %>%
-  column_to_rownames(var = "crab.ID") %>%
-  t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
+            dplyr::select(., c(crab.ID, any_of(VIP_module4$metabolite))) %>%
+            column_to_rownames(var = "crab.ID") %>%
+            t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
 #dev.off()
 ```
 
 ```{r}
 #pdf("metaboanalyst/figures/module5_VIP.pdf", height = 8.5, width = 11)
 pheatmap((transMetabData %>%
-  dplyr::select(., c(crab.ID, any_of(VIP_module5$metabolite))) %>%
-  column_to_rownames(var = "crab.ID") %>%
-  t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
+            dplyr::select(., c(crab.ID, any_of(VIP_module5$metabolite))) %>%
+            column_to_rownames(var = "crab.ID") %>%
+            t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
 #dev.off()
 ```
 
 ```{r}
 #pdf("metaboanalyst/figures/module6_VIP.pdf", height = 8.5, width = 11)
 pheatmap((transMetabData %>%
-  dplyr::select(., c(crab.ID, any_of(VIP_module6$metabolite))) %>%
-  column_to_rownames(var = "crab.ID") %>%
-  t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
+            dplyr::select(., c(crab.ID, any_of(VIP_module6$metabolite))) %>%
+            column_to_rownames(var = "crab.ID") %>%
+            t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
 #dev.off()
 ```
 
 ```{r}
 #pdf("metaboanalyst/figures/module7_VIP.pdf", height = 8.5, width = 11)
 pheatmap((transMetabData %>%
-  dplyr::select(., c(crab.ID, any_of(VIP_module7$metabolite))) %>%
-  column_to_rownames(var = "crab.ID") %>%
-  t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
+            dplyr::select(., c(crab.ID, any_of(VIP_module7$metabolite))) %>%
+            column_to_rownames(var = "crab.ID") %>%
+            t(.) %>% as.data.frame(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, color = heatmapColors, annotation_col = metabolomicsAnnotation, annotation_colors = metabolomicsColors)
 #dev.off()
 ```
 
