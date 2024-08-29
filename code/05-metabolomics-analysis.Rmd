@@ -2168,6 +2168,20 @@ pheatmap((transMetabData %>%
 #dev.off()
 ```
 
+```{r}
+#pdf("metaboanalyst/figures/module0_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+            dplyr::select(treatment_day, any_of(VIP_module0$metabolite)) %>%
+            group_by(., treatment_day) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            group_by(., treatment_day) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment_day") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = metabolomicsAvgAnnotation, annotation_colors = metabolomicsColors, name = "Z-Score")
+#dev.off()
+```
+
 ###### Module 2
 
 ```{r}
@@ -2187,6 +2201,20 @@ pheatmap((transMetabData %>%
             summarize_all(funs(mean(., na.rm = TRUE))) %>%
             column_to_rownames(var = "treatment_day") %>%
             t(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = TRUE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = metabolomicsAvgAnnotation, annotation_colors = metabolomicsColors, name = "Abundance")
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module2_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+            dplyr::select(treatment_day, any_of(VIP_module2$metabolite)) %>%
+            group_by(., treatment_day) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            group_by(., treatment_day) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment_day") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = metabolomicsAvgAnnotation, annotation_colors = metabolomicsColors, name = "Z-Score")
 #dev.off()
 ```
 
@@ -2212,6 +2240,20 @@ pheatmap((transMetabData %>%
 #dev.off()
 ```
 
+```{r}
+#pdf("metaboanalyst/figures/module3_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+            dplyr::select(treatment_day, any_of(VIP_module3$metabolite)) %>%
+            group_by(., treatment_day) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            group_by(., treatment_day) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment_day") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = metabolomicsAvgAnnotation, annotation_colors = metabolomicsColors, name = "Z-Score")
+#dev.off()
+```
+
 ###### Module 4
 
 ```{r}
@@ -2231,6 +2273,20 @@ pheatmap((transMetabData %>%
             summarize_all(funs(mean(., na.rm = TRUE))) %>%
             column_to_rownames(var = "treatment_day") %>%
             t(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = TRUE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = metabolomicsAvgAnnotation, annotation_colors = metabolomicsColors, name = "Abundance")
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module4_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+            dplyr::select(treatment_day, any_of(VIP_module4$metabolite)) %>%
+            group_by(., treatment_day) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            group_by(., treatment_day) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment_day") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = metabolomicsAvgAnnotation, annotation_colors = metabolomicsColors, name = "Z-Score")
 #dev.off()
 ```
 
@@ -2256,6 +2312,20 @@ pheatmap((transMetabData %>%
 #dev.off()
 ```
 
+```{r}
+#pdf("metaboanalyst/figures/module5_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+            dplyr::select(treatment_day, any_of(VIP_module5$metabolite)) %>%
+            group_by(., treatment_day) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            group_by(., treatment_day) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment_day") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = metabolomicsAvgAnnotation, annotation_colors = metabolomicsColors, name = "Z-Score")
+#dev.off()
+```
+
 ###### Module 6
 
 ```{r}
@@ -2275,6 +2345,20 @@ pheatmap((transMetabData %>%
             summarize_all(funs(mean(., na.rm = TRUE))) %>%
             column_to_rownames(var = "treatment_day") %>%
             t(.) %>% log(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = TRUE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = metabolomicsAvgAnnotation, annotation_colors = metabolomicsColors, name = "Abundance")
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module6_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+            dplyr::select(treatment_day, any_of(VIP_module6$metabolite)) %>%
+            group_by(., treatment_day) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            group_by(., treatment_day) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment_day") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = metabolomicsAvgAnnotation, annotation_colors = metabolomicsColors, name = "Z-Score")
 #dev.off()
 ```
 
@@ -2300,3 +2384,16 @@ pheatmap((transMetabData %>%
 #dev.off()
 ```
 
+```{r}
+#pdf("metaboanalyst/figures/module7_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+            dplyr::select(treatment_day, any_of(VIP_module7$metabolite)) %>%
+            group_by(., treatment_day) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            group_by(., treatment_day) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment_day") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = metabolomicsAvgAnnotation, annotation_colors = metabolomicsColors, name = "Z-Score")
+#dev.off()
+```
