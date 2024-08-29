@@ -1875,7 +1875,7 @@ pheatmap((transMetabData %>%
 #dev.off()
 ```
 
-The last thing I want to do with the list of all VIP is to add PubChem and KEGG annotations. This will allow me to upload the list into MetaboAnalyst and check for significantly enriched pathways or compound classes.
+The last thing I want to do with the list of all VIP is to add PubChem and KEGG annotations. This will allow me to upload the list into MetaboAnalyst to conduct pathway assignment and check for enriched pathways.
 
 ```{r}
 significantVIP %>%
@@ -1885,6 +1885,13 @@ significantVIP %>%
   write.table("metaboanalyst/allVIP_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take list of significant VIP. Select only the metabolites and join with annotation information. Select only columns of interest and save as a txt file
 ```
 
+Within MetaboAnalyst, I did the following:
+
+- Uploaded list of metabolite compound names for significant VIP in the Pathway Analysis module
+- Matched to KEGG pathways from *Strongylocentrotus purpuratus*
+- Took pathway analysis output into the Enrichment Analysis module
+- Conducted enrichment test with pathways
+- Downloaded MetaboAnalyst output
 
 #### Pairwise VIP
 
