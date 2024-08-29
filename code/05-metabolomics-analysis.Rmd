@@ -1781,9 +1781,11 @@ ggsave("metaboanalyst/figures/calcium-signaling-plot.pdf", height = 8.5, width =
 
 ## VIP "enrichment" analysis
 
-The second step of this workflow is to determine which VIP are present in each WCNA cluster. This will allow me to hone in on biological processes overrepresented in each cluster.
+The second step of this workflow is to analyze the abundance patterns and associated functions/pathways of significant VIP.
 
-### Make heatmaps
+### All VIP
+
+#### Make heatmaps
 
 ```{r}
 heatmapColors <- rev(brewer.pal("PRGn", n = 9))
@@ -1839,8 +1841,6 @@ transMetabData$treatment_day <- factor(transMetabData$treatment_day,
                                                 "30_22")) #Reorder levels
 ```
 
-#### All VIP
-
 ```{r}
 #pdf("metaboanalyst/figures/all_VIP.pdf", height = 8.5, width = 11)
 pheatmap((transMetabData %>%
@@ -1875,6 +1875,8 @@ pheatmap((transMetabData %>%
 #dev.off()
 ```
 
+#### MetaboAnalyst 
+
 The last thing I want to do with the list of all VIP is to add PubChem and KEGG annotations. This will allow me to upload the list into MetaboAnalyst to conduct pathway assignment and check for enriched pathways.
 
 ```{r}
@@ -1889,13 +1891,76 @@ Within MetaboAnalyst, I did the following:
 
 - Uploaded list of metabolite compound names for significant VIP in the Pathway Analysis module
 - Matched to KEGG pathways from *Strongylocentrotus purpuratus*
-- Took pathway analysis output into the Enrichment Analysis module
-- Conducted enrichment test with pathways
-- Downloaded MetaboAnalyst output
 
-#### Pairwise VIP
+Since the Pathway Analysis module integrates "enrichment analysis and pathway topology analysis," I did not conduct any other analyses. Now I will create figures based on the MetaboAnalyst Pathway Analysis output.
 
-##### Create lists of metabolites in each module
+```{r}
+pathwayResults <- read.csv("metaboanalyst/allVIP_metaboanalyst-results/pathway_results.csv") %>%
+  dplyr::rename(metabolite = "X") %>%
+  mutate(., Observed = Hits/Total) %>%
+  mutate(., Significant = case_when(FDR < 0.05 ~ "Yes",
+                                    FDR >= 0.05 ~ "No")) %>%
+  mutate(., enrichmentRatio = Hits/Expected)
+#Import pathway assignment data. Rename metabolite column and create new columns (pop observed hits: number of hits/total metabolites in pathway; enrichment ratio: hits/expected hits)
+head(pathwayResults) #Look at pathway analysis results. P-values are from enrichment analysis, impact is from pathway topology analysis
+```
+
+```{r}
+pathwayResults %>%
+  ggplot(., aes(x = Impact, y = X.log10.p., size = enrichmentRatio, color = Significant)) +
+  geom_point(alpha = 0.6) +
+  labs(x = "Pathway Impact", y = "Scaled Enrichment P-Value") +
+  ylim(0, 6) +
+  scale_size_continuous(name = "Enrichment Ratio") +
+  scale_color_manual(name = "FDR",
+                     values = c("grey20", "springgreen4"),
+                     labels = c(expression("">=0.05), expression(""<0.05))) +
+  theme_classic(base_size = 15)
+ggsave("metaboanalyst/figures/all_VIP-pathwaySignificance.pdf", heigh = 8.5, width = 11)
+```
+
+```{r}
+topPathwayResults <- pathwayResults %>%
+  arrange(desc(enrichmentRatio)) %>%
+  slice(., 1:25) #Arrange results by enrichment ratio and take the top 25 metabolites
+head(topPathwayResults) #Confirm formatting
+```
+
+```{r}
+topPathwayResults %>%
+  mutate(., order = rev(1:25)) %>%
+  ggplot(., aes(x = enrichmentRatio, y = as.factor(order), fill = Significant)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Enrichment Ratio") +
+  scale_y_discrete(name = "",
+                   labels = rev(topPathwayResults$metabolite)) +
+  scale_fill_manual(name = "FDR",
+                    values = c("grey20", "springgreen4"),
+                    labels = c(expression("">=0.05), expression(""<0.05))) +
+  xlim(0,16) +
+  theme_classic(base_size = 15)
+ggsave("metaboanalyst/figures/all_VIP-enrichmentRatio.pdf", heigh = 8.5, width = 11)
+```
+
+```{r}
+topPathwayResults %>%
+  mutate(., order = rev(1:25)) %>%
+  ggplot(., aes(x = X.log10.p., y = as.factor(order), color = Significant, size = enrichmentRatio)) +
+  geom_point() +
+  labs(x = "-log10(p)") +
+  scale_y_discrete(name = "",
+                   labels = rev(topPathwayResults$metabolite)) +
+  scale_size_continuous(name = "Enrichment Ratio") +
+  scale_color_manual(name = "FDR",
+                    values = c("grey20", "springgreen4"),
+                    labels = c(expression("">=0.05), expression(""<0.05))) +
+  theme_classic(base_size = 15)
+ggsave("metaboanalyst/figures/all_VIP-enrichmentOverview.pdf", heigh = 8.5, width = 11)
+```
+
+### Pairwise VIP
+
+#### Create lists of metabolites in each module
 
 For each module, I want the metabolite name, but I also want all of the PubChem and KEGG ID information provided by the sequencing facility.
 
@@ -2007,7 +2072,7 @@ head(module8_metabolites)
 write.csv(module8_metabolites, "metaboanalyst/module8_metabolites.csv", quote = FALSE, row.names = FALSE)
 ```
 
-##### Identify VIP in each module
+#### Identify VIP in each module
 
 I'm only interested in the following modules significantly correlated with specific treatment conditions:
 
@@ -2159,11 +2224,11 @@ VIP_allModules <- rbind(VIP_module0,
 write.table(VIP_allModules, "metaboanalyst/all-module-VIP.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 ```
 
-##### Make heatmaps of each module's VIP
+#### Make heatmaps of each module's VIP
 
 I'm only going to make heatmaps for the modules significantly correlated to a treatment x day condition.
 
-###### Module 0
+##### Module 0
 
 ```{r}
 #pdf("metaboanalyst/figures/module0_VIP.pdf", height = 8.5, width = 11)
@@ -2199,7 +2264,7 @@ pheatmap((transMetabData %>%
 #dev.off()
 ```
 
-###### Module 2
+##### Module 2
 
 ```{r}
 #pdf("metaboanalyst/figures/module2_VIP.pdf", height = 8.5, width = 11)
@@ -2235,7 +2300,7 @@ pheatmap((transMetabData %>%
 #dev.off()
 ```
 
-###### Module 3
+##### Module 3
 
 ```{r}
 #pdf("metaboanalyst/figures/module3_VIP.pdf", height = 8.5, width = 11)
@@ -2271,7 +2336,7 @@ pheatmap((transMetabData %>%
 #dev.off()
 ```
 
-###### Module 4
+##### Module 4
 
 ```{r}
 #pdf("metaboanalyst/figures/module4_VIP.pdf", height = 8.5, width = 11)
@@ -2307,7 +2372,7 @@ pheatmap((transMetabData %>%
 #dev.off()
 ```
 
-###### Module 5
+##### Module 5
 
 ```{r}
 #pdf("metaboanalyst/figures/module5_VIP.pdf", height = 8.5, width = 11)
@@ -2343,7 +2408,7 @@ pheatmap((transMetabData %>%
 #dev.off()
 ```
 
-###### Module 6
+##### Module 6
 
 ```{r}
 #pdf("metaboanalyst/figures/module6_VIP.pdf", height = 8.5, width = 11)
@@ -2379,7 +2444,7 @@ pheatmap((transMetabData %>%
 #dev.off()
 ```
 
-###### Module 7
+##### Module 7
 
 ```{r}
 #pdf("metaboanalyst/figures/module7_VIP.pdf", height = 8.5, width = 11)
