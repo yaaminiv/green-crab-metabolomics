@@ -1786,7 +1786,7 @@ The second step of this workflow is to determine which VIP are present in each W
 ### Make heatmaps
 
 ```{r}
-heatmapColors <- brewer.pal("RdPu", n = 9)
+heatmapColors <- rev(brewer.pal("PRGn", n = 9))
 ```
 
 ```{r}
