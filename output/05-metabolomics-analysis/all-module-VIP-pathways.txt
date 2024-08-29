@@ -1,0 +1,14 @@
+Metabolite	PubChem	KEGG	pathway	module
+cadaverine	273		glutathioneMetabolism	module0
+urea	1176	C00086	arginineBiosynthesis	module0
+citrulline	9750	C00327	arginineBiosynthesis	module0
+threonine	6288	C00188	valineBiosynthesis	module2
+asparagine	6267	C00152	alanineMetabolism	module2
+alanine	5950	C00041	alanineMetabolism	module2
+glycine	750	C00037	glutathioneMetabolism	module2
+putrescine	1045	C00134	glutathioneMetabolism	module3
+oxoproline	7405	C01879	glutathioneMetabolism	module4
+leucine	6106	C00123	valineBiosynthesis	module5
+2-ketoisocaproic acid	70	C00233	valineBiosynthesis	module6
+alpha-ketoglutarate	51	C00026	alanineMetabolism	module6
+alpha-ketoglutarate	51	C00026	arginineBiosynthesis	module6

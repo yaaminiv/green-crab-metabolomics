@@ -238,7 +238,6 @@ mkdir PLSDA
 mkdir PLSDA/figures
 ```
 
-
 ## Temperature only
 
 I'm still going to run the PLS-DA with temperature only because I suspect the plot will look cleaner this way.
@@ -1952,10 +1951,20 @@ topPathwayResults %>%
                    labels = rev(topPathwayResults$metabolite)) +
   scale_size_continuous(name = "Enrichment Ratio") +
   scale_color_manual(name = "FDR",
-                    values = c("grey20", "springgreen4"),
-                    labels = c(expression("">=0.05), expression(""<0.05))) +
+                     values = c("grey20", "springgreen4"),
+                     labels = c(expression("">=0.05), expression(""<0.05))) +
   theme_classic(base_size = 15)
 ggsave("metaboanalyst/figures/all_VIP-enrichmentOverview.pdf", heigh = 8.5, width = 11)
+```
+
+I want to make a list of significant VIP involved in significant pathways. I can then see if any of these pathways are represented in the modules. I matched names of VIP from MetaboAnalyst using the names and KEGG IDs in the name map file.
+
+```{r}
+#Create lists of metabolites involved in significant pathways
+valineBiosynthesis <- c("threonine", "isoleucine", "leucine", "2-ketoisocaproic acid", "valine")
+arginineBiosynthesis <- c("alpha-ketoglutarate", "glutamate", "citrulline", "ornithine", "urea", "fumaric acid")
+glutathioneMetabolism <- c("glycine", "oxoproline", "glutamate", "ornithine", "putrescine", "cadaverine")
+alanineMetabolism <- c("asparagine", "fumaric acid", "alanine", "alpha-ketoglutarate", "glutamate")
 ```
 
 ### Pairwise VIP
@@ -2218,6 +2227,7 @@ VIP_allModules <- rbind(VIP_module0,
                         VIP_module5,
                         VIP_module6,
                         VIP_module7) #Combine all VIP lists
+head(VIP_allModules)
 ```
 
 ```{r}
@@ -2479,3 +2489,139 @@ pheatmap((transMetabData %>%
             t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = metabolomicsAvgAnnotation, annotation_colors = metabolomicsColors, name = "Z-Score")
 #dev.off()
 ```
+
+#### Identify VIP from significant pathways in each module
+
+```{r}
+module0_VIPpathway <- rbind(module0_metabolites %>%
+        filter(., Metabolite %in% valineBiosynthesis) %>%
+        mutate(., pathway = "valineBiosynthesis"),
+      module0_metabolites %>%
+        filter(., Metabolite %in% alanineMetabolism) %>%
+        mutate(., pathway = "alanineMetabolism"),
+      module0_metabolites %>%
+        filter(., Metabolite %in% glutathioneMetabolism) %>%
+        mutate(., pathway = "glutathioneMetabolism"),
+      module0_metabolites %>%
+        filter(., Metabolite %in% arginineBiosynthesis) %>%
+        mutate(., pathway = "arginineBiosynthesis")) %>%
+  mutate(., module = "module0") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
+module0_VIPpathway
+```
+
+```{r}
+module2_VIPpathway <- rbind(module2_metabolites %>%
+        filter(., Metabolite %in% valineBiosynthesis) %>%
+        mutate(., pathway = "valineBiosynthesis"),
+      module2_metabolites %>%
+        filter(., Metabolite %in% alanineMetabolism) %>%
+        mutate(., pathway = "alanineMetabolism"),
+      module2_metabolites %>%
+        filter(., Metabolite %in% glutathioneMetabolism) %>%
+        mutate(., pathway = "glutathioneMetabolism"),
+      module2_metabolites %>%
+        filter(., Metabolite %in% arginineBiosynthesis) %>%
+        mutate(., pathway = "arginineBiosynthesis")) %>%
+  mutate(., module = "module2") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
+module2_VIPpathway
+```
+
+```{r}
+module3_VIPpathway <- rbind(module3_metabolites %>%
+        filter(., Metabolite %in% valineBiosynthesis) %>%
+        mutate(., pathway = "valineBiosynthesis"),
+      module3_metabolites %>%
+        filter(., Metabolite %in% alanineMetabolism) %>%
+        mutate(., pathway = "alanineMetabolism"),
+      module3_metabolites %>%
+        filter(., Metabolite %in% glutathioneMetabolism) %>%
+        mutate(., pathway = "glutathioneMetabolism"),
+      module3_metabolites %>%
+        filter(., Metabolite %in% arginineBiosynthesis) %>%
+        mutate(., pathway = "arginineBiosynthesis")) %>%
+  mutate(., module = "module3") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
+module3_VIPpathway
+```
+
+```{r}
+module4_VIPpathway <- rbind(module4_metabolites %>%
+        filter(., Metabolite %in% valineBiosynthesis) %>%
+        mutate(., pathway = "valineBiosynthesis"),
+      module4_metabolites %>%
+        filter(., Metabolite %in% alanineMetabolism) %>%
+        mutate(., pathway = "alanineMetabolism"),
+      module4_metabolites %>%
+        filter(., Metabolite %in% glutathioneMetabolism) %>%
+        mutate(., pathway = "glutathioneMetabolism"),
+      module4_metabolites %>%
+        filter(., Metabolite %in% arginineBiosynthesis) %>%
+        mutate(., pathway = "arginineBiosynthesis")) %>%
+  mutate(., module = "module4") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
+module4_VIPpathway
+```
+
+```{r}
+module5_VIPpathway <- rbind(module5_metabolites %>%
+        filter(., Metabolite %in% valineBiosynthesis) %>%
+        mutate(., pathway = "valineBiosynthesis"),
+      module5_metabolites %>%
+        filter(., Metabolite %in% alanineMetabolism) %>%
+        mutate(., pathway = "alanineMetabolism"),
+      module5_metabolites %>%
+        filter(., Metabolite %in% glutathioneMetabolism) %>%
+        mutate(., pathway = "glutathioneMetabolism"),
+      module5_metabolites %>%
+        filter(., Metabolite %in% arginineBiosynthesis) %>%
+        mutate(., pathway = "arginineBiosynthesis")) %>%
+  mutate(., module = "module5") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
+module5_VIPpathway
+```
+
+```{r}
+module6_VIPpathway <- rbind(module6_metabolites %>%
+        filter(., Metabolite %in% valineBiosynthesis) %>%
+        mutate(., pathway = "valineBiosynthesis"),
+      module6_metabolites %>%
+        filter(., Metabolite %in% alanineMetabolism) %>%
+        mutate(., pathway = "alanineMetabolism"),
+      module6_metabolites %>%
+        filter(., Metabolite %in% glutathioneMetabolism) %>%
+        mutate(., pathway = "glutathioneMetabolism"),
+      module6_metabolites %>%
+        filter(., Metabolite %in% arginineBiosynthesis) %>%
+        mutate(., pathway = "arginineBiosynthesis")) %>%
+  mutate(., module = "module6") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
+module6_VIPpathway
+```
+
+```{r}
+module7_VIPpathway <- rbind(module7_metabolites %>%
+        filter(., Metabolite %in% valineBiosynthesis) %>%
+        mutate(., pathway = "valineBiosynthesis"),
+      module7_metabolites %>%
+        filter(., Metabolite %in% alanineMetabolism) %>%
+        mutate(., pathway = "alanineMetabolism"),
+      module7_metabolites %>%
+        filter(., Metabolite %in% glutathioneMetabolism) %>%
+        mutate(., pathway = "glutathioneMetabolism"),
+      module7_metabolites %>%
+        filter(., Metabolite %in% arginineBiosynthesis) %>%
+        mutate(., pathway = "arginineBiosynthesis")) %>%
+  mutate(., module = "module7") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
+module7_VIPpathway
+```
+
+```{r}
+VIPpathway_allModules <- rbind(module0_VIPpathway,
+                               module2_VIPpathway,
+                               module3_VIPpathway, 
+                               module4_VIPpathway,
+                               module5_VIPpathway,
+                               module6_VIPpathway,
+                               module7_VIPpathway) #Combine dataframes
+```
+
+```{r}
+write.table(VIPpathway_allModules, "all-module-VIP-pathways.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+```
+
