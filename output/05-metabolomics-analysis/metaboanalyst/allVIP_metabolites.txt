@@ -1,0 +1,74 @@
+metabolite	PubChem	KEGG
+myo-inositol	892	C00137
+N-methylethanolamine	8016	
+pinitol	164619	
+alanine	5950	C00041
+glycerol-alpha-phosphate	754	C03189
+hydroxylamine	787	C00192
+isoleucine 	6306	C00407
+methionine	6137	C00073
+phenylalanine	6140	C00079
+uridine	6029	C00299
+valine 	6287	C00183
+UDP-N-acetylglucosamine 	445675	C00043
+isoxanthopterin	10729	C03975
+leucine	6106	C00123
+4-hydroxymandelic acid	328	C11527
+arabitol	94154	C01904
+stearic acid	5281	C01530
+adenosine-5-monophosphate	6083	C00020
+proline	145742	C00148
+phosphoethanolamine	1015	C00346
+phenylethylamine	1001	C05332
+putrescine	1045	C00134
+serine	5951	C00065
+3-Aminopiperidine-2,6-dione 	134508	
+glycine	750	C00037
+citrulline	9750	C00327
+alpha-ketoglutarate	51	C00026
+threonine	6288	C00188
+heptadecanoic acid	10465	
+taurine	1123	C00245
+asparagine	6267	C00152
+tyrosine	6057	C00082
+hydroquinone	785	C00530
+xylitol	6912	C00379
+tryptophan 	6305	C00078
+N-acetylputrescine 	122356	C02714
+N-alpha-acetyllysine 	192590	
+ribose-5-phosphate	77982	
+methionine sulfoxide	158980	C02989
+2-ketoisocaproic acid	70	C00233
+adipic acid	196	C06104
+4-hydroxybenzoate	135	C00156
+ornithine 	6262	C00077
+N-acetylgalactosamine	440552	C05021
+alpha-aminoadipic acid	92136	C00956
+arachidic acid	10467	C06425
+5-methoxytryptamine	1833	C05659
+glutamate 	33032	C00025
+lysine	5962	C00047
+cytosine	597	C00380
+dimethylglycine	673	
+glutaric acid	743	C00489
+2-aminobutyric acid	6657	C02721
+noradrenaline	439260	C00547
+methanolphosphate	13130	
+3-aminoisobutyric acid	64956	C05145
+tyramine	5610	C00483
+cadaverine	273	
+glucose-1-phosphate	65533	C00103
+terephthalic acid	22416364	C06337
+sulfuric acid	1118	C00059
+pyrophosphate 	1023	C00013
+oxoproline	7405	C01879
+phosphate	1004	C00009
+urea	1176	C00086
+serotonin	5202	C00780
+fumaric acid	444972	C00122
+histamine 	774	C00388
+malic acid	525	C00711
+hypoxanthine	790	C00262
+beta-alanine	239	C00099
+maleimide	10935	C07272
+homocysteine 	6971015	C00155

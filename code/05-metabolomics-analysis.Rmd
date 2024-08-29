@@ -1875,6 +1875,16 @@ pheatmap((transMetabData %>%
 #dev.off()
 ```
 
+The last thing I want to do with the list of all VIP is to add PubChem and KEGG annotations. This will allow me to upload the list into MetaboAnalyst and check for significantly enriched pathways or compound classes.
+
+```{r}
+significantVIP %>%
+  dplyr::select(., metabolite) %>% 
+  left_join(., (rawMetabolomicsData %>% dplyr::rename(metabolite = BinBase.name)), by = "metabolite") %>%
+  dplyr::select(., metabolite, PubChem, KEGG) %>%
+  write.table("metaboanalyst/allVIP_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take list of significant VIP. Select only the metabolites and join with annotation information. Select only columns of interest and save as a txt file
+```
+
 
 #### Pairwise VIP
 
