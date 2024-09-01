@@ -1960,11 +1960,123 @@ ggsave("metaboanalyst/figures/all_VIP-enrichmentOverview.pdf", heigh = 8.5, widt
 I want to make a list of significant VIP involved in significant pathways. I can then see if any of these pathways are represented in the modules. I matched names of VIP from MetaboAnalyst using the names and KEGG IDs in the name map file.
 
 ```{r}
-#Create lists of metabolites involved in significant pathways
-valineBiosynthesis <- c("threonine", "isoleucine", "leucine", "2-ketoisocaproic acid", "valine")
-arginineBiosynthesis <- c("alpha-ketoglutarate", "glutamate", "citrulline", "ornithine", "urea", "fumaric acid")
-glutathioneMetabolism <- c("glycine", "oxoproline", "glutamate", "ornithine", "putrescine", "cadaverine")
-alanineMetabolism <- c("asparagine", "fumaric acid", "alanine", "alpha-ketoglutarate", "glutamate")
+#Create lists of metabolites involved in significant pathways. Some names have spaces afterwards to reflect naming conventions in original dataframe
+valineBiosynthesis <- c("threonine", "isoleucine ", "leucine", "2-ketoisocaproic acid", "valine ")
+arginineBiosynthesis <- c("alpha-ketoglutarate", "glutamate ", "citrulline", "ornithine ", "urea", "fumaric acid")
+glutathioneMetabolism <- c("glycine", "oxoproline", "glutamate ", "ornithine ", "putrescine", "cadaverine")
+alanineMetabolism <- c("asparagine", "fumaric acid", "alanine", "alpha-ketoglutarate", "glutamate ")
+```
+
+##### Valine, leucine, and isoleucine biosynthesis
+
+```{r}
+transMetabData %>%
+  dplyr::select(., c(1:4, any_of(valineBiosynthesis))) %>%
+  pivot_longer(., cols = c(5:9), names_to = "metabolite", values_to = "value") %>%
+  mutate(., treatment_day = gsub(pattern = "_3", replacement = "_03", x = treatment_day)) %>%
+  mutate(., treatment_day = gsub(pattern = "5_", replacement = "05_", x = treatment_day)) %>%
+  ggplot(., mapping = aes(x = treatment_day, y = value, color = treatment_day)) +
+  facet_wrap(~metabolite, scales = "free_y") +
+  ylab("Metabolite Abundance") +
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
+  geom_point(pch = 21, position = position_dodge(width = 0.5)) +
+  scale_fill_manual(name = "Temperature (ºC) x Day", 
+                    values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                    labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
+  scale_colour_manual(name = "Temperature (ºC) x Day", 
+                      values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                      labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
+  xlab("") + #Axis titles
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.text = element_text(color = "black", size = 12), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"))
+ggsave("metaboanalyst/figures/valine-biosynthesis-plot.pdf", height = 8.5, width = 11)
+```
+
+##### Arginine biosynthesis
+
+```{r}
+transMetabData %>%
+  dplyr::select(., c(1:4, any_of(arginineBiosynthesis))) %>%
+  pivot_longer(., cols = c(5:10), names_to = "metabolite", values_to = "value") %>%
+  mutate(., treatment_day = gsub(pattern = "_3", replacement = "_03", x = treatment_day)) %>%
+  mutate(., treatment_day = gsub(pattern = "5_", replacement = "05_", x = treatment_day)) %>%
+  ggplot(., mapping = aes(x = treatment_day, y = value, color = treatment_day)) +
+  facet_wrap(~metabolite, scales = "free_y") +
+  ylab("Metabolite Abundance") +
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
+  geom_point(pch = 21, position = position_dodge(width = 0.5)) +
+  scale_fill_manual(name = "Temperature (ºC) x Day", 
+                    values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                    labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
+  scale_colour_manual(name = "Temperature (ºC) x Day", 
+                      values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                      labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
+  xlab("") + #Axis titles
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.text = element_text(color = "black", size = 12), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"))
+ggsave("metaboanalyst/figures/arginine-biosynthesis-plot.pdf", height = 8.5, width = 11)
+```
+
+##### Glutathione metabolism
+
+```{r}
+transMetabData %>%
+  dplyr::select(., c(1:4, any_of(glutathioneMetabolism))) %>%
+  pivot_longer(., cols = c(5:10), names_to = "metabolite", values_to = "value") %>%
+  mutate(., treatment_day = gsub(pattern = "_3", replacement = "_03", x = treatment_day)) %>%
+  mutate(., treatment_day = gsub(pattern = "5_", replacement = "05_", x = treatment_day)) %>%
+  ggplot(., mapping = aes(x = treatment_day, y = value, color = treatment_day)) +
+  facet_wrap(~metabolite, scales = "free_y") +
+  ylab("Metabolite Abundance") +
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
+  geom_point(pch = 21, position = position_dodge(width = 0.5)) +
+  scale_fill_manual(name = "Temperature (ºC) x Day", 
+                    values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                    labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
+  scale_colour_manual(name = "Temperature (ºC) x Day", 
+                      values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                      labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
+  xlab("") + #Axis titles
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.text = element_text(color = "black", size = 12), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"))
+ggsave("metaboanalyst/figures/glutathione-metabolism-plot.pdf", height = 8.5, width = 11)
+```
+
+##### Alanine, aspartate, and glutamate metabolism
+
+```{r}
+transMetabData %>%
+  dplyr::select(., c(1:4, any_of(alanineMetabolism))) %>%
+  pivot_longer(., cols = c(5:9), names_to = "metabolite", values_to = "value") %>%
+  mutate(., treatment_day = gsub(pattern = "_3", replacement = "_03", x = treatment_day)) %>%
+  mutate(., treatment_day = gsub(pattern = "5_", replacement = "05_", x = treatment_day)) %>%
+  ggplot(., mapping = aes(x = treatment_day, y = value, color = treatment_day)) +
+  facet_wrap(~metabolite, scales = "free_y") +
+  ylab("Metabolite Abundance") +
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
+  geom_point(pch = 21, position = position_dodge(width = 0.5)) +
+  scale_fill_manual(name = "Temperature (ºC) x Day", 
+                    values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                    labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
+  scale_colour_manual(name = "Temperature (ºC) x Day", 
+                      values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                      labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
+  xlab("") + #Axis titles
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.text = element_text(color = "black", size = 12), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"))
+ggsave("metaboanalyst/figures/alanine-metabolism-plot.pdf", height = 8.5, width = 11)
 ```
 
 ### Pairwise VIP
@@ -2494,119 +2606,119 @@ pheatmap((transMetabData %>%
 
 ```{r}
 module0_VIPpathway <- rbind(module0_metabolites %>%
-        filter(., Metabolite %in% valineBiosynthesis) %>%
-        mutate(., pathway = "valineBiosynthesis"),
-      module0_metabolites %>%
-        filter(., Metabolite %in% alanineMetabolism) %>%
-        mutate(., pathway = "alanineMetabolism"),
-      module0_metabolites %>%
-        filter(., Metabolite %in% glutathioneMetabolism) %>%
-        mutate(., pathway = "glutathioneMetabolism"),
-      module0_metabolites %>%
-        filter(., Metabolite %in% arginineBiosynthesis) %>%
-        mutate(., pathway = "arginineBiosynthesis")) %>%
+                              filter(., Metabolite %in% valineBiosynthesis) %>%
+                              mutate(., pathway = "valineBiosynthesis"),
+                            module0_metabolites %>%
+                              filter(., Metabolite %in% alanineMetabolism) %>%
+                              mutate(., pathway = "alanineMetabolism"),
+                            module0_metabolites %>%
+                              filter(., Metabolite %in% glutathioneMetabolism) %>%
+                              mutate(., pathway = "glutathioneMetabolism"),
+                            module0_metabolites %>%
+                              filter(., Metabolite %in% arginineBiosynthesis) %>%
+                              mutate(., pathway = "arginineBiosynthesis")) %>%
   mutate(., module = "module0") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
 module0_VIPpathway
 ```
 
 ```{r}
 module2_VIPpathway <- rbind(module2_metabolites %>%
-        filter(., Metabolite %in% valineBiosynthesis) %>%
-        mutate(., pathway = "valineBiosynthesis"),
-      module2_metabolites %>%
-        filter(., Metabolite %in% alanineMetabolism) %>%
-        mutate(., pathway = "alanineMetabolism"),
-      module2_metabolites %>%
-        filter(., Metabolite %in% glutathioneMetabolism) %>%
-        mutate(., pathway = "glutathioneMetabolism"),
-      module2_metabolites %>%
-        filter(., Metabolite %in% arginineBiosynthesis) %>%
-        mutate(., pathway = "arginineBiosynthesis")) %>%
+                              filter(., Metabolite %in% valineBiosynthesis) %>%
+                              mutate(., pathway = "valineBiosynthesis"),
+                            module2_metabolites %>%
+                              filter(., Metabolite %in% alanineMetabolism) %>%
+                              mutate(., pathway = "alanineMetabolism"),
+                            module2_metabolites %>%
+                              filter(., Metabolite %in% glutathioneMetabolism) %>%
+                              mutate(., pathway = "glutathioneMetabolism"),
+                            module2_metabolites %>%
+                              filter(., Metabolite %in% arginineBiosynthesis) %>%
+                              mutate(., pathway = "arginineBiosynthesis")) %>%
   mutate(., module = "module2") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
 module2_VIPpathway
 ```
 
 ```{r}
 module3_VIPpathway <- rbind(module3_metabolites %>%
-        filter(., Metabolite %in% valineBiosynthesis) %>%
-        mutate(., pathway = "valineBiosynthesis"),
-      module3_metabolites %>%
-        filter(., Metabolite %in% alanineMetabolism) %>%
-        mutate(., pathway = "alanineMetabolism"),
-      module3_metabolites %>%
-        filter(., Metabolite %in% glutathioneMetabolism) %>%
-        mutate(., pathway = "glutathioneMetabolism"),
-      module3_metabolites %>%
-        filter(., Metabolite %in% arginineBiosynthesis) %>%
-        mutate(., pathway = "arginineBiosynthesis")) %>%
+                              filter(., Metabolite %in% valineBiosynthesis) %>%
+                              mutate(., pathway = "valineBiosynthesis"),
+                            module3_metabolites %>%
+                              filter(., Metabolite %in% alanineMetabolism) %>%
+                              mutate(., pathway = "alanineMetabolism"),
+                            module3_metabolites %>%
+                              filter(., Metabolite %in% glutathioneMetabolism) %>%
+                              mutate(., pathway = "glutathioneMetabolism"),
+                            module3_metabolites %>%
+                              filter(., Metabolite %in% arginineBiosynthesis) %>%
+                              mutate(., pathway = "arginineBiosynthesis")) %>%
   mutate(., module = "module3") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
 module3_VIPpathway
 ```
 
 ```{r}
 module4_VIPpathway <- rbind(module4_metabolites %>%
-        filter(., Metabolite %in% valineBiosynthesis) %>%
-        mutate(., pathway = "valineBiosynthesis"),
-      module4_metabolites %>%
-        filter(., Metabolite %in% alanineMetabolism) %>%
-        mutate(., pathway = "alanineMetabolism"),
-      module4_metabolites %>%
-        filter(., Metabolite %in% glutathioneMetabolism) %>%
-        mutate(., pathway = "glutathioneMetabolism"),
-      module4_metabolites %>%
-        filter(., Metabolite %in% arginineBiosynthesis) %>%
-        mutate(., pathway = "arginineBiosynthesis")) %>%
+                              filter(., Metabolite %in% valineBiosynthesis) %>%
+                              mutate(., pathway = "valineBiosynthesis"),
+                            module4_metabolites %>%
+                              filter(., Metabolite %in% alanineMetabolism) %>%
+                              mutate(., pathway = "alanineMetabolism"),
+                            module4_metabolites %>%
+                              filter(., Metabolite %in% glutathioneMetabolism) %>%
+                              mutate(., pathway = "glutathioneMetabolism"),
+                            module4_metabolites %>%
+                              filter(., Metabolite %in% arginineBiosynthesis) %>%
+                              mutate(., pathway = "arginineBiosynthesis")) %>%
   mutate(., module = "module4") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
 module4_VIPpathway
 ```
 
 ```{r}
 module5_VIPpathway <- rbind(module5_metabolites %>%
-        filter(., Metabolite %in% valineBiosynthesis) %>%
-        mutate(., pathway = "valineBiosynthesis"),
-      module5_metabolites %>%
-        filter(., Metabolite %in% alanineMetabolism) %>%
-        mutate(., pathway = "alanineMetabolism"),
-      module5_metabolites %>%
-        filter(., Metabolite %in% glutathioneMetabolism) %>%
-        mutate(., pathway = "glutathioneMetabolism"),
-      module5_metabolites %>%
-        filter(., Metabolite %in% arginineBiosynthesis) %>%
-        mutate(., pathway = "arginineBiosynthesis")) %>%
+                              filter(., Metabolite %in% valineBiosynthesis) %>%
+                              mutate(., pathway = "valineBiosynthesis"),
+                            module5_metabolites %>%
+                              filter(., Metabolite %in% alanineMetabolism) %>%
+                              mutate(., pathway = "alanineMetabolism"),
+                            module5_metabolites %>%
+                              filter(., Metabolite %in% glutathioneMetabolism) %>%
+                              mutate(., pathway = "glutathioneMetabolism"),
+                            module5_metabolites %>%
+                              filter(., Metabolite %in% arginineBiosynthesis) %>%
+                              mutate(., pathway = "arginineBiosynthesis")) %>%
   mutate(., module = "module5") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
 module5_VIPpathway
 ```
 
 ```{r}
 module6_VIPpathway <- rbind(module6_metabolites %>%
-        filter(., Metabolite %in% valineBiosynthesis) %>%
-        mutate(., pathway = "valineBiosynthesis"),
-      module6_metabolites %>%
-        filter(., Metabolite %in% alanineMetabolism) %>%
-        mutate(., pathway = "alanineMetabolism"),
-      module6_metabolites %>%
-        filter(., Metabolite %in% glutathioneMetabolism) %>%
-        mutate(., pathway = "glutathioneMetabolism"),
-      module6_metabolites %>%
-        filter(., Metabolite %in% arginineBiosynthesis) %>%
-        mutate(., pathway = "arginineBiosynthesis")) %>%
+                              filter(., Metabolite %in% valineBiosynthesis) %>%
+                              mutate(., pathway = "valineBiosynthesis"),
+                            module6_metabolites %>%
+                              filter(., Metabolite %in% alanineMetabolism) %>%
+                              mutate(., pathway = "alanineMetabolism"),
+                            module6_metabolites %>%
+                              filter(., Metabolite %in% glutathioneMetabolism) %>%
+                              mutate(., pathway = "glutathioneMetabolism"),
+                            module6_metabolites %>%
+                              filter(., Metabolite %in% arginineBiosynthesis) %>%
+                              mutate(., pathway = "arginineBiosynthesis")) %>%
   mutate(., module = "module6") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
 module6_VIPpathway
 ```
 
 ```{r}
 module7_VIPpathway <- rbind(module7_metabolites %>%
-        filter(., Metabolite %in% valineBiosynthesis) %>%
-        mutate(., pathway = "valineBiosynthesis"),
-      module7_metabolites %>%
-        filter(., Metabolite %in% alanineMetabolism) %>%
-        mutate(., pathway = "alanineMetabolism"),
-      module7_metabolites %>%
-        filter(., Metabolite %in% glutathioneMetabolism) %>%
-        mutate(., pathway = "glutathioneMetabolism"),
-      module7_metabolites %>%
-        filter(., Metabolite %in% arginineBiosynthesis) %>%
-        mutate(., pathway = "arginineBiosynthesis")) %>%
+                              filter(., Metabolite %in% valineBiosynthesis) %>%
+                              mutate(., pathway = "valineBiosynthesis"),
+                            module7_metabolites %>%
+                              filter(., Metabolite %in% alanineMetabolism) %>%
+                              mutate(., pathway = "alanineMetabolism"),
+                            module7_metabolites %>%
+                              filter(., Metabolite %in% glutathioneMetabolism) %>%
+                              mutate(., pathway = "glutathioneMetabolism"),
+                            module7_metabolites %>%
+                              filter(., Metabolite %in% arginineBiosynthesis) %>%
+                              mutate(., pathway = "arginineBiosynthesis")) %>%
   mutate(., module = "module7") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
 module7_VIPpathway
 ```
