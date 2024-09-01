@@ -1,0 +1,23 @@
+metabolite	VIP	pathway
+isoleucine 	1.35114951123782	valineBiosynthesis
+valine 	1.31947683701844	valineBiosynthesis
+leucine	1.2808663302041	valineBiosynthesis
+threonine	1.18626330982793	valineBiosynthesis
+2-ketoisocaproic acid	1.15878068441227	valineBiosynthesis
+citrulline	1.19367318217559	arginineBiosynthesis
+alpha-ketoglutarate	1.18793647969963	arginineBiosynthesis
+ornithine 	1.14130313670232	arginineBiosynthesis
+glutamate 	1.10717352012459	arginineBiosynthesis
+urea	1.0337904987308	arginineBiosynthesis
+fumaric acid	1.03125154976532	arginineBiosynthesis
+putrescine	1.23136699532741	glutathioneMetabolism
+glycine	1.19936935563896	glutathioneMetabolism
+ornithine 	1.14130313670232	glutathioneMetabolism
+glutamate 	1.10717352012459	glutathioneMetabolism
+cadaverine	1.05367874360504	glutathioneMetabolism
+oxoproline	1.03699342522237	glutathioneMetabolism
+alanine	1.47041621478218	alanineMetabolism
+alpha-ketoglutarate	1.18793647969963	alanineMetabolism
+asparagine	1.17723868366768	alanineMetabolism
+glutamate 	1.10717352012459	alanineMetabolism
+fumaric acid	1.03125154976532	alanineMetabolism

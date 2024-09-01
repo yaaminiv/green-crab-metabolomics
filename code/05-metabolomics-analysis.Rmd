@@ -2095,12 +2095,28 @@ glutathioneMetabolism <- c("glycine", "oxoproline", "glutamate ", "ornithine ", 
 alanineMetabolism <- c("asparagine", "fumaric acid", "alanine", "alpha-ketoglutarate", "glutamate ")
 ```
 
-##### Valine, leucine, and isoleucine biosynthesis
+```{r}
+significantVIP_significantPathways <- rbind(significantVIP %>%
+                                              filter(., metabolite %in% valineBiosynthesis) %>%
+                                              mutate(., pathway = "valineBiosynthesis"),
+                                            significantVIP %>%
+                                              filter(., metabolite %in% arginineBiosynthesis) %>%
+                                              mutate(., pathway = "arginineBiosynthesis"),
+                                            significantVIP %>%
+                                              filter(., metabolite %in% glutathioneMetabolism) %>%
+                                              mutate(., pathway = "glutathioneMetabolism"),
+                                            significantVIP %>%
+                                              filter(., metabolite %in% alanineMetabolism) %>%
+                                              mutate(., pathway = "alanineMetabolism"))
+significantVIP_significantPathways
+```
 
 ```{r}
-significantVIP %>%
-  filter(., metabolite %in% valineBiosynthesis)
+write.table(significantVIP_significantPathways, "metaboanalyst/significant-VIP-significant-pathways.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 ```
+
+
+##### Valine, leucine, and isoleucine biosynthesis
 
 ```{r}
 transMetabData %>%
@@ -2568,122 +2584,267 @@ head(VIP_allModules)
 write.table(VIP_allModules, "metaboanalyst/all-module-VIP.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 ```
 
+#### Identify pairwise VIP that overlap with significant pathways
+
+```{r}
+VIP_valineBiosynthesis <- rbind(t.test_13v30_day3 %>%
+                                  mutate(., comparison = "13v30_day3") %>%
+                                  filter(., p.adj < 0.05) %>%
+                                  filter(., metabolite %in% valineBiosynthesis),
+                                t.test_13v5_day3 %>%
+                                  mutate(., comparison = "13v5_day3") %>%
+                                  filter(., p.adj < 0.05) %>%
+                                  filter(., metabolite %in% valineBiosynthesis),
+                                t.test_13v30_day22 %>%
+                                  mutate(., comparison = "13v30_day22") %>%
+                                  filter(., p.adj < 0.05) %>%
+                                  filter(., metabolite %in% valineBiosynthesis),
+                                t.test_13v5_day22 %>%
+                                  mutate(., comparison = "13v5_day22") %>%
+                                  filter(., p.adj < 0.05) %>%
+                                  filter(., metabolite %in% valineBiosynthesis),
+                                t.test_5_day3v22 %>%
+                                  mutate(., comparison = "5_day3v22") %>%
+                                  filter(., p.adj < 0.05) %>%
+                                  filter(., metabolite %in% valineBiosynthesis),
+                                t.test_13_day3v22 %>%
+                                  mutate(., comparison = "13_day3v22") %>%
+                                  filter(., p.adj < 0.05) %>%
+                                  filter(., metabolite %in% valineBiosynthesis),
+                                t.test_30_day3v22 %>%
+                                  mutate(., comparison = "30_day3v22") %>%
+                                  filter(., p.adj < 0.05) %>%
+                                  filter(., metabolite %in% valineBiosynthesis)) %>%
+  mutate(., pathway = "valineBiosynthesis")
+VIP_valineBiosynthesis
+```
+
+```{r}
+VIP_arginineBiosynthesis <- rbind(t.test_13v30_day3 %>%
+                                    mutate(., comparison = "13v30_day3") %>%
+                                    filter(., p.adj < 0.05) %>%
+                                    filter(., metabolite %in% arginineBiosynthesis),
+                                  t.test_13v5_day3 %>%
+                                    mutate(., comparison = "13v5_day3") %>%
+                                    filter(., p.adj < 0.05) %>%
+                                    filter(., metabolite %in% arginineBiosynthesis),
+                                  t.test_13v30_day22 %>%
+                                    mutate(., comparison = "13v30_day22") %>%
+                                    filter(., p.adj < 0.05) %>%
+                                    filter(., metabolite %in% arginineBiosynthesis),
+                                  t.test_13v5_day22 %>%
+                                    mutate(., comparison = "13v5_day22") %>%
+                                    filter(., p.adj < 0.05) %>%
+                                    filter(., metabolite %in% arginineBiosynthesis),
+                                  t.test_5_day3v22 %>%
+                                    mutate(., comparison = "5_day3v22") %>%
+                                    filter(., p.adj < 0.05) %>%
+                                    filter(., metabolite %in% arginineBiosynthesis),
+                                  t.test_13_day3v22 %>%
+                                    mutate(., comparison = "13_day3v22") %>%
+                                    filter(., p.adj < 0.05) %>%
+                                    filter(., metabolite %in% arginineBiosynthesis),
+                                  t.test_30_day3v22 %>%
+                                    mutate(., comparison = "30_day3v22") %>%
+                                    filter(., p.adj < 0.05) %>%
+                                    filter(., metabolite %in% arginineBiosynthesis)) %>%
+  mutate(., pathway = "arginineBiosynthesis")
+VIP_arginineBiosynthesis
+```
+```{r}
+VIP_glutathioneMetabolism <- rbind(t.test_13v30_day3 %>%
+                                     mutate(., comparison = "13v30_day3") %>%
+                                     filter(., p.adj < 0.05) %>%
+                                     filter(., metabolite %in% glutathioneMetabolism),
+                                   t.test_13v5_day3 %>%
+                                     mutate(., comparison = "13v5_day3") %>%
+                                     filter(., p.adj < 0.05) %>%
+                                     filter(., metabolite %in% glutathioneMetabolism),
+                                   t.test_13v30_day22 %>%
+                                     mutate(., comparison = "13v30_day22") %>%
+                                     filter(., p.adj < 0.05) %>%
+                                     filter(., metabolite %in% glutathioneMetabolism),
+                                   t.test_13v5_day22 %>%
+                                     mutate(., comparison = "13v5_day22") %>%
+                                     filter(., p.adj < 0.05) %>%
+                                     filter(., metabolite %in% glutathioneMetabolism),
+                                   t.test_5_day3v22 %>%
+                                     mutate(., comparison = "5_day3v22") %>%
+                                     filter(., p.adj < 0.05) %>%
+                                     filter(., metabolite %in% glutathioneMetabolism),
+                                   t.test_13_day3v22 %>%
+                                     mutate(., comparison = "13_day3v22") %>%
+                                     filter(., p.adj < 0.05) %>%
+                                     filter(., metabolite %in% glutathioneMetabolism),
+                                   t.test_30_day3v22 %>%
+                                     mutate(., comparison = "30_day3v22") %>%
+                                     filter(., p.adj < 0.05) %>%
+                                     filter(., metabolite %in% glutathioneMetabolism)) %>%
+  mutate(., pathway = "glutathioneMetabolism")
+VIP_glutathioneMetabolism
+```
+```{r}
+VIP_alanineMetabolism <- rbind(t.test_13v30_day3 %>%
+                                 mutate(., comparison = "13v30_day3") %>%
+                                 filter(., p.adj < 0.05) %>%
+                                 filter(., metabolite %in% alanineMetabolism),
+                               t.test_13v5_day3 %>%
+                                 mutate(., comparison = "13v5_day3") %>%
+                                 filter(., p.adj < 0.05) %>%
+                                 filter(., metabolite %in% alanineMetabolism),
+                               t.test_13v30_day22 %>%
+                                 mutate(., comparison = "13v30_day22") %>%
+                                 filter(., p.adj < 0.05) %>%
+                                 filter(., metabolite %in% alanineMetabolism),
+                               t.test_13v5_day22 %>%
+                                 mutate(., comparison = "13v5_day22") %>%
+                                 filter(., p.adj < 0.05) %>%
+                                 filter(., metabolite %in% alanineMetabolism),
+                               t.test_5_day3v22 %>%
+                                 mutate(., comparison = "5_day3v22") %>%
+                                 filter(., p.adj < 0.05) %>%
+                                 filter(., metabolite %in% alanineMetabolism),
+                               t.test_13_day3v22 %>%
+                                 mutate(., comparison = "13_day3v22") %>%
+                                 filter(., p.adj < 0.05) %>%
+                                 filter(., metabolite %in% alanineMetabolism),
+                               t.test_30_day3v22 %>%
+                                 mutate(., comparison = "30_day3v22") %>%
+                                 filter(., p.adj < 0.05) %>%
+                                 filter(., metabolite %in% alanineMetabolism)) %>%
+  mutate(., pathway = "alanineMetabolism")
+VIP_alanineMetabolism
+```
+
+```{r}
+VIP_allPathways <- rbind(VIP_valineBiosynthesis,
+                         VIP_arginineBiosynthesis,
+                         VIP_glutathioneMetabolism,
+                         VIP_alanineMetabolism)
+VIP_allPathways
+```
+
+```{r}
+write.table(VIP_allPathways, "metaboanalyst/significant-pathways-pairwise-VIP.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+```
+
+
 #### Identify pairwise VIP that overlap with VIP from significant pathways for each module
 
 ```{r}
 module0_pairwiseVIPpathway <- rbind(VIP_module0 %>%
-                              filter(., metabolite %in% valineBiosynthesis) %>%
-                              mutate(., pathway = "valineBiosynthesis"),
-                            VIP_module0 %>%
-                              filter(., metabolite %in% alanineMetabolism) %>%
-                              mutate(., pathway = "alanineMetabolism"),
-                            VIP_module0 %>%
-                              filter(., metabolite %in% glutathioneMetabolism) %>%
-                              mutate(., pathway = "glutathioneMetabolism"),
-                            VIP_module0 %>%
-                              filter(., metabolite %in% arginineBiosynthesis) %>%
-                              mutate(., pathway = "arginineBiosynthesis")) %>%
+                                      filter(., metabolite %in% valineBiosynthesis) %>%
+                                      mutate(., pathway = "valineBiosynthesis"),
+                                    VIP_module0 %>%
+                                      filter(., metabolite %in% alanineMetabolism) %>%
+                                      mutate(., pathway = "alanineMetabolism"),
+                                    VIP_module0 %>%
+                                      filter(., metabolite %in% glutathioneMetabolism) %>%
+                                      mutate(., pathway = "glutathioneMetabolism"),
+                                    VIP_module0 %>%
+                                      filter(., metabolite %in% arginineBiosynthesis) %>%
+                                      mutate(., pathway = "arginineBiosynthesis")) %>%
   mutate(., module = "module0") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
 module0_pairwiseVIPpathway
 ```
 
 ```{r}
 module2_pairwiseVIPpathway <- rbind(VIP_module2 %>%
-                              filter(., metabolite %in% valineBiosynthesis) %>%
-                              mutate(., pathway = "valineBiosynthesis"),
-                            VIP_module2 %>%
-                              filter(., metabolite %in% alanineMetabolism) %>%
-                              mutate(., pathway = "alanineMetabolism"),
-                            VIP_module2 %>%
-                              filter(., metabolite %in% glutathioneMetabolism) %>%
-                              mutate(., pathway = "glutathioneMetabolism"),
-                            VIP_module2 %>%
-                              filter(., metabolite %in% arginineBiosynthesis) %>%
-                              mutate(., pathway = "arginineBiosynthesis")) %>%
+                                      filter(., metabolite %in% valineBiosynthesis) %>%
+                                      mutate(., pathway = "valineBiosynthesis"),
+                                    VIP_module2 %>%
+                                      filter(., metabolite %in% alanineMetabolism) %>%
+                                      mutate(., pathway = "alanineMetabolism"),
+                                    VIP_module2 %>%
+                                      filter(., metabolite %in% glutathioneMetabolism) %>%
+                                      mutate(., pathway = "glutathioneMetabolism"),
+                                    VIP_module2 %>%
+                                      filter(., metabolite %in% arginineBiosynthesis) %>%
+                                      mutate(., pathway = "arginineBiosynthesis")) %>%
   mutate(., module = "module2") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
 module2_pairwiseVIPpathway
 ```
 
 ```{r}
 module3_pairwiseVIPpathway <- rbind(VIP_module3 %>%
-                              filter(., metabolite %in% valineBiosynthesis) %>%
-                              mutate(., pathway = "valineBiosynthesis"),
-                            VIP_module3 %>%
-                              filter(., metabolite %in% alanineMetabolism) %>%
-                              mutate(., pathway = "alanineMetabolism"),
-                            VIP_module3 %>%
-                              filter(., metabolite %in% glutathioneMetabolism) %>%
-                              mutate(., pathway = "glutathioneMetabolism"),
-                            VIP_module3 %>%
-                              filter(., metabolite %in% arginineBiosynthesis) %>%
-                              mutate(., pathway = "arginineBiosynthesis")) %>%
+                                      filter(., metabolite %in% valineBiosynthesis) %>%
+                                      mutate(., pathway = "valineBiosynthesis"),
+                                    VIP_module3 %>%
+                                      filter(., metabolite %in% alanineMetabolism) %>%
+                                      mutate(., pathway = "alanineMetabolism"),
+                                    VIP_module3 %>%
+                                      filter(., metabolite %in% glutathioneMetabolism) %>%
+                                      mutate(., pathway = "glutathioneMetabolism"),
+                                    VIP_module3 %>%
+                                      filter(., metabolite %in% arginineBiosynthesis) %>%
+                                      mutate(., pathway = "arginineBiosynthesis")) %>%
   mutate(., module = "module3") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
 module3_pairwiseVIPpathway
 ```
 ```{r}
 module4_pairwiseVIPpathway <- rbind(VIP_module4 %>%
-                              filter(., metabolite %in% valineBiosynthesis) %>%
-                              mutate(., pathway = "valineBiosynthesis"),
-                            VIP_module4 %>%
-                              filter(., metabolite %in% alanineMetabolism) %>%
-                              mutate(., pathway = "alanineMetabolism"),
-                            VIP_module4 %>%
-                              filter(., metabolite %in% glutathioneMetabolism) %>%
-                              mutate(., pathway = "glutathioneMetabolism"),
-                            VIP_module4 %>%
-                              filter(., metabolite %in% arginineBiosynthesis) %>%
-                              mutate(., pathway = "arginineBiosynthesis")) %>%
+                                      filter(., metabolite %in% valineBiosynthesis) %>%
+                                      mutate(., pathway = "valineBiosynthesis"),
+                                    VIP_module4 %>%
+                                      filter(., metabolite %in% alanineMetabolism) %>%
+                                      mutate(., pathway = "alanineMetabolism"),
+                                    VIP_module4 %>%
+                                      filter(., metabolite %in% glutathioneMetabolism) %>%
+                                      mutate(., pathway = "glutathioneMetabolism"),
+                                    VIP_module4 %>%
+                                      filter(., metabolite %in% arginineBiosynthesis) %>%
+                                      mutate(., pathway = "arginineBiosynthesis")) %>%
   mutate(., module = "module4") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
 module4_pairwiseVIPpathway
 ```
 
 ```{r}
 module5_pairwiseVIPpathway <- rbind(VIP_module5 %>%
-                              filter(., metabolite %in% valineBiosynthesis) %>%
-                              mutate(., pathway = "valineBiosynthesis"),
-                            VIP_module5 %>%
-                              filter(., metabolite %in% alanineMetabolism) %>%
-                              mutate(., pathway = "alanineMetabolism"),
-                            VIP_module5 %>%
-                              filter(., metabolite %in% glutathioneMetabolism) %>%
-                              mutate(., pathway = "glutathioneMetabolism"),
-                            VIP_module5 %>%
-                              filter(., metabolite %in% arginineBiosynthesis) %>%
-                              mutate(., pathway = "arginineBiosynthesis")) %>%
+                                      filter(., metabolite %in% valineBiosynthesis) %>%
+                                      mutate(., pathway = "valineBiosynthesis"),
+                                    VIP_module5 %>%
+                                      filter(., metabolite %in% alanineMetabolism) %>%
+                                      mutate(., pathway = "alanineMetabolism"),
+                                    VIP_module5 %>%
+                                      filter(., metabolite %in% glutathioneMetabolism) %>%
+                                      mutate(., pathway = "glutathioneMetabolism"),
+                                    VIP_module5 %>%
+                                      filter(., metabolite %in% arginineBiosynthesis) %>%
+                                      mutate(., pathway = "arginineBiosynthesis")) %>%
   mutate(., module = "module5") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
 module5_pairwiseVIPpathway
 ```
 
 ```{r}
 module6_pairwiseVIPpathway <- rbind(VIP_module6 %>%
-                              filter(., metabolite %in% valineBiosynthesis) %>%
-                              mutate(., pathway = "valineBiosynthesis"),
-                            VIP_module6 %>%
-                              filter(., metabolite %in% alanineMetabolism) %>%
-                              mutate(., pathway = "alanineMetabolism"),
-                            VIP_module6 %>%
-                              filter(., metabolite %in% glutathioneMetabolism) %>%
-                              mutate(., pathway = "glutathioneMetabolism"),
-                            VIP_module6 %>%
-                              filter(., metabolite %in% arginineBiosynthesis) %>%
-                              mutate(., pathway = "arginineBiosynthesis")) %>%
+                                      filter(., metabolite %in% valineBiosynthesis) %>%
+                                      mutate(., pathway = "valineBiosynthesis"),
+                                    VIP_module6 %>%
+                                      filter(., metabolite %in% alanineMetabolism) %>%
+                                      mutate(., pathway = "alanineMetabolism"),
+                                    VIP_module6 %>%
+                                      filter(., metabolite %in% glutathioneMetabolism) %>%
+                                      mutate(., pathway = "glutathioneMetabolism"),
+                                    VIP_module6 %>%
+                                      filter(., metabolite %in% arginineBiosynthesis) %>%
+                                      mutate(., pathway = "arginineBiosynthesis")) %>%
   mutate(., module = "module6") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
 module6_pairwiseVIPpathway
 ```
 
 ```{r}
 module7_pairwiseVIPpathway <- rbind(VIP_module7 %>%
-                              filter(., metabolite %in% valineBiosynthesis) %>%
-                              mutate(., pathway = "valineBiosynthesis"),
-                            VIP_module7 %>%
-                              filter(., metabolite %in% alanineMetabolism) %>%
-                              mutate(., pathway = "alanineMetabolism"),
-                            VIP_module7 %>%
-                              filter(., metabolite %in% glutathioneMetabolism) %>%
-                              mutate(., pathway = "glutathioneMetabolism"),
-                            VIP_module7 %>%
-                              filter(., metabolite %in% arginineBiosynthesis) %>%
-                              mutate(., pathway = "arginineBiosynthesis")) %>%
+                                      filter(., metabolite %in% valineBiosynthesis) %>%
+                                      mutate(., pathway = "valineBiosynthesis"),
+                                    VIP_module7 %>%
+                                      filter(., metabolite %in% alanineMetabolism) %>%
+                                      mutate(., pathway = "alanineMetabolism"),
+                                    VIP_module7 %>%
+                                      filter(., metabolite %in% glutathioneMetabolism) %>%
+                                      mutate(., pathway = "glutathioneMetabolism"),
+                                    VIP_module7 %>%
+                                      filter(., metabolite %in% arginineBiosynthesis) %>%
+                                      mutate(., pathway = "arginineBiosynthesis")) %>%
   mutate(., module = "module7") #Identify metabolites present in pathways of interest. Combine information and add a column for module identity
 module7_pairwiseVIPpathway
 ```
