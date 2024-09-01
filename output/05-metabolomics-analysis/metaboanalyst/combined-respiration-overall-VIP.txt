@@ -1,0 +1,5 @@
+metabolite	VIP
+alpha-ketoglutarate	1.18793647969963
+glucose-1-phosphate	1.05294885595851
+fumaric acid	1.03125154976532
+malic acid	1.02425804035454

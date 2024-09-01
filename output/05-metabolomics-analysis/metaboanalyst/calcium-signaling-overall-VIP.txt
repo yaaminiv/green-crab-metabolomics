@@ -1,0 +1,7 @@
+metabolite	VIP
+UDP-N-acetylglucosamine 	1.31524666902115
+serine	1.22847123911419
+threonine	1.18626330982793
+tyrosine	1.17209766519879
+tryptophan 	1.16397137236509
+glutamate 	1.10717352012459

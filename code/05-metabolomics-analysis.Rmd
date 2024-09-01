@@ -1448,11 +1448,6 @@ mkdir metaboanalyst/figures
 ## Manual pathway analysis
 
 There are a few pathways of interest based on my experiment. Since thermal tolerance in marine invertebrates is linked to oxygen availability, the tradeoff between aerobic and anaerobic respiration can tell me if a crab was tipping into a pejus or critical range. Additionally, previous research shows that magnesium can block calcium channels in colder temperatures, reducing mobility. I wanted to see if any metabolites associated with calcium signaling had different abundances according to temperature, which may provide additional evidence for magnesium blockage.
-
-```{r}
-head(transMetabData)
-```
-
 ### Aerobic respiration
 
 #### Glycolysis
@@ -1639,6 +1634,16 @@ respirationMetabolites <- c("glucose ", "glucose-1-phosphate", "glucose-6-phosph
 ```
 
 ```{r}
+overallVIP_respirationMetabolites <- significantVIP %>%
+  filter(., metabolite %in% respirationMetabolites) #Identify overall VIP associated with pathway
+overallVIP_respirationMetabolites
+```
+
+```{r}
+write.table(overallVIP_respirationMetabolites, "metaboanalyst/combined-respiration-overall-VIP.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+```
+
+```{r}
 VIP_respirationMetabolites <- rbind(t.test_13v30_day3 %>%
                                       mutate(., comparison = "13v30_day3") %>%
                                       filter(., p.adj < 0.05) %>%
@@ -1671,7 +1676,7 @@ VIP_respirationMetabolites
 ```
 
 ```{r}
-write.table(VIP_respirationMetabolites, "metaboanalyst/combined-respiration-VIP.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(VIP_respirationMetabolites, "metaboanalyst/combined-respiration-pairwise-VIP.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 ```
 
 ### Calcium signaling
@@ -1690,6 +1695,16 @@ Serotonin: Calcium signaling pathways play a crucial role in the release and reg
 
 ```{r}
 calciumSignalingMetabolites <- c("UDP-N-acetylglucosamine ", "tyrosine", "tryptophan ", "threonine", "serine", "phosphoinositol", "citric acid", "glutathione ", "glutamine", "glutamate ") #Create a vector with metabolites of interest
+```
+
+```{r}
+overallVIP_calciumSignalingMetabolites <- significantVIP %>%
+  filter(., metabolite %in% calciumSignalingMetabolites) #Identify overall VIP associated with pathway
+overallVIP_calciumSignalingMetabolites
+```
+
+```{r}
+write.table(overallVIP_calciumSignalingMetabolites, "metaboanalyst/calcium-signaling-overall-VIP.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
@@ -1725,7 +1740,7 @@ VIP_calciumSignalingMetabolites
 ```
 
 ```{r}
-write.table(VIP_calciumSignalingMetabolites, "metaboanalyst/calcium-signaling-VIP.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(VIP_calciumSignalingMetabolites, "metaboanalyst/calcium-signaling-pairwise-VIP.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 ```
 
 ```{r}
@@ -2734,6 +2749,6 @@ VIPpathway_allModules <- rbind(module0_VIPpathway,
 ```
 
 ```{r}
-write.table(VIPpathway_allModules, "all-module-VIP-pathways.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(VIPpathway_allModules, "metaboanalyst/all-module-VIP-pathways.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 ```
 
