@@ -7,8 +7,15 @@ asparagine	6267	C00152	alanineMetabolism	module2
 alanine	5950	C00041	alanineMetabolism	module2
 glycine	750	C00037	glutathioneMetabolism	module2
 putrescine	1045	C00134	glutathioneMetabolism	module3
+glutamate 	33032	C00025	alanineMetabolism	module4
 oxoproline	7405	C01879	glutathioneMetabolism	module4
+ornithine 	6262	C00077	glutathioneMetabolism	module4
+glutamate 	33032	C00025	glutathioneMetabolism	module4
+ornithine 	6262	C00077	arginineBiosynthesis	module4
+glutamate 	33032	C00025	arginineBiosynthesis	module4
+valine 	6287	C00183	valineBiosynthesis	module5
 leucine	6106	C00123	valineBiosynthesis	module5
+isoleucine 	6306	C00407	valineBiosynthesis	module5
 2-ketoisocaproic acid	70	C00233	valineBiosynthesis	module6
 alpha-ketoglutarate	51	C00026	alanineMetabolism	module6
 alpha-ketoglutarate	51	C00026	arginineBiosynthesis	module6
