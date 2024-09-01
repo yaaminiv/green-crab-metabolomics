@@ -1,0 +1,69 @@
+metabolite	VIP	module
+UDP-N-acetylglucosamine 	1.31524666902115	module0
+isoxanthopterin	1.28214599249126	module0
+phosphoethanolamine	1.23751185380676	module0
+citrulline	1.19367318217559	module0
+xylitol	1.16439996560191	module0
+N-acetylputrescine 	1.16176161700425	module0
+methionine sulfoxide	1.15896694866983	module0
+alpha-aminoadipic acid	1.12096708728421	module0
+cytosine	1.10315257961759	module0
+dimethylglycine	1.09984814224183	module0
+2-aminobutyric acid	1.08900903414582	module0
+3-aminoisobutyric acid	1.05603542910861	module0
+cadaverine	1.05367874360504	module0
+urea	1.0337904987308	module0
+malic acid	1.02425804035454	module0
+hypoxanthine	1.02174448785889	module0
+beta-alanine	1.01283615039321	module0
+N-methylethanolamine	1.66711219479947	module2
+alanine	1.47041621478218	module2
+glycerol-alpha-phosphate	1.46465954064486	module2
+4-hydroxymandelic acid	1.2747174990713	module2
+arabitol	1.27364871007099	module2
+phenylethylamine	1.23484921381356	module2
+3-Aminopiperidine-2,6-dione 	1.2186392658719	module2
+glycine	1.19936935563896	module2
+threonine	1.18626330982793	module2
+asparagine	1.17723868366768	module2
+N-alpha-acetyllysine 	1.16082241726125	module2
+5-methoxytryptamine	1.1138182787021	module2
+tyramine	1.05595673980855	module2
+serotonin	1.03355782226292	module2
+myo-inositol	1.85240419839868	module3
+stearic acid	1.26923177278397	module3
+putrescine	1.23136699532741	module3
+heptadecanoic acid	1.18568670051489	module3
+hydroquinone	1.16508262466398	module3
+adipic acid	1.15145469613592	module3
+4-hydroxybenzoate	1.14668403012666	module3
+arachidic acid	1.11904104089104	module3
+glutaric acid	1.09170850008288	module3
+glucose-1-phosphate	1.05294885595851	module3
+terephthalic acid	1.05292251942206	module3
+pyrophosphate 	1.04460771159104	module3
+taurine	1.18246954555816	module4
+ornithine 	1.14130313670232	module4
+glutamate 	1.10717352012459	module4
+noradrenaline	1.08217783269517	module4
+sulfuric acid	1.04599663404134	module4
+oxoproline	1.03699342522237	module4
+phosphate	1.03475260719176	module4
+histamine 	1.03056417465575	module4
+homocysteine 	1.01112260764302	module4
+hydroxylamine	1.4641311907033	module5
+isoleucine 	1.35114951123782	module5
+methionine	1.35060133461251	module5
+phenylalanine	1.35047946401713	module5
+valine 	1.31947683701844	module5
+leucine	1.2808663302041	module5
+tyrosine	1.17209766519879	module5
+tryptophan 	1.16397137236509	module5
+ribose-5-phosphate	1.1596894185681	module5
+uridine	1.34113384171982	module6
+proline	1.25293110192291	module6
+alpha-ketoglutarate	1.18793647969963	module6
+2-ketoisocaproic acid	1.15878068441227	module6
+adenosine-5-monophosphate	1.26628449340276	module7
+serine	1.22847123911419	module7
+methanolphosphate	1.06167164019645	module7
