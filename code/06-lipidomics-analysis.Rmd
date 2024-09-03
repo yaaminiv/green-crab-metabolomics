@@ -21,34 +21,24 @@ getwd()
 # Install packages
 
 ```{r packages, warning = FALSE, message = FALSE}
-# if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse') 
-# if ("vegan" %in% rownames(installed.packages()) == 'FALSE') install.packages('vegan') 
-# if ("factoextra" %in% rownames(installed.packages()) == 'FALSE') install.packages('factoextra') 
-# if ("ggfortify" %in% rownames(installed.packages()) == 'FALSE') install.packages('ggfortify') 
-# if ("naniar" %in% rownames(installed.packages()) == 'FALSE') install.packages('naniar') 
-# if ("cowplot" %in% rownames(installed.packages()) == 'FALSE') install.packages('cowplot') 
+# if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse')
+# if ("vegan" %in% rownames(installed.packages()) == 'FALSE') install.packages('vegan')
 # if (!requireNamespace("BiocManager", quietly = TRUE))
 #   install.packages("BiocManager")
-# if ("mixOmics" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("mixOmics") 
-# if ("RVAideMemoire" %in% rownames(installed.packages()) == 'FALSE') install.packages('RVAideMemoire') 
-# if ("VennDiagram" %in% rownames(installed.packages()) == 'FALSE') install.packages('VennDiagram') 
-# if ("broom" %in% rownames(installed.packages()) == 'FALSE') install.packages('broom') 
-# if ("RColorBrewer" %in% rownames(installed.packages()) == 'FALSE') install.packages('RColorBrewer') 
-# if ("pheatmap" %in% rownames(installed.packages()) == 'FALSE') install.packages('pheatmap') 
-# if ("genefilter" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("genefilter") 
+# if ("mixOmics" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("mixOmics")
+# if ("RVAideMemoire" %in% rownames(installed.packages()) == 'FALSE') install.packages('RVAideMemoire')
+# if ("broom" %in% rownames(installed.packages()) == 'FALSE') install.packages('broom')
+# if ("RColorBrewer" %in% rownames(installed.packages()) == 'FALSE') install.packages('RColorBrewer')
+# if ("pheatmap" %in% rownames(installed.packages()) == 'FALSE') install.packages('pheatmap')
+# if ("genefilter" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("genefilter")
 # if ("WGCNA" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('WGCNA')
-# if ("dendsort" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('dendsort') 
-# if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap') 
-
+# if ("dendsort" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('dendsort')
+# if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap')
+# if ("svglite" %in% rownames(installed.packages()) == 'FALSE') install.packages("svglite")
 require(tidyverse)
 require(vegan)
-# require(factoextra)
-# require(ggfortify)
-# require(naniar)
-# require(cowplot)
 require(mixOmics)
 require(RVAideMemoire)
-# require(VennDiagram)
 require(broom)
 require(RColorBrewer)
 require(pheatmap)
@@ -56,6 +46,7 @@ require(genefilter)
 require(WGCNA)
 require(dendsort)
 require(ComplexHeatmap)
+require(svglite)
 ```
 
 ```{r}
@@ -74,9 +65,8 @@ The file of lipid abundances I got from the West Coast Metabolomics Center did n
 
 ```{r}
 rawLipidomicsData <- read.csv("../../data/raw_lipidomics_data.csv", header = TRUE) %>% 
-  dplyr::rename_with(~stringr::str_replace_all(., "X", "")) %>%
-  rownames_to_column(., var = "uniqueID") #Import data. Remove the "X" prefix for crab IDs. Convert rownames to a new column, uniqueID, since not every lipid has a unique identifier.
-rawLipidomicsData[c(9:77)] <- rawLipidomicsData[c(9:77)] %>% mutate_if(is.character, as.numeric) #Convert data columns to numeric
+  dplyr::rename_with(~stringr::str_replace_all(., "X", "")) #Import data. Remove the "X" prefix for crab IDs.
+rawLipidomicsData[c(8:76)] <- rawLipidomicsData[c(8:76)] %>% mutate_if(is.character, as.numeric) #Convert data columns to numeric
 head(rawLipidomicsData) #Confirm import
 ```
 
@@ -89,7 +79,6 @@ inChiKeyNamePubmed <- read.csv("../../data/cts-inchikey-name-pubmed.csv", header
 nrow(inChiKeyNamePubmed) #391 unique lipids with chemical names and PubMed CID
 head(inChiKeyNamePubmed) #Confirm file import
 ```
-
 
 ```{r}
 lipidomicsMetadata <- read.csv("../../data/metabolomics_metadata.csv", header = FALSE, strip.white = TRUE) %>% 
@@ -106,31 +95,29 @@ lipidomicsMetadata <- read.csv("../../data/metabolomics_metadata.csv", header = 
 tail(lipidomicsMetadata) #Confirm import
 ```
 
-
 # Format data
 
 Before analyzing the data, I will transform the data and match with treatment metadata. The West Coast Metabolomics Center has already normalized data. 
 
 ```{r}
 transLipidData <- rawLipidomicsData %>%
-  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
-  arrange(., "PubChem.ID") %>%
-  dplyr::select(., -c(1:3, 5:10)) %>%
+  group_by(identifier) %>%
+  summarise(across(where(is.numeric), ~ mean(.x, na.rm = TRUE))) %>%
   t(.) %>% as.data.frame(.) %>%
   purrr::set_names(as.character(dplyr::slice(., 1))) %>%
   dplyr::slice(., -1) %>%
   rownames_to_column(., var = "crab.ID") %>%
-  left_join(lipidomicsMetadata, ., by = "crab.ID") #Join with inChiKey table and arrange by PubChem CID. This will ensure that any compounds without CID (aka unknowns) are at the bottom. The first 418 rows have PubChem CID (and chemical names). Remove name MS information and keep only the unique IDs (some chemical names and CID are repeated since positive and negative polarities are listed separately). Convert unique IDs to rownames, and transform dataframe. Convert rownames to crab.ID column.
-transLipidData[, c(5:2410)] <- transLipidData[, c(5:2410)] %>% mutate_if(is.character, as.numeric) #Convert data columns to numeric
+  left_join(lipidomicsMetadata, ., by = "crab.ID") #Take raw data and group by identifier. Average abundance across numeric columns to deal with any duplicate entries. Transpose data, convert the first row (identifiers) to column names, and remove this row. Convert rownames to crab ID colunn. Join with lipidomics metadata. 
+transLipidData[, c(4:2410)] <- transLipidData[, c(4:2410)] %>% mutate_if(is.character, as.numeric) #Convert data columns to numeric
 head(transLipidData) #Confirm changes
 ```
 
 ```{r}
-uniqueIDtoinChiKeyNamePubmed <- rawLipidomicsData %>%
+lipidIdentifiers <- rawLipidomicsData %>%
   right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
-  arrange(., "PubChem.ID") %>%
-  dplyr::select(., c(1:4)) #Save dataframe with all possible identifiers for downstream analysis
-head(uniqueIDtoinChiKeyNamePubmed)
+  arrange(., "PubChem.ID") %>% 
+  dplyr::select(4:5, 3:1) #Save dataframe with all possible identifiers for downstream analysis
+head(lipidIdentifiers)
 ```
 
 # Initial data investigation with PCA
@@ -141,7 +128,7 @@ mkdir PCA/figures
 ```
 
 ```{r}
-scaled.pca <- prcomp(log(transLipidData[c(5:2410)]) %>%
+scaled.pca <- prcomp(log(transLipidData[c(4:2410)]) %>%
                        replace(is.na(.), 0), 
                      scale = TRUE, center = TRUE) #Use prcomp to perform a centered and scaled PCA calculation. Replace all NA with 0 in the dataframe and log transform prior to performing the PCA calculation
 summary(scaled.pca) #Standard deviations for each PC
@@ -223,7 +210,7 @@ I'll use a global permutational multivariate analysis of variance (PERMANOVA) to
 
 ```{r}
 permanova.lipid <- adonis2(scale((log(transLipidData[c(5:2410)]) %>%
-                       replace(is.na(.), 0))) ~ treatment*day, data = transLipidData, method = 'eu') #Conduct global PERMANOVA to assess significance of trends in PCA. Scale lipidomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
+                                    replace(is.na(.), 0))) ~ treatment*day, data = transLipidData, method = 'eu') #Conduct global PERMANOVA to assess significance of trends in PCA. Scale lipidomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
 permanova.lipid #Significant influence of all factors
 ```
 
@@ -645,7 +632,7 @@ head(heatmapAnnot) #Column annotation information
 
 ```{r}
 heatmapAnnotColors <- list(Day = c("3" = "grey80",
-                                  "22" = "grey20"),
+                                   "22" = "grey20"),
                            Temperature = c("5" = plotColors[1],
                                            "13" = plotColors[2],
                                            "30" = plotColors[3])) #List of colors for column annotations
@@ -1180,7 +1167,7 @@ table(mergedColors)
 
 Module sizes are as follows: 
 
- 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15 
+0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15 
 12 144  54  40  26  23  22  22  16  11  10   9   8   8   7   6 
 
 ```{r}
@@ -1490,7 +1477,7 @@ head(heatmapAnnot) #Column annotation information
 
 ```{r}
 heatmapAnnotColors <- list(Day = c("3" = "grey80",
-                                  "22" = "grey20"),
+                                   "22" = "grey20"),
                            Temperature = c("5" = plotColors[1],
                                            "13" = plotColors[2],
                                            "30" = plotColors[3])) #List of colors for column annotations
