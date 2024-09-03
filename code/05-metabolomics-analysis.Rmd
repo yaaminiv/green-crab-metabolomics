@@ -452,6 +452,7 @@ treatmentday.known.VIP %>%
   theme_classic() + theme(axis.text.y = element_text(size = 8)) #Using only metabolites with VIP > 1, arrange by metabolite name and reorder by cumulative VIP score. Plot points and change x and y axis labels.
 ggsave("PLSDA/figures/known-metabolites-VIP-day-treatment.pdf", height = 8.5, width = 11)
 ```
+
 ```{r}
 significantVIP <- treatmentday.known.VIP %>%
   filter(VIP >= 1) #Save significant VIP

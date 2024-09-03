@@ -348,7 +348,7 @@ plotIndiv(treatment.known.plsda, comp = c(1,3), ind.names = FALSE,
 
 ```{r}
 pdf("PLSDA/figures/known-lipids-cimPlot-treatment.pdf", height = 8.5, width = 11)
-cim(treatment.known.plsda, mapping = "Y", row.names = knownTransLipidData$treatment_day, xlab = "Metabolites", ylab = "Temperature (ºC) x Day", margins = c(8, 5), row.cex = 0.5) #Create CIM plot with lipids on the x-axis and treatment x day on the y-axis. 
+cim(treatment.known.plsda, mapping = "Y", row.names = knownTransLipidData$treatment_day, xlab = "Metabolites", ylab = "Temperature (ºC)", margins = c(8, 5), row.cex = 0.5) #Create CIM plot with lipids on the x-axis and treatment x day on the y-axis. 
 dev.off()
 ```
 
@@ -356,30 +356,35 @@ dev.off()
 
 ```{r}
 treatment.known.VIP <- as.data.frame(PLSDA.VIP(treatment.known.plsda)[["tab"]]) %>%
-  rownames_to_column(., var = "uniqueID") #Extract VIP information and save as a dataframe. Convert metabolite rownames to a column.
-head(treatmentdayVIP) #Confirm changes
+  rownames_to_column(., var = "identifier") %>%
+  left_join(., lipidIdentifiers, by = "identifier") #Extract VIP information and save as a dataframe. Convert lipid identifiers to a column. Join with lipid identifier data to get additional ID information
+head(treatment.known.VIP) #Confirm changes
 ```
 
 ```{r}
-write.csv(treatment.known.VIP, "PLSDA/known-lipids-VIP-day-treatment.csv", quote = FALSE, row.names = FALSE) #Save VIP scores
+write.csv(treatment.known.VIP, "PLSDA/known-lipids-VIP-treatment.csv", quote = FALSE, row.names = FALSE) #Save VIP scores
 ```
 
 ```{r}
 treatment.known.VIP %>%
   filter(VIP >= 1) %>%
-  nrow(.) #187 lipids have VIP > 1
-187/418 * 100 #44.7% lipids VIP > 1
+  nrow(.) #184 lipids have VIP > 1
+184/418 * 100 #44% lipids VIP > 1
 ```
 
 ```{r}
 treatment.known.VIP %>%
   filter(VIP >= 1) %>%
   arrange(VIP) %>%
-  ggplot(aes(x = VIP, y = reorder(uniqueID, VIP, sum))) +
+  ggplot(aes(x = VIP, y = reorder(lipid, VIP, sum))) +
   geom_point() +
-  xlab("VIP Score") + ylab("Unique Lipid ID") +
-  theme_classic() + theme(axis.text.y = element_text(size = 8)) #Using only lipids with VIP > 1, arrange by metabolite name and reorder by cumulative VIP score. Plot points and change x and y axis labels.
-ggsave("PLSDA/figures/known-lipids-VIP-day-treatment.pdf", height = 8.5, width = 11)
+  xlab("VIP Score") + ylab("Lipid Identifier") +
+  theme_classic() + theme(axis.text.y = element_text(size = 5)) #Obtain significant VIP (lipids with VIP > 1). Arrange by lipid name and reorder by cumulative VIP score. Plot points and change x and y axis labels.
+ggsave("PLSDA/figures/known-lipids-VIP-treatment.pdf", height = 8.5, width = 11)
+```
+```{r}
+significantVIP <- treatment.known.VIP %>%
+  filter(VIP >= 1) #Save significant VIP
 ```
 
 ## Pairwise tests for VIP lipids
