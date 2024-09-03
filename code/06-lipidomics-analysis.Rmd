@@ -223,7 +223,7 @@ broom::tidy(permanova.lipid) %>%
 
 # PLSDA for all lipids
 
-The next step is for me to conduct a PLS-DA analysis using the `mixOmics` package. This is a more robust way to analyze differences between treatments. Since both temperature and day were significant in the PCA, I'll use both of those factors in the PLSDA.
+The next step is for me to conduct a PLS-DA analysis using the `mixOmics` package. This is a more robust way to analyze differences between treatments. Since only temperature was significant, I'll only include that factor. However, I'll still run the PLSDA with treatment and day just to see what it look
 
 ```{bash}
 mkdir PLSDA
@@ -267,7 +267,7 @@ The VIP are the lipids most important for distinguishing between treatments.
 
 ```{r}
 treatmentVIP <- as.data.frame(PLSDA.VIP(treatment.plsda)[["tab"]]) %>%
-  rownames_to_column(., var = "uniqueID") #Extract VIP information and save as a dataframe. Convert metabolite rownames to a column. 
+  rownames_to_column(., var = "identifier") #Extract VIP information and save as a dataframe. Convert metabolite rownames to a column. 
 head(treatmentVIP) #Confirm changes
 ```
 
@@ -286,69 +286,11 @@ treatmentVIP %>%
 treatmentVIP %>%
   filter(VIP >= 1) %>%
   arrange(VIP) %>%
-  ggplot(aes(x = VIP, y = reorder(uniqueID, VIP, sum))) +
+  ggplot(aes(x = VIP, y = reorder(identifier, VIP, sum))) +
   geom_point() +
-  xlab("VIP Score") + ylab("Unique Lipid ID") +
+  xlab("VIP Score") + ylab("Lipid Identifier") +
   theme_classic() + theme(axis.text.y = element_text(size = 5)) #Using only lipids with VIP > 1, arrange by metabolite name and reorder by cumulative VIP score. Plot points and change x and y axis labels.
 ggsave("PLSDA/figures/all-data-VIP.pdf", height = 8.5, width = 11)
-```
-## Temperature x day
-
-```{r}
-X <- log(transLipidData[c(5:2410)]) #Assign only metabolite data to the X dataframe after log transformation
-Y <- as.factor(transLipidData$treatment_day) #Assign treatment data to the Y dataframe
-```
-
-```{r}
-treatmentday.plsda <- plsda(X,Y, ncomp = 5) #ncomp = # treatments - 1
-plotIndiv(treatmentday.plsda)
-```
-
-```{r}
-#pdf("PLSDA/figures/all-data-PLSDA-day-treatment-comp12.pdf", height = 8.5, width = 11)
-plotIndiv(treatmentday.plsda, comp = c(1,2), ind.names = FALSE,
-          cex = 3, col = c("grey80", "#525252", "salmon", "#CB181D", "lightblue", "#2171B5"), pch = c(12:17), point.lwd = 0.7,
-          ellipse = TRUE, star = TRUE, centroid = FALSE, 
-          legend = TRUE, legend.title = "Temperature (ºC) x Day", 
-          title = "PLS-DA by Temperature and Day", X.label = "Component 1: 31% Explained Variance", size.xlabel = 15, Y.label = "Component 2: 11% Explained Variance", size.ylabel = 15, size.axis = 13,
-          style = "ggplot2") #Visualize first two components of PLS-DA with no individual sample names. Alter point size, color, shape, and line width. Include 95% confidence ellipses and use star format to visualize sample distance from centroids. Include a legend and specify the legend title. Specify the plot title and text label sizes. Use ggplot style.
-#dev.off()
-```
-
-```{r}
-pdf("PLSDA/figures/all-data-cimPlot-day-treatment.pdf", height = 8.5, width = 11)
-cim(treatment.plsda, mapping = "Y", row.names = transLipidData$treatment_day, xlab = "Unique Lipid ID", ylab = "Temperature (ºC) x Day", margins = c(8, 5), row.cex = 0.5) #Create CIM plot with lipids on the x-axis and treatment x day on the y-axis. 
-dev.off()
-```
-
-### Extract VIP
-
-```{r}
-treatmentdayVIP <- as.data.frame(PLSDA.VIP(treatmentday.plsda)[["tab"]]) %>%
-  rownames_to_column(., var = "uniqueID") #Extract VIP information and save as a dataframe. Convert metabolite rownames to a column.
-head(treatmentdayVIP) #Confirm changes
-```
-
-```{r}
-write.csv(treatmentdayVIP, "PLSDA/all-data-VIP-day-treatment.csv", quote = FALSE, row.names = FALSE) #Save VIP scores
-```
-
-```{r}
-treatmentdayVIP %>%
-  filter(VIP >= 1) %>%
-  nrow(.) #251 lipids have VIP > 1
-972/2406 * 100 #40.4% lipids VIP > 1
-```
-
-```{r}
-treatmentdayVIP %>%
-  filter(VIP >= 1) %>%
-  arrange(VIP) %>%
-  ggplot(aes(x = VIP, y = reorder(uniqueID, VIP, sum))) +
-  geom_point() +
-  xlab("VIP Score") + ylab("Unique Lipid ID") +
-  theme_classic() + theme(axis.text.y = element_text(size = 5)) #Using only lipids with VIP > 1, arrange by metabolite name and reorder by cumulative VIP score. Plot points and change x and y axis labels.
-ggsave("PLSDA/figures/all-data-VIP-day-treatment.pdf", height = 8.5, width = 11)
 ```
 
 # PLSDA for known features
