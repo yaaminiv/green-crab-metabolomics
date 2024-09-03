@@ -23,6 +23,7 @@ getwd()
 ```{r packages, warning = FALSE, message = FALSE}
 # if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse')
 # if ("vegan" %in% rownames(installed.packages()) == 'FALSE') install.packages('vegan')
+# if ("ggfortify" %in% rownames(installed.packages()) == 'FALSE') install.packages('ggfortify')
 # if (!requireNamespace("BiocManager", quietly = TRUE))
 #   install.packages("BiocManager")
 # if ("mixOmics" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("mixOmics")
@@ -37,6 +38,7 @@ getwd()
 # if ("svglite" %in% rownames(installed.packages()) == 'FALSE') install.packages("svglite")
 require(tidyverse)
 require(vegan)
+require(ggfortify)
 require(mixOmics)
 require(RVAideMemoire)
 require(broom)
@@ -128,7 +130,7 @@ mkdir PCA/figures
 ```
 
 ```{r}
-scaled.pca <- prcomp(log(transLipidData[c(4:2410)]) %>%
+scaled.pca <- prcomp(log(transLipidData[c(5:2410)]) %>%
                        replace(is.na(.), 0), 
                      scale = TRUE, center = TRUE) #Use prcomp to perform a centered and scaled PCA calculation. Replace all NA with 0 in the dataframe and log transform prior to performing the PCA calculation
 summary(scaled.pca) #Standard deviations for each PC
