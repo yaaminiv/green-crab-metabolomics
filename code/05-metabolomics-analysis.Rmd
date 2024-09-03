@@ -707,7 +707,7 @@ t.test_13v5_day22 %>%
 t.test_13v5_day22 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>% filter(., estimate1 < estimate2) %>%
-  nrow(.) #2 metabolites higher in 30ºC
+  nrow(.) #2 metabolites higher in 5ºC
 ```
 
 ```{r}
@@ -2629,6 +2629,7 @@ VIP_module6 <- rbind(t.test_13v30_day22 %>%
   mutate(module = "module6") #Identify VIP present in module 0 across all pairwise comparisons
 VIP_module6
 ```
+
 ```{r}
 VIP_module7 <- rbind(t.test_13v5_day22 %>%
                        mutate(., comparison = "13v5_day22") %>%
