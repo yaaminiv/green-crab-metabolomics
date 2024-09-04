@@ -249,7 +249,10 @@ mkdir PLSDA/figures
 I'm still going to run the PLS-DA with temperature only because I suspect the plot will look cleaner this way.
 
 ```{r}
-X <- log(transLipidData[c(5:2410)]) #Assign only metabolite data to the X dataframe after log transformation.
+X <- (transLipidData[c(5:2407)] %>%
+        log() %>%
+        mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+        replace(is.na(.), 0)) #Assign only metabolite data to the X dataframe after log transformation.
 Y <- as.factor(transLipidData$treatment) #Assign treatment data to the Y dataframe
 ```
 
@@ -261,10 +264,10 @@ plotIndiv(treatment.plsda)
 ```{r}
 #pdf("PLSDA/figures/all-data-PLSDA-treatment.pdf", height = 8.5, width = 11)
 plotIndiv(treatment.plsda, comp = c(1,2), ind.names = FALSE,
-          cex = 3, col = rev(plotColors), pch = c(15, 17, 19), point.lwd = 0.7,
+          cex = 3, col = c(plotColors[2], plotColors[1], plotColors[3]), pch = c(19, 17, 15), point.lwd = 0.7,
           ellipse = TRUE, star = TRUE, centroid = FALSE, 
           legend = TRUE, legend.title = "Temperature (ºC)", 
-          title = "PLS-DA by Temperature", X.label = "Component 1: 31% Explained Variance", size.xlabel = 15, Y.label = "Component 2: 11% Explained Variance", size.ylabel = 15, size.axis = 13,
+          title = "PLS-DA by Temperature", X.label = "Component 1: 30% Explained Variance", size.xlabel = 15, Y.label = "Component 2: 10% Explained Variance", size.ylabel = 15, size.axis = 13,
           style = "ggplot2") #Visualize first two components of PLS-DA with no individual sample names. Alter point size, color, shape, and line width. Include 95% confidence ellipses and use star format to visualize sample distance from centroids. Include a legend and specify the legend title. Specify the plot title and text label sizes. Use ggplot style.
 #dev.off()
 ```
@@ -281,7 +284,7 @@ The VIP are the lipids most important for distinguishing between treatments.
 
 ```{r}
 treatmentVIP <- as.data.frame(PLSDA.VIP(treatment.plsda)[["tab"]]) %>%
-  rownames_to_column(., var = "identifier") #Extract VIP information and save as a dataframe. Convert metabolite rownames to a column. 
+  rownames_to_column(., var = "lipid") #Extract VIP information and save as a dataframe. Convert metabolite rownames to a column. 
 head(treatmentVIP) #Confirm changes
 ```
 
@@ -292,17 +295,17 @@ write.csv(treatmentVIP, "PLSDA/all-data-VIP-treatment.csv", quote = FALSE, row.n
 ```{r}
 treatmentVIP %>%
   filter(VIP >= 1) %>%
-  nrow(.) #1005 lipids have VIP > 1
-1005/2406 * 100 #41.8% lipids VIP > 1
+  nrow(.) #1020 lipids have VIP > 1
+1020/2402 * 100 #42.5% lipids VIP > 1
 ```
 
 ```{r}
 treatmentVIP %>%
   filter(VIP >= 1) %>%
   arrange(VIP) %>%
-  ggplot(aes(x = VIP, y = reorder(identifier, VIP, sum))) +
+  ggplot(aes(x = VIP, y = reorder(lipid, VIP, sum))) +
   geom_point() +
-  xlab("VIP Score") + ylab("Lipid Identifier") +
+  xlab("VIP Score") + ylab("Lipid") +
   theme_classic() + theme(axis.text.y = element_text(size = 5)) #Using only lipids with VIP > 1, arrange by metabolite name and reorder by cumulative VIP score. Plot points and change x and y axis labels.
 ggsave("PLSDA/figures/all-data-VIP.pdf", height = 8.5, width = 11)
 ```
@@ -332,7 +335,7 @@ plotIndiv(treatment.known.plsda)
 ```{r}
 #pdf("PLSDA/figures/known-lipids-PLSDA-treatment-comp12.pdf", height = 8.5, width = 11)
 plotIndiv(treatment.known.plsda, comp = c(1,2), ind.names = FALSE,
-          cex = 3, col = c("#2171B5", "#525252", "#CB181D"), pch = c(15, 17, 19), point.lwd = 0.7,
+          cex = 3, col = c(plotColors[2], plotColors[1], plotColors[3]), pch = c(19, 17, 15), point.lwd = 0.7,
           ellipse = TRUE, star = TRUE, centroid = FALSE, 
           legend = TRUE, legend.title = "Temperature (ºC)", 
           title = "PLS-DA by Temperature", X.label = "Component 1: 26% Explained Variance", size.xlabel = 15, Y.label = "Component 2: 18% Explained Variance", size.ylabel = 15, size.axis = 13,
@@ -342,7 +345,7 @@ plotIndiv(treatment.known.plsda, comp = c(1,2), ind.names = FALSE,
 ```{r}
 #svg("PLSDA/figures/known-lipids-PLSDA-treatment-comp12.svg", height = 8.5, width = 11)
 plotIndiv(treatment.known.plsda, comp = c(1,2), ind.names = FALSE,
-          cex = 3, col = c("#2171B5", "#525252", "#CB181D"), pch = c(15, 17, 19), point.lwd = 0.7,
+          cex = 3, col = c(plotColors[2], plotColors[1], plotColors[3]), pch = c(19, 17, 15), point.lwd = 0.7,
           ellipse = FALSE, star = TRUE, centroid = FALSE, 
           legend = TRUE, legend.title = "Temperature (ºC)", legend.position = "bottom",
           title = "PLS-DA by Temperature", X.label = "Component 1: 26% Explained Variance", size.xlabel = 15, Y.label = "Component 2: 18% Explained Variance", size.ylabel = 15, size.axis = 13,
@@ -353,7 +356,7 @@ plotIndiv(treatment.known.plsda, comp = c(1,2), ind.names = FALSE,
 ```{r}
 #pdf("PLSDA/figures/known-lipids-PLSDA-treatment-comp13.pdf", height = 8.5, width = 11)
 plotIndiv(treatment.known.plsda, comp = c(1,3), ind.names = FALSE,
-          cex = 3, col = c("#2171B5", "#525252", "#CB181D"), pch = c(15, 17, 19), point.lwd = 0.7,
+          cex = 3, col = c(plotColors[2], plotColors[1], plotColors[3]), pch = c(19, 17, 15), point.lwd = 0.7,
           ellipse = TRUE, star = TRUE, centroid = FALSE, 
           legend = TRUE, legend.title = "Temperature (ºC)", 
           title = "PLS-DA by Temperature", X.label = "Component 1: 26% Explained Variance", size.xlabel = 15, Y.label = "Component 3: 8% Explained Variance", size.ylabel = 15, size.axis = 13,
