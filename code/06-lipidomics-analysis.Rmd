@@ -318,7 +318,7 @@ I will run this PLSDA for temperature only, since that was the only factor signi
 
 ```{r}
 knownTransLipidData <- transLipidData %>%
-  dplyr::select(1:4, which(colnames(transLipidData) %in% lipidIdentifiers$identifier[1:418])) #Take transposed lipid data and select columns associated with known lipids.
+  dplyr::select(1:4, which(colnames(transLipidData) %in% lipidIdentifiers$lipid[1:418])) #Take transposed lipid data and select columns associated with known lipids.
 head(knownTransLipidData)
 ```
 
@@ -329,7 +329,7 @@ Y <- as.factor(knownTransLipidData$treatment) #Assign treatment data to the Y da
 
 ```{r}
 treatment.known.plsda <- plsda(X,Y, ncomp = 3) #ncomp = # treatments - 1
-plotIndiv(treatment.known.plsda)
+plotIndiv(treatment.known.plsda, comp = c(1,3))
 ```
 
 ```{r}
@@ -338,17 +338,17 @@ plotIndiv(treatment.known.plsda, comp = c(1,2), ind.names = FALSE,
           cex = 3, col = c(plotColors[2], plotColors[1], plotColors[3]), pch = c(19, 17, 15), point.lwd = 0.7,
           ellipse = TRUE, star = TRUE, centroid = FALSE, 
           legend = TRUE, legend.title = "Temperature (ºC)", 
-          title = "PLS-DA by Temperature", X.label = "Component 1: 26% Explained Variance", size.xlabel = 15, Y.label = "Component 2: 18% Explained Variance", size.ylabel = 15, size.axis = 13,
+          title = "PLS-DA by Temperature", X.label = "Component 1: 27% Explained Variance", size.xlabel = 15, Y.label = "Component 2: 19% Explained Variance", size.ylabel = 15, size.axis = 13,
           style = "ggplot2") #Visualize first two components of PLS-DA with no individual sample names. Alter point size, color, shape, and line width. Include 95% confidence ellipses and use star format to visualize sample distance from centroids. Include a legend and specify the legend title. Specify the plot title and text label sizes. Use ggplot style.
 #dev.off()
 ```
 ```{r}
 #svg("PLSDA/figures/known-lipids-PLSDA-treatment-comp12.svg", height = 8.5, width = 11)
 plotIndiv(treatment.known.plsda, comp = c(1,2), ind.names = FALSE,
-          cex = 3, col = c(plotColors[2], plotColors[1], plotColors[3]), pch = c(19, 17, 15), point.lwd = 0.7,
+          cex = 3, col = c(plotColors[2], plotColors[1], plotColors[3]), pch = 19, point.lwd = 0.7,
           ellipse = FALSE, star = TRUE, centroid = FALSE, 
           legend = TRUE, legend.title = "Temperature (ºC)", legend.position = "bottom",
-          title = "PLS-DA by Temperature", X.label = "Component 1: 26% Explained Variance", size.xlabel = 15, Y.label = "Component 2: 18% Explained Variance", size.ylabel = 15, size.axis = 13,
+          title = "PLS-DA by Temperature", X.label = "Component 1: 27% Explained Variance", size.xlabel = 15, Y.label = "Component 2: 19% Explained Variance", size.ylabel = 15, size.axis = 13,
           style = "ggplot2") #Visualize first two components of PLS-DA with no individual sample names. Alter point size, color, shape, and line width. Include 95% confidence ellipses and use star format to visualize sample distance from centroids. Include a legend and specify the legend title. Specify the plot title and text label sizes. Use ggplot style.
 #dev.off()
 ```
@@ -359,7 +359,7 @@ plotIndiv(treatment.known.plsda, comp = c(1,3), ind.names = FALSE,
           cex = 3, col = c(plotColors[2], plotColors[1], plotColors[3]), pch = c(19, 17, 15), point.lwd = 0.7,
           ellipse = TRUE, star = TRUE, centroid = FALSE, 
           legend = TRUE, legend.title = "Temperature (ºC)", 
-          title = "PLS-DA by Temperature", X.label = "Component 1: 26% Explained Variance", size.xlabel = 15, Y.label = "Component 3: 8% Explained Variance", size.ylabel = 15, size.axis = 13,
+          title = "PLS-DA by Temperature", X.label = "Component 1: 27% Explained Variance", size.xlabel = 15, Y.label = "Component 3: 7% Explained Variance", size.ylabel = 15, size.axis = 13,
           style = "ggplot2") #Visualize first two components of PLS-DA with no individual sample names. Alter point size, color, shape, and line width. Include 95% confidence ellipses and use star format to visualize sample distance from centroids. Include a legend and specify the legend title. Specify the plot title and text label sizes. Use ggplot style.
 #dev.off()
 ```
