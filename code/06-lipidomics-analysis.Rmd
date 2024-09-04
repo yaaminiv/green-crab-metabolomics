@@ -659,8 +659,6 @@ head(rawLipidomicsData)
 head(lipidomicsMetadata)
 ```
 
-
-
 ```{r}
 rowwiseLipidData <- rawLipidomicsData %>%
   right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
