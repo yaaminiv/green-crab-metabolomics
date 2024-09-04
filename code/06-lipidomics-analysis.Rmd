@@ -329,6 +329,7 @@ Y <- as.factor(knownTransLipidData$treatment) #Assign treatment data to the Y da
 
 ```{r}
 treatment.known.plsda <- plsda(X,Y, ncomp = 3) #ncomp = # treatments - 1
+plotIndiv(treatment.known.plsda, comp = c(1,2))
 plotIndiv(treatment.known.plsda, comp = c(1,3))
 ```
 
