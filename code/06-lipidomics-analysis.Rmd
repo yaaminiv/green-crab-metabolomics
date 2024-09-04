@@ -374,8 +374,8 @@ dev.off()
 
 ```{r}
 treatment.known.VIP <- as.data.frame(PLSDA.VIP(treatment.known.plsda)[["tab"]]) %>%
-  rownames_to_column(., var = "identifier") %>%
-  left_join(., lipidIdentifiers, by = "identifier") #Extract VIP information and save as a dataframe. Convert lipid identifiers to a column. Join with lipid identifier data to get additional ID information
+  rownames_to_column(., var = "lipid") %>%
+  left_join(., lipidIdentifiers, by = "lipid") #Extract VIP information and save as a dataframe. Convert lipid identifiers to a column. Join with lipid identifier data to get additional ID information
 head(treatment.known.VIP) #Confirm changes
 ```
 
@@ -386,8 +386,8 @@ write.csv(treatment.known.VIP, "PLSDA/known-lipids-VIP-treatment.csv", quote = F
 ```{r}
 treatment.known.VIP %>%
   filter(VIP >= 1) %>%
-  nrow(.) #184 lipids have VIP > 1
-184/418 * 100 #44% lipids VIP > 1
+  nrow(.) #188 lipids have VIP > 1
+188/418 * 100 #45% lipids VIP > 1
 ```
 
 ```{r}
@@ -396,7 +396,7 @@ treatment.known.VIP %>%
   arrange(VIP) %>%
   ggplot(aes(x = VIP, y = reorder(lipid, VIP, sum))) +
   geom_point() +
-  xlab("VIP Score") + ylab("Lipid Identifier") +
+  xlab("VIP Score") + ylab("Lipid") +
   theme_classic() + theme(axis.text.y = element_text(size = 4)) #Obtain significant VIP (lipids with VIP > 1). Arrange by lipid name and reorder by cumulative VIP score. Plot points and change x and y axis labels.
 ggsave("PLSDA/figures/known-lipids-VIP-treatment.pdf", height = 8.5, width = 11)
 ```
@@ -420,13 +420,13 @@ X <- knownTransLipidData %>%
   filter(., treatment %in% list) %>%
   droplevels() #Filter knownTransLipidData for desired contrasts
 Y <- as.factor(X$treatment) #Treatments for Y
-X <- X[, 5:422] #Retain data only
+X <- X[, 5:419] #Retain data only
 ```
 
 ```{r}
 known.plsda_13v30 <- plsda(X, Y, ncomp = 3) #Run PLSDA for desired contrast
 VIP_13v30 <- as.data.frame(PLSDA.VIP(known.plsda_13v30)[["tab"]]) %>%
-  rownames_to_column(., var = "identifier") %>%
+  rownames_to_column(., var = "lipid") %>%
   filter(., VIP >= 1) #Extract VIP list and filter for VIP > 1
 nrow(VIP_13v30)
 ```
@@ -436,9 +436,11 @@ clean_13v30 <- knownTransLipidData %>%
   dplyr::filter(., treatment %in% list) %>%
   droplevels() #Filter knownTransLipidData for desired contrasts.
 VIP_select_13v30 <- cbind(clean_13v30[, 1:4], 
-                          log(clean_13v30[, names(clean_13v30) %in% VIP_13v30$identifier])) %>%
-  pivot_longer(., cols = 5:149, values_to = "log_norm_counts", names_to = "identifier") %>%
-  group_by(., identifier) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by lipids.
+                          (log(clean_13v30[, names(clean_13v30) %in% VIP_13v30$lipid]) %>%
+                             mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+                             replace(is.na(.), 0))) %>%
+  pivot_longer(., cols = 5:147, values_to = "log_norm_counts", names_to = "lipid") %>%
+  group_by(., lipid) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Ensure -Inf from log transformation is converted to 0. Pivot data longer and group by lipids.
 VIP_select_13v30 #Confirm changes
 ```
 
@@ -449,7 +451,7 @@ t.test_13v30 <-do(VIP_select_13v30, tidy(t.test(.$log_norm_counts ~ .$treatment,
                                                 var.equal = FALSE,
                                                 conf.level = 0.95
 ))) #Looped t-test for all lipids with VIP > 1
-t.test_13v30$p.adj <- p.adjust(t.test_13v30$p.value, method = c("fdr"), n = length(VIP_13v30$identifier)) #Adjust p value for the number of comparisons
+t.test_13v30$p.adj <- p.adjust(t.test_13v30$p.value, method = c("fdr"), n = length(VIP_13v30$lipid)) #Adjust p value for the number of comparisons
 t.test_13v30
 ```
 
@@ -457,21 +459,21 @@ t.test_13v30
 t.test_13v30 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>%
-  nrow(.) #134 significantly different lipids
+  nrow(.) #130 significantly different lipids
 t.test_13v30 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>% filter(., estimate1 > estimate2) %>%
-  nrow(.) #99 lipids higher in 13ºC
+  nrow(.) #97 lipids higher in 13ºC
 t.test_13v30 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>% filter(., estimate1 < estimate2) %>%
-  nrow(.) #35 lipids higher in 30ºC
+  nrow(.) #33 lipids higher in 30ºC
 ```
 
 ```{r}
 t.test_13v30 %>%
   filter(., p.adj < 0.05) %>%
-  right_join(x = lipidIdentifiers, y = ., by = "identifier") %>%
+  right_join(x = lipidIdentifiers, y = ., by = "lipid") %>%
   write.csv("PLSDA/known-lipids-13v30-VIP.csv", quote = FALSE, row.names = FALSE) #Take t-test results and join with unique ID information to get chemical names. Save as a csv
 ```
 
@@ -479,8 +481,7 @@ t.test_13v30 %>%
 t.test_13v30 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>%
-  left_join(., VIP_13v30, by = "identifier") %>%
-  left_join(., lipidIdentifiers, by = "identifier") %>%
+  left_join(., VIP_13v30, by = "lipid") %>%
   mutate(., direction = case_when(estimate > 0 ~ "13",
                                   estimate < 0 ~ "30")) %>%
   mutate(., score = case_when(estimate > 0 ~ VIP,
@@ -488,7 +489,7 @@ t.test_13v30 %>%
   arrange(score) %>%
   ggplot(aes(x = score, y = reorder(lipid, score, sum))) +
   geom_bar(aes(fill = direction), stat = 'identity') +
-  xlab("VIP Score") + ylab("Lipid Identifier") +
+  xlab("VIP Score") + ylab("Lipid") +
   scale_fill_manual(values = c(plotColors[2], plotColors[1]), 
                     name = "Temperature (ºC)",
                     breaks = c("13", "30"),
@@ -508,13 +509,13 @@ X <- knownTransLipidData %>%
   filter(., treatment %in% list) %>%
   droplevels() #Filter knownTransLipidData for desired contrasts
 Y <- as.factor(X$treatment) #Treatments for Y
-X <- X[, 5:422] #Retain data only
+X <- X[, 5:419] #Retain data only
 ```
 
 ```{r}
 known.plsda_13v5 <- plsda(X, Y, ncomp = 3) #Run PLSDA for desired contrast
 VIP_13v5 <- as.data.frame(PLSDA.VIP(known.plsda_13v5)[["tab"]]) %>%
-  rownames_to_column(., var = "identifier") %>%
+  rownames_to_column(., var = "lipid") %>%
   filter(., VIP >= 1) #Extract VIP list and filter for VIP > 1
 nrow(VIP_13v5)
 ```
@@ -524,9 +525,11 @@ clean_13v5 <- knownTransLipidData %>%
   dplyr::filter(., treatment %in% list) %>%
   droplevels() #Filter knownTransLipidData for desired contrasts.
 VIP_select_13v5 <- cbind(clean_13v5[, 1:4], 
-                         log(clean_13v5[, names(clean_13v5) %in% VIP_13v5$identifier])) %>%
-  pivot_longer(., cols = 5:149, values_to = "log_norm_counts", names_to = "identifier") %>%
-  group_by(., identifier) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by lipids.
+                         (log(clean_13v5[, names(clean_13v5) %in% VIP_13v5$lipid]) %>%
+                            mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+                            replace(is.na(.), 0))) %>%
+  pivot_longer(., cols = 5:175, values_to = "log_norm_counts", names_to = "lipid") %>%
+  group_by(., lipid) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by lipids.
 VIP_select_13v5 #Confirm changes
 ```
 
@@ -537,7 +540,7 @@ t.test_13v5 <-do(VIP_select_13v5, tidy(t.test(.$log_norm_counts ~ .$treatment,
                                               var.equal = FALSE,
                                               conf.level = 0.95
 ))) #Looped t-test for all lipids with VIP > 1
-t.test_13v5$p.adj <- p.adjust(t.test_13v5$p.value, method = c("fdr"), n = length(VIP_13v5$identifier)) #Adjust p value for the number of comparisons
+t.test_13v5$p.adj <- p.adjust(t.test_13v5$p.value, method = c("fdr"), n = length(VIP_13v5$lipid)) #Adjust p value for the number of comparisons
 t.test_13v5
 ```
 
@@ -545,21 +548,21 @@ t.test_13v5
 t.test_13v5 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>%
-  nrow(.) #39 significantly different lipids
+  nrow(.) #61 significantly different lipids
 t.test_13v5 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>% filter(., estimate1 > estimate2) %>%
-  nrow(.) #34 lipids higher in 13ºC
+  nrow(.) #55 lipids higher in 13ºC
 t.test_13v5 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>% filter(., estimate1 < estimate2) %>%
-  nrow(.) #5 lipids higher in 5ºC
+  nrow(.) #6 lipids higher in 5ºC
 ```
 
 ```{r}
 t.test_13v5 %>%
   filter(., p.adj < 0.05) %>%
-  right_join(x = lipidIdentifiers, y = ., by = "identifier") %>%
+  right_join(x = lipidIdentifiers, y = ., by = "lipid") %>%
   write.csv("PLSDA/known-lipids-13v5-VIP.csv", quote = FALSE, row.names = FALSE) #Take t-test results and join with unique ID information to get chemical names. Save as a csv
 ```
 
@@ -567,8 +570,7 @@ t.test_13v5 %>%
 t.test_13v5 %>%
   ungroup(.) %>%
   filter(., p.adj < 0.05) %>%
-  left_join(., VIP_13v5, by = "identifier") %>%
-  left_join(., lipidIdentifiers, by = "identifier") %>%
+  left_join(., VIP_13v5, by = "lipid") %>%
   mutate(., direction = case_when(estimate > 0 ~ "13",
                                   estimate < 0 ~ "5")) %>%
   mutate(., score = case_when(estimate > 0 ~ VIP,
@@ -576,7 +578,7 @@ t.test_13v5 %>%
   arrange(score) %>%
   ggplot(aes(x = score, y = reorder(lipid, score, sum))) +
   geom_bar(aes(fill = direction), stat = 'identity') +
-  xlab("VIP Score") + ylab("Lipid Identifier") +
+  xlab("VIP Score") + ylab("Lipid") +
   scale_fill_manual(values = c(plotColors[2], plotColors[3]), 
                     name = "Temperature (ºC)",
                     breaks = c("13", "5"),
