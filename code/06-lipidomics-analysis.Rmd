@@ -367,7 +367,7 @@ plotIndiv(treatment.known.plsda, comp = c(1,3), ind.names = FALSE,
 
 ```{r}
 pdf("PLSDA/figures/known-lipids-cimPlot-treatment.pdf", height = 8.5, width = 11)
-cim(treatment.known.plsda, mapping = "Y", row.names = knownTransLipidData$treatment_day, xlab = "Metabolites", ylab = "Temperature (ºC)", margins = c(8, 5), row.cex = 0.5) #Create CIM plot with lipids on the x-axis and treatment x day on the y-axis. 
+cim(treatment.known.plsda, mapping = "Y", row.names = knownTransLipidData$treatment, xlab = "Lipid", ylab = "Temperature (ºC)", margins = c(8, 5), row.cex = 0.5) #Create CIM plot with lipids on the x-axis and treatment x day on the y-axis. 
 dev.off()
 ```
 
@@ -388,7 +388,7 @@ write.csv(treatment.known.VIP, "PLSDA/known-lipids-VIP-treatment.csv", quote = F
 treatment.known.VIP %>%
   filter(VIP >= 1) %>%
   nrow(.) #188 lipids have VIP > 1
-188/418 * 100 #45% lipids VIP > 1
+188/415 * 100 #45.3% lipids VIP > 1
 ```
 
 ```{r}
@@ -495,7 +495,7 @@ t.test_13v30 %>%
                     name = "Temperature (ºC)",
                     breaks = c("13", "30"),
                     labels = c("13", "30")) +
-  theme_classic(base_size = 15) #Take t-test results and filter out significant lipids. Create two new columns using estimate values: one for the direction of increase, and another for positive or negative VIP. Arrange by identifier name and reorder by cumulative VIP score. Plot bars and change x and y axis labels. Add scale information.
+  theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Take t-test results and filter out significant lipids. Create two new columns using estimate values: one for the direction of increase, and another for positive or negative VIP. Arrange by identifier name and reorder by cumulative VIP score. Plot bars and change x and y axis labels. Add scale information.
 ggsave("PLSDA/figures/significant-VIP-13v30.pdf", height = 8.5, width = 11)
 ```
 
@@ -603,7 +603,7 @@ Next, I'll assess the optimal number of lipids to keep in the analysis.
 
 ```{r}
 list.keepX <- c(5:10,  seq(20, 300, 10)) #list.keepX # to output the grid of values tested
-X <- log(knownTransLipidData[c(5:422)]) #Assign known metabolite data to the X dataframe after log transformation
+X <- log(knownTransLipidData[c(5:419)]) #Assign known metabolite data to the X dataframe after log transformation
 Y <- as.factor(knownTransLipidData$treatment) #Assign treatment data to the Y dataframe
 ```
 
@@ -655,20 +655,14 @@ mkdir WCNA/figures
 I need to convert my dataframe such that samples are columns and lipids are rows. I also need to have a dataframe without metadata.
 
 ```{r}
-head(rawLipidomicsData)
-head(lipidomicsMetadata)
-```
-
-```{r}
-rowwiseLipidData <- rawLipidomicsData %>%
-  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
-  arrange(., "PubChem.ID") %>%
-  slice(., c(1:418)) %>%
-  dplyr::select(., -c(1:3, 5:10)) %>%
-  column_to_rownames(., var = "identifier") %>%
-  log(.) %>% 
-  replace(is.na(.), 0) #Take the raw lipidomics data, since that dataframe already has samples in columns and lipids in rows. Join with inChiKey table and arrange by CID. Keep the first 418 rows, since those are the known lipids (names and CID included). Change the unique IDs to rownames. Log transform the data. Replace all NA with 0.
-tail(rowwiseLipidData) #Confirm formatting
+rowwiseLipidData <- knownTransLipidData %>%
+  dplyr::select(-c(treatment:treatment_day)) %>%
+  column_to_rownames(var = "crab.ID") %>%
+  t(.) %>% as.data.frame(.) %>%
+  log(.) %>%
+  mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+  replace(is.na(.), 0) #Take transposed lipid data for known lipids. Remove metadata and set crab ID as row names. Transpose and convert into a dataframe such that samples are columns and lipids are rows. Log-transform data. Convert -Inf to NA, then NA to 0.
+head(rowwiseLipidData) #Confirm formatting
 ```
 
 ```{r}
@@ -677,7 +671,7 @@ rowSums(dplyr::count(rowwiseLipidData)) > 0 #Check that there are no lipids with
 
 ### Data filtering: PoverA and genefilter
 
-*pOverA*: Specifying the minimum count for a proportion of samples for each metabolite. Here, we are using a pOverA of 0.08. This is because we have 69 samples with a minimum of n = 6 samples per treatment x day. Therefore, we will accept lipids that are present in 6/69 = 0.08 of the samples because we expect different lipids by temperature and day as demonstrated by PLSDA analysis. We are further setting the minimum value of lipids to 0.01 (median normalized), such that 8% of the samples must have a non-zero normalized metabolite presence in order for the metabolite to remain in the data set.  
+*pOverA*: Specifying the minimum count for a proportion of samples for each metabolite. Here, we are using a pOverA of 0.08. This is because we have 69 samples with a minimum of n = 6 samples per treatment x day. Therefore, we will accept lipids that are present in 6/69 = 0.08 of the samples because we expect different lipids by temperature as demonstrated by PLSDA analysis. We are further setting the minimum value of lipids to 0.01 (median normalized), such that 8% of the samples must have a non-zero normalized metabolite presence in order for the metabolite to remain in the data set.  
 
 Filter in the package "genefilter". Pre-filtering our dataset to reduce the memory size dataframe, increase the speed of the transformation and testing functions, and improve quality of statistical analysis by removing low-coverage counts. Removed counts could represent outliers in the data and removing these improves sensitivity of statistical tests.
 
@@ -699,7 +693,7 @@ nrow(rowwiseLipidData) #Before
 nrow(rowwiseLipidData_filt) #After
 ```
 
-All 418 known lipids will be used in downstream analysis.
+All 415 known lipids will be used in downstream analysis.
 
 ```{r}
 #Checking that all row and column names match. Should return "TRUE"
@@ -740,12 +734,11 @@ plot(sampleTree, main = "Sample clustering to detect outliers", sub = "", xlab =
 #dev.off()
 ```
 
-303, 304, and 606 look like they could be outliers (all from 30ºC treatment at day 3). I did this analysis with and without those samples and it significantly changed the sample clustering, so I'll proceed with outlier removal.
+304, 303, and 606 look like they could be outliers (all from 30ºC treatment at day 3). I did this analysis with and without those samples and it significantly changed the sample clustering, so I'll proceed with outlier removal.
 
 ```{r}
-rowwiseLipidData[-c(30, 31, 67),]
+rowwiseLipidData[-c(40, 28, 30),] #Remove 303, 304, and 306
 ```
-
 
 ## Network construction and consensus module detection
 
@@ -756,7 +749,7 @@ The soft thresholding power (β) is the number to which the co-expression simila
 ```{r, message=FALSE, warning=FALSE}
 allowWGCNAThreads()
 powers <- c(c(1:20), seq(from = 12, to=20, by=2)) #Create a string of numbers from 1 through 10, and even numbers from 10 through 20
-sft <-pickSoftThreshold(rowwiseLipidData[-c(30, 31, 67),], powerVector = powers, verbose = 5) # Call the network topology analysis function
+sft <-pickSoftThreshold(rowwiseLipidData, powerVector = powers, verbose = 5) # Call the network topology analysis function
 ```
 
 ```{r}
@@ -778,7 +771,7 @@ plot(sft$fitIndices[,1], sft$fitIndices[,5],
 text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1,col="red")
 ```
 
-When choosing a soft thresholding power, want to choose the lowest number that reaches the R<sup>2</sup> cutoff. From this data, it appears that the **soft thresholding power is 9**.  
+When choosing a soft thresholding power, want to choose the lowest number that reaches the R<sup>2</sup> cutoff. From this data, it appears that the **soft thresholding power is 9**.
 
 ### Identify modules using `blockwiseModules`  
 
@@ -799,7 +792,7 @@ mergeCutHeight = 0.25
 picked_power = 9
 temp_cor <- cor       
 cor <- WGCNA::cor # Force it to use WGCNA cor function (fix a namespace conflict issue)
-netwk <- blockwiseModules(rowwiseLipidData[-c(30, 31, 67),],                         # <= input here
+netwk <- blockwiseModules(rowwiseLipidData,                         # <= input here
                           
                           # == Adjacency Function ==
                           power = picked_power,               # <= power here
@@ -834,8 +827,8 @@ table(mergedColors)
 
 Module sizes are as follows: 
 
-0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15 
-12 144  54  40  26  23  22  22  16  11  10   9   8   8   7   6 
+0    1   2   3   4   5   6   7   8   9  10  11  12  13  14  15 
+23 136  52  37  25  23  22  20  17  11  10   9   9   8   7   6 
 
 ```{r}
 # Plot the dendrogram and the module colors underneath
@@ -857,9 +850,7 @@ plotDendroAndColors(
 ``` {r, echo=TRUE, warning=FALSE, message=FALSE}
 module_df <- data.frame(
   Lipid = names(netwk$colors),
-  colors = netwk$colors
-  #colors = labels2colors(netwk$colors)
-)
+  colors = netwk$colors)
 
 module_df[1:5,]
 
@@ -903,19 +894,13 @@ Prepare trait data. Data has to be numeric, so I will substitute temperatures an
 
 ```{r}
 datTraits <- lipidomicsMetadata %>%
-  mutate(., "13ºC at Day 3" = case_when(treatment_day == "13_3" ~ 1,
-                                        treatment_day != "13_3" ~ 0)) %>%
-  mutate(., "5ºC at Day 3" = case_when(treatment_day == "5_3" ~ 1,
-                                       treatment_day != "5_3" ~ 0)) %>%
-  mutate(., "30ºC at Day 3" = case_when(treatment_day == "30_3" ~ 1,
-                                        treatment_day != "30_3" ~ 0)) %>%
-  mutate(., "13ºC at Day 22" = case_when(treatment_day == "13_22" ~ 1,
-                                         treatment_day != "13_22" ~ 0)) %>%
-  mutate(., "5ºC at Day 22" = case_when(treatment_day == "5_22" ~ 1,
-                                        treatment_day != "5_22" ~ 0)) %>%
-  mutate(., "30ºC at Day 22" = case_when(treatment_day == "30_22" ~ 1,
-                                         treatment_day != "30_22" ~ 0)) %>%
-  dplyr::select(., -c(2:4)) #Copy dataframe into datTraits, then use a series of case_when commands to create individual columns for each treatment or day, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns. 
+  mutate(., "13ºC" = case_when(treatment == "13" ~ 1,
+                               treatment != "13" ~ 0)) %>%
+  mutate(., "5ºC" = case_when(treatment == "5" ~ 1,
+                              treatment != "5" ~ 0)) %>%
+  mutate(., "30ºC" = case_when(treatment == "30" ~ 1,
+                               treatment != "30" ~ 0)) %>%
+dplyr::select(., -c(2:4)) #Copy dataframe into datTraits, then use a series of case_when commands to create individual columns for each treatment or day, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns. 
 rownames(datTraits) <- datTraits$crab.ID #Convert crab.ID into rownames.
 datTraits <- datTraits %>%
   dplyr::select(., -crab.ID) #Remove the crab.ID column
@@ -924,14 +909,14 @@ head(datTraits) #Confirm dataframe creation
 
 ```{r}
 #Define numbers of lipids and samples and view 
-nMetabolites <- ncol(rowwiseLipidData[-c(30, 31, 67),])
-nSamples <- nrow(rowwiseLipidData[-c(30, 31, 67),])
+nMetabolites <- ncol(rowwiseLipidData)
+nSamples <- nrow(rowwiseLipidData)
 
 nMetabolites
 nSamples
 ```
 
-We have 612 lipids and 69 samples.   
+We have 415 lipids and 69 samples.   
 
 Next correlate the trait matrix (treatment, day) with eigengenes (modules).  
 
