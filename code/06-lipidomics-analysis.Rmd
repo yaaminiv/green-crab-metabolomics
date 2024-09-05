@@ -656,7 +656,7 @@ I need to convert my dataframe such that samples are columns and lipids are rows
 
 ```{r}
 rowwiseLipidData <- knownTransLipidData %>%
-  dplyr::select(-c(treatment:treatment)) %>%
+  dplyr::select(-c(treatment:treatment_day)) %>%
   column_to_rownames(var = "crab.ID") %>%
   t(.) %>% as.data.frame(.) %>%
   log(.) %>%
@@ -671,12 +671,12 @@ rowSums(dplyr::count(rowwiseLipidData)) > 0 #Check that there are no lipids with
 
 ### Data filtering: PoverA and genefilter
 
-*pOverA*: Specifying the minimum count for a proportion of samples for each metabolite. Here, we are using a pOverA of 0.08. This is because we have 69 samples with a minimum of n = 6 samples per treatment x day. Therefore, we will accept lipids that are present in 6/69 = 0.08 of the samples because we expect different lipids by temperature as demonstrated by PLSDA analysis. We are further setting the minimum value of lipids to 0.01 (median normalized), such that 8% of the samples must have a non-zero normalized metabolite presence in order for the metabolite to remain in the data set.  
+*pOverA*: Specifying the minimum count for a proportion of samples for each metabolite. Here, we are using a pOverA of 0.17. This is because we have 69 samples with a minimum of n = 12 samples per temperature Therefore, we will accept lipids that are present in 12/69 = 0.17 of the samples because we expect different lipids by temperature as demonstrated by PLSDA analysis. We are further setting the minimum value of lipids to 0.01 (median normalized), such that 17% of the samples must have a non-zero normalized metabolite presence in order for the metabolite to remain in the data set.  
 
 Filter in the package "genefilter". Pre-filtering our dataset to reduce the memory size dataframe, increase the speed of the transformation and testing functions, and improve quality of statistical analysis by removing low-coverage counts. Removed counts could represent outliers in the data and removing these improves sensitivity of statistical tests.
 
 ```{r}
-filt <- filterfun(pOverA(0.08, 0.01)) #Define the filter
+filt <- filterfun(pOverA(0.17, 0.01)) #Define the filter
 gfilt <- genefilter(rowwiseLipidData, filt) #Create filter for the metabolite data
 ```
 
@@ -705,6 +705,8 @@ all(rownames(lipidomicsMetadata$sample_id) == colnames(rowwiseLipidData_filt))
 
 I will identify outliers visually through a clustering analysis.
 
+#### Lipids
+
 ```{r}
 sampleTree <- hclust(dist(rowwiseLipidData), method = "average") #Perform clustering analysis
 ```
@@ -715,7 +717,29 @@ plot(sampleTree, main = "Sample clustering to detect outliers", sub = "", xlab =
 #dev.off()
 ```
 
-There's so much data that it's hard to tell if anything is actually an outlier, but most if not all lipids seem to cluster with other lipids.
+```{r}
+# rowwiseLipidData %>%
+#   rownames_to_column(., var = "lipid") %>%
+#   filter(., lipid != "PC 34:1 Isomer A") %>% 
+#   column_to_rownames(., var = "lipid") #Remove potential outlier
+```
+
+```{r}
+# sampleTree <- hclust(dist(rowwiseLipidData %>%
+#   rownames_to_column(., var = "lipid") %>%
+#   filter(., lipid != "PC 34:1 Isomer A") %>% 
+#   column_to_rownames(., var = "lipid")), method = "average") #Perform clustering analysis without potential outlier
+```
+
+```{r}
+# pdf("WCNA/figures/lipid-outliers.pdf", height = 8.5, width = 11)
+# plot(sampleTree, main = "Sample clustering to detect outliers", sub = "", xlab = "", cex.lab = 0.8, cex.axis = 0.8, cex.main = 2) #Plot cluster dendogram
+# dev.off()
+```
+
+There's so much lipid data, but it doesn't seem like outlier removal changes the clustering patterns. I'll keep the potential outlier in the data.
+
+#### Samples
 
 ```{r}
 rowwiseLipidData <- t(rowwiseLipidData) %>% as.data.frame(.) #Transpose such that samples are in rows and lipids are in columns.  
@@ -726,6 +750,7 @@ Construct a new cluster dendogram to visually identify sample outliers.
 
 ```{r}
 sampleTree <- hclust(dist(rowwiseLipidData), method = "average") #Perform clustering analysis
+# sampleTree <- hclust(dist(rowwiseLipidData[-c(40, 28, 30),]), method = "average") #Perform clustering analysis
 ```
 
 ```{r}
