@@ -88,12 +88,12 @@ lipidomicsMetadata <- read.csv("../../data/metabolomics_metadata.csv", header = 
   t(.) %>% as.data.frame(.) %>% 
   purrr::set_names(as.character(dplyr::slice(., 1))) %>%
   dplyr::slice(., -1) %>% 
-  mutate(., unite(., "treatment_day", treatment:day, sep = "_")) %>%
-  mutate(., treatment_day = gsub(x = treatment_day, pattern = "_  3", replacement = "_3")) %>%
-  mutate(., treatment_day = gsub(x = treatment_day, pattern = "_ 22", replacement = "_22")) %>%
-  mutate(., treatment_day = gsub(x = treatment_day, pattern = " 13_", replacement = "13_")) %>%
-  mutate(., treatment_day = gsub(x = treatment_day, pattern = " 30_", replacement = "30_")) %>%
-  mutate(., treatment_day = gsub(x = treatment_day, pattern = "  5_", replacement = "5_")) %>% 
+  mutate(., unite(., "treatment", treatment:day, sep = "_")) %>%
+  mutate(., treatment = gsub(x = treatment, pattern = "_  3", replacement = "_3")) %>%
+  mutate(., treatment = gsub(x = treatment, pattern = "_ 22", replacement = "_22")) %>%
+  mutate(., treatment = gsub(x = treatment, pattern = " 13_", replacement = "13_")) %>%
+  mutate(., treatment = gsub(x = treatment, pattern = " 30_", replacement = "30_")) %>%
+  mutate(., treatment = gsub(x = treatment, pattern = "  5_", replacement = "5_")) %>% 
   mutate(., treatment = gsub(x = treatment, pattern = " ", replacement = "")) %>%
   mutate(., day = gsub(x = day, pattern = " ", replacement = "")) #Import metadata. Do not include any header information. Remove "V" from column names. Transform so crab.ID, treatment, and day are all columns. Set the first row in the dataframe as column names, then remove that row. Transform characters in each column for correct formatting
 tail(lipidomicsMetadata) #Confirm import
@@ -656,7 +656,7 @@ I need to convert my dataframe such that samples are columns and lipids are rows
 
 ```{r}
 rowwiseLipidData <- knownTransLipidData %>%
-  dplyr::select(-c(treatment:treatment_day)) %>%
+  dplyr::select(-c(treatment:treatment)) %>%
   column_to_rownames(var = "crab.ID") %>%
   t(.) %>% as.data.frame(.) %>%
   log(.) %>%
@@ -900,7 +900,7 @@ datTraits <- lipidomicsMetadata %>%
                               treatment != "5" ~ 0)) %>%
   mutate(., "30ºC" = case_when(treatment == "30" ~ 1,
                                treatment != "30" ~ 0)) %>%
-dplyr::select(., -c(2:4)) #Copy dataframe into datTraits, then use a series of case_when commands to create individual columns for each treatment or day, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns. 
+  dplyr::select(., -c(2:4)) #Copy dataframe into datTraits, then use a series of case_when commands to create individual columns for each treatment or day, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns. 
 rownames(datTraits) <- datTraits$crab.ID #Convert crab.ID into rownames.
 datTraits <- datTraits %>%
   dplyr::select(., -crab.ID) #Remove the crab.ID column
@@ -1040,17 +1040,15 @@ draw(ht) #Draw heatmap
 lipidomicsMetadata$crab.ID <- as.factor(lipidomicsMetadata$crab.ID)
 lipidomicsMetadata$treatment <- as.factor(lipidomicsMetadata$treatment)
 lipidomicsMetadata$day <- as.factor(lipidomicsMetadata$day)
-lipidomicsMetadata$treatment_day <- as.factor(lipidomicsMetadata$treatment_day)
+lipidomicsMetadata$treatment <- as.factor(lipidomicsMetadata$treatment)
 ```
 
 ```{r}
 mME_meta <- merge(mME, lipidomicsMetadata, by = "crab.ID") %>%
   rename(Module = name) #Create new dataframe with metadata
 head(mME_meta) #Confirm dataframe creation
-mME_meta$treatment_day <- factor(mME_meta$treatment_day, levels = c("5_3", "5_22", 
-                                                                    "13_3", "13_22", 
-                                                                    "30_3", "30_22")) #Reorder levels
-levels(mME_meta$treatment_day) #Confirm levels were reordered
+mME_meta$treatment <- factor(mME_meta$treatment, levels = c("5", "13", "30")) #Reorder levels
+levels(mME_meta$treatment) #Confirm levels were reordered
 ```
 
 ```{r}
@@ -1062,19 +1060,18 @@ First, I'm going to look at boxplots for eigengene expression by treatment x day
 ```{r, warning = FALSE, message = FALSE}
 #pdf("WCNA/figures/eigengene-expression-boxplot.pdf", height = 8.5, width = 11)
 mME_meta %>%
-  ggplot(aes(x = treatment_day, y = value, colour = treatment_day)) +
+  ggplot(aes(x = treatment, y = value, colour = treatment)) +
   facet_wrap(~ Module) +
   ylab("Module Expression") +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey")+
   geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
-  stat_summary(fun=mean, geom="line", aes(group = treatment_day, color = treatment_day), position = position_dodge(width = 0.5))  + 
   geom_point(pch = 21, position = position_dodge(width = 0.5)) +
-  scale_fill_manual(name = "Temperature (ºC) x Day", 
-                    values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
-                    labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
-  scale_colour_manual(name = "Temperature (ºC) x Day", 
-                      values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
-                      labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
+  scale_fill_manual(name = "Temperature (ºC)", 
+                    values = rev(plotColors),
+                    labels = c("5ºC", "13ºC", "30ºC")) +
+  scale_colour_manual(name = "Temperature (ºC)", 
+                      values = rev(plotColors),
+                      labels = c("5ºC", "13ºC", "30ºC")) +
   xlab("") + #Axis titles
   theme_classic(base_size = 15) + theme(axis.text.x = element_text(color = "white"),
                                         axis.ticks.x = element_blank()) #Create a boxplot with data points for module expression on the y-axis and values for each treatment x day combination. Facet by module eigengene. Add a horizontal line at y = 0.
@@ -1083,21 +1080,21 @@ mME_meta %>%
 
 I'm going to make a similar plot, but use dots instead to see if that makes the trends clearer.
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 #pdf("WCNA/figures/eigengene-expression-dotplot.pdf", height = 8.5, width = 11)
 mME_meta %>%
-  ggplot(aes(x = treatment_day, y = value)) +
+  ggplot(aes(x = treatment, y = value)) +
   facet_grid(~Module) +
   ylab("Eigengene Expression") +
   geom_hline(yintercept = 0, linetype ="dashed", color = "grey")+
-  geom_point(aes(fill = treatment_day, color = treatment_day), size = 3, pch = 21, position = position_dodge(width = 0.5)) +
-  geom_smooth(aes(group=1), se=TRUE, show.legend = NA, color="black")+
-  scale_fill_manual(name = "Temperature (ºC) x Day", 
-                    values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
-                    labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
-  scale_colour_manual(name = "Temperature (ºC) x Day", 
-                      values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
-                      labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
+  geom_point(aes(fill = treatment, color = treatment), size = 3, pch = 21, position = position_dodge(width = 0.5)) +
+  geom_smooth(aes(group = 1), se = TRUE, show.legend = NA, color="black") +
+  scale_fill_manual(name = "Temperature (ºC)", 
+                    values = rev(plotColors),
+                    labels = c("5ºC", "13ºC", "30ºC")) +
+  scale_colour_manual(name = "Temperature (ºC)", 
+                      values = rev(plotColors),
+                      labels = c("5ºC", "13ºC", "30ºC")) +
   xlab("") + #Axis titles
   theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
                                         axis.ticks.x = element_blank(),
@@ -1108,22 +1105,22 @@ mME_meta %>%
 ```
 
 ```{r}
-mME_meta$treatment_day <- factor(mME_meta$treatment_day, levels = c("13_3", "13_22", 
-                                                                    "5_3", "5_22", 
-                                                                    "30_3", "30_22")) #Reorder levels
-levels(mME_meta$treatment_day) #Confirm levels were reordered
+mME_meta$treatment <- factor(mME_meta$treatment, levels = c("13", 
+                                                            "5", 
+                                                            "30")) #Reorder levels
+levels(mME_meta$treatment) #Confirm levels were reordered
 ```
 
 ```{r}
 lipid_rel_change <- mME_meta %>%
-  dplyr::select(treatment_day, crab.ID, Module, value) %>%
-  group_by(treatment_day, Module) %>%
+  dplyr::select(treatment, crab.ID, Module, value) %>%
+  group_by(treatment, Module) %>%
   summarise(mean = mean(value)) %>%
-  group_by(treatment_day, Module) %>%
-  arrange(treatment_day, .by_group = TRUE) %>%
+  group_by(treatment, Module) %>%
+  arrange(treatment, .by_group = TRUE) %>%
   group_by(Module) %>%
   mutate(lipid_expression = ((mean-dplyr::first(mean))/abs(dplyr::first(mean)))) %>%
-  dplyr::select(Module, treatment_day, lipid_expression) #Take the dataframe with module information and metadata, and keep only the treatment_day, crab.ID, module, and module eigengene values. Group by treatment_day and Module, then calculate mean eigengene expression. Arrange by treatment_day, group by module again, then calculate relative change in expression for each module relative to 13ºC at day 3. 
+  dplyr::select(Module, treatment, lipid_expression) #Take the dataframe with module information and metadata, and keep only the treatment, crab.ID, module, and module eigengene values. Group by treatment and Module, then calculate mean eigengene expression. Arrange by treatment, group by module again, then calculate relative change in expression for each module relative to 13ºC at day 3. 
 lipid_rel_change #Confirm calculations
 ```
 
