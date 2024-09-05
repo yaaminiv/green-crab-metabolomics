@@ -1592,7 +1592,7 @@ write.csv(module8_metabolites, "metaboanalyst/module8_metabolites.csv", quote = 
 
 # Pathway analysis
 
-The final step in this workflow is to understand the various metabolic pathways represented in each module eigengene. To do this, I will conduct a manual pathway analysis and identify VIP present in each significant cluster.
+The final step in this workflow is to understand the various metabolic pathways represented in each module eigengene. To do this, I will conduct a manual pathway analysis and identify VIP present in each significant cluster, and also use MetaboAnalyst.
 
 ```{bash}
 mkdir metaboanalyst
