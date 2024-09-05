@@ -2060,7 +2060,7 @@ pheatmap((transMetabData %>%
 
 #### MetaboAnalyst 
 
-The last thing I want to do with the list of all VIP is to add PubChem and KEGG annotations. This will allow me to upload the list into MetaboAnalyst to conduct pathway assignment and check for enriched pathways.
+The next thing I want to do with the list of all VIP is to add PubChem and KEGG annotations. This will allow me to upload the list into MetaboAnalyst to conduct pathway assignment and check for enriched pathways.
 
 ```{r}
 significantVIP %>%
@@ -2300,6 +2300,8 @@ ggsave("metaboanalyst/figures/alanine-metabolism-plot.pdf", height = 8.5, width 
 ```
 
 #### Identify VIP in each module
+
+I will only identify VIP in modules that were significantly correlated with a temperature x day condition.
 
 ```{r}
 overallVIP_module0 <- significantVIP %>%
@@ -2799,7 +2801,6 @@ VIP_allPathways
 ```{r}
 write.table(VIP_allPathways, "metaboanalyst/significant-pathways-pairwise-VIP.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 ```
-
 
 #### Identify pairwise VIP that overlap with VIP from significant pathways for each module
 
