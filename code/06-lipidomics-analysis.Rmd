@@ -1162,6 +1162,192 @@ lipid_rel_change #Confirm calculations
 write.csv(lipid_rel_change, "WCNA/lipids_relative_change.csv", quote = FALSE, row.names = FALSE)
 ```
 
+# Create lists of lipids in each module
+
+For each module, I want the metabolite name, but I also want all of the annotation information provided by the sequencing facility.
+
+```{r}
+module0_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 0) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
+  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
+  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
+nrow(module0_lipids) #31 lipids
+head(module0_lipids)
+write_delim(module0_lipids, "metaboanalyst/module0_lipids.tsv", delim = "\t", col_names = TRUE)
+```
+
+```{r}
+module1_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 1) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
+  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
+  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
+nrow(module1_lipids) #157 lipids
+head(module1_lipids)
+write_delim(module1_lipids, "metaboanalyst/module1_lipids.tsv", delim = "\t", col_names = TRUE)
+```
+
+```{r}
+module2_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 2) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
+  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
+  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
+nrow(module2_lipids) #53 lipids
+head(module2_lipids)
+write_delim(module2_lipids, "metaboanalyst/module2_lipids.tsv", delim = "\t", col_names = TRUE)
+```
+
+```{r}
+module3_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 3) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
+  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
+  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
+nrow(module3_lipids) #43 lipids
+head(module3_lipids)
+write_delim(module3_lipids, "metaboanalyst/module3_lipids.tsv", delim = "\t", col_names = TRUE)
+```
+
+```{r}
+module4_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 4) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
+  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
+  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
+nrow(module4_lipids) #25 lipids
+head(module4_lipids)
+write_delim(module4_lipids, "metaboanalyst/module4_lipids.tsv", delim = "\t", col_names = TRUE)
+```
+
+```{r}
+module5_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 5) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
+  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
+  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
+nrow(module5_lipids) #23 lipids
+head(module5_lipids)
+write_delim(module5_lipids, "metaboanalyst/module5_lipids.tsv", delim = "\t", col_names = TRUE)
+```
+
+```{r}
+module6_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 6) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
+  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
+  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
+nrow(module6_lipids) #19 lipids
+head(module6_lipids)
+write_delim(module6_lipids, "metaboanalyst/module6_lipids.tsv", delim = "\t", col_names = TRUE)
+```
+
+```{r}
+module7_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 7) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
+  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
+  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
+nrow(module7_lipids) #16 lipids
+head(module7_lipids)
+write_delim(module7_lipids, "metaboanalyst/module7_lipids.tsv", delim = "\t", col_names = TRUE)
+```
+
+```{r}
+module8_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 8) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
+  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
+  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
+nrow(module8_lipids) #11 lipids
+head(module8_lipids)
+write_delim(module8_lipids, "metaboanalyst/module8_lipids.tsv", delim = "\t", col_names = TRUE)
+```
+
+```{r}
+module9_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 9) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
+  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
+  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
+nrow(module9_lipids) #10 lipids
+head(module9_lipids)
+write_delim(module9_lipids, "metaboanalyst/module9_lipids.tsv", delim = "\t", col_names = TRUE)
+```
+
+```{r}
+module10_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 10) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
+  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
+  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
+nrow(module10_lipids) #10 lipids
+head(module10_lipids)
+write_delim(module10_lipids, "metaboanalyst/module10_lipids.tsv", delim = "\t", col_names = TRUE)
+```
+
+```{r}
+module11_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 11) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
+  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
+  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
+nrow(module11_lipids) #9 lipids
+head(module11_lipids)
+write_delim(module11_lipids, "metaboanalyst/module11_lipids.tsv", delim = "\t", col_names = TRUE)
+```
+
+```{r}
+module12_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 12) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
+  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
+  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
+nrow(module12_lipids) #6 lipids
+head(module12_lipids)
+write_delim(module12_lipids, "metaboanalyst/module12_lipids.tsv", delim = "\t", col_names = TRUE)
+```
+
+```{r}
+module13_lipids <- module_df %>%
+  dplyr::rename(., Module = colors) %>%
+  filter(., Module == 13) %>%
+  dplyr::select(., Lipid) %>% 
+  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
+  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
+  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
+nrow(module13_lipids) #5 lipids
+head(module13_lipids)
+write_delim(module13_lipids, "metaboanalyst/module13_lipids.tsv", delim = "\t", col_names = TRUE)
+```
+
 # Pathway analysis
 
 The final step in this workflow is to understand the various lipid pathways represented in each module eigengene. To do this, I will conduct a manual pathway analysis and identify VIP present in each significant cluster, and also use MetaboAnalyst.
@@ -1211,10 +1397,10 @@ head(VIPannotation)
 
 ```{r}
 VIPannotation$Status <- factor(VIPannotation$Status, 
-                                        levels=c("Both", 
-                                                 "Overall",
-                                                 "Pairwise",
-                                                 "Neither")) #Reorder levels for visualization
+                               levels=c("Both", 
+                                        "Overall",
+                                        "Pairwise",
+                                        "Neither")) #Reorder levels for visualization
 ```
 
 ```{r}
@@ -1231,6 +1417,11 @@ lipidomicsColors #Column annotation colors
 ## Manual pathway analysis
 
 I want to do a rough analysis with phosphatidylethanolamine (PE) and phosphatidylcholines (PC) compounds, since Chapelle 1978 and 1986 found them most responsive to temperature. I'll also examine the other kids of glycerophospholipids — phosphatidylserine (PS) and phosphatidylinositol (PI) — since glycerophsopholipids are involved in cell membranes. Phosphatidic acid (PA) is another glycerophospholipid, but it is not present in this dataset. Finally, I'll look at tryglycerides, which are important energy storage molecules.
+
+```{bash}
+mkdir metaboanalyst
+mkdir metaboanalyst/figures
+```
 
 ### Glycerophospholipids
 
@@ -1434,198 +1625,152 @@ pheatmap((TGData %>%
 #dev.off()
 ```
 
-## Create lists of lipids in each module
+## VIP "enrichment" analysis
 
-The final step in this workflow is to understand the various metabolic pathways represented in each module eigengene. I'll conduct the majority of this analysis with the MetaboAnalyst GUI interface, but return here to process results.
+The second step of this workflow is to analyze the abundance patterns and associated functions/pathways of significant VIP.
 
-```{bash}
-mkdir metaboanalyst
-mkdir metaboanalyst/figures
-```
+### All VIP
 
-For each module, I want the lipid unique ID name, but I also want all of the information provided by the sequencing facility. This is because common names for lipids can be different, and using a numerical classifier will ensure the correct compounds are recognized by MetaboAnalyst.
+#### Make heatmaps
 
 ```{r}
-module0_lipids <- module_df %>%
-  dplyr::rename(., Module = colors) %>%
-  filter(., Module == 0) %>%
-  dplyr::select(., Lipid) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
-  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
-  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
-nrow(module0_lipids) #31 lipids
-head(module0_lipids)
-write_delim(module0_lipids, "metaboanalyst/module0_lipids.tsv", delim = "\t", col_names = TRUE)
-```
-
-```{r}
-module1_lipids <- module_df %>%
-  dplyr::rename(., Module = colors) %>%
-  filter(., Module == 1) %>%
-  dplyr::select(., Lipid) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
-  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
-  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
-nrow(module1_lipids) #157 lipids
-head(module1_lipids)
-write_delim(module1_lipids, "metaboanalyst/module1_lipids.tsv", delim = "\t", col_names = TRUE)
+#pdf("metaboanalyst/figures/all_VIP-average.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(significantVIP$lipid)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            t(.) %>% as.data.frame(.) %>%
+            log(.) %>%
+            mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+            replace(is.na(.), 0) %>%
+            as.matrix()), cluster_row = TRUE, fontsize_row = 4, show_rownames = TRUE,
+         cluster_cols = FALSE, show_colnames = FALSE, 
+         scale = "row", 
+         color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, 
+         name = "Abundance")
+#dev.off()
 ```
 
 ```{r}
-module2_lipids <- module_df %>%
-  dplyr::rename(., Module = colors) %>%
-  filter(., Module == 2) %>%
-  dplyr::select(., Lipid) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
-  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
-  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
-nrow(module2_lipids) #53 lipids
-head(module2_lipids)
-write_delim(module2_lipids, "metaboanalyst/module2_lipids.tsv", delim = "\t", col_names = TRUE)
+#pdf("metaboanalyst/figures/all_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(significantVIP$lipid)) %>%
+            group_by(., treatment) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, fontsize_row = 4,
+         cluster_cols = FALSE, show_colnames = FALSE, 
+         scale = "row", 
+         color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, 
+         name = "Z-Score")
+#dev.off()
 ```
 
 ```{r}
-module3_lipids <- module_df %>%
-  dplyr::rename(., Module = colors) %>%
-  filter(., Module == 3) %>%
-  dplyr::select(., Lipid) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
-  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
-  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
-nrow(module3_lipids) #43 lipids
-head(module3_lipids)
-write_delim(module3_lipids, "metaboanalyst/module3_lipids.tsv", delim = "\t", col_names = TRUE)
+#svg("metaboanalyst/figures/all_VIP-zscore.svg", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(significantVIP$lipid)) %>%
+            group_by(., treatment) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, fontsize_row = 4,
+         cluster_cols = FALSE, show_colnames = FALSE, 
+         scale = "row", 
+         color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, 
+         name = "Z-Score")
+#dev.off()
+```
+
+#### Metaboanalyst
+
+The next thing I want to do with the list of all VIP is to add PubChem and KEGG annotations. This will allow me to upload the list into MetaboAnalyst to conduct pathway assignment and check for enriched pathways.
+
+```{r}
+significantVIP %>%
+  dplyr::select(., lipid) %>% 
+  left_join(., rawLipidomicsData, by = "lipid") %>%
+  left_join(., lipidIdentifiers, by = c("lipid", "identifier", "INCHIKEY")) %>%
+  dplyr::select(., lipid, identifier, PubChem.CID, Chemical.Name, INCHIKEY) %>%
+  write.table("metaboanalyst/allVIP_lipids.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take list of significant VIP. Select only the lipids and join with annotation information. Select only columns of interest and save as a txt file
+```
+
+#### Identify VIP in each module
+
+```{r}
+overallVIP_module0 <- significantVIP %>%
+  filter(., metabolite %in% module0_metabolites$Metabolite) %>%
+  mutate(module = "module0") #Identify overall VIP present in module
+overallVIP_module0
 ```
 
 ```{r}
-module4_lipids <- module_df %>%
-  dplyr::rename(., Module = colors) %>%
-  filter(., Module == 4) %>%
-  dplyr::select(., Lipid) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
-  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
-  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
-nrow(module4_lipids) #25 lipids
-head(module4_lipids)
-write_delim(module4_lipids, "metaboanalyst/module4_lipids.tsv", delim = "\t", col_names = TRUE)
+overallVIP_module2 <- significantVIP %>%
+  filter(., metabolite %in% module2_metabolites$Metabolite) %>%
+  mutate(module = "module2") #Identify overall VIP present in module
+overallVIP_module2
 ```
 
 ```{r}
-module5_lipids <- module_df %>%
-  dplyr::rename(., Module = colors) %>%
-  filter(., Module == 5) %>%
-  dplyr::select(., Lipid) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
-  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
-  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
-nrow(module5_lipids) #23 lipids
-head(module5_lipids)
-write_delim(module5_lipids, "metaboanalyst/module5_lipids.tsv", delim = "\t", col_names = TRUE)
+overallVIP_module3 <- significantVIP %>%
+  filter(., metabolite %in% module3_metabolites$Metabolite) %>%
+  mutate(module = "module3") #Identify overall VIP present in module
+overallVIP_module3
 ```
 
 ```{r}
-module6_lipids <- module_df %>%
-  dplyr::rename(., Module = colors) %>%
-  filter(., Module == 6) %>%
-  dplyr::select(., Lipid) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
-  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
-  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
-nrow(module6_lipids) #19 lipids
-head(module6_lipids)
-write_delim(module6_lipids, "metaboanalyst/module6_lipids.tsv", delim = "\t", col_names = TRUE)
+overallVIP_module4 <- significantVIP %>%
+  filter(., metabolite %in% module4_metabolites$Metabolite) %>%
+  mutate(module = "module4") #Identify overall VIP present in module
+overallVIP_module4
 ```
 
 ```{r}
-module7_lipids <- module_df %>%
-  dplyr::rename(., Module = colors) %>%
-  filter(., Module == 7) %>%
-  dplyr::select(., Lipid) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
-  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
-  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
-nrow(module7_lipids) #16 lipids
-head(module7_lipids)
-write_delim(module7_lipids, "metaboanalyst/module7_lipids.tsv", delim = "\t", col_names = TRUE)
+overallVIP_module5 <- significantVIP %>%
+  filter(., metabolite %in% module5_metabolites$Metabolite) %>%
+  mutate(module = "module5") #Identify overall VIP present in module
+overallVIP_module5
 ```
 
 ```{r}
-module8_lipids <- module_df %>%
-  dplyr::rename(., Module = colors) %>%
-  filter(., Module == 8) %>%
-  dplyr::select(., Lipid) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
-  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
-  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
-nrow(module8_lipids) #11 lipids
-head(module8_lipids)
-write_delim(module8_lipids, "metaboanalyst/module8_lipids.tsv", delim = "\t", col_names = TRUE)
+overallVIP_module6 <- significantVIP %>%
+  filter(., metabolite %in% module6_metabolites$Metabolite) %>%
+  mutate(module = "module6") #Identify overall VIP present in module
+overallVIP_module6
 ```
 
 ```{r}
-module9_lipids <- module_df %>%
-  dplyr::rename(., Module = colors) %>%
-  filter(., Module == 9) %>%
-  dplyr::select(., Lipid) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
-  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
-  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
-nrow(module9_lipids) #10 lipids
-head(module9_lipids)
-write_delim(module9_lipids, "metaboanalyst/module9_lipids.tsv", delim = "\t", col_names = TRUE)
+overallVIP_module7 <- significantVIP %>%
+  filter(., metabolite %in% module7_metabolites$Metabolite) %>%
+  mutate(module = "module7") #Identify overall VIP present in module
+overallVIP_module7
 ```
 
 ```{r}
-module10_lipids <- module_df %>%
-  dplyr::rename(., Module = colors) %>%
-  filter(., Module == 10) %>%
-  dplyr::select(., Lipid) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
-  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
-  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
-nrow(module10_lipids) #10 lipids
-head(module10_lipids)
-write_delim(module10_lipids, "metaboanalyst/module10_lipids.tsv", delim = "\t", col_names = TRUE)
+overallVIP_allModules <- rbind(overallVIP_module0,
+                               overallVIP_module2,
+                               overallVIP_module3,
+                               overallVIP_module4,
+                               overallVIP_module5,
+                               overallVIP_module6,
+                               overallVIP_module7)
+overallVIP_allModules
 ```
 
 ```{r}
-module11_lipids <- module_df %>%
-  dplyr::rename(., Module = colors) %>%
-  filter(., Module == 11) %>%
-  dplyr::select(., Lipid) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
-  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
-  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
-nrow(module11_lipids) #9 lipids
-head(module11_lipids)
-write_delim(module11_lipids, "metaboanalyst/module11_lipids.tsv", delim = "\t", col_names = TRUE)
+write.table(overallVIP_allModules, "metaboanalyst/all-module-overall-VIP.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 ```
 
-```{r}
-module12_lipids <- module_df %>%
-  dplyr::rename(., Module = colors) %>%
-  filter(., Module == 12) %>%
-  dplyr::select(., Lipid) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
-  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
-  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
-nrow(module12_lipids) #6 lipids
-head(module12_lipids)
-write_delim(module12_lipids, "metaboanalyst/module12_lipids.tsv", delim = "\t", col_names = TRUE)
-```
+#### Identify VIP from significant pathways in each module
 
-```{r}
-module13_lipids <- module_df %>%
-  dplyr::rename(., Module = colors) %>%
-  filter(., Module == 13) %>%
-  dplyr::select(., Lipid) %>% 
-  left_join(., (rawLipidomicsData %>% dplyr::rename(Lipid = identifier)), by = "Lipid") %>%
-  right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
-  dplyr::select(., 1:6) #Take dataframe with modules and lipids, change colors to Module, and select lipids for a given module. Keep only the Lipid column. Then join with the raw lipidomics data to sequencer information, and inChiKey table for additional annotations
-nrow(module13_lipids) #5 lipids
-head(module13_lipids)
-write_delim(module13_lipids, "metaboanalyst/module13_lipids.tsv", delim = "\t", col_names = TRUE)
-```
+
+
+
+# CODE TO REORGANIZE
 
 ## Enrichment compound class analysis
 
