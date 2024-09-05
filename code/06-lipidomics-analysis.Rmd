@@ -2033,6 +2033,343 @@ head(pairwiseVIP_allModules)
 write.table(pairwiseVIP_allModules, "metaboanalyst/all-module-VIP.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 ```
 
+#### Identify pairwise VIP that overlap with significant pathways
+
+#### Identify pairwise VIP that overlap with VIP from significant pathways for each module
+
+#### Make heatmaps of each module's VIP
+
+I'm only going to make heatmaps for the modules significantly correlated to a temperature condition. I will not make one for ME0 or ME8 since they have no pairwise VIP.
+
+##### Module 1
+
+```{r}
+#pdf("metaboanalyst/figures/module1_VIP-average.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module1$lipid)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            log(.) %>%
+            mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+            replace(is.na(.), 0) %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = TRUE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Abundance")
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module1_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module1$lipid)) %>%
+            group_by(., treatment) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Z-Score")
+#dev.off()
+```
+
+##### Module 2
+
+```{r}
+#pdf("metaboanalyst/figures/module2_VIP-average.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module2$lipid)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            log(.) %>%
+            mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+            replace(is.na(.), 0) %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = TRUE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Abundance")
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module2_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module2$lipid)) %>%
+            group_by(., treatment) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Z-Score")
+#dev.off()
+```
+
+##### Module 3
+
+```{r}
+#pdf("metaboanalyst/figures/module3_VIP-average.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module3$lipid)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            log(.) %>%
+            mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+            replace(is.na(.), 0) %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = TRUE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Abundance")
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module3_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module3$lipid)) %>%
+            group_by(., treatment) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Z-Score")
+#dev.off()
+```
+
+##### Module 4
+
+```{r}
+#pdf("metaboanalyst/figures/module4_VIP-average.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module4$lipid)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            log(.) %>%
+            mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+            replace(is.na(.), 0) %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = TRUE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Abundance")
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module4_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module4$lipid)) %>%
+            group_by(., treatment) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Z-Score")
+#dev.off()
+```
+
+##### Module 5
+
+```{r}
+#pdf("metaboanalyst/figures/module5_VIP-average.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module5$lipid)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            log(.) %>%
+            mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+            replace(is.na(.), 0) %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = TRUE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Abundance")
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module5_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module5$lipid)) %>%
+            group_by(., treatment) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Z-Score")
+#dev.off()
+```
+
+##### Module 6
+
+```{r}
+#pdf("metaboanalyst/figures/module5_VIP-average.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module5$lipid)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            log(.) %>%
+            mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+            replace(is.na(.), 0) %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = TRUE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Abundance")
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module5_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module5$lipid)) %>%
+            group_by(., treatment) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Z-Score")
+#dev.off()
+```
+
+##### Module 7
+
+```{r}
+#pdf("metaboanalyst/figures/module7_VIP-average.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module7$lipid)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            log(.) %>%
+            mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+            replace(is.na(.), 0) %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = TRUE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Abundance")
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module7_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module7$lipid)) %>%
+            group_by(., treatment) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Z-Score")
+#dev.off()
+```
+
+##### Module 9
+
+```{r}
+#pdf("metaboanalyst/figures/module9_VIP-average.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module9$lipid)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            log(.) %>%
+            mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+            replace(is.na(.), 0) %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = TRUE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Abundance")
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module9_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module9$lipid)) %>%
+            group_by(., treatment) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Z-Score")
+#dev.off()
+```
+
+##### Module 10
+
+```{r}
+#pdf("metaboanalyst/figures/module10_VIP-average.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module10$lipid)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            log(.) %>%
+            mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+            replace(is.na(.), 0) %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = TRUE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Abundance")
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module10_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module10$lipid)) %>%
+            group_by(., treatment) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Z-Score")
+#dev.off()
+```
+
+##### Module 11
+
+```{r}
+#pdf("metaboanalyst/figures/module11_VIP-average.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module11$lipid)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            log(.) %>%
+            mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+            replace(is.na(.), 0) %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = TRUE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Abundance")
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module11_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module11$lipid)) %>%
+            group_by(., treatment) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Z-Score")
+#dev.off()
+```
+
+##### Module 12
+
+```{r}
+#pdf("metaboanalyst/figures/module12_VIP-average.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module12$lipid)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            log(.) %>%
+            mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+            replace(is.na(.), 0) %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = TRUE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Abundance")
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/module12_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(VIP_module12$lipid)) %>%
+            group_by(., treatment) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Z-Score")
+#dev.off()
+```
 
 # CODE TO REORGANIZE
 
