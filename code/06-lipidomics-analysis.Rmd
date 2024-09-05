@@ -734,10 +734,10 @@ plot(sampleTree, main = "Sample clustering to detect outliers", sub = "", xlab =
 #dev.off()
 ```
 
-304, 303, and 606 look like they could be outliers (all from 30ºC treatment at day 3). I did this analysis with and without those samples and it significantly changed the sample clustering, so I'll proceed with outlier removal.
+304, 303, and 606 look like they could be outliers (all from 30ºC treatment at day 3). I did this analysis with and without those samples and it did not change the sample or treatment clustering, so I will not remove these outliers.
 
 ```{r}
-rowwiseLipidData[-c(40, 28, 30),] #Remove 303, 304, and 306
+# rowwiseLipidData[-c(40, 28, 30),] #Remove 303, 304, and 306
 ```
 
 ## Network construction and consensus module detection
@@ -965,7 +965,7 @@ heatmappval <- signif(moduleTraitPvalue, 1) #Create list of pvalues for eigengen
 row_dend <- dendsort(hclust(dist(moduleTraitCor))) #Create dendograms for rows
 col_dend <- dendsort(hclust(dist(t(moduleTraitCor)))) #Create dendograms for columns
 
-trait_order <- c("5ºC at Day 3", "13ºC at Day 3", "30ºC at Day 3", "5ºC at Day 22", "13ºC at Day 22", "30ºC at Day 22") #Order of traits for heatmap
+trait_order <- c("5ºC", "13ºC", "30ºC") #Order of traits for heatmap
 ```
 
 ```{r}
@@ -977,6 +977,38 @@ ht <- Heatmap(moduleTraitCor, name = "Eigengene", column_title = "Module-Group E
               width = unit(5, "in"), 
               height = unit(4.5, "in"), 
               column_dend_reorder = TRUE,
+              cluster_columns = col_dend,
+              row_dend_reorder = FALSE,  
+              #column_split = 3, 
+              #row_split = 3, 
+              #column_dend_height = unit(.5, "in"),
+              cluster_rows = row_dend, 
+              #column_order = trait_order, 
+              #row_gap = unit(2.5, "mm"), 
+              border = TRUE,
+              cell_fun = function(j, i, x, y, w, h, col) {
+                if(heatmappval[i, j] < 0.05) {
+                  grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+                }
+                else {
+                  grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+                }},
+              column_names_rot = 45,
+              column_names_gp =  gpar(fontsize = 12, border = FALSE),
+              column_title_gp = gpar(fontsize = 20),
+              row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
+draw(ht) #Draw heatmap
+#dev.off()
+```
+
+```{r}
+#svg(file = "WCNA/figures/module-trait-relationship-heatmap.svg", height = 8.5, width = 8.5)
+ht <- Heatmap(moduleTraitCor, name = "Correlation", column_title = "Module-Group Eigengene Correlation",
+              row_names_side = "left", 
+              row_dend_side = "left",
+              width = unit(5, "in"), 
+              height = unit(4.5, "in"), 
+              column_dend_reorder = TRUE, 
               cluster_columns = col_dend,
               row_dend_reorder = FALSE,  
               #column_split = 3, 
