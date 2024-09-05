@@ -1,20 +1,23 @@
-INCHIKEY	Chemical.Name	PubChem.CID	Lipid	identifier	lipid
-YGJTUEISKATQSM-UHFFFAOYSA-N	15-Oxoicosa-5,8,11,13-tetraenoic acid	1443	3	0.30_317.21	15-OxoETE 
-IFRKCNPQVIJFAQ-UHFFFAOYSA-N	4-Hydroxydocosa-5,7,10,13,16,19-hexaenoic acid	53394255	4	0.30_343.23	4-HDoHE 
-KGIJOOYOSFUGPC-UHFFFAOYSA-N	5-Hete	1771	6	0.31_319.23	5-HETE 
-QSBYPNXLFMSGKH-UHFFFAOYSA-N	9-heptadecenoic acid	3014063	79	0.88_267.23	FA 17:1
-ZQPPMHVWECSIRJ-KTKRTIGZSA-N	Emersol 220 White Oleate	445639	80	1.06_281.25	FA 18:1 (oleic acid) 
-JBYXPOFIGCOSSB-XBLVEGMJSA-N	9,11-Octadecadienoic acid	5282796	82	0.79_279.23	FA 18:2 (linoleic acid) 
-DTOSIQBPPRVQHS-PDBXOOCHSA-N	LINOLENIC ACID	5280934	84	0.60_277.22	FA 18:3 (linolenic acid) 
-YOKHLRHWEXTWJR-ZHACJKMWSA-N	9-Nonadecenoic acid	14275215	85	1.23_295.26	FA 19:1 
-BITHHVVYSMSWAG-UHFFFAOYSA-N	(EZ)-Icosenoic acid	142770	86	1.36_309.28	FA 20:1
-XSXIVVZCUAHUJO-HZJYTTRNSA-N	Eicosadienoic acid	6439848	87	1.16_307.26	FA 20:2 (eicosadienoic acid) 
-AHANXAKGNAKFSK-PDBXOOCHSA-N	11,14,17-Eicosatrienoic acid	5312529	88	0.94_305.25	FA 20:3 (eicosatrienoic acid) 
-YZXBAPSDXZZRGB-DOFZRALJSA-N	Arachidonate	444899	89	0.74_303.23	FA 20:4 (arachidonic acid) 
-JAZBEHYOTPTENJ-JLNKQSITSA-N	Icosapent (INN)	446284	90	0.56_301.22	FA 20:5 (eicosapentaenoic acid) 
-DPUOLQHDNGRHBS-KTKRTIGZSA-N	Erucic Acid	5281116	91	1.58_337.31	FA 22:1 (erucic acid) 
-HVGRZDASOHMCSK-AVQMFFATSA-N	13,16-Docosadienoic acid	5282807	92	1.41_335.30	FA 22:2 (docosadienoic acid) 
-TWSWSIQAPQLDBP-DOFZRALJSA-N	(7Z,10Z,13Z,16Z)-Docosa-7,10,13,16-tetraenoic acid	5497181	93	1.03_331.26	FA 22:4 
-MBMBGCFOFBJSGT-KUBAVDMBSA-N	HXA	445580	94	0.65_327.23	FA 22:6 (docosahexaenoic acid) 
-UWSSQGYIAHOMJM-OMCRSCLLSA-N	Fahfa 18:1/20:3	138276051	99	1.06_585.49	FAHFA 38:4 
-ASWBNKHCZGQVJV-HSZRJFAPSA-N	1-16:0-2-lysophosphatidylcholine	460602	118	0.64_554.35	LPC 16:0 
+identifier	lipid	PubChem.CID	Chemical.Name	INCHIKEY
+1.88_674.56	HexCer 32:0;O2	22178811	HexCer 18:0;2O/14:0	SCBSLJVBXYHZPZ-UHFFFAOYSA-N
+1.99_706.55	PC 16:0_14:0 	10190333	(3-Hexadecanoyloxy-2-tetradecanoyloxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	UIXXHROAQSBBOV-UHFFFAOYSA-N
+2.37_792.57	PC 32:0 	452110	Colfosceril Palmitate	KILNVBDSWZSGLL-KXQOOQHDSA-N
+2.46_762.60	PC 34:0	24778686	1-Hexadecanoyl-2-octadecanoyl-sn-glycero-3-phosphocholine	PZNPLUBHRSSFHT-RRHRGVEJSA-N
+2.21_706.57	PC O-31:0	164334893	(3-Octoxy-2-tricosanoyloxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	MARQLCZUTCPJHC-UHFFFAOYSA-N
+2.05_706.58	PC O-31:0|PC O-15:0_16:0	165289337	(2-Hexadecanoyloxy-3-pentadecoxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	RPJBSPVVDIKMBV-UHFFFAOYSA-N
+2.30_720.59	PC O-32:0 	173570	1-Palmitoyl-2-hexadecyl-sn-glycero-3-phosphocholine	SVWBXNAUENUONE-LDLOPFEMSA-N
+2.44_734.60	PC O-33:0 	164333045	(3-Octoxy-2-pentacosanoyloxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	LXEGSWFXNDUGIV-UHFFFAOYSA-N
+2.77_796.59	PE 18:0_22:3 	134768112	Phosphatidylethanolamine 18:0-22:3	SUKSMPBISVBNOS-SDJUKWJGSA-N
+1.54_647.51	SM d30:1 	44260123	N-(dodecanoyl)-sphing-4-enine-1-phosphocholine	HZCLJRFPXMKWHR-FEBLJDHQSA-N
+1.65_661.52	SM d31:1 	134729785	N-(heptadecanoyl)-4E-tetradecasphingenine-1-phosphocholine	FJYURYAFGRADQP-WSYRTZMQSA-N
+1.82_677.56	SM d32:0 	44260138	C14DH Sphingomyelin	MJAFYELZQYPMQG-MPQUPPDSSA-N
+1.92_735.57	SM d32:0 Isomer B 	133040069	[3-Hydroxy-2-(tridecanoylamino)nonadecyl] 2-(trimethylazaniumyl)ethyl phosphate	OMRILSIMTXCAPB-UHFFFAOYSA-N
+1.75_675.54_1.75_697.52	SM d32:1 Isomer A	11433862	C14 Sphingomyelin	KYICBZWZQPCUMO-PSALXKTOSA-N
+1.84_733.55	SM d32:1 Isomer B	11433862	C14 Sphingomyelin	KYICBZWZQPCUMO-PSALXKTOSA-N
+1.67_731.53	SM d32:2 	52931131	N-(tetradecanoyl)-4E,14Z-sphingadienine-1-phosphocholine	PEJGMBUENJSLLH-RHAKMSQVSA-N
+1.89_689.56	SM d33:1 	52931139	N-(pentadecanoyl)-sphing-4-enine-1-phosphocholine	LQINJRUGTUOHGS-YPDYIYJKSA-N
+2.18_763.60	SM d34:0 	9939965	N-Palmitoyldihydrosphingomyelin	QHZIGNLCLJPLCU-QPPIDDCLSA-N
+1.97_703.58	SM d34:1 Isomer A	9939941	Palmitoyl sphingomyelin	RWKUXQNLWDTSLO-GWQJGLRPSA-N
+2.09_761.58	SM d34:1 Isomer B	9939941	Palmitoyl sphingomyelin	RWKUXQNLWDTSLO-GWQJGLRPSA-N
+1.89_715.57	SM d35:2 	138173078	[(E)-2-[[(Z)-henicos-9-enoyl]amino]-3-hydroxytetradec-4-enyl] 2-(trimethylazaniumyl)ethyl phosphate	HVVDGWWLGYBUAB-JYDNXXCZSA-N
+1.97_725.56	SM d36:4 	138162742	[(4E,8E,12E)-3-hydroxy-2-[[(Z)-tetradec-9-enoyl]amino]docosa-4,8,12-trienyl] 2-(trimethylazaniumyl)ethyl phosphate	GPOGSMIDYBSWAT-UDBQMCEJSA-N

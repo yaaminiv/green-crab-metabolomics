@@ -1,17 +1,21 @@
-INCHIKEY	Chemical.Name	PubChem.CID	Lipid	identifier	lipid
-JLPULHDHAOZNQI-UHFFFAOYSA-N	[3-(1-oxohexadecoxy)-2-(1-oxooctadeca-9,12-dienoxy)propyl] 2-(trimethylammonio)ethyl phosphate	122218	154	2.18_792.53	PC 16:0_18:2 
-HRBNRYBXXRPMKP-OMCHRGCMSA-N	[2-[(5Z,8Z,11Z,14Z,17Z)-icosa-5,8,11,14,17-pentaenoyl]oxy-3-[(9Z,12Z)-octadeca-9,12-dienoyl]oxypropyl] 2-(trimethylazaniumyl)ethyl phosphate	24778981	160	1.83_862.56	PC 18:2_20:5 
-JLPULHDHAOZNQI-ZTIMHPMXSA-N	Lecithin	5287971	192	2.04_758.57	PC 34:2 Isomer A
-JLPULHDHAOZNQI-ZTIMHPMXSA-N	Lecithin	5287971	193	2.16_816.58	PC 34:2 Isomer B
-CNNSEHUKQJCGTE-UPPWDXJYSA-N	PC(16:0/18:3(6Z,9Z,12Z))	24778699	194	1.98_814.57	PC 34:3 
-VKVSSDKCKXJFIM-AFYHZPHLSA-N	PC(20:3(8Z,11Z,14Z)/14:0)	52923213	195	1.89_756.56	PC 34:3 Isomer B 
-BXRLDROZWDUSGM-ZRYFCQOPSA-N	PC(18:1(9Z)/18:2(6Z,9Z))	24778937	216	2.07_784.59	PC 36:3 Isomer A 
-YPAZQMWFRMHBBM-CLKMJQEKSA-N	PC(18:2(9Z,12Z)/18:1(11Z))	53478785	217	2.19_842.59	PC 36:3 Isomer AB
-NKQPOVROGSWLTO-NVPMBMBWSA-N	PC(18:3(6Z,9Z,12Z)/18:1(9Z))	52922783	218	1.88_782.57_1.89_804.55	PC 36:4 Isomer A 
-SUZYROYNFNQALJ-MHEIZRSESA-N	PC(20:5(5Z,8Z,11Z,14Z,17Z)/16:0)	52923341	221	1.76_780.55	PC 36:5 Isomer A 
-SIMZOWLEIOYZJX-VRCXRDLJSA-N	PC(20:5(5Z,8Z,11Z,14Z,17Z)/20:3(5Z,8Z,11Z))	53479127	272	1.80_830.57_1.80_852.55	PC 40:8 Isomer A
-BFCSBEFTXQRIOJ-IMYLGOOQSA-N	PC(20:4(8Z,11Z,14Z,17Z)/20:4(8Z,11Z,14Z,17Z))	53479093	273	1.90_888.58	PC 40:8 Isomer B
-GKAFCSRKMWFPSJ-RQOIEFAZSA-N	[3-[2-aminoethoxy(hydroxy)phosphoryl]oxy-2-[(9Z,12Z)-octadeca-9,12-dienoyl]oxypropyl] (Z)-octadec-9-enoate	25245362	399	2.24_740.52	PE 36:3 
-AJTJVNKPLZTLHV-UHFFFAOYSA-N	[1-[2-Aminoethoxy(hydroxy)phosphoryl]oxy-3-octadeca-9,12-dienoyloxypropan-2-yl] icosa-5,8,11,14,17-pentaenoate	75957373	410	1.76_762.52	PE 38:7|PE 18:2_20:5 Isomer A
-AJTJVNKPLZTLHV-UHFFFAOYSA-N	[1-[2-Aminoethoxy(hydroxy)phosphoryl]oxy-3-octadeca-9,12-dienoyloxypropan-2-yl] icosa-5,8,11,14,17-pentaenoate	75957373	411	1.86_760.49	PE 38:7|PE 18:2_20:5 Isomer B
-FQGSWQFJOVVRRB-UHFFFAOYSA-N	[1-Hexadecanoyloxy-3-[hydroxy-(2,3,4,5,6-pentahydroxycyclohexyl)oxyphosphoryl]oxypropan-2-yl] icosa-5,8,11,14,17-pentaenoate	75961205	473	1.64_855.50	PI 36:5 
+identifier	lipid	PubChem.CID	Chemical.Name	INCHIKEY
+0.19_129.06	4-METHYL-2-OXO-PENTANOIC ACID 	70	4-Methyl-2-oxopentanoic acid	BKAJNAXTPSGJCU-UHFFFAOYSA-N
+0.30_344.28	CAR 12:0 	168381	(3R)-3-(1-oxododecoxy)-4-(trimethylammonio)butanoate	FUJLYHJROOYKRA-QGZVFWFLSA-N
+0.54_386.33	CAR 15:0	123132011	C15 Carnitine	MDDWQHVKSHTZTD-UHFFFAOYSA-N
+0.67_400.34	CAR 16:0 	11953816	3-carboxy-N,N,N-trimethyl-2-[(1-oxohexadecyl)oxy]-1-Propanaminium	XOMRRQXKHMYMOC-OAQYLSRUSA-N
+0.49_398.33	CAR 16:1	78076330	3-(1-oxohexadec-9-enoxy)-4-(trimethylammonio)butanoate	JFAGPSOZZSTLRF-UHFFFAOYSA-N
+0.80_414.36	CAR 17:0	53477803	Heptadecanoyl carnitine	DWSFAVOTORHAAL-UHFFFAOYSA-N
+0.99_428.37	CAR 18:0 Isomer A 	52922056	Stearoylcarnitine	FNPHNLNTJNMAEE-HSZRJFAPSA-N
+0.72_426.36	CAR 18:1 	53477830	(4S)-4-[(11E)-octadec-11-enoyloxy]-4-(trimethylazaniumyl)butanoate	HITOYGLMAFIRNI-YSESTWPTSA-N
+0.55_424.34	CAR 18:2 Isomer A 	6450015	O-linoleyl-L-carnitine	MJLXQSQYKZWZCB-DQFWFXSYSA-N
+1.03_454.39	CAR 20:1 	71464507	(11Z)-eicoseneoylcarnitine	PVOQPLSKYNZHOT-SEYXRHQNSA-N
+3.44_863.70	CoQ10	1156	Ubisemiquinone	ACTIUHUUMQJHFO-UHFFFAOYSA-N
+1.95_821.53	MGDG 16:0_20:5 	134732480	[(2S)-1-hexadecanoyloxy-3-[(2R,5R,6R)-3,4,5-trihydroxy-6-(hydroxymethyl)oxan-2-yl]oxypropan-2-yl] (5E,8E,11E,14E,17E)-icosa-5,8,11,14,17-pentaenoate	GIEIKQLTPYMKIQ-LPNQNMOLSA-N
+2.01_797.53	MGDG 34:3 	74382274	[1-Hexadecanoyloxy-3-[3,4,5-trihydroxy-6-(hydroxymethyl)oxan-2-yl]oxypropan-2-yl] octadeca-9,12,15-trienoate	NAUNPPRXNUXMCK-UHFFFAOYSA-N
+2.06_840.53	PC 16:0_22:6 	74063529	(2-Docosa-4,7,10,13,16,19-hexaenoyloxy-3-hexadecanoyloxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	IESVDEZGAHUQJU-UHFFFAOYSA-N
+2.29_768.56	PE 38:4 	46891781	2-ammonioethyl [(2R)-2-[(5Z,8Z,11Z,14Z)-1-oxoeicosa-5,8,11,14-tetraenoxy]-3-(1-oxooctadecoxy)propyl] phosphate	ANRKEHNWXKCXDB-BHFWLYLHSA-N
+2.42_766.54	PE 38:4|PE 18:0_20:4	76042065	[1-[2-Aminoethoxy(hydroxy)phosphoryl]oxy-3-octadecanoyloxypropan-2-yl] icosa-8,11,14,17-tetraenoate	YEHAZLUVAZKVRO-UHFFFAOYSA-N
+2.26_764.52	PE 38:5 	138318539	[1-[2-aminoethoxy(hydroxy)phosphoryl]oxy-3-[(Z)-octadec-9-enoyl]oxypropan-2-yl] (8Z,11Z,14Z,17Z)-icosa-8,11,14,17-tetraenoate	ZYMZKMQPPJPQHY-HAGCXRLMSA-N
+1.67_782.48	PE 40:10|PE 20:5_20:5	75957671	[3-[2-Aminoethoxy(hydroxy)phosphoryl]oxy-2-icosa-5,8,11,14,17-pentaenoyloxypropyl] icosa-5,8,11,14,17-pentaenoate	IHTIZXOEIOXSDI-UHFFFAOYSA-N
+2.03_773.53	PG 36:2 	75959369	[1-[2,3-Dihydroxypropoxy(hydroxy)phosphoryl]oxy-3-hexadecanoyloxypropan-2-yl] icosa-11,14-dienoate	KDFIYBDWNQKADP-UHFFFAOYSA-N
+1.87_852.56	PI 34:2 	138160318	[1-[hydroxy-(2,3,4,5,6-pentahydroxycyclohexyl)oxyphosphoryl]oxy-3-octanoyloxypropan-2-yl] (15Z,18Z)-hexacosa-15,18-dienoate	GIASXRZRWQSUOZ-QGLGPCELSA-N

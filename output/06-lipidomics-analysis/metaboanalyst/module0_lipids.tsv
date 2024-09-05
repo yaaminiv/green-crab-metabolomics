@@ -1,32 +1,24 @@
-INCHIKEY	Chemical.Name	PubChem.CID	Lipid	identifier	lipid
-DNWUYCUUEGGVPR-CLTKARDFSA-N	(Z)-9,12,13-trihydroxy-15-octadecenoic acid	24066906	1	0.23_329.23	(Z)-9,12,13-trihydroxyoctadec-15-enoic acid 
-HNICUWMFWZBIFP-KDFHGORWSA-N	(9E,11E)-13-hydroxyoctadeca-9,11-dienoic acid	5282948	2	0.33_295.23	13-HODE 
-NNPWRKSGORGTIM-HCCKYKKOSA-N	8S,15S-dihydroxy-5Z,9E,11Z,13E-eicosatetraenoic acid	5283183	7	0.27_335.22	8,15-DiHETE 
-YDSCLGYBUIDZNF-UHFFFAOYSA-N	1-Hexadecyl-2-arachidonoylthio-2-deoxyglycero-3-phosphorylcholine	53394300	8	2.39_784.57	arachidonoylthiophosphorylcholine 
-HVYWMOMLDIMFJA-DPAQBDIFSA-N	(3S,8S,9S,10R,13R,14S,17R)-10,13-dimethyl-17-[(2R)-6-methylheptan-2-yl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1H-cyclopenta[a]phenanthren-3-ol	5997	62	1.89_369.35	Cholesterol 
-XEBKSQSGNGRGDW-UHFFFAOYSA-N	9,10-Dihydroxyoctadec-12-enoic acid	53394288	81	0.28_313.24	FA 18:1+2O 
-JGUNZIWGNMQSBM-UHFFFAOYSA-N	9S-hydroperoxy-10E,12Z-octadecadienoic acid	1928	83	0.26_311.22	FA 18:2+2O 
-MSUOLNSQHLHDAS-UHFFFAOYSA-N	2-Hydroxytetracosanoic acid	102430	95	1.47_383.35	FA 24:0(2OH)
-MWMPEAHGUXCSMY-UHFFFAOYSA-N	pentacosanoic acid	10468	96	2.21_381.37	FA 25:0 
-VHOCUJPBKOZGJD-UHFFFAOYSA-N	Triacontanoic acid	10471	97	2.93_451.45	FA 30:0 
-OBPRTZBYYWWRGJ-UHFFFAOYSA-N	2-Tetracosanoyloxyacetic acid	88765616	98	1.58_425.36	FAHFA 26:0 
-IHNKQIMGVNPMTC-RUZDIDTESA-N	1-18:0-lysoPC	497299	120	1.20_582.38	LPC 18:0 Isomer B 
-UATOAILWGVYRQS-UHFFFAOYSA-N	[2-hydroxy-3-(1-oxoeicosoxy)propyl] 2-(trimethylammonio)ethyl phosphate	24779474	123	1.36_610.41	LPC 20:0 
-ZPDQFUYPBVXUKS-UHFFFAOYNA-N	LPS 18:0	478094547	144	0.69_524.30	LPS 18:0 
-NURPOXDFZKXLRW-UHFFFAOYSA-N	N-(2-hydroxyethyl)pentanamide	13245640	149	0.20_146.12	NAE 5:0
-QWJKOSGGYVUJBP-UHFFFAOYSA-N	N-(2-hydroxyethyl)nonanamide	14455154	150	0.23_202.17	NAE 9:0
-PPTNNIINSOQWCE-WJOKGBTCSA-N	1-Palmitoyl-2-(9-oxo-nonanoyl)-sn-glycero-3-phosphocholine	46907874	152	0.99_650.44	PC 16:0/9:0 CHO 
-XOZKRFBVCYMGKM-GKFVBPDJSA-N	[2-[(6Z,9Z,12Z,15Z)-octadeca-6,9,12,15-tetraenoyl]oxy-3-propanoyloxypropyl] 2-(trimethylazaniumyl)ethyl phosphate	138298680	163	0.53_572.34	PC 21:4 
-BQAGEKPOHNCEPX-UHFFFAOYSA-N	(3-Decanoyloxy-2-tetradecanoyloxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	24778525	166	1.44_680.45	PC 24:0|PC 10:0_14:0
-VBWSYJOSSOZQOH-UHFFFAOYSA-N	(3-Decanoyloxy-2-hexadecanoyloxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	138277677	167	1.58_650.48	PC 26:0|PC 10:0_16:0
-GWWAIYISJPUKIW-UHFFFAOYSA-N	(3-Acetyloxy-2-heptacosanoyloxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	138165033	171	1.86_692.53	PC 29:0 
-PSVRFUPOQYJOOZ-QNPWAGBNSA-N	[(2R)-2-[(5Z,8Z,11Z,14Z)-1-oxoeicosa-5,8,11,14-tetraenoxy]-3-(1-oxooctadecoxy)propyl] 2-(trimethylammonio)ethyl phosphate	16219824	241	2.10_810.60	PC 38:4 Isomer A 
-BYMZZQJJOHDZOU-UHFFFAOYSA-N	(2-Hexadecanoyloxy-3-tetradecoxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	24779276	308	2.14_692.56	PC O-30:0|PC O-14:0_16:0
-BAGTZVRZMJNFDH-MJXYYAAPSA-N	[2-[(9Z,12Z)-heptadeca-9,12-dienoyl]oxy-3-[(11Z,14Z,17Z)-icosa-11,14,17-trienoxy]propyl] 2-(trimethylazaniumyl)ethyl phosphate	138124242	336	2.25_780.59	PC O-37:5 
-LFGBKOUQHCWBQI-BZGLIJSBSA-N	PE(18:2(9Z,12Z)/20:4(5Z,8Z,11Z,14Z))	52924893	407	1.99_764.53	PE 38:6 
-FIJFPUAJUDAZEY-UHFFFAOYSA-N	[1-[2-Aminoethoxy(hydroxy)phosphoryl]oxy-3-octadec-1-enoxypropan-2-yl] docosa-4,7,10,13,16,19-hexaenoate	74819122	447	2.30_776.57	PE-O 18:1_22:6 
-MDRFMTLYKHBJTF-NQYLGBTJSA-N	N-(11Z-eicosenoyl)-sphing-4-enine-1-phosphocholine	52931179	529	2.20_757.62	SM d38:2 Isomer A
-DACOGJMBYLZYDH-GXJPFUDISA-N	N-(tetracosanoyl)-4E,14Z-sphingadienine-1-phosphocholine	52931217	534	2.85_871.69	SM d42:2 Isomer B 
-GLZHPWPMVDTTOB-HHDDAWPXSA-N	[1-[(9Z,12Z)-hexadeca-9,12-dienoyl]oxy-3-[(9Z,12Z,15Z)-octadeca-9,12,15-trienoyl]oxypropan-2-yl] (9Z,12Z)-octadeca-9,12-dienoate	165216290	538	3.42_866.73	TG 16:2_18:2_18:3 
-PVMBAGXWHHZKFP-JMPJWMFJSA-N	TG(16:1(9Z)/16:1(9Z)/18:2(9Z,12Z))[iso3]	25240359	558	3.58_844.76	TG 50:4 
-WRHBANXXQKCUJB-HNENSFHCSA-N	(2-decanoyloxy-3-octanoyloxypropyl) (Z)-octadec-9-enoate	164466143	609	2.75_654.56	TG 8:0_10:0_18:1 
+identifier	lipid	PubChem.CID	Chemical.Name	INCHIKEY
+2.39_784.57	arachidonoylthiophosphorylcholine 	53394300	1-Hexadecyl-2-arachidonoylthio-2-deoxyglycero-3-phosphorylcholine	YDSCLGYBUIDZNF-UHFFFAOYSA-N
+1.89_369.35	Cholesterol 	5997	(3S,8S,9S,10R,13R,14S,17R)-10,13-dimethyl-17-[(2R)-6-methylheptan-2-yl]-2,3,4,7,8,9,11,12,14,15,16,17-dodecahydro-1H-cyclopenta[a]phenanthren-3-ol	HVYWMOMLDIMFJA-DPAQBDIFSA-N
+1.47_383.35	FA 24:0(2OH)	102430	2-Hydroxytetracosanoic acid	MSUOLNSQHLHDAS-UHFFFAOYSA-N
+2.21_381.37	FA 25:0 	10468	pentacosanoic acid	MWMPEAHGUXCSMY-UHFFFAOYSA-N
+2.93_451.45	FA 30:0 	10471	Triacontanoic acid	VHOCUJPBKOZGJD-UHFFFAOYSA-N
+1.20_582.38	LPC 18:0 Isomer B 	497299	1-18:0-lysoPC	IHNKQIMGVNPMTC-RUZDIDTESA-N
+1.36_610.41	LPC 20:0 	24779474	[2-hydroxy-3-(1-oxoeicosoxy)propyl] 2-(trimethylammonio)ethyl phosphate	UATOAILWGVYRQS-UHFFFAOYSA-N
+0.69_524.30	LPS 18:0 	478094547	LPS 18:0	ZPDQFUYPBVXUKS-UHFFFAOYNA-N
+0.20_146.12	NAE 5:0	13245640	N-(2-hydroxyethyl)pentanamide	NURPOXDFZKXLRW-UHFFFAOYSA-N
+0.23_202.17	NAE 9:0	14455154	N-(2-hydroxyethyl)nonanamide	QWJKOSGGYVUJBP-UHFFFAOYSA-N
+0.99_650.44	PC 16:0/9:0 CHO 	46907874	1-Palmitoyl-2-(9-oxo-nonanoyl)-sn-glycero-3-phosphocholine	PPTNNIINSOQWCE-WJOKGBTCSA-N
+0.53_572.34	PC 21:4 	138298680	[2-[(6Z,9Z,12Z,15Z)-octadeca-6,9,12,15-tetraenoyl]oxy-3-propanoyloxypropyl] 2-(trimethylazaniumyl)ethyl phosphate	XOZKRFBVCYMGKM-GKFVBPDJSA-N
+0.53_630.34	PC 22:4 	138159393	[3-acetyloxy-2-[(8Z,11Z,14Z,17Z)-icosa-8,11,14,17-tetraenoyl]oxypropyl] 2-(trimethylazaniumyl)ethyl phosphate	GFFACUDRMCKGID-ZKWNWVNESA-N
+1.86_692.53	PC 29:0 	138165033	(3-Acetyloxy-2-heptacosanoyloxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	GWWAIYISJPUKIW-UHFFFAOYSA-N
+2.10_810.60	PC 38:4 Isomer A 	16219824	[(2R)-2-[(5Z,8Z,11Z,14Z)-1-oxoeicosa-5,8,11,14-tetraenoxy]-3-(1-oxooctadecoxy)propyl] 2-(trimethylammonio)ethyl phosphate	PSVRFUPOQYJOOZ-QNPWAGBNSA-N
+2.14_692.56	PC O-30:0|PC O-14:0_16:0	24779276	(2-Hexadecanoyloxy-3-tetradecoxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	BYMZZQJJOHDZOU-UHFFFAOYSA-N
+2.25_780.59	PC O-37:5 	138124242	[2-[(9Z,12Z)-heptadeca-9,12-dienoyl]oxy-3-[(11Z,14Z,17Z)-icosa-11,14,17-trienoxy]propyl] 2-(trimethylazaniumyl)ethyl phosphate	BAGTZVRZMJNFDH-MJXYYAAPSA-N
+1.99_764.53	PE 38:6 	52924893	PE(18:2(9Z,12Z)/20:4(5Z,8Z,11Z,14Z))	LFGBKOUQHCWBQI-BZGLIJSBSA-N
+2.30_776.57	PE-O 18:1_22:6 	74819122	[1-[2-Aminoethoxy(hydroxy)phosphoryl]oxy-3-octadec-1-enoxypropan-2-yl] docosa-4,7,10,13,16,19-hexaenoate	FIJFPUAJUDAZEY-UHFFFAOYSA-N
+2.20_757.62	SM d38:2 Isomer A	52931179	N-(11Z-eicosenoyl)-sphing-4-enine-1-phosphocholine	MDRFMTLYKHBJTF-NQYLGBTJSA-N
+2.85_871.69	SM d42:2 Isomer B 	52931217	N-(tetracosanoyl)-4E,14Z-sphingadienine-1-phosphocholine	DACOGJMBYLZYDH-GXJPFUDISA-N
+3.42_866.73	TG 16:2_18:2_18:3 	165216290	[1-[(9Z,12Z)-hexadeca-9,12-dienoyl]oxy-3-[(9Z,12Z,15Z)-octadeca-9,12,15-trienoyl]oxypropan-2-yl] (9Z,12Z)-octadeca-9,12-dienoate	GLZHPWPMVDTTOB-HHDDAWPXSA-N
+3.58_844.76	TG 50:4 	25240359	TG(16:1(9Z)/16:1(9Z)/18:2(9Z,12Z))[iso3]	PVMBAGXWHHZKFP-JMPJWMFJSA-N
