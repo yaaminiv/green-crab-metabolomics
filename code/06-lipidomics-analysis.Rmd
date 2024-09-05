@@ -1743,63 +1743,114 @@ significantVIP %>%
 
 #### Identify VIP in each module
 
+I will only identify VIP in modules that were significantly correlated with a temperature condition, which will exclude ME13 and ME15.
+
+
 ```{r}
 overallVIP_module0 <- significantVIP %>%
-  filter(., metabolite %in% module0_metabolites$Metabolite) %>%
+  filter(., lipid %in% module0_lipids$lipid) %>%
   mutate(module = "module0") #Identify overall VIP present in module
 overallVIP_module0
 ```
 
 ```{r}
+overallVIP_module1 <- significantVIP %>%
+  filter(., lipid %in% module1_lipids$lipid) %>%
+  mutate(module = "module1") #Identify overall VIP present in module
+overallVIP_module1
+```
+
+```{r}
 overallVIP_module2 <- significantVIP %>%
-  filter(., metabolite %in% module2_metabolites$Metabolite) %>%
+  filter(., lipid %in% module2_lipids$lipid) %>%
   mutate(module = "module2") #Identify overall VIP present in module
 overallVIP_module2
 ```
 
 ```{r}
 overallVIP_module3 <- significantVIP %>%
-  filter(., metabolite %in% module3_metabolites$Metabolite) %>%
+  filter(., lipid %in% module3_lipids$lipid) %>%
   mutate(module = "module3") #Identify overall VIP present in module
 overallVIP_module3
 ```
 
 ```{r}
 overallVIP_module4 <- significantVIP %>%
-  filter(., metabolite %in% module4_metabolites$Metabolite) %>%
+  filter(., lipid %in% module4_lipids$lipid) %>%
   mutate(module = "module4") #Identify overall VIP present in module
 overallVIP_module4
 ```
 
 ```{r}
 overallVIP_module5 <- significantVIP %>%
-  filter(., metabolite %in% module5_metabolites$Metabolite) %>%
+  filter(., lipid %in% module5_lipids$lipid) %>%
   mutate(module = "module5") #Identify overall VIP present in module
 overallVIP_module5
 ```
 
 ```{r}
 overallVIP_module6 <- significantVIP %>%
-  filter(., metabolite %in% module6_metabolites$Metabolite) %>%
+  filter(., lipid %in% module6_lipids$lipid) %>%
   mutate(module = "module6") #Identify overall VIP present in module
 overallVIP_module6
 ```
 
 ```{r}
 overallVIP_module7 <- significantVIP %>%
-  filter(., metabolite %in% module7_metabolites$Metabolite) %>%
+  filter(., lipid %in% module7_lipids$lipid) %>%
   mutate(module = "module7") #Identify overall VIP present in module
 overallVIP_module7
 ```
 
 ```{r}
+overallVIP_module8 <- significantVIP %>%
+  filter(., lipid %in% module8_lipids$lipid) %>%
+  mutate(module = "module8") #Identify overall VIP present in module
+overallVIP_module8
+```
+
+```{r}
+overallVIP_module9 <- significantVIP %>%
+  filter(., lipid %in% module9_lipids$lipid) %>%
+  mutate(module = "module9") #Identify overall VIP present in module
+overallVIP_module9
+```
+
+```{r}
+overallVIP_module10 <- significantVIP %>%
+  filter(., lipid %in% module10_lipids$lipid) %>%
+  mutate(module = "module10") #Identify overall VIP present in module
+overallVIP_module10
+```
+
+```{r}
+overallVIP_module11 <- significantVIP %>%
+  filter(., lipid %in% module11_lipids$lipid) %>%
+  mutate(module = "module11") #Identify overall VIP present in module
+overallVIP_module11
+```
+
+```{r}
+overallVIP_module12 <- significantVIP %>%
+  filter(., lipid %in% module12_lipids$lipid) %>%
+  mutate(module = "module12") #Identify overall VIP present in module
+overallVIP_module12
+```
+
+```{r}
 overallVIP_allModules <- rbind(overallVIP_module0,
+                               overallVIP_module1,
                                overallVIP_module2,
                                overallVIP_module3,
                                overallVIP_module4,
                                overallVIP_module5,
                                overallVIP_module6,
-                               overallVIP_module7)
+                               overallVIP_module7,
+                               overallVIP_module8,
+                               overallVIP_module9,
+                               overallVIP_module10,
+                               overallVIP_module11,
+                               overallVIP_module12)
 overallVIP_allModules
 ```
 
@@ -1809,7 +1860,178 @@ write.table(overallVIP_allModules, "metaboanalyst/all-module-overall-VIP.txt", s
 
 #### Identify VIP from significant pathways in each module
 
+### Pairwise VIP
 
+#### Identify pairwise VIP in each module
+
+I'm only interested in finding the pairwise VIP associated with the treatment conditions that a specific module was associated with:
+
+- Module 0: 5
+- Module 1: 13, 30
+- Module 2: 13, 30
+- Module 3: 5, 30
+- Module 4: 13, 30
+- Module 5: 30
+- Module 6: 30
+- Module 7: 13, 30
+- Module 8: 30
+- Module 9: 5, 30
+- Module 10: 13, 30
+- Module 11: 5, 30
+- Module 12: 13
+
+```{r}
+VIP_module0 <- rbind(t.test_13v5 %>%
+                       mutate(., comparison = "13v5") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., lipid %in% module0_lipids$lipid)) %>% 
+  mutate(module = "module0") #Identify pairwise VIP present in module
+VIP_module0
+```
+
+```{r}
+VIP_module1 <- rbind(t.test_13v30 %>%
+                       mutate(., comparison = "13v30") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., lipid %in% module1_lipids$lipid)) %>% 
+  mutate(module = "module1") #Identify pairwise VIP present in module
+VIP_module1
+```
+
+```{r}
+VIP_module2 <- rbind(t.test_13v5 %>%
+                       mutate(., comparison = "13v30") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., lipid %in% module2_lipids$lipid)) %>% 
+  mutate(module = "module2") #Identify pairwise VIP present in module
+VIP_module2
+```
+
+```{r}
+VIP_module3 <- rbind(t.test_13v5 %>%
+                       mutate(., comparison = "13v5") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., lipid %in% module3_lipids$lipid),
+                     t.test_13v30 %>%
+                       mutate(., comparison = "13v30") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., lipid %in% module3_lipids$lipid)) %>% 
+  mutate(module = "module3") #Identify pairwise VIP present in module 3
+VIP_module3
+```
+
+```{r}
+VIP_module4 <- rbind(t.test_13v30 %>%
+                       mutate(., comparison = "13v30") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., lipid %in% module4_lipids$lipid)) %>% 
+  mutate(module = "module4") #Identify pairwise VIP present in module
+VIP_module4
+```
+
+```{r}
+VIP_module5 <- rbind(t.test_13v30 %>%
+                       mutate(., comparison = "13v30") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., lipid %in% module5_lipids$lipid)) %>% 
+  mutate(module = "module5") #Identify pairwise VIP present in module
+VIP_module5
+```
+
+```{r}
+VIP_module6 <- rbind(t.test_13v30 %>%
+                       mutate(., comparison = "13v30") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., lipid %in% module6_lipids$lipid)) %>% 
+  mutate(module = "module6") #Identify pairwise VIP present in module
+VIP_module6
+```
+
+```{r}
+VIP_module7 <- rbind(t.test_13v30 %>%
+                       mutate(., comparison = "13v30") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., lipid %in% module7_lipids$lipid)) %>% 
+  mutate(module = "module7") #Identify pairwise VIP present in module
+VIP_module7
+```
+
+```{r}
+VIP_module8 <- rbind(t.test_13v30 %>%
+                       mutate(., comparison = "13v30") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., lipid %in% module8_lipids$lipid)) %>% 
+  mutate(module = "module8") #Identify pairwise VIP present in module
+VIP_module8
+```
+
+```{r}
+VIP_module9 <- rbind(t.test_13v30 %>%
+                       mutate(., comparison = "13v30") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., lipid %in% module9_lipids$lipid),
+                     t.test_13v5 %>%
+                       mutate(., comparison = "13v5") %>%
+                       filter(., p.adj < 0.05) %>%
+                       filter(., lipid %in% module9_lipids$lipid)) %>% 
+  mutate(module = "module9") #Identify pairwise VIP present in module
+VIP_module9
+```
+```{r}
+VIP_module10 <- rbind(t.test_13v30 %>%
+                        mutate(., comparison = "13v30") %>%
+                        filter(., p.adj < 0.05) %>%
+                        filter(., lipid %in% module10_lipids$lipid)) %>% 
+  mutate(module = "module10") #Identify pairwise VIP present in module
+VIP_module10
+```
+
+```{r}
+VIP_module11 <- rbind(t.test_13v30 %>%
+                        mutate(., comparison = "13v30") %>%
+                        filter(., p.adj < 0.05) %>%
+                        filter(., lipid %in% module11_lipids$lipid),
+                      t.test_13v5 %>%
+                        mutate(., comparison = "13v5") %>%
+                        filter(., p.adj < 0.05) %>%
+                        filter(., lipid %in% module11_lipids$lipid)) %>% 
+  mutate(module = "module11") #Identify pairwise VIP present in module
+VIP_module11
+```
+
+```{r}
+VIP_module12 <- rbind(t.test_13v30 %>%
+                        mutate(., comparison = "13v30") %>%
+                        filter(., p.adj < 0.05) %>%
+                        filter(., lipid %in% module12_lipids$lipid),
+                      t.test_13v5 %>%
+                        mutate(., comparison = "13v5") %>%
+                        filter(., p.adj < 0.05) %>%
+                        filter(., lipid %in% module12_lipids$lipid)) %>% 
+  mutate(module = "module12") #Identify pairwise VIP present in module
+VIP_module12
+```
+
+```{r}
+pairwiseVIP_allModules <- rbind(VIP_module0,
+                                VIP_module1,
+                                VIP_module2,
+                                VIP_module3,
+                                VIP_module4,
+                                VIP_module5,
+                                VIP_module6,
+                                VIP_module7,
+                                VIP_module8,
+                                VIP_module9,
+                                VIP_module10,
+                                VIP_module11,
+                                VIP_module12) #Combine all VIP lists
+head(pairwiseVIP_allModules)
+```
+
+```{r}
+write.table(pairwiseVIP_allModules, "metaboanalyst/all-module-VIP.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+```
 
 
 # CODE TO REORGANIZE
