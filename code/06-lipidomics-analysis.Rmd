@@ -401,6 +401,7 @@ treatment.known.VIP %>%
   theme_classic() + theme(axis.text.y = element_text(size = 4)) #Obtain significant VIP (lipids with VIP > 1). Arrange by lipid name and reorder by cumulative VIP score. Plot points and change x and y axis labels.
 ggsave("PLSDA/figures/known-lipids-VIP-treatment.pdf", height = 8.5, width = 11)
 ```
+
 ```{r}
 significantVIP <- treatment.known.VIP %>%
   filter(VIP >= 1) #Save significant VIP
@@ -750,7 +751,6 @@ Construct a new cluster dendogram to visually identify sample outliers.
 
 ```{r}
 sampleTree <- hclust(dist(rowwiseLipidData), method = "average") #Perform clustering analysis
-# sampleTree <- hclust(dist(rowwiseLipidData[-c(40, 28, 30),]), method = "average") #Perform clustering analysis
 ```
 
 ```{r}
@@ -759,11 +759,22 @@ plot(sampleTree, main = "Sample clustering to detect outliers", sub = "", xlab =
 #dev.off()
 ```
 
-304, 303, and 606 look like they could be outliers (all from 30ºC treatment at day 3). I did this analysis with and without those samples and it did not change the sample or treatment clustering, so I will not remove these outliers.
-
 ```{r}
 # rowwiseLipidData[-c(40, 28, 30),] #Remove 303, 304, and 306
 ```
+
+```{r}
+# sampleTree <- hclust(dist(rowwiseLipidData[-c(40, 28, 30),]), method = "average") #Perform clustering analysis without potential outliers
+```
+
+```{r}
+#Recreate clustering without potential outliers
+#pdf("WCNA/figures/sample-outliers.pdf", height = 8.5, width = 11)
+# plot(sampleTree, main = "Sample clustering to detect outliers", sub = "", xlab = "", cex.lab = 1.5, cex.axis = 1.5, cex.main = 2)
+#dev.off()
+```
+
+304, 303, and 606 look like they could be outliers (all from 30ºC treatment at day 3). I did this analysis with and without those samples and it did not change the sample clustering, so I will not remove these outliers.
 
 ## Network construction and consensus module detection
 
@@ -877,8 +888,6 @@ module_df <- data.frame(
   Lipid = names(netwk$colors),
   colors = netwk$colors)
 
-module_df[1:5,]
-
 write.csv(module_df, "WCNA/lipid_modules.csv")
 
 # Get Module Eigengenes per cluster
@@ -910,7 +919,7 @@ mME %>% ggplot(., aes(x=crab.ID, y=name, fill=value)) +
     midpoint = 0,
     limit = c(-1,1)) +
   theme(axis.text.x = element_text(angle=90)) +
-  labs(title = "Module-Sample Relationships", y = "Modules", fill="corr")
+  labs(title = "Module-Sample Relationships", y = "Modules", fill = "corr")
 ```
 
 ### Relate modules to treatment and day
@@ -1080,13 +1089,13 @@ levels(mME_meta$treatment) #Confirm levels were reordered
 write.csv(mME_meta, "WCNA/module-expression.csv", quote = FALSE, row.names = FALSE) #Save module expression dataframe
 ```
 
-First, I'm going to look at boxplots for eigengene expression by treatment x day.
+First, I'm going to look at boxplots for eigengene expression by treatment.
 
 ```{r, warning = FALSE, message = FALSE}
 #pdf("WCNA/figures/eigengene-expression-boxplot.pdf", height = 8.5, width = 11)
 mME_meta %>%
   ggplot(aes(x = treatment, y = value, colour = treatment)) +
-  facet_wrap(~ Module) +
+  facet_wrap(~ Module, scales = "free_y") +
   ylab("Module Expression") +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey")+
   geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
@@ -1154,6 +1163,8 @@ write.csv(lipid_rel_change, "WCNA/lipids_relative_change.csv", quote = FALSE, ro
 ```
 
 # Pathway analysis
+
+The final step in this workflow is to understand the various lipid pathways represented in each module eigengene. To do this, I will conduct a manual pathway analysis and identify VIP present in each significant cluster, and also use MetaboAnalyst.
 
 ## Comparing with Chapelle results
 
