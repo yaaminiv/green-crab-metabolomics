@@ -2007,6 +2007,55 @@ ggsave("metaboanalyst/figures/13v30_VIP-logFDR.svg", heigh = 8.5, width = 11)
 
 ##### 13 vs. 5
 
+```{r}
+enrichmentResults13v5 <- read.csv("metaboanalyst/LION-enrichment-report-13v5/LION-enrichment-results-13v5.csv") %>%
+  dplyr::rename(Description = "Discription") %>%
+  dplyr::rename(Observed = "Significant") %>%
+  mutate(., Significant = case_when(FDR.q.value < 0.05 ~ "Yes",
+                                    FDR.q.value >= 0.05 ~ "No")) %>%
+  mutate(., "-log(FDR)" = -log(FDR.q.value)) #Import enrichment results. Rename description and observed column and create new column
+head(enrichmentResults13v5) #Look at results
+enrichmentResults13v5 %>% filter(., FDR.q.value < 0.05) %>% nrow() #There are 4 significantly enriched terms
+```
+
+```{r}
+topEnrichmentResults13v5 <- enrichmentResults13v5 %>%
+  arrange(desc("-log(FDR)")) %>%
+  slice(., 1:25) #Arrange results by enrichment ratio and take the top 25 LION terms
+head(topEnrichmentResults13v5) #Confirm formatting
+```
+
+```{r}
+topEnrichmentResults13v5 %>%
+  mutate(., order = rev(1:25)) %>%
+  ggplot(., aes(x = `-log(FDR)`, y = as.factor(order), fill = Significant)) +
+  geom_bar(stat = "identity") +
+  labs(x = "-log(FDR)") +
+  scale_y_discrete(name = "",
+                   labels = rev(topEnrichmentResults13v5$Description)) +
+  scale_fill_manual(name = "FDR",
+                    values = c("grey20", "springgreen4"),
+                    labels = c(expression("">=0.05), expression(""<0.05))) +
+  xlim(0,7) +
+  theme_classic(base_size = 15)
+ggsave("metaboanalyst/figures/13v5_VIP-logFDR.pdf", heigh = 8.5, width = 11)
+```
+
+```{r}
+topEnrichmentResults13v5 %>%
+  mutate(., order = rev(1:25)) %>%
+  ggplot(., aes(x = `-log(FDR)`, y = as.factor(order), fill = Significant)) +
+  geom_bar(stat = "identity") +
+  labs(x = "-log(FDR)") +
+  scale_y_discrete(name = "",
+                   labels = rev(topEnrichmentResults13v5$Description)) +
+  scale_fill_manual(name = "FDR",
+                    values = c("grey20", "springgreen4"),
+                    labels = c(expression("">=0.05), expression(""<0.05))) +
+  xlim(0,7) +
+  theme_classic(base_size = 15)
+ggsave("metaboanalyst/figures/13v5_VIP-logFDR.svg", heigh = 8.5, width = 11)
+```
 
 #### Identify pairwise VIP in each module
 
