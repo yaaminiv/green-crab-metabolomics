@@ -343,6 +343,7 @@ plotIndiv(treatment.known.plsda, comp = c(1,2), ind.names = FALSE,
           style = "ggplot2") #Visualize first two components of PLS-DA with no individual sample names. Alter point size, color, shape, and line width. Include 95% confidence ellipses and use star format to visualize sample distance from centroids. Include a legend and specify the legend title. Specify the plot title and text label sizes. Use ggplot style.
 #dev.off()
 ```
+
 ```{r}
 #svg("PLSDA/figures/known-lipids-PLSDA-treatment-comp12.svg", height = 8.5, width = 11)
 plotIndiv(treatment.known.plsda, comp = c(1,2), ind.names = FALSE,
@@ -1392,7 +1393,7 @@ write_delim(module15_lipids, "metaboanalyst/module15_lipids.tsv", delim = "\t", 
 
 # Pathway analysis
 
-The final step in this workflow is to understand the various lipid pathways represented in each module eigengene. To do this, I will conduct a manual pathway analysis and identify VIP present in each significant cluster, and also use MetaboAnalyst.
+The final step in this workflow is to understand the various lipid pathways represented in each module eigengene. To do this, I will conduct a manual pathway analysis and identify VIP present in each significant cluster, and also use LION Enrichment.
 
 ## Establish heatmap formatting
 
@@ -1728,9 +1729,11 @@ pheatmap((knownTransLipidData %>%
 #dev.off()
 ```
 
-#### Metaboanalyst
+#### LION Enrichment
 
-The next thing I want to do with the list of all VIP is to add PubChem and KEGG annotations. This will allow me to upload the list into MetaboAnalyst to conduct pathway assignment and check for enriched pathways.
+The next thing I want to do is export a list of lipids to use with the web-based GUI [LIpid ONtology (LION)](). I am using this instead of MetaboAnalyst because it is specific for lipids, wherease MetaboAnalyst doesn't recognize most lipids in this dataset.
+
+To conduct a target enrichment with LION, I need a list of targets (overall VIP lipids) and a list of background compounds (all known lipids).
 
 ```{r}
 significantVIP %>%
@@ -1738,7 +1741,72 @@ significantVIP %>%
   left_join(., rawLipidomicsData, by = "lipid") %>%
   left_join(., lipidIdentifiers, by = c("lipid", "identifier", "INCHIKEY")) %>%
   dplyr::select(., lipid, identifier, PubChem.CID, Chemical.Name, INCHIKEY) %>%
+  unique(.) %>%
   write.table("metaboanalyst/allVIP_lipids.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take list of significant VIP. Select only the lipids and join with annotation information. Select only columns of interest and save as a txt file
+```
+
+```{r}
+knownTransLipidData %>%
+  dplyr::select(-c(crab.ID:treatment_day)) %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(., var = "lipid") %>%
+  dplyr::select(lipid) %>%
+  left_join(., lipidIdentifiers, by = "lipid") %>%
+  unique(.) %>%
+  write.table("metaboanalyst/allKnown_lipids.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take list of known lipids. Remove metadata and transpose. Select only the lipid and join with annotation information. Select unique rows and save as a txt file.
+```
+
+Within LION I did the following:
+
+- Target enrichment (this uses the `topGO` algorithm to conduct a Fisher's exact test for enrichment) using overall VIP as the list of interests and all known lipids as the backgrounds
+
+```{r}
+enrichmentResults <- read.csv("metaboanalyst/LION-enrichment-report/LION-enrichment-results.csv") %>%
+  dplyr::rename(Description = "Discription") %>%
+  dplyr::rename(Observed = "Significant") %>%
+  mutate(., Significant = case_when(FDR.q.value < 0.05 ~ "Yes",
+                                    FDR.q.value >= 0.05 ~ "No")) %>%
+  mutate(., "-log(FDR)" = -log(FDR.q.value)) #Import enrichment results. Rename description and observed column and create new column
+head(enrichmentResults) #Look at results
+```
+
+```{r}
+topEnrichmentResults <- enrichmentResults %>%
+  arrange(desc("-log(FDR)")) %>%
+  slice(., 1:25) #Arrange results by enrichment ratio and take the top 25 metabolites
+head(topEnrichmentResults) #Confirm formatting
+```
+
+```{r}
+topEnrichmentResults %>%
+  mutate(., order = rev(1:25)) %>%
+  ggplot(., aes(x = `-log(FDR)`, y = as.factor(order), fill = Significant)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Enrichment Ratio") +
+  scale_y_discrete(name = "",
+                   labels = rev(topEnrichmentResults$Description)) +
+  scale_fill_manual(name = "FDR",
+                    values = c("grey20", "springgreen4"),
+                    labels = c(expression("">=0.05), expression(""<0.05))) +
+  xlim(0,4) +
+  theme_classic(base_size = 15)
+ggsave("metaboanalyst/figures/all_VIP-logFDR.pdf", heigh = 8.5, width = 11)
+```
+
+```{r}
+topEnrichmentResults %>%
+  mutate(., order = rev(1:25)) %>%
+  ggplot(., aes(x = `-log(FDR)`, y = as.factor(order), fill = Significant)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Enrichment Ratio") +
+  scale_y_discrete(name = "",
+                   labels = rev(topEnrichmentResults$Description)) +
+  scale_fill_manual(name = "FDR",
+                    values = c("grey20", "springgreen4"),
+                    labels = c(expression("">=0.05), expression(""<0.05))) +
+  xlim(0,4) +
+  theme_classic(base_size = 15)
+ggsave("metaboanalyst/figures/all_VIP-logFDR.svg", heigh = 8.5, width = 11)
 ```
 
 #### Identify VIP in each module
