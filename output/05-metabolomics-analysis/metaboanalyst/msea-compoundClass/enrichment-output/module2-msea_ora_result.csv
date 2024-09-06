@@ -1,9 +1,0 @@
-"","total","expected","hits","Raw p","Holm p","FDR"
-"Carboxylic acids and derivatives",3740,0.342,7,2.55e-08,1.21e-05,1.21e-05
-"Phenols",434,0.0397,3,8.54e-06,0.00405,0.00203
-"Indoles and derivatives",559,0.0511,2,0.0012,0.567,0.19
-"Oxepanes",37,0.00338,1,0.00338,1,0.402
-"Diazines",342,0.0313,1,0.0308,1,1
-"Benzene and substituted derivatives",3050,0.279,2,0.0312,1,1
-"Organooxygen compounds",3160,0.288,2,0.0332,1,1
-"Organonitrogen compounds",618,0.0565,1,0.055,1,1
