@@ -1731,7 +1731,7 @@ pheatmap((knownTransLipidData %>%
 
 #### LION Enrichment
 
-The next thing I want to do is export a list of lipids to use with the web-based GUI [LIpid ONtology (LION)](). I am using this instead of MetaboAnalyst because it is specific for lipids, wherease MetaboAnalyst doesn't recognize most lipids in this dataset.
+The next thing I want to do is export a list of lipids to use with the web-based GUI [LION/web](lipidontology.com). I am using this instead of MetaboAnalyst because it is specific for lipids, wherease MetaboAnalyst doesn't recognize most lipids in this dataset.
 
 To conduct a target enrichment with LION, I need a list of targets (overall VIP lipids) and a list of background compounds (all known lipids).
 
@@ -1782,7 +1782,7 @@ topEnrichmentResults %>%
   mutate(., order = rev(1:25)) %>%
   ggplot(., aes(x = `-log(FDR)`, y = as.factor(order), fill = Significant)) +
   geom_bar(stat = "identity") +
-  labs(x = "Enrichment Ratio") +
+  labs(x = "-log(FDR)") +
   scale_y_discrete(name = "",
                    labels = rev(topEnrichmentResults$Description)) +
   scale_fill_manual(name = "FDR",
@@ -1798,7 +1798,7 @@ topEnrichmentResults %>%
   mutate(., order = rev(1:25)) %>%
   ggplot(., aes(x = `-log(FDR)`, y = as.factor(order), fill = Significant)) +
   geom_bar(stat = "identity") +
-  labs(x = "Enrichment Ratio") +
+  labs(x = "-log(FDR)") +
   scale_y_discrete(name = "",
                    labels = rev(topEnrichmentResults$Description)) +
   scale_fill_manual(name = "FDR",
@@ -1812,7 +1812,6 @@ ggsave("metaboanalyst/figures/all_VIP-logFDR.svg", heigh = 8.5, width = 11)
 #### Identify VIP in each module
 
 I will only identify VIP in modules that were significantly correlated with a temperature condition, which will exclude ME13 and ME15.
-
 
 ```{r}
 overallVIP_module0 <- significantVIP %>%
@@ -1926,9 +1925,31 @@ overallVIP_allModules
 write.table(overallVIP_allModules, "metaboanalyst/all-module-overall-VIP.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 ```
 
-#### Identify VIP from significant pathways in each module
-
 ### Pairwise VIP
+
+#### LION Enrichment
+
+To help answer the question of what lipids are associated with cold or warm temperature acclimation, I'm also going to conduct enrichment tests with pairwise VIP.
+
+```{r}
+t.test_13v30 %>%
+  filter(., p.adj < 0.05) %>%
+  dplyr::select(., lipid) %>%
+  left_join(., lipidIdentifiers, by = "lipid") %>%
+  dplyr::select(-identifier) %>%
+  unique(.) %>%
+  write.table("metaboanalyst/13v30VIP_lipids.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take significant pairwise VIP data and join with lipid identifiers. Retain unique entries and write table
+```
+
+```{r}
+t.test_13v5 %>%
+  filter(., p.adj < 0.05) %>%
+  dplyr::select(., lipid) %>%
+  left_join(., lipidIdentifiers, by = "lipid") %>%
+  dplyr::select(-identifier) %>%
+  unique(.) %>%
+  write.table("metaboanalyst/13v5VIP_lipids.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take significant pairwise VIP data and join with lipid identifiers. Retain unique entries and write table
+```
 
 #### Identify pairwise VIP in each module
 
