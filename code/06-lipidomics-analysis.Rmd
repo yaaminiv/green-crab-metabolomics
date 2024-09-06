@@ -1773,7 +1773,7 @@ head(enrichmentResults) #Look at results
 ```{r}
 topEnrichmentResults <- enrichmentResults %>%
   arrange(desc("-log(FDR)")) %>%
-  slice(., 1:25) #Arrange results by enrichment ratio and take the top 25 metabolites
+  slice(., 1:25) #Arrange results by enrichment ratio and take the top 25 LION terms
 head(topEnrichmentResults) #Confirm formatting
 ```
 
@@ -1950,6 +1950,63 @@ t.test_13v5 %>%
   unique(.) %>%
   write.table("metaboanalyst/13v5VIP_lipids.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take significant pairwise VIP data and join with lipid identifiers. Retain unique entries and write table
 ```
+
+Within LION, I conducted a target enrichment using the pairwise VIP list as the target and all known lipids as the background.
+
+##### 13 vs. 30
+
+```{r}
+enrichmentResults13v30 <- read.csv("metaboanalyst/LION-enrichment-report-13v30/LION-enrichment-results-13v30.csv") %>%
+  dplyr::rename(Description = "Discription") %>%
+  dplyr::rename(Observed = "Significant") %>%
+  mutate(., Significant = case_when(FDR.q.value < 0.05 ~ "Yes",
+                                    FDR.q.value >= 0.05 ~ "No")) %>%
+  mutate(., "-log(FDR)" = -log(FDR.q.value)) #Import enrichment results. Rename description and observed column and create new column
+head(enrichmentResults13v30) #Look at results
+enrichmentResults13v30 %>% filter(., FDR.q.value < 0.05) %>% nrow() #There are 7 significantly enriched terms
+```
+
+```{r}
+topEnrichmentResults13v30 <- enrichmentResults13v30 %>%
+  arrange(desc("-log(FDR)")) %>%
+  slice(., 1:25) #Arrange results by enrichment ratio and take the top 25 LION terms
+head(topEnrichmentResults13v30) #Confirm formatting
+```
+
+```{r}
+topEnrichmentResults13v30 %>%
+  mutate(., order = rev(1:25)) %>%
+  ggplot(., aes(x = `-log(FDR)`, y = as.factor(order), fill = Significant)) +
+  geom_bar(stat = "identity") +
+  labs(x = "-log(FDR)") +
+  scale_y_discrete(name = "",
+                   labels = rev(topEnrichmentResults13v30$Description)) +
+  scale_fill_manual(name = "FDR",
+                    values = c("grey20", "springgreen4"),
+                    labels = c(expression("">=0.05), expression(""<0.05))) +
+  xlim(0,7) +
+  theme_classic(base_size = 15)
+ggsave("metaboanalyst/figures/13v30_VIP-logFDR.pdf", heigh = 8.5, width = 11)
+```
+
+```{r}
+topEnrichmentResults13v30 %>%
+  mutate(., order = rev(1:25)) %>%
+  ggplot(., aes(x = `-log(FDR)`, y = as.factor(order), fill = Significant)) +
+  geom_bar(stat = "identity") +
+  labs(x = "-log(FDR)") +
+  scale_y_discrete(name = "",
+                   labels = rev(topEnrichmentResults13v30$Description)) +
+  scale_fill_manual(name = "FDR",
+                    values = c("grey20", "springgreen4"),
+                    labels = c(expression("">=0.05), expression(""<0.05))) +
+  xlim(0,7) +
+  theme_classic(base_size = 15)
+ggsave("metaboanalyst/figures/13v30_VIP-logFDR.svg", heigh = 8.5, width = 11)
+```
+
+##### 13 vs. 5
+
 
 #### Identify pairwise VIP in each module
 
