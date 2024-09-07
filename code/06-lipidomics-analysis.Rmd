@@ -1810,6 +1810,24 @@ pheatmap((PSData %>%
 #dev.off()
 ```
 
+```{r}
+PSDataVIP13v30 <- knownTransLipidData %>%
+  dplyr::select(1:4, any_of(PSLipids$lipid)) %>%
+  dplyr::select(1:4, any_of(significantVIP_13v30$lipid)) %>%
+  column_to_rownames(var = "crab.ID") #Take known lipid data and select metadata columns and columns with names that match PS lipids. Convert crab ID to column name
+head(PSDataVIP13v30) #Confirm dataframe creation
+ncol(PSDataVIP13v30) - 3 #There are 0 known pairwise PS lipids
+```
+
+```{r}
+PSDataVIP13v5 <- knownTransLipidData %>%
+  dplyr::select(1:4, any_of(PSLipids$lipid)) %>%
+  dplyr::select(1:4, any_of(significantVIP_13v5$lipid)) %>%
+  column_to_rownames(var = "crab.ID") #Take known lipid data and select metadata columns and columns with names that match PS lipids. Convert crab ID to column name
+head(PSDataVIP13v5) #Confirm dataframe creation
+ncol(PSDataVIP13v5) - 3 #There are 0 known pairwise PS lipids
+```
+
 #### Phosphatidylinositols (PI)
 
 ```{r}
@@ -1848,6 +1866,70 @@ pheatmap((PIData %>%
          annotation_colors = lipidomicsColors, 
          name = "Z-Score") #Take PI data and remove unnecessary metadata columns. Group by treatment and log-transform numeric columns. Convert -Inf to NA, then NA to 0. Scale all values to obtain z-scores. Average lipid z-scores across treatment. Convert treatment column to rownames. Transpose to obtain matrix. Create heatmap using color schemes and annotations created above.
 #dev.off()
+```
+
+```{r}
+PIDataVIP13v30 <- knownTransLipidData %>%
+  dplyr::select(1:4, any_of(PILipids$lipid)) %>%
+  dplyr::select(1:4, any_of(significantVIP_13v30$lipid)) %>%
+  column_to_rownames(var = "crab.ID") #Take known lipid data and select metadata columns and columns with names that match PI lipids. Convert crab ID to column name
+head(PIDataVIP13v30) #Confirm dataframe creation
+ncol(PIDataVIP13v30) - 3 #There is 1 known pairwise PI lipids
+```
+
+```{r}
+#pdf("metaboanalyst/figures/pairwise-VIP-13v30-PI-heatmap.pdf", width = 11, height = 8.5)
+pheatmap((PIDataVIP13v30 %>% 
+            dplyr::select(., -c(day, treatment_day)) %>%
+            filter(., treatment != "5") %>%
+            group_by(treatment) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+            replace(is.na(.), 0) %>%
+            # mutate(across(where(is.numeric), scale)) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            t(.)), cluster_row = TRUE, show_rownames = TRUE, fontsize_row = 5, 
+         cluster_cols = FALSE, show_colnames = FALSE, 
+         # scale = "row",
+         color = heatmapColors, 
+         annotation_col = lipidomicsAvgAnnotation %>% filter(., Treatment != "5ºC"), 
+         annotation_colors = lipidomicsColors, 
+         name = "Scaled Abundance") #Take PI data and remove unnecessary metadata columns. Group by treatment and log-transform numeric columns. Convert -Inf to NA, then NA to 0. Scale all values to obtain z-scores. Average lipid z-scores across treatment. Convert treatment column to rownames. Transpose to obtain matrix. Create heatmap using color schemes and annotations created above.
+#dev.off()
+```
+
+```{r}
+PIDataVIP13v30 %>% 
+  dplyr::select(., -c(day, treatment_day)) %>%
+  filter(., treatment != "5") %>%
+  group_by(treatment) %>%
+  summarize_all(funs(mean(., na.rm = TRUE))) %>%
+  column_to_rownames(var = "treatment") %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(var = "lipid") %>%
+  mutate(., diff = `13` - `30`) %>%
+  mutate(., logDiff = log(abs(diff))) %>%
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>%
+  mutate(., status = case_when(logDiff > 0 ~ "13",
+                               logDiff < 0 ~ "30")) %>%
+  ggplot(., aes(x = logDiff, y = lipid, fill = status)) +
+  geom_bar(aes(fill = status), stat = 'identity') +
+  labs(x = "log(Difference)", y = "") +
+  scale_fill_manual(values = c(plotColors[2], plotColors[1]), 
+                    guide = "none") +
+  theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
+ggsave("metaboanalyst/figures/pairwise-VIP-13v30-PI-bargraph.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+PIDataVIP13v5 <- knownTransLipidData %>%
+  dplyr::select(1:4, any_of(PILipids$lipid)) %>%
+  dplyr::select(1:4, any_of(significantVIP_13v5$lipid)) %>%
+  column_to_rownames(var = "crab.ID") #Take known lipid data and select metadata columns and columns with names that match PI lipids. Convert crab ID to column name
+head(PIDataVIP13v5) #Confirm dataframe creation
+ncol(PIDataVIP13v5) - 3 #There are 0 known pairwise PI lipids
 ```
 
 ### Triglycerides
