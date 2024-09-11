@@ -2539,7 +2539,7 @@ pheatmap((knownTransLipidData %>%
 ```{r}
 knownTransLipidData %>%
   filter(., treatment != "30") %>%
-  dplyr::select(treatment, any_of(significantVIP_13v30$lipid)) %>%
+  dplyr::select(treatment, any_of(significantVIP_13v5$lipid)) %>%
   group_by(treatment) %>%
   summarize_all(funs(mean(., na.rm = TRUE))) %>%
   column_to_rownames(var = "treatment") %>%
