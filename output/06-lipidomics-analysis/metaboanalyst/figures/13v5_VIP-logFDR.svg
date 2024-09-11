@@ -118,6 +118,7 @@
 <text x='530.99' y='584.07' text-anchor='middle' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Arial";' textLength='6.67px' lengthAdjust='spacingAndGlyphs'>4</text>
 <text x='628.54' y='584.07' text-anchor='middle' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Arial";' textLength='6.67px' lengthAdjust='spacingAndGlyphs'>6</text>
 <text x='506.61' y='601.22' text-anchor='middle' style='font-size: 15.00px; font-family: "Arial";' textLength='65.85px' lengthAdjust='spacingAndGlyphs'>-log(FDR)</text>
+<text transform='translate(18.24,288.10) rotate(-90)' text-anchor='middle' style='font-size: 15.00px; font-family: "Arial";' textLength='74.18px' lengthAdjust='spacingAndGlyphs'>LION Term</text>
 <rect x='709.34' y='252.58' width='75.19' height='71.05' style='stroke-width: 1.45; stroke: none; fill: #FFFFFF;' />
 <text x='716.81' y='272.47' style='font-size: 15.00px; font-family: "Arial";' textLength='30.84px' lengthAdjust='spacingAndGlyphs'>FDR</text>
 <rect x='716.81' y='281.60' width='17.28' height='17.28' style='stroke-width: 1.45; stroke: none; fill: #FFFFFF;' />

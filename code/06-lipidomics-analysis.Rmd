@@ -2398,7 +2398,7 @@ topEnrichmentResults13v30 %>%
   ggplot(., aes(x = `-log(FDR)`, y = as.factor(order), fill = Significant)) +
   geom_bar(stat = "identity") +
   labs(x = "-log(FDR)") +
-  scale_y_discrete(name = "",
+  scale_y_discrete(name = "LION Term",
                    labels = rev(topEnrichmentResults13v30$Description)) +
   scale_fill_manual(name = "FDR",
                     values = c("grey20", "springgreen4"),
@@ -2414,7 +2414,7 @@ topEnrichmentResults13v30 %>%
   ggplot(., aes(x = `-log(FDR)`, y = as.factor(order), fill = Significant)) +
   geom_bar(stat = "identity") +
   labs(x = "-log(FDR)") +
-  scale_y_discrete(name = "",
+  scale_y_discrete(name = "LION Term",
                    labels = rev(topEnrichmentResults13v30$Description)) +
   scale_fill_manual(name = "FDR",
                     values = c("grey20", "springgreen4"),
@@ -2450,7 +2450,7 @@ topEnrichmentResults13v5 %>%
   ggplot(., aes(x = `-log(FDR)`, y = as.factor(order), fill = Significant)) +
   geom_bar(stat = "identity") +
   labs(x = "-log(FDR)") +
-  scale_y_discrete(name = "",
+  scale_y_discrete(name = "LION Term",
                    labels = rev(topEnrichmentResults13v5$Description)) +
   scale_fill_manual(name = "FDR",
                     values = c("grey20", "springgreen4"),
@@ -2466,7 +2466,7 @@ topEnrichmentResults13v5 %>%
   ggplot(., aes(x = `-log(FDR)`, y = as.factor(order), fill = Significant)) +
   geom_bar(stat = "identity") +
   labs(x = "-log(FDR)") +
-  scale_y_discrete(name = "",
+  scale_y_discrete(name = "LION Term",
                    labels = rev(topEnrichmentResults13v5$Description)) +
   scale_fill_manual(name = "FDR",
                     values = c("grey20", "springgreen4"),
