@@ -1459,7 +1459,7 @@ lipidomicsColors #Column annotation colors
 
 ## Manual pathway analysis
 
-I want to do a rough analysis with phosphatidylethanolamine (PE) and phosphatidylcholines (PC) compounds, since Chapelle 1978 and 1986 found them most responsive to temperature. I'll also examine the other kids of glycerophospholipids — phosphatidylserine (PS) and phosphatidylinositol (PI) — since glycerophsopholipids are involved in cell membranes. Phosphatidic acid (PA) is another glycerophospholipid, but it is not present in this dataset. Finally, I'll look at tryglycerides, which are important energy storage molecules.
+I want to do a rough analysis with phosphatidylethanolamine (PE) and phosphatidylcholines (PC) compounds, since Chapelle 1978 and 1986 found them most responsive to temperature. I'll also examine the other kids of glycerophospholipids — phosphatidylserine (PS) and phosphatidylinositol (PI) — since glycerophsopholipids are involved in cell membranes. Phosphatidic acid (PA) is another glycerophospholipid, but it is not present in this dataset. Finally, I'll look at triglycerides, which are important energy storage molecules.
 
 ```{bash}
 mkdir metaboanalyst
@@ -1476,6 +1476,11 @@ significantVIP_13v30 <- t.test_13v30 %>%
   filter(., p.adj < 0.05)
 significantVIP_13v5 <- t.test_13v5 %>%
   filter(., p.adj < 0.05)
+```
+
+```{r}
+significantVIP_13v30 %>% nrow(.)
+significantVIP_13v5 %>% nrow(.)
 ```
 
 #### Phosphatidylcholines (PC)
@@ -1558,7 +1563,7 @@ PCDataVIP13v30 %>%
                                logDiff < 0 ~ "30")) %>%
   ggplot(., aes(x = logDiff, y = lipid, fill = status)) +
   geom_bar(aes(fill = status), stat = 'identity') +
-  labs(x = "log(Difference)", y = "") +
+  labs(x = "log(Difference)", y = "Lipid") +
   scale_fill_manual(values = c(plotColors[2], plotColors[1]), 
                     guide = "none") +
   theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
@@ -1613,7 +1618,7 @@ PCDataVIP13v5 %>%
                                logDiff < 0 ~ "5")) %>%
   ggplot(., aes(x = logDiff, y = lipid, fill = status)) +
   geom_bar(aes(fill = status), stat = 'identity') +
-  labs(x = "log(Difference)", y = "") +
+  labs(x = "log(Difference)", y = "Lipid") +
   scale_fill_manual(values = c(plotColors[2], plotColors[3]),
                     guide = "none") +
   theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
@@ -1708,7 +1713,7 @@ PEDataVIP13v30 %>%
                                logDiff < 0 ~ "30")) %>%
   ggplot(., aes(x = logDiff, y = lipid, fill = status)) +
   geom_bar(aes(fill = status), stat = 'identity') +
-  labs(x = "log(Difference)", y = "") +
+  labs(x = "log(Difference)", y = "Lipid") +
   scale_fill_manual(values = c(plotColors[2], plotColors[1]), 
                     guide = "none") +
   theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
@@ -1763,7 +1768,7 @@ PEDataVIP13v5 %>%
                                logDiff < 0 ~ "5")) %>%
   ggplot(., aes(x = logDiff, y = lipid, fill = status)) +
   geom_bar(aes(fill = status), stat = 'identity') +
-  labs(x = "log(Difference)", y = "") +
+  labs(x = "log(Difference)", y = "Lipid") +
   scale_fill_manual(values = c(plotColors[2], plotColors[3]),
                     guide = "none") +
   theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
@@ -2081,11 +2086,6 @@ TGDataVIP13v5 %>%
   theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
 ggsave("metaboanalyst/figures/pairwise-VIP-13v5-TG-bargraph.pdf", height = 8.5, width = 11)
 ```
-
-
-
-
-
 
 ## VIP "enrichment" analysis
 
