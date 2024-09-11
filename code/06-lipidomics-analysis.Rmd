@@ -2375,6 +2375,73 @@ Within LION, I conducted a target enrichment using the pairwise VIP list as the 
 ##### 13 vs. 30
 
 ```{r}
+#pdf("metaboanalyst/figures/13v30_VIP-average.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(significantVIP_13v30$lipid)) %>%
+            filter(., treatment != "5") %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            t(.) %>% as.data.frame(.) %>%
+            log(.) %>%
+            mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+            replace(is.na(.), 0) %>%
+            as.matrix()), cluster_row = TRUE, fontsize_row = 4, show_rownames = TRUE,
+         cluster_cols = FALSE, show_colnames = FALSE, 
+         # scale = "row", 
+         color = heatmapColors, 
+         annotation_col = lipidomicsAvgAnnotation %>% filter(., Treatment != "5ºC"), 
+         annotation_colors = lipidomicsColors, 
+         name = "Abundance")
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/13v30_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            filter(., treatment != "5") %>%
+            dplyr::select(treatment, any_of(significantVIP_13v30$lipid)) %>%
+            group_by(., treatment) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+            replace(is.na(.), 0) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            t(.)), cluster_row = TRUE, fontsize_row = 4, show_rownames = TRUE,
+         cluster_cols = FALSE, show_colnames = FALSE, 
+         color = heatmapColors, 
+         annotation_col = lipidomicsAvgAnnotation %>% filter(., Treatment != "5ºC"), 
+         annotation_colors = lipidomicsColors, 
+         name = "Z-Score")
+#dev.off()
+```
+
+```{r}
+knownTransLipidData %>%
+  filter(., treatment != "5") %>%
+  dplyr::select(treatment, any_of(significantVIP_13v30$lipid)) %>%
+  group_by(treatment) %>%
+  summarize_all(funs(mean(., na.rm = TRUE))) %>%
+  column_to_rownames(var = "treatment") %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(var = "lipid") %>%
+  mutate(., diff = `13` - `30`) %>%
+  mutate(., logDiff = log(abs(diff))) %>%
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>%
+  mutate(., status = case_when(logDiff > 0 ~ "13",
+                               logDiff < 0 ~ "30")) %>%
+  ggplot(., aes(x = logDiff, y = lipid, fill = status)) +
+  geom_bar(aes(fill = status), stat = 'identity') +
+  labs(x = "log(Difference)", y = "Lipid") +
+  scale_fill_manual(values = c(plotColors[2], plotColors[1]), 
+                    guide = "none") +
+  theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
+ggsave("metaboanalyst/figures/pairwise-VIP-13v30-bargraph.pdf", height = 8.5, width = 11)
+```
+
+```{r}
 enrichmentResults13v30 <- read.csv("metaboanalyst/LION-enrichment-report-13v30/LION-enrichment-results-13v30.csv") %>%
   dplyr::rename(Description = "Discription") %>%
   dplyr::rename(Observed = "Significant") %>%
@@ -2425,6 +2492,73 @@ ggsave("metaboanalyst/figures/13v30_VIP-logFDR.svg", heigh = 8.5, width = 11)
 ```
 
 ##### 13 vs. 5
+
+```{r}
+#pdf("metaboanalyst/figures/13v5_VIP-average.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            dplyr::select(treatment, any_of(significantVIP_13v5$lipid)) %>%
+            filter(., treatment != "5") %>%
+            group_by(., treatment) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            t(.) %>% as.data.frame(.) %>%
+            log(.) %>%
+            mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+            replace(is.na(.), 0) %>%
+            as.matrix()), cluster_row = TRUE, fontsize_row = 4, show_rownames = TRUE,
+         cluster_cols = FALSE, show_colnames = FALSE, 
+         # scale = "row", 
+         color = heatmapColors, 
+         annotation_col = lipidomicsAvgAnnotation %>% filter(., Treatment != "30ºC"), 
+         annotation_colors = lipidomicsColors, 
+         name = "Abundance")
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/13v5_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            filter(., treatment != "5") %>%
+            dplyr::select(treatment, any_of(significantVIP_13v5$lipid)) %>%
+            group_by(., treatment) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+            replace(is.na(.), 0) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment") %>%
+            t(.)), cluster_row = TRUE, fontsize_row = 4, show_rownames = TRUE,
+         cluster_cols = FALSE, show_colnames = FALSE, 
+         color = heatmapColors, 
+         annotation_col = lipidomicsAvgAnnotation %>% filter(., Treatment != "30ºC"), 
+         annotation_colors = lipidomicsColors, 
+         name = "Z-Score")
+#dev.off()
+```
+
+```{r}
+knownTransLipidData %>%
+  filter(., treatment != "30") %>%
+  dplyr::select(treatment, any_of(significantVIP_13v30$lipid)) %>%
+  group_by(treatment) %>%
+  summarize_all(funs(mean(., na.rm = TRUE))) %>%
+  column_to_rownames(var = "treatment") %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(var = "lipid") %>%
+  mutate(., diff = `13` - `5`) %>%
+  mutate(., logDiff = log(abs(diff))) %>%
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>%
+  mutate(., status = case_when(logDiff > 0 ~ "13",
+                               logDiff < 0 ~ "5")) %>%
+  ggplot(., aes(x = logDiff, y = lipid, fill = status)) +
+  geom_bar(aes(fill = status), stat = 'identity') +
+  labs(x = "log(Difference)", y = "Lipid") +
+  scale_fill_manual(values = c(plotColors[2], plotColors[3]), 
+                    guide = "none") +
+  theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
+ggsave("metaboanalyst/figures/pairwise-VIP-13v5-bargraph.pdf", height = 8.5, width = 11)
+```
 
 ```{r}
 enrichmentResults13v5 <- read.csv("metaboanalyst/LION-enrichment-report-13v5/LION-enrichment-results-13v5.csv") %>%
@@ -2646,10 +2780,6 @@ head(pairwiseVIP_allModules)
 ```{r}
 write.table(pairwiseVIP_allModules, "metaboanalyst/all-module-VIP.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 ```
-
-#### Identify pairwise VIP that overlap with significant pathways
-
-#### Identify pairwise VIP that overlap with VIP from significant pathways for each module
 
 #### Make heatmaps of each module's VIP
 
@@ -2984,192 +3114,3 @@ pheatmap((knownTransLipidData %>%
             t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Z-Score")
 #dev.off()
 ```
-
-# CODE TO REORGANIZE
-
-## Enrichment compound class analysis
-
-### Analysis in MetaboAnalyst interface
-
-The first kind of enrichment analysis I will complete is looking at compound structures. To do this, I will upload the list of metabolite names for each module (generated above) to the [MetaboAnalyst interface](https://www.metaboanalyst.ca/MetaboAnalyst/upload/EnrichUploadView.xhtml). Then, I will conduct an enrichment of *main class chemical structures*. 
-
-> Enrichment tests are based on the well-established globaltest to test associations between metabolite sets and the outcome. The algorithm uses a generalized linear model to compute a ‘Q-stat’ for each metabolite set. The Q-stat is calculated as the average of the Q values calculated for the each single lipids; while the Q value is the squared covariance between the metabolite and the outcome. The globaltest has been shown to exhibit similar or superior performance when tested against several other popular methods.
-
-> Metabolite sets: Unlike transcriptomics which allows comprehensive gene expression profiling, targeted lipidomics usually covers only a small percentage of metabolome (the actual coverage is platform/protocol specific). This means that lipids (defined in our current pathways or metabolite sets) do not have equal probabilities of being measured in your studies, and the enriched functions are the results from both platform/protocol specific effects and biological perturbations. Since the primary interest is to detect the latter, we highly recommend uploading a reference metabolome containing all measurable lipids from your platform to eliminate the former effects.
-
-I don't have a reference metabolome and I didn't perform targeted lipidomics. I used metabolite sets containing at least two entries and all compounds in the selected library as a reference.
-
-Certain compounds were not recognized by MetaboAnalyst, or require manual PubChem/KEGG ID correction. The resulting name maps (input names v.s names used for enrichment analysis) from MetaboAnalyst were renamed according to module number and saved [here](https://github.com/yaaminiv/green-crab-lipidomics/tree/main/output/06-lipidomics-analysis/metaboanalyst/name-maps).
-
-The output tables (msea_ora_result.csv files from MetaboAnalyst) were renamed according to module number and saved [here](https://github.com/yaaminiv/green-crab-lipidomics/tree/main/output/06-lipidomics-analysis/metaboanalyst/msea-compoundClass/enrichment-output).
-
-### View results
-
-#### Import results
-
-```{r}
-#Import dataframes from each module. Add a Module column and rename the first column.
-
-module0_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module0-msea_ora_result.csv") %>%
-  mutate(., Module = "0") %>%
-  dplyr::rename(., compoundClass = X)
-module1_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module1-msea_ora_result.csv") %>%
-  mutate(., Module = "1") %>%
-  dplyr::rename(., compoundClass = X)
-module2_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module2-msea_ora_result.csv") %>%
-  mutate(., Module = "2") %>%
-  dplyr::rename(., compoundClass = X)
-module3_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module3-msea_ora_result.csv") %>%
-  mutate(., Module = "3") %>%
-  dplyr::rename(., compoundClass = X)
-module4_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module4-msea_ora_result.csv") %>%
-  mutate(., Module = "4") %>%
-  dplyr::rename(., compoundClass = X)
-module5_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module5-msea_ora_result.csv") %>%
-  mutate(., Module = "5") %>%
-  dplyr::rename(., compoundClass = X)
-module6_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module6-msea_ora_result.csv") %>%
-  mutate(., Module = "6") %>%
-  dplyr::rename(., compoundClass = X)
-module7_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module7-msea_ora_result.csv") %>%
-  mutate(., Module = "7") %>%
-  dplyr::rename(., compoundClass = X)
-module8_class <- read.csv("metaboanalyst/msea-compoundClass/enrichment-output/module8-msea_ora_result.csv") %>%
-  mutate(., Module = "8") %>%
-  dplyr::rename(., compoundClass = X)
-```
-
-```{r}
-compound_classes <- rbind(module0_class,
-                          module1_class,
-                          module2_class,
-                          module3_class,
-                          module4_class,
-                          module5_class,
-                          module6_class,
-                          module7_class,
-                          module8_class) #Create dataframe with compound classes
-head(compound_classes) #Confirm dataframe creation
-```
-
-```{r}
-write.csv(compound_classes, "metaboanalyst/msea-compoundClass/all-module-compound-classes.csv", quote = FALSE, row.names = FALSE) #Save dataframe with all compound classes for all modules
-```
-
-#### Format results
-
-```{r}
-sig_classes_comp <- compound_classes %>%
-  filter(., FDR < 0.05) %>%
-  dplyr::select(., compoundClass, total, hits, FDR, Module) #Filter out only significant compound classes using a FDR < 0.05 threshold. Keep compoundClass, total, hits, FDR, and Module columns.
-head(sig_classes_comp) 
-```
-
-```{r}
-write.csv(sig_classes_comp, "metaboanalyst/msea-compoundClass/significant-compound-classes.csv", quote = FALSE, row.names = FALSE)
-```
-
-#### Plot results
-
-```{r}
-ggplot(sig_classes_comp, aes(x = Module, y = compoundClass)) + 
-  geom_point(aes(size = hits)) +
-  scale_size(name = "Metabolites",
-             range = c(4,15), 
-             limits = c(1,15)) +
-  xlab("Module Eigengene") + ylab("Compound Class") +
-  theme_classic(base_size = 15) #Plot significantly enriched compound classes for each module. Scale point size by the number of metabolite hits in each category. Define x- and y- axis labels. Change the angle of the x-axis text.
-ggsave("metaboanalyst/figures/compound-class-dotplot.pdf", height = 8.5, width = 11)
-```
-
-## KEGG Pathway Analysis
-
-### Analysis in MetaboAnalyst Interface
-
-I'll return to the [MetaboAnalyst enrichment interface](https://www.metaboanalyst.ca/MetaboAnalyst/upload/EnrichUploadView.xhtml) and use the same steps to conduct a KEGG Pathway enrichment. Again, I will upload metabolite names and correct them as needed within the interface. KEGG Pathway enrichment results are saved [here](https://github.com/yaaminiv/green-crab-lipidomics/tree/main/output/05-lipidomics-analysis/metaboanalyst/msea-KEGG/enrichment-output).
-
-### View results
-
-#### Import results
-
-```{r}
-#Import dataframes from each module. Add a Module column and rename the first column.
-
-module0_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module0-msea_ora_result.csv") %>%
-  mutate(., Module = "0") %>%
-  dplyr::rename(., KEGG = X)
-module1_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module1-msea_ora_result.csv") %>%
-  mutate(., Module = "1") %>%
-  dplyr::rename(., KEGG = X)
-module2_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module2-msea_ora_result.csv") %>%
-  mutate(., Module = "2") %>%
-  dplyr::rename(., KEGG = X)
-module3_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module3-msea_ora_result.csv") %>%
-  mutate(., Module = "3") %>%
-  dplyr::rename(., KEGG = X)
-module4_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module4-msea_ora_result.csv") %>%
-  mutate(., Module = "4") %>%
-  dplyr::rename(., KEGG = X)
-module5_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module5-msea_ora_result.csv") %>%
-  mutate(., Module = "5") %>%
-  dplyr::rename(., KEGG = X)
-# module6_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module6-msea_ora_result.csv") %>%
-#   mutate(., Module = "6") %>%
-#   dplyr::rename(., KEGG = X)
-module7_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module7-msea_ora_result.csv") %>%
-  mutate(., Module = "7") %>%
-  dplyr::rename(., KEGG = X)
-# module8_KEGG <- read.csv("metaboanalyst/msea-KEGG/enrichment-output/module8-msea_ora_result.csv") %>%
-#   mutate(., Module = "8") %>%
-#   dplyr::rename(., KEGG = X)
-```
-
-```{r}
-KEGG_pathways <- rbind(module0_KEGG,
-                       module1_KEGG,
-                       module2_KEGG,
-                       module3_KEGG,
-                       module4_KEGG,
-                       module5_KEGG,
-                       # module6_KEGG,
-                       module7_KEGG
-                       # module8_KEGG
-) #Create dataframe with compound classes
-head(KEGG_pathways) #Confirm dataframe creation
-```
-
-```{r}
-write.csv(KEGG_pathways, "metaboanalyst/msea-KEGG/all-module-KEGG-pathways.csv", quote = FALSE, row.names = FALSE) #Save dataframe with all compound classes for all modules
-```
-
-#### Format results
-
-```{r}
-sig_KEGG_pathways <- KEGG_pathways %>%
-  filter(., FDR < 0.05) %>%
-  dplyr::select(., KEGG, total, hits, FDR, Module) #Filter out only significant compound classes using a FDR < 0.05 threshold. Keep KEGG, total, hits, FDR, and Module columns.
-head(sig_KEGG_pathways) 
-```
-
-```{r}
-write.csv(sig_KEGG_pathways, "metaboanalyst/msea-KEGG/significant-compound-classes.csv", quote = FALSE, row.names = FALSE)
-```
-
-#### Plot results
-
-```{r}
-ggplot(sig_KEGG_pathways, aes(x = Module, y = KEGG)) + 
-  geom_point(aes(size = hits)) +
-  scale_size(name = "Metabolites",
-             range = c(4,15), 
-             limits = c(1,15)) +
-  xlab("Module Eigengene") + ylab("KEGG Pathway") +
-  theme_classic(base_size = 15) #Plot significantly enriched KEGG pathways for each module. Scale point size by the number of metabolite hits in each category. Define x- and y- axis labels. Change the angle of the x-axis text.
-ggsave("metaboanalyst/figures/KEGG-pathway-dotplot.pdf", height = 8.5, width = 11)
-```
-
-**TO DO**:
-
-- figure out why modules 6 and 8 aren't running through KEGG enrichment
-
-
