@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' class='svglite' width='792.00pt' height='612.00pt' viewBox='0 0 792.00 612.00'>
+<defs>
+  <style type='text/css'><![CDATA[
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+  ]]></style>
+</defs>
+<rect width='100%' height='100%' style='stroke: none; fill: #FFFFFF;'/>
+<defs>
+  <clipPath id='cpMC4wMHw3OTIuMDB8MC4wMHw2MTIuMDA='>
+    <rect x='0.00' y='0.00' width='792.00' height='612.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMC4wMHw3OTIuMDB8MC4wMHw2MTIuMDA=)'>
+<rect x='0.000000000000064' y='0.00' width='792.00' height='612.00' style='stroke-width: 1.45; stroke: #FFFFFF; fill: #FFFFFF;' />
+</g>
+<defs>
+  <clipPath id='cpMzE2LjIxfDY5NC4zOXw3LjQ3fDU2OC43Mw=='>
+    <rect x='316.21' y='7.47' width='378.18' height='561.26' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMzE2LjIxfDY5NC4zOXw3LjQ3fDU2OC43Mw==)'>
+<rect x='316.21' y='7.47' width='378.18' height='561.26' style='stroke-width: 1.45; stroke: none; fill: #FFFFFF;' />
+<rect x='333.40' y='17.74' width='343.80' height='61.60' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #333333;' />
+<rect x='333.40' y='86.19' width='209.28' height='61.60' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #333333;' />
+<rect x='333.40' y='154.63' width='200.55' height='61.60' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #333333;' />
+<rect x='333.40' y='223.08' width='120.33' height='61.60' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #333333;' />
+<rect x='333.40' y='291.52' width='104.64' height='61.60' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #333333;' />
+<rect x='333.40' y='359.97' width='92.56' height='61.60' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #333333;' />
+<rect x='333.40' y='428.42' width='82.99' height='61.60' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #333333;' />
+<rect x='333.40' y='496.86' width='72.93' height='61.60' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #333333;' />
+</g>
+<g clip-path='url(#cpMC4wMHw3OTIuMDB8MC4wMHw2MTIuMDA=)'>
+<polyline points='316.21,568.73 316.21,7.47 ' style='stroke-width: 1.45; stroke-linecap: butt;' />
+<text x='309.48' y='531.97' text-anchor='end' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Arial";' textLength='112.03px' lengthAdjust='spacingAndGlyphs'>Pyruvate metabolism</text>
+<text x='309.48' y='463.52' text-anchor='end' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Arial";' textLength='96.03px' lengthAdjust='spacingAndGlyphs'>Sulfur metabolism</text>
+<text x='309.48' y='395.08' text-anchor='end' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Arial";' textLength='188.76px' lengthAdjust='spacingAndGlyphs'>Ascorbate and aldarate metabolism</text>
+<text x='309.48' y='326.63' text-anchor='end' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Arial";' textLength='224.14px' lengthAdjust='spacingAndGlyphs'>Pentose and glucuronate interconversions</text>
+<text x='309.48' y='258.18' text-anchor='end' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Arial";' textLength='190.80px' lengthAdjust='spacingAndGlyphs'>Pantothenate and CoA biosynthesis</text>
+<text x='309.48' y='189.74' text-anchor='end' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Arial";' textLength='284.20px' lengthAdjust='spacingAndGlyphs'>Ubiquinone and other terpenoid-quinone biosynthesis</text>
+<text x='309.48' y='121.29' text-anchor='end' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Arial";' textLength='94.69px' lengthAdjust='spacingAndGlyphs'>Biotin metabolism</text>
+<text x='309.48' y='52.85' text-anchor='end' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Arial";' textLength='224.82px' lengthAdjust='spacingAndGlyphs'>Valine, leucine and isoleucine degradation</text>
+<polyline points='312.47,527.66 316.21,527.66 ' style='stroke-width: 1.45; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='312.47,459.22 316.21,459.22 ' style='stroke-width: 1.45; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='312.47,390.77 316.21,390.77 ' style='stroke-width: 1.45; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='312.47,322.32 316.21,322.32 ' style='stroke-width: 1.45; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='312.47,253.88 316.21,253.88 ' style='stroke-width: 1.45; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='312.47,185.43 316.21,185.43 ' style='stroke-width: 1.45; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='312.47,116.99 316.21,116.99 ' style='stroke-width: 1.45; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='312.47,48.54 316.21,48.54 ' style='stroke-width: 1.45; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='316.21,568.73 694.39,568.73 ' style='stroke-width: 1.45; stroke-linecap: butt;' />
+<polyline points='333.40,572.47 333.40,568.73 ' style='stroke-width: 1.45; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='425.25,572.47 425.25,568.73 ' style='stroke-width: 1.45; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='517.11,572.47 517.11,568.73 ' style='stroke-width: 1.45; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='608.97,572.47 608.97,568.73 ' style='stroke-width: 1.45; stroke: #333333; stroke-linecap: butt;' />
+<text x='333.40' y='584.07' text-anchor='middle' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Arial";' textLength='6.67px' lengthAdjust='spacingAndGlyphs'>0</text>
+<text x='425.25' y='584.07' text-anchor='middle' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Arial";' textLength='13.35px' lengthAdjust='spacingAndGlyphs'>10</text>
+<text x='517.11' y='584.07' text-anchor='middle' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Arial";' textLength='13.35px' lengthAdjust='spacingAndGlyphs'>20</text>
+<text x='608.97' y='584.07' text-anchor='middle' style='font-size: 12.00px;fill: #4D4D4D; font-family: "Arial";' textLength='13.35px' lengthAdjust='spacingAndGlyphs'>30</text>
+<text x='505.30' y='601.22' text-anchor='middle' style='font-size: 15.00px; font-family: "Arial";' textLength='115.08px' lengthAdjust='spacingAndGlyphs'>Enrichment Ratio</text>
+<rect x='709.34' y='261.22' width='75.19' height='53.77' style='stroke-width: 1.45; stroke: none; fill: #FFFFFF;' />
+<text x='716.81' y='281.11' style='font-size: 15.00px; font-family: "Arial";' textLength='30.84px' lengthAdjust='spacingAndGlyphs'>FDR</text>
+<rect x='716.81' y='290.24' width='17.28' height='17.28' style='stroke-width: 1.45; stroke: none; fill: #FFFFFF;' />
+<rect x='717.52' y='290.94' width='15.86' height='15.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #333333;' />
+<text x='744.34' y='302.95' style='font-size: 12.00px; font-family: "Symbol";' textLength='6.59px' lengthAdjust='spacingAndGlyphs'>≥</text>
+<text x='753.70' y='302.95' style='font-size: 12.00px; font-family: "Arial";' textLength='23.36px' lengthAdjust='spacingAndGlyphs'>0.05</text>
+</g>
+</svg>
