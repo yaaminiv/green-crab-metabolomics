@@ -1,0 +1,7 @@
+"Query","Match","HMDB","PubChem","KEGG","SMILES","Comment"
+"3-Aminopiperidine-2,6-dione","NA","NA","NA","NA","NA","0"
+"asparagine","L-Asparagine","HMDB0000168","6267","C00152","N[C@@H](CC(N)=O)C(O)=O","1"
+"fumaric acid","Fumaric acid","HMDB0000134","444972","C00122","OC(=O)\C=C\C(O)=O","1"
+"maleimide","NA","NA","NA","NA","NA","0"
+"phenylethylamine","Phenylethylamine","HMDB0012275","1001","C05332","NCCC1=CC=CC=C1","1"
+"putrescine","Putrescine","HMDB0001414","1045","C00134","NCCCCN","1"

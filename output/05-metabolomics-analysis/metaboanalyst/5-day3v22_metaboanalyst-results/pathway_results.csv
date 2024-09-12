@@ -1,0 +1,9 @@
+"","Total","Expected","Hits","Raw p","-log10(p)","Holm adjust","FDR","Impact"
+"Alanine, aspartate and glutamate metabolism",23,0.087786,2,0.0026934,2.5697,0.20739,0.20739,0.00338
+"Phenylalanine metabolism",7,0.026718,1,0.026489,1.5769,1,1,0.27586
+"Arginine biosynthesis",12,0.045802,1,0.045084,1.346,1,1,0
+"Citrate cycle (TCA cycle)",20,0.076336,1,0.074282,1.1291,1,1,0.02981
+"Pyruvate metabolism",23,0.087786,1,0.085056,1.0703,1,1,0
+"Glutathione metabolism",26,0.099237,1,0.095736,1.0189,1,1,0.01724
+"Arginine and proline metabolism",29,0.11069,1,0.10632,0.97337,1,1,0.14222
+"Tyrosine metabolism",33,0.12595,1,0.12029,0.91976,1,1,0.04121
