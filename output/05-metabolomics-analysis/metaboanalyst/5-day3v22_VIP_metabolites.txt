@@ -1,0 +1,7 @@
+metabolite	PubChem	KEGG
+3-Aminopiperidine-2,6-dione 	134508	
+asparagine	6267	C00152
+fumaric acid	444972	C00122
+maleimide	10935	C07272
+phenylethylamine	1001	C05332
+putrescine	1045	C00134

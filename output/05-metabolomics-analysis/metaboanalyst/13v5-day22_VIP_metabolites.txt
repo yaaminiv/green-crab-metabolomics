@@ -1,0 +1,32 @@
+metabolite	PubChem	KEGG
+2-hydroxyglutaric acid	43	C02630
+2-ketoadipic acid 	71	C00322
+2-ketoisocaproic acid	70	C00233
+4-hydroxymandelic acid	328	C11527
+N-acetylgalactosamine	440552	C05021
+N-acetylglucosamine-6-phosphate 	129630434	C00357
+N-methylethanolamine	8016	
+UDP-N-acetylglucosamine 	445675	C00043
+adenine	190	C00147
+alanine	5950	C00041
+alpha-ketoglutarate	51	C00026
+arabitol	94154	C01904
+beta-alanine	239	C00099
+dimethylglycine	673	
+glycerol-3-galactoside 	16048618	C05401
+hydroxycarbamate 	16639161	
+methanolphosphate	13130	
+methionine sulfoxide	158980	C02989
+nicotinic acid	938	C00253
+ononitol	230881	
+phosphate	1004	C00009
+phosphoethanolamine	1015	C00346
+pinitol	164619	
+proline	145742	C00148
+pyrrole-2-carboxylic acid	12473	C05942
+serine	5951	C00065
+threonine	6288	C00188
+uracil	1174	C00106
+urea	1176	C00086
+uridine	6029	C00299
+xylitol	6912	C00379
