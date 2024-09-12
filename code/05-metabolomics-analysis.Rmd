@@ -2541,6 +2541,95 @@ t.test_5_day3v22 %>%
   write.table("metaboanalyst/5-day3v22_VIP_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take significant pairwise VIP data and join with lipid identifiers. Retain unique entries and write table
 ```
 
+Within MetaboAnalyst, I did the following:
+
+- Uploaded each list of metabolite compound names for significant VIP in the Pathway Analysis module
+- Matched to KEGG pathways from *Drosophila melanogaster*
+
+##### Day 22: 13ºC vs. 30ºC
+
+```{r}
+day22_13v30_pathwayResults <- read.csv("metaboanalyst/13v30-day22_metaboanalyst-results/pathway_results.csv") %>%
+  dplyr::rename(metabolite = "X") %>%
+  mutate(., Observed = Hits/Total) %>%
+  mutate(., Significant = case_when(FDR < 0.05 ~ "Yes",
+                                    FDR >= 0.05 ~ "No")) %>%
+  mutate(., enrichmentRatio = Hits/Expected) %>%
+  mutate(., negLogFDR = -log(FDR))
+#Import pathway assignment data. Rename metabolite column and create new columns (pop observed hits: number of hits/total metabolites in pathway; enrichment ratio: hits/expected hits)
+head(day22_13v30_pathwayResults) #Look at pathway analysis results. P-values are from enrichment analysis, impact is from pathway topology analysis
+```
+
+```{r}
+day22_13v30_pathwayResults %>%
+  ggplot(., aes(x = Impact, y = X.log10.p., size = enrichmentRatio, color = Significant)) +
+  geom_point(alpha = 0.6) +
+  labs(x = "Pathway Impact", y = "Scaled Enrichment P-Value") +
+  ylim(0, 6) +
+  scale_size_continuous(name = "Enrichment Ratio") +
+  scale_color_manual(name = "FDR",
+                     values = c("grey20", "springgreen4"),
+                     labels = c(expression("">=0.05), expression(""<0.05))) +
+  theme_classic(base_size = 15)
+ggsave("metaboanalyst/figures/13v30_day22-pathwaySignificance.pdf", heigh = 8.5, width = 11)
+```
+
+```{r}
+top_day22_13v30_pathwayResults <- day22_13v30_pathwayResults %>%
+  arrange(desc(enrichmentRatio)) %>%
+  slice(., 1:25) #Arrange results by enrichment ratio and take the top 25 metabolites
+head(top_day22_13v30_pathwayResults) #Confirm formatting
+```
+
+```{r}
+top_day22_13v30_pathwayResults %>%
+  mutate(., order = rev(1:25)) %>%
+  ggplot(., aes(x = enrichmentRatio, y = as.factor(order), fill = Significant)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Enrichment Ratio") +
+  scale_y_discrete(name = "",
+                   labels = rev(topPathwayResults$metabolite)) +
+  scale_fill_manual(name = "FDR",
+                    values = c("grey20", "springgreen4"),
+                    labels = c(expression("">=0.05), expression(""<0.05))) +
+  theme_classic(base_size = 15)
+ggsave("metaboanalyst/figures/13v30_day22-enrichmentRatio.pdf", heigh = 8.5, width = 11)
+```
+
+```{r}
+top_day22_13v30_pathwayResults %>%
+  mutate(., order = rev(1:25)) %>%
+  ggplot(., aes(x = enrichmentRatio, y = as.factor(order), fill = Significant)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Enrichment Ratio") +
+  scale_y_discrete(name = "",
+                   labels = rev(topPathwayResults$metabolite)) +
+  scale_fill_manual(name = "FDR",
+                    values = c("grey20", "springgreen4"),
+                    labels = c(expression("">=0.05), expression(""<0.05))) +
+  theme_classic(base_size = 15)
+ggsave("metaboanalyst/figures/13v30_day22-enrichmentRatio.svg", heigh = 8.5, width = 11)
+```
+
+```{r}
+top_day22_13v30_pathwayResults %>%
+  mutate(., order = rev(1:25)) %>%
+  ggplot(., aes(x = X.log10.p., y = as.factor(order), color = Significant, size = enrichmentRatio)) +
+  geom_point() +
+  labs(x = "-log10(p)") +
+  scale_y_discrete(name = "",
+                   labels = rev(topPathwayResults$metabolite)) +
+  scale_size_continuous(name = "Enrichment Ratio") +
+  scale_color_manual(name = "FDR",
+                     values = c("grey20", "springgreen4"),
+                     labels = c(expression("">=0.05), expression(""<0.05))) +
+  theme_classic(base_size = 15)
+ggsave("metaboanalyst/figures/13v30_day22-enrichmentOverview.pdf", heigh = 8.5, width = 11)
+```
+
+##### Day 22: 13ºC vs. 5ºC
+
+##### 5ºC: Day 3 vs. Day 22
 
 #### Identify pairwise VIP in each module
 
