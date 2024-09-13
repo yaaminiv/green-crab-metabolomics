@@ -2549,6 +2549,77 @@ Within MetaboAnalyst, I did the following:
 ##### Day 22: 13ºC vs. 30ºC
 
 ```{r}
+significantVIP_13v30_day22 <- t.test_13v30_day22 %>%
+  filter(., p.adj < 0.05) #Create an object with significant VIP from the specific comparison
+head(significantVIP_13v30_day22) #Confirm dataframe creation
+```
+
+```{r}
+#pdf("metaboanalyst/figures/13v30_day22_VIP-average.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+            dplyr::select(treatment_day, any_of(significantVIP_13v30_day22$metabolite)) %>%
+            filter(treatment_day == "13_22" | treatment_day == "30_22") %>%
+            group_by(treatment_day) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment_day") %>%
+            t(.) %>% as.data.frame(.) %>%
+            log(.) %>%
+            replace(is.na(.), 0) %>%
+            as.matrix()), cluster_row = TRUE, fontsize_row = 4, show_rownames = TRUE,
+         cluster_cols = FALSE, show_colnames = FALSE, 
+         color = heatmapColors, 
+         annotation_col = metabolomicsAvgAnnotation %>% filter(Treatment == "13ºC at Day 22" | Treatment == "30ºC at Day 22"), 
+         annotation_colors = metabolomicsColors, 
+         name = "Abundance")
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/13v30_day22_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+            dplyr::select(treatment_day, any_of(significantVIP_13v30_day22$metabolite)) %>%
+            filter(treatment_day == "13_22" | treatment_day == "30_22") %>%
+            group_by(treatment_day) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            replace(is.na(.), 0) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment_day") %>%
+            t(.)), 
+         cluster_row = TRUE, fontsize_row = 4, show_rownames = TRUE,
+         cluster_cols = FALSE, show_colnames = FALSE, 
+         color = heatmapColors, 
+         annotation_col = metabolomicsAvgAnnotation %>% filter(Treatment == "13ºC at Day 22" | Treatment == "30ºC at Day 22"), 
+         annotation_colors = metabolomicsColors, 
+         name = "Z-Score")
+#dev.off()
+```
+
+```{r}
+transMetabData %>%
+  dplyr::select(treatment_day, any_of(significantVIP_13v30_day22$metabolite)) %>%
+  filter(treatment_day == "13_22" | treatment_day == "30_22") %>%
+  group_by(treatment_day) %>%
+  summarize_all(funs(mean(., na.rm = TRUE))) %>%
+  column_to_rownames(var = "treatment_day") %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(var = "metabolite") %>%
+  mutate(., diff = `13_22` - `30_22`) %>%
+  mutate(., logDiff = log(abs(diff))) %>%
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>%
+  mutate(., status = case_when(logDiff > 0 ~ "13",
+                               logDiff < 0 ~ "30")) %>%
+  ggplot(., aes(x = logDiff, y = metabolite, fill = status)) +
+  geom_bar(aes(fill = status), stat = 'identity') +
+  labs(x = "log(Difference)", y = "Metabolite") +
+  scale_fill_manual(values = c(plotColors[2], plotColors[1]), 
+                    guide = "none") +
+  theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
+ggsave("metaboanalyst/figures/pairwise-VIP-13v30-day22-bargraph.pdf", height = 8.5, width = 11)
+```
+
+```{r}
 day22_13v30_pathwayResults <- read.csv("metaboanalyst/13v30-day22_metaboanalyst-results/pathway_results.csv") %>%
   dplyr::rename(metabolite = "X") %>%
   mutate(., Observed = Hits/Total) %>%
@@ -2630,6 +2701,77 @@ ggsave("metaboanalyst/figures/13v30_day22-enrichmentOverview.pdf", heigh = 8.5, 
 ##### Day 22: 13ºC vs. 5ºC
 
 ```{r}
+significantVIP_13v5_day22 <- t.test_13v5_day22 %>%
+  filter(., p.adj < 0.05) #Create an object with significant VIP from the specific comparison
+head(significantVIP_13v5_day22) #Confirm dataframe creation
+```
+
+```{r}
+#pdf("metaboanalyst/figures/13v5_day22_VIP-average.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+            dplyr::select(treatment_day, any_of(significantVIP_13v5_day22$metabolite)) %>%
+            filter(treatment_day == "13_22" | treatment_day == "5_22") %>%
+            group_by(treatment_day) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment_day") %>%
+            t(.) %>% as.data.frame(.) %>%
+            log(.) %>%
+            replace(is.na(.), 0) %>%
+            as.matrix()), cluster_row = TRUE, fontsize_row = 4, show_rownames = TRUE,
+         cluster_cols = FALSE, show_colnames = FALSE, 
+         color = heatmapColors, 
+         annotation_col = metabolomicsAvgAnnotation %>% filter(Treatment == "13ºC at Day 22" | Treatment == "5ºC at Day 22"), 
+         annotation_colors = metabolomicsColors, 
+         name = "Abundance")
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/13v5_day22_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+            dplyr::select(treatment_day, any_of(significantVIP_13v5_day22$metabolite)) %>%
+            filter(treatment_day == "13_22" | treatment_day == "5_22") %>%
+            group_by(treatment_day) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            replace(is.na(.), 0) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment_day") %>%
+            t(.)), 
+         cluster_row = TRUE, fontsize_row = 4, show_rownames = TRUE,
+         cluster_cols = FALSE, show_colnames = FALSE, 
+         color = heatmapColors, 
+         annotation_col = metabolomicsAvgAnnotation %>% filter(Treatment == "13ºC at Day 22" | Treatment == "5ºC at Day 22"), 
+         annotation_colors = metabolomicsColors, 
+         name = "Z-Score")
+#dev.off()
+```
+
+```{r}
+transMetabData %>%
+  dplyr::select(treatment_day, any_of(significantVIP_13v5_day22$metabolite)) %>%
+  filter(treatment_day == "13_22" | treatment_day == "5_22") %>%
+  group_by(treatment_day) %>%
+  summarize_all(funs(mean(., na.rm = TRUE))) %>%
+  column_to_rownames(var = "treatment_day") %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(var = "metabolite") %>%
+  mutate(., diff = `13_22` - `5_22`) %>%
+  mutate(., logDiff = log(abs(diff))) %>%
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>%
+  mutate(., status = case_when(logDiff > 0 ~ "13",
+                               logDiff < 0 ~ "5")) %>%
+  ggplot(., aes(x = logDiff, y = metabolite, fill = status)) +
+  geom_bar(aes(fill = status), stat = 'identity') +
+  labs(x = "log(Difference)", y = "Metabolite") +
+  scale_fill_manual(values = c(plotColors[2], plotColors[3]), 
+                    guide = "none") +
+  theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
+ggsave("metaboanalyst/figures/pairwise-VIP-13v5-day22-bargraph.pdf", height = 8.5, width = 11)
+```
+
+```{r}
 day22_13v5_pathwayResults <- read.csv("metaboanalyst/13v5-day22_metaboanalyst-results/pathway_results.csv") %>%
   dplyr::rename(metabolite = "X") %>%
   mutate(., Observed = Hits/Total) %>%
@@ -2709,6 +2851,77 @@ ggsave("metaboanalyst/figures/13v5_day22-enrichmentOverview.pdf", heigh = 8.5, w
 ```
 
 ##### 5ºC: Day 3 vs. Day 22
+
+```{r}
+significantVIP_5_day3v22 <- t.test_5_day3v22 %>%
+  filter(., p.adj < 0.05) #Create an object with significant VIP from the specific comparison
+head(significantVIP_5_day3v22) #Confirm dataframe creation
+```
+
+```{r}
+#pdf("metaboanalyst/figures/5_day3v22_VIP-average.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+            dplyr::select(treatment_day, any_of(significantVIP_5_day3v22$metabolite)) %>%
+            filter(treatment_day == "5_3" | treatment_day == "5_22") %>%
+            group_by(treatment_day) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment_day") %>%
+            t(.) %>% as.data.frame(.) %>%
+            log(.) %>%
+            replace(is.na(.), 0) %>%
+            as.matrix()), cluster_row = TRUE, fontsize_row = 4, show_rownames = TRUE,
+         cluster_cols = FALSE, show_colnames = FALSE, 
+         color = heatmapColors, 
+         annotation_col = metabolomicsAvgAnnotation %>% filter(Treatment == "5ºC at Day 3" | Treatment == "5ºC at Day 22"), 
+         annotation_colors = metabolomicsColors, 
+         name = "Abundance")
+#dev.off()
+```
+
+```{r}
+#pdf("metaboanalyst/figures/5_day3v22_VIP-zscore.pdf", height = 8.5, width = 11)
+pheatmap((transMetabData %>%
+            dplyr::select(treatment_day, any_of(significantVIP_5_day3v22$metabolite)) %>%
+            filter(treatment_day == "5_3" | treatment_day == "5_22") %>%
+            group_by(treatment_day) %>%
+            mutate(across(where(is.numeric), log)) %>%
+            replace(is.na(.), 0) %>%
+            mutate(across(where(is.numeric), scale)) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment_day") %>%
+            t(.)), 
+         cluster_row = TRUE, fontsize_row = 4, show_rownames = TRUE,
+         cluster_cols = FALSE, show_colnames = FALSE, 
+         color = heatmapColors, 
+         annotation_col = metabolomicsAvgAnnotation %>% filter(Treatment == "5ºC at Day 3" | Treatment == "5ºC at Day 22"), 
+         annotation_colors = metabolomicsColors, 
+         name = "Z-Score")
+#dev.off()
+```
+
+```{r}
+transMetabData %>%
+  dplyr::select(treatment_day, any_of(significantVIP_5_day3v22$metabolite)) %>%
+  filter(treatment_day == "5_3" | treatment_day == "5_22") %>%
+  group_by(treatment_day) %>%
+  summarize_all(funs(mean(., na.rm = TRUE))) %>%
+  column_to_rownames(var = "treatment_day") %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(var = "metabolite") %>%
+  mutate(., diff = `5_3` - `5_22`) %>%
+  mutate(., logDiff = log(abs(diff))) %>%
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>%
+  mutate(., status = case_when(logDiff > 0 ~ "3",
+                               logDiff < 0 ~ "22")) %>%
+  ggplot(., aes(x = logDiff, y = metabolite, fill = status)) +
+  geom_bar(aes(fill = status), stat = 'identity') +
+  labs(x = "log(Difference)", y = "Metabolite") +
+  scale_fill_manual(values = c("black", "purple"), 
+                    guide = "none") +
+  theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
+ggsave("metaboanalyst/figures/pairwise-VIP-5-day3v22-bargraph.pdf", height = 8.5, width = 11)
+```
 
 ```{r}
 day3v22_5_pathwayResults <- read.csv("metaboanalyst/5-day3v22_metaboanalyst-results/pathway_results.csv") %>%
