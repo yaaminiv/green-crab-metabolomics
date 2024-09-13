@@ -2552,6 +2552,7 @@ Within MetaboAnalyst, I did the following:
 significantVIP_13v30_day22 <- t.test_13v30_day22 %>%
   filter(., p.adj < 0.05) #Create an object with significant VIP from the specific comparison
 head(significantVIP_13v30_day22) #Confirm dataframe creation
+nrow(significantVIP_13v30_day22)
 ```
 
 ```{r}
@@ -2617,6 +2618,30 @@ transMetabData %>%
                     guide = "none") +
   theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
 ggsave("metaboanalyst/figures/pairwise-VIP-13v30-day22-bargraph.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+transMetabData %>%
+  dplyr::select(treatment_day, any_of(significantVIP_13v30_day22$metabolite)) %>%
+  filter(treatment_day == "13_22" | treatment_day == "30_22") %>%
+  group_by(treatment_day) %>%
+  summarize_all(funs(mean(., na.rm = TRUE))) %>%
+  column_to_rownames(var = "treatment_day") %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(var = "metabolite") %>%
+  mutate(., diff = `13_22` - `30_22`) %>%
+  mutate(., logDiff = log(abs(diff))) %>%
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>%
+  mutate(., status = case_when(logDiff > 0 ~ "13",
+                               logDiff < 0 ~ "30")) %>%
+  ggplot(., aes(x = logDiff, y = metabolite, fill = status)) +
+  geom_bar(aes(fill = status), stat = 'identity') +
+  labs(x = "log(Difference)", y = "Metabolite") +
+  scale_fill_manual(values = c(plotColors[2], plotColors[1]), 
+                    guide = "none") +
+  theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
+ggsave("metaboanalyst/figures/pairwise-VIP-13v30-day22-bargraph.svg", height = 8.5, width = 11)
 ```
 
 ```{r}
@@ -2704,6 +2729,7 @@ ggsave("metaboanalyst/figures/13v30_day22-enrichmentOverview.pdf", heigh = 8.5, 
 significantVIP_13v5_day22 <- t.test_13v5_day22 %>%
   filter(., p.adj < 0.05) #Create an object with significant VIP from the specific comparison
 head(significantVIP_13v5_day22) #Confirm dataframe creation
+nrow(significantVIP_13v5_day22)
 ```
 
 ```{r}
@@ -2769,6 +2795,30 @@ transMetabData %>%
                     guide = "none") +
   theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
 ggsave("metaboanalyst/figures/pairwise-VIP-13v5-day22-bargraph.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+transMetabData %>%
+  dplyr::select(treatment_day, any_of(significantVIP_13v5_day22$metabolite)) %>%
+  filter(treatment_day == "13_22" | treatment_day == "5_22") %>%
+  group_by(treatment_day) %>%
+  summarize_all(funs(mean(., na.rm = TRUE))) %>%
+  column_to_rownames(var = "treatment_day") %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(var = "metabolite") %>%
+  mutate(., diff = `13_22` - `5_22`) %>%
+  mutate(., logDiff = log(abs(diff))) %>%
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>%
+  mutate(., status = case_when(logDiff > 0 ~ "13",
+                               logDiff < 0 ~ "5")) %>%
+  ggplot(., aes(x = logDiff, y = metabolite, fill = status)) +
+  geom_bar(aes(fill = status), stat = 'identity') +
+  labs(x = "log(Difference)", y = "Metabolite") +
+  scale_fill_manual(values = c(plotColors[2], plotColors[3]), 
+                    guide = "none") +
+  theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
+ggsave("metaboanalyst/figures/pairwise-VIP-13v5-day22-bargraph.svg", height = 8.5, width = 11)
 ```
 
 ```{r}
@@ -2856,6 +2906,7 @@ ggsave("metaboanalyst/figures/13v5_day22-enrichmentOverview.pdf", heigh = 8.5, w
 significantVIP_5_day3v22 <- t.test_5_day3v22 %>%
   filter(., p.adj < 0.05) #Create an object with significant VIP from the specific comparison
 head(significantVIP_5_day3v22) #Confirm dataframe creation
+nrow(significantVIP_5_day3v22)
 ```
 
 ```{r}
@@ -2921,6 +2972,30 @@ transMetabData %>%
                     guide = "none") +
   theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
 ggsave("metaboanalyst/figures/pairwise-VIP-5-day3v22-bargraph.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+transMetabData %>%
+  dplyr::select(treatment_day, any_of(significantVIP_5_day3v22$metabolite)) %>%
+  filter(treatment_day == "5_3" | treatment_day == "5_22") %>%
+  group_by(treatment_day) %>%
+  summarize_all(funs(mean(., na.rm = TRUE))) %>%
+  column_to_rownames(var = "treatment_day") %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(var = "metabolite") %>%
+  mutate(., diff = `5_3` - `5_22`) %>%
+  mutate(., logDiff = log(abs(diff))) %>%
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>%
+  mutate(., status = case_when(logDiff > 0 ~ "3",
+                               logDiff < 0 ~ "22")) %>%
+  ggplot(., aes(x = logDiff, y = metabolite, fill = status)) +
+  geom_bar(aes(fill = status), stat = 'identity') +
+  labs(x = "log(Difference)", y = "Metabolite") +
+  scale_fill_manual(values = c("black", "purple"), 
+                    guide = "none") +
+  theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
+ggsave("metaboanalyst/figures/pairwise-VIP-5-day3v22-bargraph.svg", height = 8.5, width = 11)
 ```
 
 ```{r}
