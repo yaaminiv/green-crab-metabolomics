@@ -2442,6 +2442,30 @@ ggsave("metaboanalyst/figures/pairwise-VIP-13v30-bargraph.pdf", height = 8.5, wi
 ```
 
 ```{r}
+knownTransLipidData %>%
+  filter(., treatment != "5") %>%
+  dplyr::select(treatment, any_of(significantVIP_13v30$lipid)) %>%
+  group_by(treatment) %>%
+  summarize_all(funs(mean(., na.rm = TRUE))) %>%
+  column_to_rownames(var = "treatment") %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(var = "lipid") %>%
+  mutate(., diff = `13` - `30`) %>%
+  mutate(., logDiff = log(abs(diff))) %>%
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>%
+  mutate(., status = case_when(logDiff > 0 ~ "13",
+                               logDiff < 0 ~ "30")) %>%
+  ggplot(., aes(x = logDiff, y = lipid, fill = status)) +
+  geom_bar(aes(fill = status), stat = 'identity') +
+  labs(x = "log(Difference)", y = "Lipid") +
+  scale_fill_manual(values = c(plotColors[2], plotColors[1]), 
+                    guide = "none") +
+  theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
+ggsave("metaboanalyst/figures/pairwise-VIP-13v30-bargraph.svg", height = 8.5, width = 11)
+```
+
+```{r}
 enrichmentResults13v30 <- read.csv("metaboanalyst/LION-enrichment-report-13v30/LION-enrichment-results-13v30.csv") %>%
   dplyr::rename(Description = "Discription") %>%
   dplyr::rename(Observed = "Significant") %>%
@@ -2558,6 +2582,30 @@ knownTransLipidData %>%
                     guide = "none") +
   theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
 ggsave("metaboanalyst/figures/pairwise-VIP-13v5-bargraph.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+knownTransLipidData %>%
+  filter(., treatment != "30") %>%
+  dplyr::select(treatment, any_of(significantVIP_13v5$lipid)) %>%
+  group_by(treatment) %>%
+  summarize_all(funs(mean(., na.rm = TRUE))) %>%
+  column_to_rownames(var = "treatment") %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(var = "lipid") %>%
+  mutate(., diff = `13` - `5`) %>%
+  mutate(., logDiff = log(abs(diff))) %>%
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>%
+  mutate(., status = case_when(logDiff > 0 ~ "13",
+                               logDiff < 0 ~ "5")) %>%
+  ggplot(., aes(x = logDiff, y = lipid, fill = status)) +
+  geom_bar(aes(fill = status), stat = 'identity') +
+  labs(x = "log(Difference)", y = "Lipid") +
+  scale_fill_manual(values = c(plotColors[2], plotColors[3]), 
+                    guide = "none") +
+  theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
+ggsave("metaboanalyst/figures/pairwise-VIP-13v5-bargraph.svg", height = 8.5, width = 11)
 ```
 
 ```{r}
