@@ -24,9 +24,11 @@ getwd()
 #install.packages("tidyverse")
 #install.packages("plotrix")
 #install.packages("RColorBrewer")
+#install.packages("cowplot")
 require(tidyverse)
 require(plotrix)
 require(RColorBrewer)
+require(cowplot)
 ```
 
 ```{r}
@@ -367,9 +369,6 @@ modTTR %>%
 ggsave("figures/time-to-right-avg.pdf", height = 8.5, width = 11)
 ```
 
-- make geom_line show up 
-
-
 ```{r}
 modTTR %>%
   dplyr::select(., c(day, treatment, TTRavg)) %>%
@@ -399,4 +398,71 @@ modTTR %>%
   theme_classic(base_size = 15) #Select unique day, treatment, and TTRavg data. Replace numbers with characters to facilitate better ordering. Plot average TTR for each crab in a boxplot. Do not show outliers with the OG boxplot, but add them in with geom_jitter. Add horizontal line for boxplot outlier threshold. Assign colors to each treatment. Increase base font size.
 ggsave("figures/time-to-right-avg-boxplot.pdf", height = 8.5, width = 11)
 ```
+
+```{r}
+mainPlot <- modTTR %>%
+  dplyr::select(., c(day, treatment, TTRavg)) %>%
+  distinct(.) %>%
+  mutate(., treatment = gsub(x = treatment, pattern = "5C", replacement = "05C")) %>%
+  mutate(., day = gsub(x = day, pattern = 4, replacement = "04")) %>%
+  mutate(., day = gsub(x = day, pattern = 8, replacement = "08")) %>%
+  mutate(., day = gsub(x = day, pattern = 11, replacement = "11")) %>%
+  mutate(., day = gsub(x = day, pattern = 108, replacement = "18")) %>%
+  mutate(., day = gsub(x = day, pattern = 15, replacement = "15")) %>%
+  mutate(., day = gsub(x = day, pattern = 22, replacement = "22")) %>%
+  ggplot(mapping = aes(x = day, y = TTRavg, color = treatment, shape = treatment)) +
+  geom_boxplot(outlier.shape = NA) + geom_jitter(position = position_dodge(width = 0.75)) +
+  ylab("Average Time-to-Right (s)") +
+  scale_x_discrete(name = "Day",
+                   breaks = c("04", "08", "11", "18", "15", "22"),
+                   labels = c("4", "8", "11", "18", "15", "22")) +
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("05C", "13C", "30C"),
+                     labels = c("5", "13", "30")) +
+  scale_shape_manual(values = c(15, 19, 17),
+                     name = "Temperature (ºC)",
+                     breaks = c("05C", "13C", "30C"),
+                     labels = c("5", "13", "30")) +
+  theme_classic(base_size = 15) #Select unique day, treatment, and TTRavg data. Replace numbers with characters to facilitate better ordering. Plot average TTR for each crab in a boxplot. Do not show outliers with the OG boxplot, but add them in with geom_jitter. Assign colors to each treatment. Increase base font size.
+
+insetPlot <-  modTTR %>%
+  dplyr::select(., c(day, treatment, TTRavg)) %>%
+  distinct(.) %>%
+  filter(., treatment != "5C") %>%
+  mutate(., day = gsub(x = day, pattern = 4, replacement = "04")) %>%
+  mutate(., day = gsub(x = day, pattern = 8, replacement = "08")) %>%
+  mutate(., day = gsub(x = day, pattern = 11, replacement = "11")) %>%
+  mutate(., day = gsub(x = day, pattern = 108, replacement = "18")) %>%
+  mutate(., day = gsub(x = day, pattern = 15, replacement = "15")) %>%
+  mutate(., day = gsub(x = day, pattern = 22, replacement = "22")) %>%
+  ggplot(mapping = aes(x = day, y = TTRavg, color = treatment, shape = treatment)) +
+  geom_boxplot(outlier.shape = NA) + geom_jitter(position = position_dodge(width = 0.75)) +
+  ylab("Average Time-to-Right (s)") +
+  scale_x_discrete(name = "Day",
+                   breaks = c("04", "08", "11", "18", "15", "22"),
+                   labels = c("4", "8", "11", "18", "15", "22")) +
+  scale_color_manual(values = c(plotColors[2], plotColors[1]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("13C", "30C"),
+                     labels = c("13", "30")) +
+  scale_shape_manual(values = c(19, 17),
+                     name = "Temperature (ºC)",
+                     breaks = c("13C", "30C"),
+                     labels = c("13", "30")) +
+  scale_y_continuous(limits = c(0,3)) +
+  theme_classic() + theme(legend.position = "none",
+                          panel.border = element_rect(colour = "black", fill = NA, size = 2))
+
+plotWithInset <- ggdraw() +
+  draw_plot(mainPlot) +
+  draw_plot(insetPlot, x = 0.3, y = 0.63, width = 0.52, height = 0.35)
+
+plotWithInset
+
+ggsave("figures/time-to-right-avg-boxplot-noThresh.pdf", height = 8.5, width = 11)
+```
+
+
+- add stat information
 
