@@ -1948,6 +1948,89 @@ transMetabData %>%
 ggsave("metaboanalyst/figures/calcium-signaling-plot.pdf", height = 8.5, width = 11)
 ```
 
+### Cold protectors
+
+```{r}
+coldProtectionMetabolites <- c("alanine", "ornithine ", "proline") #Create a vector with metabolites of interest
+```
+
+```{r}
+overallVIP_coldProtectionMetabolites <- significantVIP %>%
+  filter(., metabolite %in% coldProtectionMetabolites) #Identify overall VIP associated with pathway
+overallVIP_coldProtectionMetabolites
+```
+
+```{r}
+VIP_coldProtectionMetabolites <- rbind(t.test_13v30_day3 %>%
+                                         mutate(., comparison = "13v30_day3") %>%
+                                         filter(., p.adj < 0.05) %>%
+                                         filter(., metabolite %in% coldProtectionMetabolites),
+                                       t.test_13v5_day3 %>%
+                                         mutate(., comparison = "13v5_day3") %>%
+                                         filter(., p.adj < 0.05) %>%
+                                         filter(., metabolite %in% coldProtectionMetabolites),
+                                       t.test_13v30_day22 %>%
+                                         mutate(., comparison = "13v30_day22") %>%
+                                         filter(., p.adj < 0.05) %>%
+                                         filter(., metabolite %in% coldProtectionMetabolites),
+                                       t.test_13v5_day22 %>%
+                                         mutate(., comparison = "13v5_day22") %>%
+                                         filter(., p.adj < 0.05) %>%
+                                         filter(., metabolite %in% coldProtectionMetabolites),
+                                       t.test_5_day3v22 %>%
+                                         mutate(., comparison = "5_day3v22") %>%
+                                         filter(., p.adj < 0.05) %>%
+                                         filter(., metabolite %in% coldProtectionMetabolites),
+                                       t.test_13_day3v22 %>%
+                                         mutate(., comparison = "13_day3v22") %>%
+                                         filter(., p.adj < 0.05) %>%
+                                         filter(., metabolite %in% coldProtectionMetabolites),
+                                       t.test_30_day3v22 %>%
+                                         mutate(., comparison = "30_day3v22") %>%
+                                         filter(., p.adj < 0.05) %>%
+                                         filter(., metabolite %in% coldProtectionMetabolites))
+VIP_coldProtectionMetabolites
+```
+```{r}
+write.table(VIP_coldProtectionMetabolites, "metaboanalyst/cold-protection-pairwise-VIP.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+```
+
+```{r}
+coldProtection_facets <- c("1" = "ornithine ",
+                           "2" = "proline",
+                           "3" = "alanine") #Create facet labels
+```
+
+```{r}
+transMetabData %>%
+  dplyr::select(., c(1:4,
+                     alanine, `ornithine `, proline)) %>%
+  pivot_longer(., cols = c(5:7), names_to = "metabolite", values_to = "value") %>%
+  mutate(., treatment_day = gsub(pattern = "_3", replacement = "_03", x = treatment_day)) %>%
+  mutate(., treatment_day = gsub(pattern = "5_", replacement = "05_", x = treatment_day)) %>%
+  mutate(., order = case_when(metabolite == "ornithine " ~ 1,
+                              metabolite == "proline" ~ 2,
+                              metabolite == "alanine" ~ 3)) %>%
+  ggplot(., mapping = aes(x = treatment_day, y = value, color = treatment_day)) +
+  facet_wrap(~order, scales = "free", labeller = labeller(order = coldProtection_facets)) +
+  ylab("Metabolite Abundance") +
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
+  geom_point(pch = 21, position = position_dodge(width = 0.5)) +
+  scale_fill_manual(name = "Temperature (ºC) x Day", 
+                    values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                    labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
+  scale_colour_manual(name = "Temperature (ºC) x Day", 
+                      values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                      labels = c("5ºC on Day 3", "5ºC on Day 22", "13ºC on Day 3", "13ºC on Day 22", "30ºC on Day 3", "30ºC on Day 22")) +
+  xlab("") + #Axis titles
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.text = element_text(color = "black", size = 12), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"))
+ggsave("metaboanalyst/figures/cold-protection-plot.pdf", height = 8.5, width = 11)
+```
+
 ## VIP "enrichment" analysis
 
 The second step of this workflow is to analyze the abundance patterns and associated functions/pathways of significant VIP.
