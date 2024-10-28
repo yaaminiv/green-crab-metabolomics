@@ -1,0 +1,191 @@
+---
+title: "07-integration-analysis"
+author: "Yaamini Venkataraman"
+date: '2024-10-03'
+output: html_document
+---
+
+In this script, I will integrate the metabolomics and lipidomics analyses. I will do this by correlating WCNA modules and using DIABLO to identify relationships between individual compounds.
+
+# Set up R Markdown document
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = normalizePath("../output/07-integration-analysis/")) #Set root directory
+```
+
+```{r}
+getwd()
+```
+
+# Install packages
+
+```{r packages, warning = FALSE, message = FALSE}
+# if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse')
+# if ("vegan" %in% rownames(installed.packages()) == 'FALSE') install.packages('vegan')
+# if ("ggfortify" %in% rownames(installed.packages()) == 'FALSE') install.packages('ggfortify')
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#   install.packages("BiocManager")
+# if ("mixOmics" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("mixOmics")
+# if ("RVAideMemoire" %in% rownames(installed.packages()) == 'FALSE') install.packages('RVAideMemoire')
+# if ("broom" %in% rownames(installed.packages()) == 'FALSE') install.packages('broom')
+# if ("RColorBrewer" %in% rownames(installed.packages()) == 'FALSE') install.packages('RColorBrewer')
+# if ("pheatmap" %in% rownames(installed.packages()) == 'FALSE') install.packages('pheatmap')
+# if ("genefilter" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("genefilter")
+# if ("WGCNA" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('WGCNA')
+# if ("dendsort" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('dendsort')
+# if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap')
+# if ("svglite" %in% rownames(installed.packages()) == 'FALSE') install.packages("svglite")
+require(tidyverse)
+require(vegan)
+require(ggfortify)
+require(mixOmics)
+require(RVAideMemoire)
+require(broom)
+require(RColorBrewer)
+require(pheatmap)
+require(genefilter)
+require(WGCNA)
+require(dendsort)
+require(ComplexHeatmap)
+require(svglite)
+```
+
+```{r}
+sessionInfo()
+```
+
+```{bash}
+mkdir figures
+```
+
+# Import data
+
+## Metabolomics data
+
+```{r}
+attach("../05-metabolomics-analysis/05-metabolomics-analysis.RData") #Attach metabolomics RData
+metabolomicsMetadata <- metabolomicsMetadata #Save metadata
+transMetabData <- transMetabData #Save transposed data used for PLSDA
+rowwiseMetabData <- rowwiseMetabData #Rowwise data used for WCNA
+mME_metabolomics <- mME_meta #Data used to create module expression matrix
+detach("file:../05-metabolomics-analysis/05-metabolomics-analysis.RData") #Detach metabolomics RData
+```
+
+```{r}
+head(metabolomicsMetadata)
+head(transMetabData)
+head(rowwiseMetabData)
+head(mME_metabolomics)
+```
+
+## Lipidomics data
+
+```{r}
+attach("../06-lipidomics-analysis/06-lipidomics-analysis.RData") #Attach lipidomics RData
+lipidomicsMetadata <- lipidomicsMetadata #Save metadata
+knownTransLipidData <- knownTransLipidData #Save transposed data used for PLSDA
+rowwiseLipidData <- rowwiseLipidData #Rowwise data used for WCNA
+mME_lipidomics <- mME_meta #Data used to create module expression matrix
+detach("file:../06-lipidomics-analysis/06-lipidomics-analysis.RData") #Detach lipidomics RData
+```
+
+```{r}
+head(lipidomicsMetadata)
+head(knownTransLipidData)
+head(rowwiseLipidData)
+head(mME_lipidomics)
+```
+
+## Physiology data
+
+# Correlating physiology and -omics data
+
+# Correlating metabolomics and lipidomics data
+
+To do this, I'll take the module expression information from each analysis and correlate them together!
+
+```{r}
+correlationInput <- left_join(mME_metabolomics %>%
+            pivot_wider(., names_prefix = "metabolite_", names_from = "Module", values_from = "value"),
+          mME_lipidomics %>%
+            pivot_wider(., names_prefix = "lipid_", names_from = "Module", values_from = "value"),
+          by = c("crab.ID")) %>%
+  dplyr::select(., -c(treatment.y, day.y, treatment_day.y)) %>%
+  dplyr::rename("treatment" = treatment.x, "day" = day.x, "treatment_day" = treatment_day.x) %>%
+  dplyr::select(., -c("metabolite_1", "metabolite_8", "lipid_13", "lipid_14", "lipid_15"))
+  #Left join modified versions of module information tables from metabolomics and lipidomics data. Remove duplicate metadata information and rename columns to match standard naming conventions. Remove columns that were not significantly correlated to a treatment condition.
+head(correlationInput)
+```
+
+```{r}
+metabLipidCor <- cor(correlationInput[,5:24], method = "pearson") #Calculate Pearson's correlation coefficients
+head(metabLipidCor %>% as.data.frame())
+```
+```{r}
+nSamples <- nrow(rowwiseMetabData)
+metabLipidPvalue <- corPvalueStudent(metabLipidCor, nSamples) #Calculate p-values for metabolite-lipid module correlations
+head(metabLipidPvalue %>% as.data.frame())
+```
+
+```{r}
+metabLipidCorClean <- as.data.frame(metabLipidCor) %>%
+  dplyr::select(., starts_with("lipid_")) %>%
+  filter(., row_number() %in% 1:7) #Take correlation data and keep columns where metabolite modules and correlated with lipid modules
+head(metabLipidCorClean)
+```
+
+```{r}
+metabLipidPvalueClean <- as.data.frame(metabLipidPvalue) %>%
+  dplyr::select(., starts_with("lipid_")) %>%
+  filter(., row_number() %in% 1:7) #Take p-values and keep columns where metabolite modules and correlated with lipid modules
+head(metabLipidPvalueClean)
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+heatmappval <- signif(metabLipidPvalueClean, 1) #Create list of pvalues for eigengene correlation with specific traits
+
+row_dend <- dendsort(hclust(dist(metabLipidCorClean))) #Create dendograms for rows
+col_dend <- dendsort(hclust(dist(t(metabLipidCorClean)))) #Create dendograms for columns
+```
+
+```{r}
+pdf(file = "figures/metabolite-lipid-module-relationship-heatmap.pdf", height = 8.5, width = 8.5)
+ht <- Heatmap(as.matrix(metabLipidCorClean), name = "Eigengene", column_title = "Metabolomics-Lipidomics Eigengene Correlation",
+              col = blueWhiteRed(50), 
+              row_names_side = "left", 
+              row_dend_side = "left",
+              width = unit(5, "in"), 
+              height = unit(4.5, "in"), 
+              column_dend_reorder = TRUE, 
+              cluster_columns = col_dend,
+              row_dend_reorder = FALSE,  
+              #column_split = 3, 
+              #row_split = 3, 
+              #column_dend_height = unit(.5, "in"),
+              cluster_rows = row_dend, 
+              #row_gap = unit(2.5, "mm"), 
+              border = TRUE,
+              cell_fun = function(j, i, x, y, w, h, col) {
+                if(heatmappval[i, j] < 0.05) {
+                  grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+                }
+                else {
+                  grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+                }},
+              column_names_rot = 45,
+              column_names_gp =  gpar(fontsize = 12, border = FALSE),
+              column_title_gp = gpar(fontsize = 20),
+              row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
+draw(ht) #Draw heatmap
+dev.off()
+```
+
+High level: metabolites pos and neg associated with lipids
+
+
+# Individual metabolite and lipid correlations with DIABLO
+
+
+
+
