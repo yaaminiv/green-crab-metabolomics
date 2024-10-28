@@ -424,6 +424,18 @@ mainPlot <- modTTR %>%
                      name = "Temperature (ºC)",
                      breaks = c("05C", "13C", "30C"),
                      labels = c("5", "13", "30")) +
+  annotate(geom = "text", x = 4.5, y = 32, 
+           label = expression(paste(bolditalic("13ºC vs. 30ºC: "), "t = -2.66, p = 0.008")),
+           hjust = 0) +
+  annotate(geom = "text", x = 4.5, y = 30.5, 
+           label = expression(paste(bolditalic("13ºC vs. 5ºC: "), "t = 15.48, p = 2.27 x ", 10^-38)),
+           hjust = 0) +
+    annotate(geom = "text", x = 4.5, y = 29, 
+           label = expression(paste(bolditalic("Day: "), "t = -1.55, p = 0.12")),
+           hjust = 0) +
+    annotate(geom = "text", x = 4.5, y = 27.5, 
+           label = expression(paste(bolditalic("Crab weight: "), "t = 1.47, p = 0.14")),
+           hjust = 0) +
   theme_classic(base_size = 15) #Select unique day, treatment, and TTRavg data. Replace numbers with characters to facilitate better ordering. Plot average TTR for each crab in a boxplot. Do not show outliers with the OG boxplot, but add them in with geom_jitter. Assign colors to each treatment. Increase base font size.
 
 insetPlot <-  modTTR %>%
@@ -438,8 +450,8 @@ insetPlot <-  modTTR %>%
   mutate(., day = gsub(x = day, pattern = 22, replacement = "22")) %>%
   ggplot(mapping = aes(x = day, y = TTRavg, color = treatment, shape = treatment)) +
   geom_boxplot(outlier.shape = NA) + geom_jitter(position = position_dodge(width = 0.75)) +
-  ylab("Average Time-to-Right (s)") +
-  scale_x_discrete(name = "Day",
+  ylab("") +
+  scale_x_discrete(name = "",
                    breaks = c("04", "08", "11", "18", "15", "22"),
                    labels = c("4", "8", "11", "18", "15", "22")) +
   scale_color_manual(values = c(plotColors[2], plotColors[1]), 
@@ -452,17 +464,15 @@ insetPlot <-  modTTR %>%
                      labels = c("13", "30")) +
   scale_y_continuous(limits = c(0,3)) +
   theme_classic() + theme(legend.position = "none",
-                          panel.border = element_rect(colour = "black", fill = NA, size = 2))
+                          axis.line.x.bottom = element_line(linewidth = 0),
+                          axis.line.y.left = element_line(linewidth = 0),
+                          panel.border = element_rect(colour = "black", fill = NA, size = 1))
 
 plotWithInset <- ggdraw() +
   draw_plot(mainPlot) +
-  draw_plot(insetPlot, x = 0.3, y = 0.63, width = 0.52, height = 0.35)
+  draw_plot(insetPlot, x = 0.3, y = 0.73, width = 0.52, height = 0.25)
 
 plotWithInset
 
 ggsave("figures/time-to-right-avg-boxplot-noThresh.pdf", height = 8.5, width = 11)
 ```
-
-
-- add stat information
-
