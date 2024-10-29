@@ -2208,6 +2208,11 @@ facet_labels <- c("04" = "Day 4",
 ```
 
 ```{r}
+setwd("../output/04-respirometry-analysis/")
+```
+
+
+```{r}
 all_MO2_slope_results_reorder %>%
   filter(., blank_ratio < 0.10) %>%
   ggplot(., aes(x = treatment, y = -slope_nmol_hr_corrected, color = treatment)) + 
@@ -2228,6 +2233,15 @@ all_MO2_slope_results_reorder %>%
                      name = "Temperature (ºC)",
                      breaks = c("05C", "13C", "30C"),
                      labels = c("5", "13", "30")) +
+  annotate(geom = "text", x = 1, y = 30000, 
+           label = expression(paste(bolditalic("13ºC vs. 30ºC: "), "t = 2.38, p = 0.02")),
+           hjust = 0) +
+  annotate(geom = "text", x = 2, y = 0.12, 
+           label = expression(paste(bolditalic("13ºC vs. 5ºC: "), "t = -8.09, p = 1.50 x", 10^-11)),
+           hjust = 0) +
+  annotate(geom = "text", x = 2, y = 0.12, 
+           label = expression(paste(bolditalic("Day: "), "t = 3.75, p = 3.72 x", 10^-4)),
+           hjust = 0) +
   theme_classic(base_size = 15) + theme(axis.ticks.x = element_blank(),
                                         axis.title.x = element_blank(),
                                         strip.text.x = element_text(size = 15),
@@ -2235,6 +2249,41 @@ all_MO2_slope_results_reorder %>%
 ggsave("figures/multipanel-oxygen-consumption-corrected.pdf", height = 8.5, width = 11)
 #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. Add a line connecting each boxplot midpoint. Facet wrap and use the labeller to relabel facets. Add consistent color and shape scales.
 ```
+
+```{r}
+all_MO2_slope_results_reorder %>%
+  filter(., blank_ratio < 0.10) %>%
+  ggplot(., aes(x = day, y = -slope_nmol_hr_corrected, color = treatment, shape = treatment)) + 
+  geom_boxplot(outlier.shape = NA) + geom_jitter(position = position_dodge(width = 0.75)) +
+  xlab("") + ylab("Oxygen Consumption (nmol/hr)") +
+  # stat_summary(fun = median,
+  #              geom = "line",
+  #              aes(group = 1),
+  #              col = "black", lty = 2) +
+  scale_x_discrete(name = "Day",
+                   breaks = c("04", "08", "15", "22"),
+                   labels = c("4", "8", "15", "22")) +
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("05C", "13C", "30C"),
+                     labels = c("5", "13", "30")) +
+  scale_shape_manual(values = c(15, 19, 17),
+                     name = "Temperature (ºC)",
+                     breaks = c("05C", "13C", "30C"),
+                     labels = c("5", "13", "30")) +
+  annotate(geom = "text", x = 1, y = 30000, 
+           label = expression(paste(bolditalic("13ºC vs. 30ºC: "), "t = 2.38, p = 0.02")),
+           hjust = 0) +
+  annotate(geom = "text", x = 1, y = 29000, 
+           label = expression(paste(bolditalic("13ºC vs. 5ºC: "), "t = -8.09, p = 1.50 x", 10^-11)),
+           hjust = 0) +
+  annotate(geom = "text", x = 1, y = 28000, 
+           label = expression(paste(bolditalic("Day: "), "t = 3.75, p = 3.72 x", 10^-4)),
+           hjust = 0) +
+  theme_classic(base_size = 15)
+ggsave("figures/multipanel-oxygen-consumption-corrected.pdf", height = 8.5, width = 11) #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. Add a line connecting each boxplot midpoint. Facet wrap and use the labeller to relabel facets. Add consistent color and shape scales.
+```
+
 
 # Within-group variability
 
