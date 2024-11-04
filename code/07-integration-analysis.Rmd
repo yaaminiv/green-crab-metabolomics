@@ -122,6 +122,7 @@ head(correlationInput)
 metabLipidCor <- cor(correlationInput[,5:24], method = "pearson") #Calculate Pearson's correlation coefficients
 head(metabLipidCor %>% as.data.frame())
 ```
+
 ```{r}
 nSamples <- nrow(rowwiseMetabData)
 metabLipidPvalue <- corPvalueStudent(metabLipidCor, nSamples) #Calculate p-values for metabolite-lipid module correlations
@@ -141,6 +142,13 @@ metabLipidPvalueClean <- as.data.frame(metabLipidPvalue) %>%
   filter(., row_number() %in% 1:7) #Take p-values and keep columns where metabolite modules and correlated with lipid modules
 head(metabLipidPvalueClean)
 ```
+
+```{r}
+#Save dataframes
+write.csv(metabLipidCorClean, "metabolite-lipid-module-correlations.csv", quote = FALSE, row.names = FALSE)
+write.csv(metabLipidPvalueClean, "metabolite-lipid-module-pvalues.csv", quote = FALSE, row.names = FALSE)
+```
+
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 heatmappval <- signif(metabLipidPvalueClean, 1) #Create list of pvalues for eigengene correlation with specific traits
