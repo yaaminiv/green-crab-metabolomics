@@ -222,15 +222,15 @@ write.csv(metabLipidPvalueNo0, "metabolite-lipid-module-pvalues-no0.csv", quote 
 
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
-heatmappval <- signif(metabLipidPvalueClean, 1) #Create list of pvalues for eigengene correlation with specific traits
+heatmappval <- signif(metabLipidPvalueNo0, 1) #Create list of pvalues for eigengene correlation with specific traits
 
-row_dend <- dendsort(hclust(dist(metabLipidCorClean))) #Create dendograms for rows
-col_dend <- dendsort(hclust(dist(t(metabLipidCorClean)))) #Create dendograms for columns
+row_dend <- dendsort(hclust(dist(metabLipidCorNo0))) #Create dendograms for rows
+col_dend <- dendsort(hclust(dist(t(metabLipidCorNo0)))) #Create dendograms for columns
 ```
 
 ```{r}
-pdf(file = "figures/metabolite-lipid-module-relationship-heatmap.pdf", height = 8.5, width = 8.5)
-ht <- Heatmap(as.matrix(metabLipidCorClean), name = "Eigengene", column_title = "Metabolomics-Lipidomics Eigengene Correlation",
+pdf(file = "figures/metabolite-lipid-module-relationship-heatmap-no0.pdf", height = 8.5, width = 8.5)
+ht <- Heatmap(as.matrix(metabLipidCorNo0), name = "Eigengene", column_title = "Metabolomics-Lipidomics Eigengene Correlation",
               col = blueWhiteRed(50), 
               row_names_side = "left", 
               row_dend_side = "left",
@@ -260,6 +260,7 @@ draw(ht) #Draw heatmap
 dev.off()
 ```
 
+Removing these modules doesn't change the overall pattern! I will stick to this version without the null modules.
 
 # Individual metabolite and lipid correlations with DIABLO
 
