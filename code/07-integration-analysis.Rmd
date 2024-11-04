@@ -145,8 +145,8 @@ head(metabLipidPvalueClean)
 
 ```{r}
 #Save dataframes
-write.csv(metabLipidCorClean, "metabolite-lipid-module-correlations.csv", quote = FALSE, row.names = FALSE)
-write.csv(metabLipidPvalueClean, "metabolite-lipid-module-pvalues.csv", quote = FALSE, row.names = FALSE)
+write.csv(metabLipidCorClean, "metabolite-lipid-module-correlations.csv", quote = FALSE, row.names = TRUE)
+write.csv(metabLipidPvalueClean, "metabolite-lipid-module-pvalues.csv", quote = FALSE, row.names = TRUE)
 ```
 
 
@@ -189,7 +189,76 @@ draw(ht) #Draw heatmap
 dev.off()
 ```
 
-High level: metabolites pos and neg associated with lipids
+### Repeat without module 0
+
+Module 0 is where the WCNA algorithm places compounds that are not co-expressed with any other compounds. I want to recreate this heatmap without module 0, since I'm interested in co-expressed metabolites that are associated wtih co-expressed lipids to understand pathway-level processes.
+
+```{r}
+metabLipidCorNo0 <- as.data.frame(metabLipidCor) %>%
+  dplyr::select(., starts_with("lipid_")) %>%
+  filter(., row_number() %in% 1:7) #Take correlation data and keep columns where metabolite modules and correlated with lipid modules
+head(metabLipidCorClean)
+```
+
+```{r}
+metabLipidCorNo0 <- metabLipidCorClean %>%
+  filter(., rownames(metabLipidCorClean) != "metabolite_0") %>%
+  dplyr::select(-lipid_0) #Take dataframe and remove metabolite_0 row and lipid_0 column
+head(metabLipidCorNo0) #Confirm changes
+```
+
+```{r}
+metabLipidPvalueNo0 <- metabLipidPvalueClean %>%
+  filter(., rownames(metabLipidPvalueClean) != "metabolite_0") %>%
+  dplyr::select(-lipid_0) #Take dataframe and remove metabolite_0 row and lipid_0 column
+head(metabLipidPvalueNo0) #Confirm changes
+```
+
+```{r}
+#Save dataframes
+write.csv(metabLipidCorNo0, "metabolite-lipid-module-correlations-no0.csv", quote = FALSE, row.names = TRUE)
+write.csv(metabLipidPvalueNo0, "metabolite-lipid-module-pvalues-no0.csv", quote = FALSE, row.names = TRUE)
+```
+
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+heatmappval <- signif(metabLipidPvalueClean, 1) #Create list of pvalues for eigengene correlation with specific traits
+
+row_dend <- dendsort(hclust(dist(metabLipidCorClean))) #Create dendograms for rows
+col_dend <- dendsort(hclust(dist(t(metabLipidCorClean)))) #Create dendograms for columns
+```
+
+```{r}
+pdf(file = "figures/metabolite-lipid-module-relationship-heatmap.pdf", height = 8.5, width = 8.5)
+ht <- Heatmap(as.matrix(metabLipidCorClean), name = "Eigengene", column_title = "Metabolomics-Lipidomics Eigengene Correlation",
+              col = blueWhiteRed(50), 
+              row_names_side = "left", 
+              row_dend_side = "left",
+              width = unit(5, "in"), 
+              height = unit(4.5, "in"), 
+              column_dend_reorder = TRUE, 
+              cluster_columns = col_dend,
+              row_dend_reorder = FALSE,  
+              #column_split = 3, 
+              #row_split = 3, 
+              #column_dend_height = unit(.5, "in"),
+              cluster_rows = row_dend, 
+              #row_gap = unit(2.5, "mm"), 
+              border = TRUE,
+              cell_fun = function(j, i, x, y, w, h, col) {
+                if(heatmappval[i, j] < 0.05) {
+                  grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+                }
+                else {
+                  grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+                }},
+              column_names_rot = 45,
+              column_names_gp =  gpar(fontsize = 12, border = FALSE),
+              column_title_gp = gpar(fontsize = 20),
+              row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
+draw(ht) #Draw heatmap
+dev.off()
+```
 
 
 # Individual metabolite and lipid correlations with DIABLO
