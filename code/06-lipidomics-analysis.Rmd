@@ -2346,9 +2346,303 @@ write.table(overallVIP_allModules, "metaboanalyst/all-module-overall-VIP.txt", s
 
 ### Pairwise VIP
 
+#### Lipid classes
+
+I want to understand which lipid classes are represented in the pairwise VIP, since different lipid classes have different functions.
+
+```{r}
+significantVIP_13v30_annot <- significantVIP_13v30 %>%
+  mutate(comparison = "13 vs. 30") %>%
+  mutate(., class = lipid) %>%
+  separate(., col = class, into = c("class", "structure"), sep = " ") %>%
+  mutate(class = gsub(pattern = "4-METHYL-2-OXO-PENTANOIC", replacement = "OxFA", x = class)) %>%
+  mutate(class = gsub(pattern = "(eicosanoyl)", replacement = "", x = class)) %>%
+  mutate(class = gsub(pattern = "()sphingosine", replacement = "", x = class)) %>%
+  mutate(class = gsub(pattern = "N-\\(\\)", replacement = "Cer", x = class)) %>%
+  mutate(class = gsub(pattern = "Phosphatidylethanolamine", replacement = "PE", x = class)) %>%
+  mutate(targetClass = case_when(class == "TG" ~ class,
+                                 class == "PE" ~ class,
+                                 class == "PC" ~ class,
+                                 class == "PI" ~ class,
+                                 class == "PS" ~ class,
+                                 class == "PA" ~ class,
+                                 class != "TG" | class != "PE" | class != "PC" | class != "PI" | class != "PS" | class != "PA" ~ "Other")) %>%
+  separate(., col = structure, into = c("carbons", "oxygen", "rest"), sep = ":") %>%
+  separate(., col = oxygen, into = c("oxygen", "trash"), sep = "_") %>%
+  dplyr::select(-trash) %>%
+  separate(., col = oxygen, into = c("oxygen", "trash"), sep = ";") %>%
+  dplyr::select(-trash) %>%
+  mutate(., oxygen = gsub(pattern = "\\|", replacement = "", x = oxygen)) %>%
+  mutate(., oxygen = gsub(pattern = "PC", replacement = "", x = oxygen)) %>%
+  mutate(., oxygen = gsub(pattern = "PE", replacement = "", x = oxygen)) %>%
+  mutate(., rest = case_when(is.na(rest) == TRUE ~ "0",
+                             is.na(rest) == FALSE ~ rest)) %>%
+  mutate(., rest = as.numeric(rest), oxygen = as.numeric(oxygen)) %>%
+  mutate(., totDoubleBond = oxygen + rest) %>%
+  mutate(., saturation = case_when(totDoubleBond == 0 ~ "Saturated",
+                                   totDoubleBond == 1 ~ "Monounsaturated",
+                                   totDoubleBond > 1 ~ "Polyunsaturated")) %>%
+  dplyr::select(-c(carbons, oxygen, rest, totDoubleBond)) #Take significant VIP from 13 vs. 30 comparison and create a class column. Replace specific anomalies with correct lipid class. Add a column with comparison type. Add a columnn with targeted class information. Separate out structural information to determine if lipids are saturated or unsaturated.
+
+#Replace specific values as needed
+significantVIP_13v30_annot$saturation[1] <- "Saturated"
+significantVIP_13v30_annot$saturation[28] <- "Monounsaturated"
+significantVIP_13v30_annot$saturation[113] <- "Polyunsaturated"
+
+head(significantVIP_13v30_annot) #Confirm dataframe creation
+```
+
+```{r}
+significantVIP_13v5_annot <- significantVIP_13v5 %>%
+  mutate(comparison = "13 vs. 5") %>%
+  mutate(., class = lipid) %>%
+  separate(., col = class, into = c("class", "structure"), sep = " ") %>%
+  mutate(class = gsub(pattern = "Phosphatidylethanolamine", replacement = "PE", x = class)) %>%
+  mutate(targetClass = case_when(class == "TG" ~ class,
+                                 class == "PE" ~ class,
+                                 class == "PC" ~ class,
+                                 class == "PI" ~ class,
+                                 class == "PS" ~ class,
+                                 class == "PA" ~ class,
+                                 class != "TG" | class != "PE" | class != "PC" | class != "PI" | class != "PS" | class != "PA" ~ "Other")) %>%
+  separate(., col = structure, into = c("carbons", "oxygen", "rest"), sep = ":") %>%
+  separate(., col = oxygen, into = c("oxygen", "trash"), sep = "\\+") %>%
+  dplyr::select(-trash) %>%
+  separate(., col = oxygen, into = c("oxygen", "trash"), sep = "_") %>%
+  dplyr::select(-trash) %>%
+  mutate(., oxygen = gsub(pattern = "\\|", replacement = "", x = oxygen)) %>%
+  mutate(., oxygen = gsub(pattern = "PC", replacement = "", x = oxygen)) %>%
+  mutate(., oxygen = gsub(pattern = "PE", replacement = "", x = oxygen)) %>%
+  mutate(., rest = case_when(is.na(rest) == TRUE ~ "0",
+                             is.na(rest) == FALSE ~ rest)) %>%
+  mutate(., rest = as.numeric(rest), oxygen = as.numeric(oxygen)) %>%
+  mutate(., totDoubleBond = oxygen + rest) %>%
+  mutate(., saturation = case_when(totDoubleBond == 0 ~ "Saturated",
+                                   totDoubleBond == 1 ~ "Monounsaturated",
+                                   totDoubleBond > 1 ~ "Polyunsaturated")) %>%
+  dplyr::select(-c(carbons, oxygen, rest, totDoubleBond)) #Take significant VIP from 13 vs. 5 comparison and create a class column. Replace specific anomalies with correct lipid class. Add a column with comparison type. Add a columnn with targeted class information. Separate out structural information to determine if lipids are saturated or unsaturated.
+
+#Replace specific values as needed
+significantVIP_13v5_annot$saturation[59] <- "Polyunsaturated"
+
+head(significantVIP_13v5_annot) #Confirm dataframe creation
+```
+
+```{r}
+rbind(significantVIP_13v30_annot, significantVIP_13v5_annot) %>%
+  group_by(comparison, class) %>%
+  summarize(., count = n()) %>%
+  ggplot(., aes(x = comparison, y = count, fill = class)) +
+  geom_bar(position = "fill", stat = "identity") +
+  labs(x = "Comparison", y = "Percent of VIP Lipids", fill = "Lipid Class") +
+  theme_classic(base_size = 15)
+ggsave("metaboanalyst/figures/lipid-classes.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+rbind(significantVIP_13v30_annot, significantVIP_13v5_annot) %>%
+  group_by(comparison, targetClass) %>%
+  summarize(., count = n()) %>%
+  ggplot(., aes(x = comparison, y = count, fill = targetClass)) +
+  geom_bar(position = "fill", stat = "identity", color = "grey20") +
+  labs(x = "Comparison", y = "Percent of VIP Lipids", fill = "Lipid Class") +
+  annotate(geom = "text", x = 0.57, y = 0.98,
+           label = "n = 130",
+           hjust = 0, size = 4) +
+  annotate(geom = "text", x = 1.57, y = 0.98,
+           label = "n = 61",
+           hjust = 0, size = 4) +
+  scale_fill_brewer(palette = "Greys") +
+  theme_classic(base_size = 15)
+ggsave("metaboanalyst/figures/lipid-targetClasses.pdf", height = 8.5, width = 11) #Combine annotated VIP dataframes and group by comparison and targetClass. Count the number of lipids in a specific class for each comparison. Create a stacked barplot with fill specified by lipid class. Change labels and color palette. Set theme and text base size.
+```
+
+```{r}
+knownTransLipidData %>%
+  filter(., treatment != "5") %>%
+  dplyr::select(treatment, any_of(significantVIP_13v30$lipid)) %>%
+  group_by(treatment) %>%
+  summarize_all(funs(mean(., na.rm = TRUE))) %>%
+  column_to_rownames(var = "treatment") %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(var = "lipid") %>%
+  mutate(., diff = `13` - `30`) %>%
+  mutate(., logDiff = log(abs(diff))) %>%
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>%
+  mutate(., status = case_when(logDiff > 0 ~ "13",
+                               logDiff < 0 ~ "30")) %>%
+  left_join(x = ., y = significantVIP_13v30_annot) %>%
+  dplyr::select(-c(estimate:comparison)) %>%
+  ggplot(., aes(x = logDiff, y = reorder(lipid, logDiff), fill = saturation)) +
+  facet_wrap(~ class, scales = "free_y") +
+  geom_bar(aes(fill = saturation, color = status), stat = 'identity') +
+  scale_fill_manual(name = "Saturation",
+                    values = c("grey40", "grey80", "black")) +
+  scale_color_manual(values = c(plotColors[2], plotColors[1]), 
+                    guide = "none") +
+  labs(x = "log(Difference)", y = "Pairwise VIP Lipid") +
+  theme_classic(base_size = 15) + theme(axis.ticks.y = element_blank(),
+                                        axis.text.y = element_blank()) #Take lipid abundance data and remove data from 5ºC treatment. Select VIP of interest. Calculate average abundance for each lipid and traspose dataframe. Calculate difference in abundance between treatments of interest and calculate log difference. A column for whether the lipid had higher abundance in 13 or 30. Join with annotated VIP data. Remove extra columns and keep only PC and PE data. Create bargraph and facet by lipid class. Fill by saturation state and color by treatment.
+ggsave("metaboanalyst/figures/pairwise-VIP-13vs30-classAbundance.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+knownTransLipidData %>%
+  filter(., treatment != "5") %>%
+  dplyr::select(treatment, any_of(significantVIP_13v30$lipid)) %>%
+  group_by(treatment) %>%
+  summarize_all(funs(mean(., na.rm = TRUE))) %>%
+  column_to_rownames(var = "treatment") %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(var = "lipid") %>%
+  mutate(., diff = `13` - `30`) %>%
+  mutate(., logDiff = log(abs(diff))) %>%
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>%
+  mutate(., status = case_when(logDiff > 0 ~ "13",
+                               logDiff < 0 ~ "30")) %>%
+  left_join(x = ., y = significantVIP_13v30_annot) %>%
+  dplyr::select(-c(estimate:comparison)) %>%
+  ggplot(., aes(x = logDiff, y = reorder(lipid, logDiff), fill = saturation)) +
+  facet_wrap(~ targetClass, scales = "free_y") +
+  geom_bar(aes(fill = saturation, color = status), stat = 'identity') +
+  scale_fill_manual(name = "Saturation",
+                    values = c("grey40", "grey80", "black")) +
+  scale_color_manual(values = c(plotColors[2], plotColors[1]), 
+                    guide = "none") +
+  labs(x = "log(Difference)", y = "Pairwise VIP Lipid") +
+  theme_classic(base_size = 15) + theme(axis.ticks.y = element_blank(),
+                                        axis.text.y = element_blank()) #Take lipid abundance data and remove data from 5ºC treatment. Select VIP of interest. Calculate average abundance for each lipid and traspose dataframe. Calculate difference in abundance between treatments of interest and calculate log difference. A column for whether the lipid had higher abundance in 13 or 30. Join with annotated VIP data. Remove extra columns and keep only PC and PE data. Create bargraph and facet by lipid class. Fill by saturation state and color by treatment.
+ggsave("metaboanalyst/figures/pairwise-VIP-13vs30-targetClass.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+knownTransLipidData %>%
+  filter(., treatment != "5") %>%
+  dplyr::select(treatment, any_of(significantVIP_13v30$lipid)) %>%
+  group_by(treatment) %>%
+  summarize_all(funs(mean(., na.rm = TRUE))) %>%
+  column_to_rownames(var = "treatment") %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(var = "lipid") %>%
+  mutate(., diff = `13` - `30`) %>%
+  mutate(., logDiff = log(abs(diff))) %>%
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>%
+  mutate(., status = case_when(logDiff > 0 ~ "13",
+                               logDiff < 0 ~ "30")) %>%
+  left_join(x = ., y = significantVIP_13v30_annot) %>%
+  dplyr::select(-c(estimate:comparison)) %>%
+  filter(., targetClass == "PC" | targetClass == "PE") %>%
+  ggplot(., aes(x = logDiff, y = reorder(lipid, logDiff), fill = saturation)) +
+  facet_wrap(~ targetClass, scales = "free_y") +
+  geom_bar(aes(fill = saturation, color = status), stat = 'identity') +
+  scale_fill_manual(name = "Saturation",
+                    values = c("grey40", "grey80", "black")) +
+  scale_color_manual(values = c(plotColors[2], plotColors[1]), 
+                    guide = "none") +
+  labs(x = "log(Difference)", y = "Pairwise VIP Lipid") +
+  theme_classic(base_size = 15) + theme(axis.ticks.y = element_blank(),
+                                        axis.text.y = element_blank()) #Take lipid abundance data and remove data from 5ºC treatment. Select VIP of interest. Calculate average abundance for each lipid and traspose dataframe. Calculate difference in abundance between treatments of interest and calculate log difference. A column for whether the lipid had higher abundance in 13 or 30. Join with annotated VIP data. Remove extra columns and keep only PC and PE data. Create bargraph and facet by lipid class. Fill by saturation state and color by treatment.
+ggsave("metaboanalyst/figures/pairwise-VIP-13vs30-PCPE.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+knownTransLipidData %>%
+  filter(., treatment != "30") %>%
+  dplyr::select(treatment, any_of(significantVIP_13v5$lipid)) %>%
+  group_by(treatment) %>%
+  summarize_all(funs(mean(., na.rm = TRUE))) %>%
+  column_to_rownames(var = "treatment") %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(var = "lipid") %>%
+  mutate(., diff = `13` - `5`) %>%
+  mutate(., logDiff = log(abs(diff))) %>%
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>%
+  mutate(., status = case_when(logDiff > 0 ~ "13",
+                               logDiff < 0 ~ "5")) %>%
+  left_join(x = ., y = significantVIP_13v5_annot) %>%
+  dplyr::select(-c(estimate:comparison)) %>%
+  # filter(., targetClass == "PC" | targetClass == "PE") %>%
+  ggplot(., aes(x = logDiff, y = reorder(lipid, logDiff), fill = saturation)) +
+  facet_wrap(~ class, scales = "free_y") +
+  geom_bar(aes(fill = saturation, color = status), stat = 'identity') +
+  scale_fill_manual(name = "Saturation",
+                    values = c("grey40", "grey80", "black")) +
+  scale_color_manual(values = c(plotColors[2], plotColors[3]), 
+                    guide = "none") +
+  labs(x = "log(Difference)", y = "Pairwise VIP Lipid") +
+  theme_classic(base_size = 15) + theme(axis.ticks.y = element_blank(),
+                                        axis.text.y = element_blank()) #Take lipid abundance data and remove data from 30ºC treatment. Select VIP of interest. Calculate average abundance for each lipid and traspose dataframe. Calculate difference in abundance between treatments of interest and calculate log difference. A column for whether the lipid had higher abundance in 13 or 5 Join with annotated VIP data. Remove extra columns and keep only PC and PE data. Create bargraph and facet by lipid class. Fill by saturation state and color by treatment.
+ggsave("metaboanalyst/figures/pairwise-VIP-13vs5-classAbundance.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+knownTransLipidData %>%
+  filter(., treatment != "30") %>%
+  dplyr::select(treatment, any_of(significantVIP_13v5$lipid)) %>%
+  group_by(treatment) %>%
+  summarize_all(funs(mean(., na.rm = TRUE))) %>%
+  column_to_rownames(var = "treatment") %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(var = "lipid") %>%
+  mutate(., diff = `13` - `5`) %>%
+  mutate(., logDiff = log(abs(diff))) %>%
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>%
+  mutate(., status = case_when(logDiff > 0 ~ "13",
+                               logDiff < 0 ~ "5")) %>%
+  left_join(x = ., y = significantVIP_13v5_annot) %>%
+  dplyr::select(-c(estimate:comparison)) %>%
+  ggplot(., aes(x = logDiff, y = reorder(lipid, logDiff), fill = saturation)) +
+  facet_wrap(~ targetClass, scales = "free_y") +
+  geom_bar(aes(fill = saturation, color = status), stat = 'identity') +
+  scale_fill_manual(name = "Saturation",
+                    values = c("grey40", "grey80", "black")) +
+  scale_color_manual(values = c(plotColors[2], plotColors[3]), 
+                    guide = "none") +
+  labs(x = "log(Difference)", y = "Pairwise VIP Lipid") +
+  theme_classic(base_size = 15) + theme(axis.ticks.y = element_blank(),
+                                        axis.text.y = element_blank()) #Take lipid abundance data and remove data from 30ºC treatment. Select VIP of interest. Calculate average abundance for each lipid and traspose dataframe. Calculate difference in abundance between treatments of interest and calculate log difference. A column for whether the lipid had higher abundance in 13 or 5 Join with annotated VIP data. Remove extra columns and keep only PC and PE data. Create bargraph and facet by lipid class. Fill by saturation state and color by treatment.
+ggsave("metaboanalyst/figures/pairwise-VIP-13vs5-targetClass.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+knownTransLipidData %>%
+  filter(., treatment != "30") %>%
+  dplyr::select(treatment, any_of(significantVIP_13v5$lipid)) %>%
+  group_by(treatment) %>%
+  summarize_all(funs(mean(., na.rm = TRUE))) %>%
+  column_to_rownames(var = "treatment") %>%
+  t(.) %>% as.data.frame(.) %>%
+  rownames_to_column(var = "lipid") %>%
+  mutate(., diff = `13` - `5`) %>%
+  mutate(., logDiff = log(abs(diff))) %>%
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>%
+  mutate(., status = case_when(logDiff > 0 ~ "13",
+                               logDiff < 0 ~ "5")) %>%
+  left_join(x = ., y = significantVIP_13v5_annot) %>%
+  dplyr::select(-c(estimate:comparison)) %>%
+  filter(., targetClass == "PC" | targetClass == "PE") %>%
+  ggplot(., aes(x = logDiff, y = reorder(lipid, logDiff), fill = saturation)) +
+  facet_wrap(~ class, scales = "free_y") +
+  geom_bar(aes(fill = saturation, color = status), stat = 'identity') +
+  scale_fill_manual(name = "Saturation",
+                    values = c("grey40", "grey80", "black")) +
+  scale_color_manual(values = c(plotColors[2], plotColors[3]), 
+                    guide = "none") +
+  labs(x = "log(Difference)", y = "Pairwise VIP Lipid") +
+  theme_classic(base_size = 15) + theme(axis.ticks.y = element_blank(),
+                                        axis.text.y = element_blank()) #Take lipid abundance data and remove data from 30ºC treatment. Select VIP of interest. Calculate average abundance for each lipid and traspose dataframe. Calculate difference in abundance between treatments of interest and calculate log difference. A column for whether the lipid had higher abundance in 13 or 5 Join with annotated VIP data. Remove extra columns and keep only PC and PE data. Create bargraph and facet by lipid class. Fill by saturation state and color by treatment.
+ggsave("metaboanalyst/figures/pairwise-VIP-13vs5-PCPE.pdf", height = 8.5, width = 11)
+```
+
 #### LION Enrichment
 
-To help answer the question of what lipids are associated with cold or warm temperature acclimation, I'm also going to conduct enrichment tests with pairwise VIP.
+To help answer the question of what lipids are associated with cold or warm temperature acclimation, I am also going to conduct enrichment tests with pairwise VIP.
 
 ```{r}
 t.test_13v30 %>%
