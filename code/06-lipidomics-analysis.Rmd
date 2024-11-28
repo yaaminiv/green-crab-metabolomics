@@ -2480,7 +2480,7 @@ knownTransLipidData %>%
   scale_fill_manual(name = "Saturation",
                     values = c("grey40", "grey80", "black")) +
   scale_color_manual(values = c(plotColors[2], plotColors[1]), 
-                    guide = "none") +
+                     guide = "none") +
   labs(x = "log(Difference)", y = "Pairwise VIP Lipid") +
   theme_classic(base_size = 15) + theme(axis.ticks.y = element_blank(),
                                         axis.text.y = element_blank()) #Take lipid abundance data and remove data from 5ºC treatment. Select VIP of interest. Calculate average abundance for each lipid and traspose dataframe. Calculate difference in abundance between treatments of interest and calculate log difference. A column for whether the lipid had higher abundance in 13 or 30. Join with annotated VIP data. Remove extra columns and keep only PC and PE data. Create bargraph and facet by lipid class. Fill by saturation state and color by treatment.
@@ -2510,7 +2510,7 @@ knownTransLipidData %>%
   scale_fill_manual(name = "Saturation",
                     values = c("grey40", "grey80", "black")) +
   scale_color_manual(values = c(plotColors[2], plotColors[1]), 
-                    guide = "none") +
+                     guide = "none") +
   labs(x = "log(Difference)", y = "Pairwise VIP Lipid") +
   theme_classic(base_size = 15) + theme(axis.ticks.y = element_blank(),
                                         axis.text.y = element_blank()) #Take lipid abundance data and remove data from 5ºC treatment. Select VIP of interest. Calculate average abundance for each lipid and traspose dataframe. Calculate difference in abundance between treatments of interest and calculate log difference. A column for whether the lipid had higher abundance in 13 or 30. Join with annotated VIP data. Remove extra columns and keep only PC and PE data. Create bargraph and facet by lipid class. Fill by saturation state and color by treatment.
@@ -2541,7 +2541,7 @@ knownTransLipidData %>%
   scale_fill_manual(name = "Saturation",
                     values = c("grey40", "grey80", "black")) +
   scale_color_manual(values = c(plotColors[2], plotColors[1]), 
-                    guide = "none") +
+                     guide = "none") +
   labs(x = "log(Difference)", y = "Pairwise VIP Lipid") +
   theme_classic(base_size = 15) + theme(axis.ticks.y = element_blank(),
                                         axis.text.y = element_blank()) #Take lipid abundance data and remove data from 5ºC treatment. Select VIP of interest. Calculate average abundance for each lipid and traspose dataframe. Calculate difference in abundance between treatments of interest and calculate log difference. A column for whether the lipid had higher abundance in 13 or 30. Join with annotated VIP data. Remove extra columns and keep only PC and PE data. Create bargraph and facet by lipid class. Fill by saturation state and color by treatment.
@@ -2572,7 +2572,7 @@ knownTransLipidData %>%
   scale_fill_manual(name = "Saturation",
                     values = c("grey40", "grey80", "black")) +
   scale_color_manual(values = c(plotColors[2], plotColors[3]), 
-                    guide = "none") +
+                     guide = "none") +
   labs(x = "log(Difference)", y = "Pairwise VIP Lipid") +
   theme_classic(base_size = 15) + theme(axis.ticks.y = element_blank(),
                                         axis.text.y = element_blank()) #Take lipid abundance data and remove data from 30ºC treatment. Select VIP of interest. Calculate average abundance for each lipid and traspose dataframe. Calculate difference in abundance between treatments of interest and calculate log difference. A column for whether the lipid had higher abundance in 13 or 5 Join with annotated VIP data. Remove extra columns and keep only PC and PE data. Create bargraph and facet by lipid class. Fill by saturation state and color by treatment.
@@ -2602,7 +2602,7 @@ knownTransLipidData %>%
   scale_fill_manual(name = "Saturation",
                     values = c("grey40", "grey80", "black")) +
   scale_color_manual(values = c(plotColors[2], plotColors[3]), 
-                    guide = "none") +
+                     guide = "none") +
   labs(x = "log(Difference)", y = "Pairwise VIP Lipid") +
   theme_classic(base_size = 15) + theme(axis.ticks.y = element_blank(),
                                         axis.text.y = element_blank()) #Take lipid abundance data and remove data from 30ºC treatment. Select VIP of interest. Calculate average abundance for each lipid and traspose dataframe. Calculate difference in abundance between treatments of interest and calculate log difference. A column for whether the lipid had higher abundance in 13 or 5 Join with annotated VIP data. Remove extra columns and keep only PC and PE data. Create bargraph and facet by lipid class. Fill by saturation state and color by treatment.
@@ -2633,7 +2633,7 @@ knownTransLipidData %>%
   scale_fill_manual(name = "Saturation",
                     values = c("grey40", "grey80", "black")) +
   scale_color_manual(values = c(plotColors[2], plotColors[3]), 
-                    guide = "none") +
+                     guide = "none") +
   labs(x = "log(Difference)", y = "Pairwise VIP Lipid") +
   theme_classic(base_size = 15) + theme(axis.ticks.y = element_blank(),
                                         axis.text.y = element_blank()) #Take lipid abundance data and remove data from 30ºC treatment. Select VIP of interest. Calculate average abundance for each lipid and traspose dataframe. Calculate difference in abundance between treatments of interest and calculate log difference. A column for whether the lipid had higher abundance in 13 or 5 Join with annotated VIP data. Remove extra columns and keep only PC and PE data. Create bargraph and facet by lipid class. Fill by saturation state and color by treatment.
@@ -2691,23 +2691,26 @@ pheatmap((knownTransLipidData %>%
 ```
 
 ```{r}
-#pdf("metaboanalyst/figures/13v30_VIP-zscore.pdf", height = 8.5, width = 11)
+head(knownTransLipidData)
+```
+
+```{r}
+#pdf("metaboanalyst/figures/13v30_day3v22_VIP-average.pdf", height = 8.5, width = 11)
 pheatmap((knownTransLipidData %>%
             filter(., treatment != "5") %>%
-            dplyr::select(treatment, any_of(significantVIP_13v30$lipid)) %>%
-            group_by(., treatment) %>%
-            mutate(across(where(is.numeric), log)) %>%
+            dplyr::select(treatment_day, any_of(significantVIP_13v30$lipid)) %>%
+            group_by(., treatment_day) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment_day") %>%
+            t(.) %>% as.data.frame(.) %>%
+            log(.) %>%
             mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
             replace(is.na(.), 0) %>%
-            mutate(across(where(is.numeric), scale)) %>%
-            summarize_all(funs(mean(., na.rm = TRUE))) %>%
-            column_to_rownames(var = "treatment") %>%
-            t(.)), cluster_row = TRUE, fontsize_row = 4, show_rownames = TRUE,
-         cluster_cols = FALSE, show_colnames = FALSE, 
+            as.matrix()), cluster_row = TRUE, fontsize_row = 4, show_rownames = TRUE,
+         cluster_cols = TRUE, show_colnames = TRUE, 
+         # scale = "row", 
          color = heatmapColors, 
-         annotation_col = lipidomicsAvgAnnotation %>% filter(., Treatment != "5ºC"), 
-         annotation_colors = lipidomicsColors, 
-         name = "Z-Score")
+         name = "Abundance")
 #dev.off()
 ```
 
@@ -2815,7 +2818,7 @@ ggsave("metaboanalyst/figures/13v30_VIP-logFDR.svg", heigh = 8.5, width = 11)
 #pdf("metaboanalyst/figures/13v5_VIP-average.pdf", height = 8.5, width = 11)
 pheatmap((knownTransLipidData %>%
             dplyr::select(treatment, any_of(significantVIP_13v5$lipid)) %>%
-            filter(., treatment != "5") %>%
+            filter(., treatment != "30") %>%
             group_by(., treatment) %>%
             summarize_all(funs(mean(., na.rm = TRUE))) %>%
             column_to_rownames(var = "treatment") %>%
@@ -2834,9 +2837,29 @@ pheatmap((knownTransLipidData %>%
 ```
 
 ```{r}
+#pdf("metaboanalyst/figures/13v5_day3v22_VIP-average.pdf", height = 8.5, width = 11)
+pheatmap((knownTransLipidData %>%
+            filter(., treatment != "30") %>%
+            dplyr::select(treatment_day, any_of(significantVIP_13v5$lipid)) %>%
+            group_by(., treatment_day) %>%
+            summarize_all(funs(mean(., na.rm = TRUE))) %>%
+            column_to_rownames(var = "treatment_day") %>%
+            t(.) %>% as.data.frame(.) %>%
+            log(.) %>%
+            mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+            replace(is.na(.), 0) %>%
+            as.matrix()), cluster_row = TRUE, fontsize_row = 4, show_rownames = TRUE,
+         cluster_cols = TRUE, show_colnames = TRUE, 
+         # scale = "row", 
+         color = heatmapColors,
+         name = "Abundance")
+#dev.off()
+```
+
+```{r}
 #pdf("metaboanalyst/figures/13v5_VIP-zscore.pdf", height = 8.5, width = 11)
 pheatmap((knownTransLipidData %>%
-            filter(., treatment != "5") %>%
+            filter(., treatment != "30") %>%
             dplyr::select(treatment, any_of(significantVIP_13v5$lipid)) %>%
             group_by(., treatment) %>%
             mutate(across(where(is.numeric), log)) %>%
