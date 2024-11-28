@@ -590,6 +590,144 @@ t.test_13v5 %>%
 ggsave("PLSDA/figures/significant-VIP-13v5.pdf", height = 8.5, width = 11)
 ```
 
+### 30 vs. 5
+
+I want to do this comparison to understand if there are lipids that are divergent between the two temperature extremes.
+
+```{r}
+list <- c("30", "5") #Assign treatments to examine
+```
+
+```{r}
+X <- knownTransLipidData %>%
+  filter(., treatment %in% list) %>%
+  droplevels() #Filter knownTransLipidData for desired contrasts
+Y <- as.factor(X$treatment) #Treatments for Y
+X <- X[, 5:419] #Retain data only
+```
+
+```{r}
+known.plsda_30v5 <- plsda(X, Y, ncomp = 3) #Run PLSDA for desired contrast
+VIP_30v5 <- as.data.frame(PLSDA.VIP(known.plsda_30v5)[["tab"]]) %>%
+  rownames_to_column(., var = "lipid") %>%
+  filter(., VIP >= 1) #Extract VIP list and filter for VIP > 1
+nrow(VIP_30v5)
+```
+
+```{r}
+clean_30v5 <- knownTransLipidData %>%
+  dplyr::filter(., treatment %in% list) %>%
+  droplevels() #Filter knownTransLipidData for desired contrasts.
+VIP_select_30v5 <- cbind(clean_30v5[, 1:4], 
+                         (log(clean_30v5[, names(clean_30v5) %in% VIP_30v5$lipid]) %>%
+                            mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+                            replace(is.na(.), 0))) %>%
+  pivot_longer(., cols = 5:153, values_to = "log_norm_counts", names_to = "lipid") %>%
+  group_by(., lipid) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by lipids.
+VIP_select_30v5 #Confirm changes
+```
+
+```{r}
+t.test_30v5 <-do(VIP_select_30v5, tidy(t.test(.$log_norm_counts ~ .$treatment,
+                                              alternative = "two.sided",
+                                              mu = 0,
+                                              var.equal = FALSE,
+                                              conf.level = 0.95
+))) #Looped t-test for all lipids with VIP > 1
+t.test_30v5$p.adj <- p.adjust(t.test_30v5$p.value, method = c("fdr"), n = length(VIP_30v5$lipid)) #Adjust p value for the number of comparisons
+t.test_30v5
+```
+
+```{r}
+t.test_30v5 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>%
+  nrow(.) #135 significantly different lipids
+t.test_30v5 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>% filter(., estimate1 > estimate2) %>%
+  nrow(.) #86 lipids higher in 30ºC
+t.test_30v5 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>% filter(., estimate1 < estimate2) %>%
+  nrow(.) #49 lipids higher in 5ºC
+```
+
+```{r}
+t.test_30v5 %>%
+  filter(., p.adj < 0.05) %>%
+  right_join(x = lipidIdentifiers, y = ., by = "lipid") %>%
+  write.csv("PLSDA/known-lipids-30v5-VIP.csv", quote = FALSE, row.names = FALSE) #Take t-test results and join with unique ID information to get chemical names. Save as a csv
+```
+
+```{r}
+t.test_30v5 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>%
+  left_join(., VIP_30v5, by = "lipid") %>%
+  mutate(., direction = case_when(estimate > 0 ~ "30",
+                                  estimate < 0 ~ "5")) %>%
+  mutate(., score = case_when(estimate > 0 ~ VIP,
+                              estimate < 0 ~ -VIP)) %>%
+  arrange(score) %>%
+  ggplot(aes(x = score, y = reorder(lipid, score, sum))) +
+  geom_bar(aes(fill = direction), stat = 'identity') +
+  xlab("VIP Score") + ylab("Lipid") +
+  scale_fill_manual(values = c(plotColors[1], plotColors[3]), 
+                    name = "Temperature (ºC)",
+                    breaks = c("30", "5"),
+                    labels = c("30", "5")) +
+  theme_classic(base_size = 15) #Take t-test results and filter out significant lipids. Create two new columns using estimate values: one for the direction of increase, and another for positive or negative VIP. Arrange by identifier name and reorder by cumulative VIP score. Plot bars and change x and y axis labels. Add scale information.
+ggsave("PLSDA/figures/significant-VIP-30v5.pdf", height = 8.5, width = 11)
+```
+
+Now that I have identified VIP compounds that are associated with the temperature extremes, I want to see if any of these compounds are different than the VIP molecules identified by the comparison with the control temperature of 13ºC.
+
+```{r}
+t.test_30v5 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>%
+  anti_join(x = ., y = (t.test_13v5 %>%
+                          ungroup(.) %>%
+                          filter(., p.adj < 0.05)),
+            by = "lipid") %>%
+    anti_join(x = ., y = (t.test_13v30 %>%
+                          ungroup(.) %>%
+                          filter(., p.adj < 0.05)),
+            by = "lipid") %>%
+  right_join(x = lipidIdentifiers, y = ., by = "lipid") %>%
+  write.csv("PLSDA/unique-known-lipids-30v5-VIP.csv", quote = FALSE, row.names = FALSE) #Take the t-test results and filter out the significant entries. Use anti-join to identify lipids that are unique to the 30 vs. 5 comparison. Join with lipid identifier information and save as a .csv
+```
+
+```{r}
+t.test_30v5 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>%
+  anti_join(x = ., y = (t.test_13v5 %>%
+                          ungroup(.) %>%
+                          filter(., p.adj < 0.05)),
+            by = "lipid") %>%
+    anti_join(x = ., y = (t.test_13v30 %>%
+                          ungroup(.) %>%
+                          filter(., p.adj < 0.05)),
+            by = "lipid") %>%
+  left_join(., VIP_30v5, by = "lipid") %>%
+  mutate(., direction = case_when(estimate > 0 ~ "30",
+                                  estimate < 0 ~ "5")) %>%
+  mutate(., score = case_when(estimate > 0 ~ VIP,
+                              estimate < 0 ~ -VIP)) %>%
+  arrange(score) %>%
+  ggplot(aes(x = score, y = reorder(lipid, score, sum))) +
+  geom_bar(aes(fill = direction), stat = 'identity') +
+  xlab("VIP Score") + ylab("Lipid") +
+  scale_fill_manual(values = c(plotColors[1], plotColors[3]), 
+                    name = "Temperature (ºC)",
+                    breaks = c("30", "5"),
+                    labels = c("30", "5")) +
+  theme_classic(base_size = 15) #Take t-test results and filter out significant lipids. Create two new columns using estimate values: one for the direction of increase, and another for positive or negative VIP. Arrange by identifier name and reorder by cumulative VIP score. Plot bars and change x and y axis labels. Add scale information.
+ggsave("PLSDA/figures/unique-significant-VIP-30v5.pdf", height = 8.5, width = 11)
+```
+
 # Validate PLSDA model
 
 It's important to validate the PLSDA model. First, I'll run a permutation test to determine how many components to include.
