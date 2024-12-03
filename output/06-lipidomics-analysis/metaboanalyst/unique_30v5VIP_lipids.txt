@@ -1,0 +1,29 @@
+lipid	PubChem.CID	Chemical.Name	INCHIKEY
+Cer 18:0;2O_20:0 	5239143	N-(1,3-dihydroxyoctadecan-2-yl)eicosanamide	ZWAUSWHRQBSECP-UHFFFAOYSA-N
+Cer d40:2 	52931123	N-(docosanoyl)-4E,14Z-sphingadienine	HILTUFAERVOALR-MQXYEJFFSA-N
+Cer d41:2 	138199486	(Z)-N-[(E)-1,3-dihydroxyheptadec-4-en-2-yl]tetracos-11-enamide	KZTBXGOBTULOIO-SZHIUZGGSA-N
+Cer d42:2 	5283568	(Z)-N-[(E,2S,3R)-1,3-dihydroxyoctadec-4-en-2-yl]-15-tetracosenamide	VJSBNBBOSZJDKB-KPEYJIHVSA-N
+FA 17:1	3014063	9-heptadecenoic acid	QSBYPNXLFMSGKH-UHFFFAOYSA-N
+FA 18:3 (linolenic acid) 	5280934	LINOLENIC ACID	DTOSIQBPPRVQHS-PDBXOOCHSA-N
+FA 19:1 	14275215	9-Nonadecenoic acid	YOKHLRHWEXTWJR-ZHACJKMWSA-N
+FA 20:2 (eicosadienoic acid) 	6439848	Eicosadienoic acid	XSXIVVZCUAHUJO-HZJYTTRNSA-N
+FA 20:3 (eicosatrienoic acid) 	5312529	11,14,17-Eicosatrienoic acid	AHANXAKGNAKFSK-PDBXOOCHSA-N
+FA 20:5 (eicosapentaenoic acid) 	446284	Icosapent (INN)	JAZBEHYOTPTENJ-JLNKQSITSA-N
+GlcCer d42:2 	6321360	N-(15Z-tetracosenoyl)-1-beta-glucosyl-sphing-4-enine	WBOZIXHPUPAOIA-RBELZSLISA-N
+LPE 16:0 	53480922	LysoPE(0:0/16:0)	CKPBBEOJHAPPBT-HXUWFJFHSA-N
+LPE 18:0 	477551911	LPE 18:0	BBYWOYAFBUOUFP-UHFFFAOYNA-N
+LPE O-18:1 	477577455	LPE O-18:1	CDONWGCJDDHTLP-KTKRTIGZNA-N
+LPS 18:0 	478094547	LPS 18:0	ZPDQFUYPBVXUKS-UHFFFAOYNA-N
+PC 31:1 	24778657	1-pentadecanoyl-2-(9Z-hexadecenoyl)-sn-glycero-3-phosphocholine	QFVHCMLUKNHDSH-WTWBAFHPSA-N
+PC 32:2 Isomer A	24778764	1,2-Dipalmitoleoyl-sn-glycero-3-phosphocholine	GPWHCUUIQMGELX-VHQDNGOZSA-N
+PC 33:1 Isomer B	24778662	1-pentadecanoyl-2-(11Z-octadecenoyl)-sn-glycero-3-phosphocholine	GXTATYLPYLLNLV-MGIDVFSBSA-N
+PC 35:2 	52922491	1-heptadecanoyl-2-(9Z,12Z-octadecadienoyl)-sn-glycero-3-phosphocholine	ZSKWZJYUVZYDQU-WESJWMGVSA-N
+PC 35:4 Isomer A	52922204	1-tridecanoyl-2-(7Z,10Z,13Z,16Z-docosatetraenoyl)-glycero-3-phosphocholine	OROZWUJCDDCYAU-IPUAOQJZSA-N
+PC 36:5 Isomer C 	52923341	PC(20:5(5Z,8Z,11Z,14Z,17Z)/16:0)	SUZYROYNFNQALJ-MHEIZRSESA-N
+PC P-34:1 or PC O-34:2 	70698781	1-(1Z,11Z-octadecadienyl)-2-hexadecanoyl-sn-glycero-3-phosphocholine	MBRHHFWRXQYYAN-JEPFLRBFSA-N
+SM d39:2 	52931187	N-(heneicosanoyl)-4E,14Z-sphingadienine-1-phosphocholine	SDUGEKJCGFHJRC-IYXZHQORSA-N
+SM d41:2 Isomer A 	52931209	N-(tricosanoyl)-4E,14Z-sphingadienine-1-phosphocholine	JBDGKEXQKCCQFK-JWQIMADESA-N
+SM d42:2 Isomer B 	52931217	N-(tetracosanoyl)-4E,14Z-sphingadienine-1-phosphocholine	DACOGJMBYLZYDH-GXJPFUDISA-N
+TG 46:1 	11764207	1,2-Dimyristoyl-3-oleoyl glycerol	RSDIQTNCDWUNDP-VHXPQNKSSA-N
+TG 50:2	85034325	(3-Hexadecanoyloxy-2-hexadec-9-enoyloxypropyl) octadec-9-enoate	TWJCMQZMAPGUSG-UHFFFAOYSA-N
+Taurine	1123	2-aminoethanesulfonic acid	XOAAWQZATWQOTB-UHFFFAOYSA-N

@@ -1,0 +1,136 @@
+lipid	PubChem.CID	Chemical.Name	INCHIKEY
+4-METHYL-2-OXO-PENTANOIC ACID 	70	4-Methyl-2-oxopentanoic acid	BKAJNAXTPSGJCU-UHFFFAOYSA-N
+CAR 16:1	78076330	3-(1-oxohexadec-9-enoxy)-4-(trimethylammonio)butanoate	JFAGPSOZZSTLRF-UHFFFAOYSA-N
+Cer 18:0;2O_20:0 	5239143	N-(1,3-dihydroxyoctadecan-2-yl)eicosanamide	ZWAUSWHRQBSECP-UHFFFAOYSA-N
+Cer d34:0 	5283572	N-(hexadecanoyl)-sphinganine	GCGTXOVNNFGTPQ-JHOUSYSJSA-N
+Cer d36:2 	25201955	N-(1,3-dihydroxyoctadeca-4,8-dien-2-yl)octadecanamide	WNPWDGNHTKGEDS-UHFFFAOYSA-N
+Cer d39:1 	11273482	N-(tricosanoyl)-hexadecasphing-4-enine	WYSRACVJQVNCRW-PQPBPFPMSA-N
+Cer d40:1 	5283567	N-docosanoylsphingosine	KEPQASGDXIEOIL-GLQCRSEXSA-N
+Cer d40:2 	52931123	N-(docosanoyl)-4E,14Z-sphingadienine	HILTUFAERVOALR-MQXYEJFFSA-N
+Cer d41:1 	52931115	N-(tricosanoyl)-sphing-4-enine	NAJHAHQNQCNWOP-PUYNVXOJSA-N
+Cer d41:2 	138199486	(Z)-N-[(E)-1,3-dihydroxyheptadec-4-en-2-yl]tetracos-11-enamide	KZTBXGOBTULOIO-SZHIUZGGSA-N
+Cer d42:2 	5283568	(Z)-N-[(E,2S,3R)-1,3-dihydroxyoctadec-4-en-2-yl]-15-tetracosenamide	VJSBNBBOSZJDKB-KPEYJIHVSA-N
+Cer-NDS d36:0 	4255985	N-(1,3-dihydroxyoctadecan-2-yl)octadecanamide	KZTJQXAANJHSCE-UHFFFAOYSA-N
+DG 36:5 	9543737	DG(18:2(9Z,12Z)/18:3(9Z,12Z,15Z)/0:0)	PGXBELQFNRPKBC-WBVIKXMWSA-N
+DG 38:5 	9543784	DG(18:3(9Z,12Z,15Z)/20:2(11Z,14Z)/0:0)	GRGDLDNREYVILP-CNWVQWJYSA-N
+DG 38:6 	9543795	DG(18:3(9Z,12Z,15Z)/20:3(8Z,11Z,14Z)/0:0)	YDVDXUYJFQLPEG-CTHJWPIASA-N
+FA 17:1	3014063	9-heptadecenoic acid	QSBYPNXLFMSGKH-UHFFFAOYSA-N
+FA 18:3 (linolenic acid) 	5280934	LINOLENIC ACID	DTOSIQBPPRVQHS-PDBXOOCHSA-N
+FA 19:1 	14275215	9-Nonadecenoic acid	YOKHLRHWEXTWJR-ZHACJKMWSA-N
+FA 20:2 (eicosadienoic acid) 	6439848	Eicosadienoic acid	XSXIVVZCUAHUJO-HZJYTTRNSA-N
+FA 20:3 (eicosatrienoic acid) 	5312529	11,14,17-Eicosatrienoic acid	AHANXAKGNAKFSK-PDBXOOCHSA-N
+FA 20:5 (eicosapentaenoic acid) 	446284	Icosapent (INN)	JAZBEHYOTPTENJ-JLNKQSITSA-N
+FAHFA 46:0 	138125105	Fahfa 25:0/21:0	BCZDKPKCPSQECA-UHFFFAOYSA-N
+GlcCer d42:2 	6321360	N-(15Z-tetracosenoyl)-1-beta-glucosyl-sphing-4-enine	WBOZIXHPUPAOIA-RBELZSLISA-N
+LNAPE 20:4_N-19:1 	165327881	Lnape 20:4/N-19:1	YGNHTBSNYNKPPR-QXHWDXSJSA-N
+LPE 16:0 	53480922	LysoPE(0:0/16:0)	CKPBBEOJHAPPBT-HXUWFJFHSA-N
+LPE 18:0 	477551911	LPE 18:0	BBYWOYAFBUOUFP-UHFFFAOYNA-N
+LPE 18:1 	477882298	LPE 18:1	PYVRVRFVLRNJLY-KTKRTIGZNA-N
+LPE 18:2 	52925130	1-(9Z,12Z-octadecadienoyl)-sn-glycero-3-phosphoethanolamine	DBHKHNGBVGWQJE-USWSLJGRSA-N
+LPE 20:5	75958074	[3-[2-Aminoethoxy(hydroxy)phosphoryl]oxy-2-hydroxypropyl] icosa-5,8,11,14,17-pentaenoate	KCWGBXXAJHVZNN-UHFFFAOYSA-N
+LPE 22:6 	52925132	Lyso-PE(22:6w3/0:0)	XEVRBOQZSXWGQO-PAUXXPOVSA-N
+LPE O-18:1 	477577455	LPE O-18:1	CDONWGCJDDHTLP-KTKRTIGZNA-N
+LPS 18:0 	478094547	LPS 18:0	ZPDQFUYPBVXUKS-UHFFFAOYNA-N
+PC 16:0_18:2 	122218	[3-(1-oxohexadecoxy)-2-(1-oxooctadeca-9,12-dienoxy)propyl] 2-(trimethylammonio)ethyl phosphate	JLPULHDHAOZNQI-UHFFFAOYSA-N
+PC 18:0_18:1 	3033933	(3-Octadecanoyloxy-2-octadec-9-enoyloxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	ATHVAWFAEPLPPQ-UHFFFAOYSA-N
+PC 18:2_20:5 	24778981	[2-[(5Z,8Z,11Z,14Z,17Z)-icosa-5,8,11,14,17-pentaenoyl]oxy-3-[(9Z,12Z)-octadeca-9,12-dienoyl]oxypropyl] 2-(trimethylazaniumyl)ethyl phosphate	HRBNRYBXXRPMKP-OMCHRGCMSA-N
+PC 19:1 	138312775	[3-acetyloxy-2-[(Z)-heptadec-9-enoyl]oxypropyl] 2-(trimethylazaniumyl)ethyl phosphate	ZHAHTCLACAJNQI-SEYXRHQNSA-N
+PC 31:1 	24778657	1-pentadecanoyl-2-(9Z-hexadecenoyl)-sn-glycero-3-phosphocholine	QFVHCMLUKNHDSH-WTWBAFHPSA-N
+PC 32:1 Isomer A	6443788	1-Palmitoyl-2-palmitoleoyl-sn-glycero-3-phosphocholine	QIBZFHLFHCIUOT-NPBIGWJUSA-N
+PC 32:1 Isomer B	6443090	1-Palmitoyl-2-palmitoleoylphosphatidylcholine	QIBZFHLFHCIUOT-ZPHPHTNESA-N
+PC 32:2 Isomer A	24778764	1,2-Dipalmitoleoyl-sn-glycero-3-phosphocholine	GPWHCUUIQMGELX-VHQDNGOZSA-N
+PC 32:2 Isomer B	24778764	1,2-Dipalmitoleoyl-sn-glycero-3-phosphocholine	GPWHCUUIQMGELX-VHQDNGOZSA-N
+PC 33:1 Isomer A	52922442	1-(9Z-hexadecenoyl)-2-heptadecanoyl-glycero-3-phosphocholine	OFRWLQSOUIZELQ-VEAYGOGPSA-N
+PC 33:1 Isomer B	24778662	1-pentadecanoyl-2-(11Z-octadecenoyl)-sn-glycero-3-phosphocholine	GXTATYLPYLLNLV-MGIDVFSBSA-N
+PC 33:2 Isomer A	52922715	1-(9Z,12Z-octadecadienoyl)-2-pentadecanoyl-glycero-3-phosphocholine	SBNDHGBVMZMSNL-UESLNCBNSA-N
+PC 33:2 Isomer B	52922715	1-(9Z,12Z-octadecadienoyl)-2-pentadecanoyl-glycero-3-phosphocholine	SBNDHGBVMZMSNL-UESLNCBNSA-N
+PC 34:0	24778686	1-Hexadecanoyl-2-octadecanoyl-sn-glycero-3-phosphocholine	PZNPLUBHRSSFHT-RRHRGVEJSA-N
+PC 34:2 Isomer A	5287971	Lecithin	JLPULHDHAOZNQI-ZTIMHPMXSA-N
+PC 34:2 Isomer B	5287971	Lecithin	JLPULHDHAOZNQI-ZTIMHPMXSA-N
+PC 34:3 	24778699	PC(16:0/18:3(6Z,9Z,12Z))	CNNSEHUKQJCGTE-UPPWDXJYSA-N
+PC 34:3 Isomer B 	52923213	PC(20:3(8Z,11Z,14Z)/14:0)	VKVSSDKCKXJFIM-AFYHZPHLSA-N
+PC 34:4 Isomer A	52922891	PC(18:4(6Z,9Z,12Z,15Z)/16:0)	YWDDIWXKFJEMKF-JTZVLWBESA-N
+PC 34:4 Isomer B 	52922891	PC(18:4(6Z,9Z,12Z,15Z)/16:0)	YWDDIWXKFJEMKF-JTZVLWBESA-N
+PC 35:2 	52922491	1-heptadecanoyl-2-(9Z,12Z-octadecadienoyl)-sn-glycero-3-phosphocholine	ZSKWZJYUVZYDQU-WESJWMGVSA-N
+PC 35:2 Isomer B 	52922721	1-(9Z,12Z-octadecadienoyl)-2-heptadecanoyl-glycero-3-phosphocholine	MJWAVUYQCBFFHQ-WESJWMGVSA-N
+PC 35:3 	52924614	PE(20:3(8Z,11Z,14Z)/18:0)	AYXGHIQPMDYMJC-AHMBLZLYSA-N
+PC 35:4 Isomer A	52922204	1-tridecanoyl-2-(7Z,10Z,13Z,16Z-docosatetraenoyl)-glycero-3-phosphocholine	OROZWUJCDDCYAU-IPUAOQJZSA-N
+PC 36:1 Isomer A	24778825	1-Stearoyl-2-oleoyl-sn-glycero-3-phosphocholine	ATHVAWFAEPLPPQ-VRDBWYNSSA-N
+PC 36:1 Isomer B	24778825	1-Stearoyl-2-oleoyl-sn-glycero-3-phosphocholine	ATHVAWFAEPLPPQ-VRDBWYNSSA-N
+PC 36:4 Isomer A 	52922783	PC(18:3(6Z,9Z,12Z)/18:1(9Z))	NKQPOVROGSWLTO-NVPMBMBWSA-N
+PC 36:4 Isomer B	10747814	Phosphatidylcholine(16:0/20:4w6)	IIZPXYDJLKNOIY-JXPKJXOSSA-N
+PC 36:5 Isomer A 	52923341	PC(20:5(5Z,8Z,11Z,14Z,17Z)/16:0)	SUZYROYNFNQALJ-MHEIZRSESA-N
+PC 36:5 Isomer B 	24778771	PC(16:1(9Z)/20:4(5Z,8Z,11Z,14Z))	DYDDZDMJSQYFGN-OIVUZXIWSA-N
+PC 36:5 Isomer C 	52923341	PC(20:5(5Z,8Z,11Z,14Z,17Z)/16:0)	SUZYROYNFNQALJ-MHEIZRSESA-N
+PC 36:5 Isomer D 	52923341	PC(20:5(5Z,8Z,11Z,14Z,17Z)/16:0)	SUZYROYNFNQALJ-MHEIZRSESA-N
+PC 36:6 	52922847	PC(18:3(9Z,12Z,15Z)/18:3(6Z,9Z,12Z))	SPWBDEZMKCRQSX-NGPPOSSDSA-N
+PC 38:6 Isomer A 	52923295	PC(20:4(5Z,8Z,11Z,14Z)/18:2(9Z,12Z))	PLZBTDKJYHXIEW-DZUXOTHRSA-N
+PC 38:6 Isomer B	53478789	PC(18:2(9Z,12Z)/20:4(8Z,11Z,14Z,17Z))	RUHBZJXWUDKAMZ-XXAGCNFXSA-N
+PC 38:7 	53479075	PC(20:4(8Z,11Z,14Z,17Z)/18:3(6Z,9Z,12Z))	BNNUJTATKJXKJP-XCDHYEIISA-N
+PC 38:8 	138163135	[2-[(4Z,7Z,10Z,13Z,16Z,19Z)-docosa-4,7,10,13,16,19-hexaenoyl]oxy-3-[(9Z,12Z)-hexadeca-9,12-dienoyl]oxypropyl] 2-(trimethylazaniumyl)ethyl phosphate	GQTMDGAVIYVIDL-RVTNGMKESA-N
+PC 39:6 	52922637	1-(9Z,12Z-heptadecadienoyl)-2-(7Z,10Z,13Z,16Z-docosatetraenoyl)-glycero-3-phosphocholine	QMCWOGICYCFNBF-BWHZRABLSA-N
+PC 40:7 	133026127	(2-Docosa-4,7,10,13,16,19-hexaenoyloxy-3-octadec-9-enoyloxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	FPEVDFOXMCHLKL-UHFFFAOYSA-N
+PC 40:7 Isomer A 	24778982	PC(18:2(9Z,12Z)/22:5(4Z,7Z,10Z,13Z,16Z))	BPUROMFCPFGBOT-ZEGPSQTJSA-N
+PC 40:7 Isomer B 	24778982	PC(18:2(9Z,12Z)/22:5(4Z,7Z,10Z,13Z,16Z))	BPUROMFCPFGBOT-ZEGPSQTJSA-N
+PC 40:8 Isomer A	53479127	PC(20:5(5Z,8Z,11Z,14Z,17Z)/20:3(5Z,8Z,11Z))	SIMZOWLEIOYZJX-VRCXRDLJSA-N
+PC 40:8 Isomer B	53479093	PC(20:4(8Z,11Z,14Z,17Z)/20:4(8Z,11Z,14Z,17Z))	BFCSBEFTXQRIOJ-IMYLGOOQSA-N
+PC O-18:0_16:0 	24779324	3-(Octadecyloxy)-2-(palmitoyloxy)propyl 2-(trimethylammonio)ethyl phosphate	GTFLTTXDLGEBAI-UHFFFAOYSA-N
+PC O-18:1_20:4 	24779390	1-(1-enyl-stearoyl)-2-arachidonoyl-sn-glycero-3-phosphocholine	FHHVIBPVBBRLOR-IYACIECVSA-N
+PC O-31:0	164334893	(3-Octoxy-2-tricosanoyloxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	MARQLCZUTCPJHC-UHFFFAOYSA-N
+PC O-31:0|PC O-15:0_16:0	165289337	(2-Hexadecanoyloxy-3-pentadecoxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	RPJBSPVVDIKMBV-UHFFFAOYSA-N
+PC O-32:0 	173570	1-Palmitoyl-2-hexadecyl-sn-glycero-3-phosphocholine	SVWBXNAUENUONE-LDLOPFEMSA-N
+PC O-33:0 	164333045	(3-Octoxy-2-pentacosanoyloxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	LXEGSWFXNDUGIV-UHFFFAOYSA-N
+PC O-34:0 Isomer A	164209620	(2-Hexacosanoyloxy-3-octoxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	BNIFFRNYMGLGIV-UHFFFAOYSA-N
+PC O-34:0 Isomer B	24779361	[(2R)-2-hexadecoxy-3-octadecanoyloxypropyl] 2-(trimethylazaniumyl)ethyl phosphate	ZKTXOJMFIAILJG-VQJSHJPSSA-N
+PC O-34:1|PC O-16:0_18:1	72730732	(3-Hexadecoxy-2-octadec-9-enoyloxypropyl) 2-(trimethylazaniumyl)ethyl phosphate	SIEDNCDNGMIKST-UHFFFAOYSA-N
+PC O-36:1 	138138968	[2-[(Z)-docos-13-enoyl]oxy-3-tetradecoxypropyl] 2-(trimethylazaniumyl)ethyl phosphate	CTZJPIRYGNJXMR-MRCUWXFGSA-N
+PC O-39:8 	138157243	[3-[(4Z,7Z,10Z,13Z,16Z,19Z)-docosa-4,7,10,13,16,19-hexaenoxy]-2-[(9Z,12Z)-heptadeca-9,12-dienoyl]oxypropyl] 2-(trimethylazaniumyl)ethyl phosphate	FYLHFHLSNYCGOC-FPWUCMTFSA-N
+PC P-34:0 or PC O-34:1 	53481719	1-(11Z-octadecenyl)-2-hexadecanoyl-sn-glycero-3-phosphocholine	QCGUXAIDEOWPBV-SNKLRXETSA-N
+PC P-34:1 or PC O-34:2	53480735	1-(1-Enyl-vaccenoyl)-2-palmitoyl-sn-glycero-3-phosphocholine	MBRHHFWRXQYYAN-RTVLTNFHSA-N
+PC P-34:1 or PC O-34:2 	70698781	1-(1Z,11Z-octadecadienyl)-2-hexadecanoyl-sn-glycero-3-phosphocholine	MBRHHFWRXQYYAN-JEPFLRBFSA-N
+PC P-36:1 or PC O-36:2	52923754	PC(O-16:0/20:2(11Z,14Z))	ZYLPVUZBZNMVMR-ZBBHDILGSA-N
+PC P-36:1 or PC O-36:2 	53480797	1-(1Z,9Z-octadecadienyl)-2-octadecanoyl-sn-glycero-3-phosphocholine	ZOTYCHIFTCFAHC-KOUVQCMKSA-N
+PC P-36:2 or PC O-36:3 	53480801	PC(P-18:1(9Z)/18:1(9Z))	DIHWZUCEXWUHOD-IIVNATNGSA-N
+PC P-36:3 or PC O-36:4 	53481701	PC(o-16:0/20:4(8Z,11Z,14Z,17Z))	SOUZQPFUXRVDGK-KCTKZSJBSA-N
+PC P-38:5 or PC O-38:6 Isomer A 	53480695	PC(P-16:0/22:5(4Z,7Z,10Z,13Z,16Z))	FAKYQMLQEAQOLK-LHZZQLRFSA-N
+PC-O 16:0_18:1 	10771331	[(2S)-3-hexadecoxy-2-[(Z)-octadec-9-enoyl]oxypropyl] 2-(trimethylazaniumyl)ethyl phosphate	SIEDNCDNGMIKST-GUSIKBLRSA-N
+PE 34:0 	6426734	Phosphatidylethanolamine 18:0-16:0	JRTZGTYHEHCHTM-UHFFFAOYSA-N
+PE 34:1 	134763376	Phosphatidylethanolamine 16:0-18:1	RECBGBLFDMTQRS-SGEDCAFJSA-N
+PE 36:1 	25244969	2-azaniumylethyl [3-octadecanoyloxy-2-[(Z)-octadec-9-enoyl]oxypropyl] phosphate	JQKOHRZNEOQNJE-ZZEZOPTASA-N
+PE 36:4 	138221545	[1-[2-aminoethoxy(hydroxy)phosphoryl]oxy-3-hexadecanoyloxypropan-2-yl] (8Z,11Z,14Z,17Z)-icosa-8,11,14,17-tetraenoate	NQIMLWFRWGTTOZ-JAXHXWBXSA-N
+PE 36:5|PE 16:0_20:5	75957871	[1-[2-Aminoethoxy(hydroxy)phosphoryl]oxy-3-hexadecanoyloxypropan-2-yl] icosa-5,8,11,14,17-pentaenoate	KHLRCNXJXSYNCK-UHFFFAOYSA-N
+PE 37:5|PE 17:0_20:5	75957262	[1-[2-Aminoethoxy(hydroxy)phosphoryl]oxy-3-heptadecanoyloxypropan-2-yl] icosa-5,8,11,14,17-pentaenoate	YRRQJTQXWQBPQK-UHFFFAOYSA-N
+PE 38:4 	46891781	2-ammonioethyl [(2R)-2-[(5Z,8Z,11Z,14Z)-1-oxoeicosa-5,8,11,14-tetraenoxy]-3-(1-oxooctadecoxy)propyl] phosphate	ANRKEHNWXKCXDB-BHFWLYLHSA-N
+PE 38:5 	138318539	[1-[2-aminoethoxy(hydroxy)phosphoryl]oxy-3-[(Z)-octadec-9-enoyl]oxypropan-2-yl] (8Z,11Z,14Z,17Z)-icosa-8,11,14,17-tetraenoate	ZYMZKMQPPJPQHY-HAGCXRLMSA-N
+PE 38:6 Isomer B 	6426738	[1-[2-aminoethoxy(hydroxy)phosphoryl]oxy-3-hexadecanoyloxypropan-2-yl] (4Z,7Z,10Z,13Z,16Z,19Z)-docosa-4,7,10,13,16,19-hexaenoate	MPWUZHVZZKSTPV-LGFBOSHVSA-N
+PE 38:7|PE 18:2_20:5 Isomer A	75957373	[1-[2-Aminoethoxy(hydroxy)phosphoryl]oxy-3-octadeca-9,12-dienoyloxypropan-2-yl] icosa-5,8,11,14,17-pentaenoate	AJTJVNKPLZTLHV-UHFFFAOYSA-N
+PE 38:7|PE 18:2_20:5 Isomer B	75957373	[1-[2-Aminoethoxy(hydroxy)phosphoryl]oxy-3-octadeca-9,12-dienoyloxypropan-2-yl] icosa-5,8,11,14,17-pentaenoate	AJTJVNKPLZTLHV-UHFFFAOYSA-N
+PE 40:6|PE 18:1_22:5	76042109	[1-[2-Aminoethoxy(hydroxy)phosphoryl]oxy-3-octadec-9-enoyloxypropan-2-yl] docosa-7,10,13,16,19-pentaenoate	IZEXFAOLFRVCJS-UHFFFAOYSA-N
+PE 40:7|PE 18:1_22:6	75955284	[1-[2-Aminoethoxy(hydroxy)phosphoryl]oxy-3-octadec-9-enoyloxypropan-2-yl] docosa-4,7,10,13,16,19-hexaenoate	JZSZAGWWWKKXLO-UHFFFAOYSA-N
+PE O-16:1_18:1 	138251610	[1-[2-aminoethoxy(hydroxy)phosphoryl]oxy-3-[(Z)-hexadec-9-enoxy]propan-2-yl] (Z)-octadec-9-enoate	RFPQMVKZNQOUGY-KXYOHKLBSA-N
+PE O-16:1_18:2 	138252555	[1-[2-aminoethoxy(hydroxy)phosphoryl]oxy-3-[(Z)-hexadec-9-enoxy]propan-2-yl] (9Z,12Z)-octadeca-9,12-dienoate	RIQAKBUOHSSMTC-PNBIJBBKSA-N
+PE O-36:1 	52924982	1-octadecyl-2-(9Z-octadecenoyl)-glycero-3-phosphoethanolamine	CEVVUBCHWNKKNN-VDLQPGGRSA-N
+PE O-36:3 	138137779	[1-[2-aminoethoxy(hydroxy)phosphoryl]oxy-3-octadecoxypropan-2-yl] (9Z,12Z,15Z)-octadeca-9,12,15-trienoate	CQHMZFNQRVSRPW-HLMRNWPHSA-N
+PE P-34:1 or PE O-34:2 	53480893	1-(1-Enyl-oleoyl)-2-palmitoyl-sn-glycero-3-phosphoethanolamine	ZOSSFCIAXYNTHL-CSTBBDSDSA-N
+PE P-36:1 or PE O-36:2	53480895	1-(1-Enyl-oleoyl)-2-stearoyl-sn-glycero-3-phosphoethanolamine	OBAAWAYLQLYWNN-KHFVPPDWSA-N
+Phosphatidylethanolamine alkenyl 18:0-18:2 	134760121	Phosphatidylethanolamine alkenyl 18:0-18:2	QBAQUPWJTLVJBD-CZAAGYDRSA-N
+SM 37:4;3O 	164390119	[(8E,12E,16E)-3,4-dihydroxy-2-[[(Z)-nonadec-9-enoyl]amino]octadeca-8,12,16-trienyl] 2-(trimethylazaniumyl)ethyl phosphate	QFCPIEOQTPOOTG-BIQXSSBLSA-N
+SM d32:0 	44260138	C14DH Sphingomyelin	MJAFYELZQYPMQG-MPQUPPDSSA-N
+SM d32:0 Isomer B 	133040069	[3-Hydroxy-2-(tridecanoylamino)nonadecyl] 2-(trimethylazaniumyl)ethyl phosphate	OMRILSIMTXCAPB-UHFFFAOYSA-N
+SM d32:1 Isomer B	11433862	C14 Sphingomyelin	KYICBZWZQPCUMO-PSALXKTOSA-N
+SM d34:0 	9939965	N-Palmitoyldihydrosphingomyelin	QHZIGNLCLJPLCU-QPPIDDCLSA-N
+SM d34:1 Isomer B	9939941	Palmitoyl sphingomyelin	RWKUXQNLWDTSLO-GWQJGLRPSA-N
+SM d36:0 	44260130	N-(octadecanoyl)-sphinganine-1-phosphocholine	JCELSEVNSMXGKA-IOLBBIBUSA-N
+SM d36:1 Isomer B	6453725	Sphingomyelin (D18:1/18:0)	LKQLRGMMMAHREN-YJFXYUILSA-N
+SM d37:1 	52931171	N-(nonadecanoyl)-sphing-4-enine-1-phosphocholine	HAFQHLHNPJDAGB-MAJDXUCPSA-N
+SM d38:1 	44260124	C20 Sphingomyelin	AADLTHQNYQJHQV-SVLGDMRNSA-N
+SM d38:2 Isomer B	52931179	N-(11Z-eicosenoyl)-sphing-4-enine-1-phosphocholine	MDRFMTLYKHBJTF-NQYLGBTJSA-N
+SM d39:2 	52931187	N-(heneicosanoyl)-4E,14Z-sphingadienine-1-phosphocholine	SDUGEKJCGFHJRC-IYXZHQORSA-N
+SM d41:2 Isomer A 	52931209	N-(tricosanoyl)-4E,14Z-sphingadienine-1-phosphocholine	JBDGKEXQKCCQFK-JWQIMADESA-N
+SM d42:2 Isomer B 	52931217	N-(tetracosanoyl)-4E,14Z-sphingadienine-1-phosphocholine	DACOGJMBYLZYDH-GXJPFUDISA-N
+TG 46:1 	11764207	1,2-Dimyristoyl-3-oleoyl glycerol	RSDIQTNCDWUNDP-VHXPQNKSSA-N
+TG 50:2	85034325	(3-Hexadecanoyloxy-2-hexadec-9-enoyloxypropyl) octadec-9-enoate	TWJCMQZMAPGUSG-UHFFFAOYSA-N
+TG 50:2 	9544010	Tracylglycerol(18:0/16:1/16:1)	QEZWFCZNHWUARW-XQCAQTCHSA-N
+TG 52:3 	56938177	1-tetradecanoyl-2-(9Z,12Z-octadecadienoyl)-3-(11Z-eicosenoyl)-sn-glycerol	DQXQIWIQYYEGLG-MMWLGPPDSA-N
+TG 52:5 	25240366	TG(16:1(9Z)/18:2(9Z,12Z)/18:2(9Z,12Z))[iso3]	CQZAAIKPSLHIBC-KDJOUNIJSA-N
+Taurine	1123	2-aminoethanesulfonic acid	XOAAWQZATWQOTB-UHFFFAOYSA-N
