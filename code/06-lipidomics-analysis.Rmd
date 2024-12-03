@@ -691,7 +691,7 @@ t.test_30v5 %>%
                           ungroup(.) %>%
                           filter(., p.adj < 0.05)),
             by = "lipid") %>%
-    anti_join(x = ., y = (t.test_13v30 %>%
+  anti_join(x = ., y = (t.test_13v30 %>%
                           ungroup(.) %>%
                           filter(., p.adj < 0.05)),
             by = "lipid") %>%
@@ -707,7 +707,7 @@ t.test_30v5 %>%
                           ungroup(.) %>%
                           filter(., p.adj < 0.05)),
             by = "lipid") %>%
-    anti_join(x = ., y = (t.test_13v30 %>%
+  anti_join(x = ., y = (t.test_13v30 %>%
                           ungroup(.) %>%
                           filter(., p.adj < 0.05)),
             by = "lipid") %>%
@@ -1539,6 +1539,10 @@ I will put together a color scheme and annotation information for rows (VIP stat
 
 ```{r}
 heatmapColors <- rev(brewer.pal("PRGn", n = 9))
+```
+
+```{r}
+heatmapGreyscale <- rev(brewer.pal("Greys", n = 9))
 ```
 
 ```{r}
@@ -2802,6 +2806,34 @@ t.test_13v5 %>%
   write.table("metaboanalyst/13v5VIP_lipids.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take significant pairwise VIP data and join with lipid identifiers. Retain unique entries and write table
 ```
 
+```{r}
+t.test_30v5 %>%
+  filter(., p.adj < 0.05) %>%
+  dplyr::select(., lipid) %>%
+  left_join(., lipidIdentifiers, by = "lipid") %>%
+  dplyr::select(-identifier) %>%
+  unique(.) %>%
+  write.table("metaboanalyst/30v5VIP_lipids.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take significant pairwise VIP data and join with lipid identifiers. Retain unique entries and write table
+```
+
+```{r}
+t.test_30v5 %>%
+  filter(., p.adj < 0.05) %>%
+  anti_join(x = ., y = (t.test_13v5 %>%
+                          ungroup(.) %>%
+                          filter(., p.adj < 0.05)),
+            by = "lipid") %>%
+  anti_join(x = ., y = (t.test_13v30 %>%
+                          ungroup(.) %>%
+                          filter(., p.adj < 0.05)),
+            by = "lipid") %>%
+  dplyr::select(., lipid) %>%
+  left_join(., lipidIdentifiers, by = "lipid") %>%
+  dplyr::select(-identifier) %>%
+  unique(.) %>%
+  write.table("metaboanalyst/unique_30v5VIP_lipids.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take significant pairwise VIP data and join with lipid identifiers. Retain unique entries and write table
+```
+
 Within LION, I conducted a target enrichment using the pairwise VIP list as the target and all known lipids as the background.
 
 ##### 13 vs. 30
@@ -2829,10 +2861,6 @@ pheatmap((knownTransLipidData %>%
 ```
 
 ```{r}
-head(knownTransLipidData)
-```
-
-```{r}
 #pdf("metaboanalyst/figures/13v30_day3v22_VIP-average.pdf", height = 8.5, width = 11)
 pheatmap((knownTransLipidData %>%
             filter(., treatment != "5") %>%
@@ -2847,7 +2875,7 @@ pheatmap((knownTransLipidData %>%
             as.matrix()), cluster_row = TRUE, fontsize_row = 4, show_rownames = TRUE,
          cluster_cols = TRUE, show_colnames = TRUE, 
          # scale = "row", 
-         color = heatmapColors, 
+         color = rev(heatmapGreyscale), 
          name = "Abundance")
 #dev.off()
 ```
@@ -2988,8 +3016,8 @@ pheatmap((knownTransLipidData %>%
             replace(is.na(.), 0) %>%
             as.matrix()), cluster_row = TRUE, fontsize_row = 4, show_rownames = TRUE,
          cluster_cols = TRUE, show_colnames = TRUE, 
-         # scale = "row", 
-         color = heatmapColors,
+         # scale = "row",
+         color = rev(heatmapGreyscale), 
          name = "Abundance")
 #dev.off()
 ```
