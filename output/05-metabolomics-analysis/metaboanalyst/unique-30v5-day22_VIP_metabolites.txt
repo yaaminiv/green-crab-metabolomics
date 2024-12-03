@@ -1,0 +1,16 @@
+metabolite	PubChem	KEGG
+adipic acid	196	C06104
+arachidic acid	10467	C06425
+cadaverine	273	
+glucose-1-phosphate	65533	C00103
+heptadecanoic acid	10465	
+hypotaurine	107812	C00519
+isogluconic acid	604	C02341
+levoglucosan	2724705	C22350
+phenylalanine	6140	C00079
+phosphoinositol	4449629	
+pyrophosphate 	1023	C00013
+spermidine 	1102	C00315
+stearic acid	5281	C01530
+trans-4-hydroxyproline 	5810	C01157
+triethanolamine	7618	C06771

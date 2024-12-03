@@ -2826,6 +2826,17 @@ write.table(VIPpathway_allModules, "metaboanalyst/all-module-VIP-pathways.txt", 
 I'll conduct enrichment tests using pairwise VIP from my various contrasts, since that will shed more light on short- and long-term acclimation processes to various temperatures.
 
 ```{r}
+t.test_30v5_day3 %>%
+  filter(., p.adj < 0.05) %>%
+  left_join(., (rawMetabolomicsData %>% 
+                  dplyr::rename(metabolite = BinBase.name)), 
+            by = "metabolite") %>%
+  dplyr::select(., metabolite, PubChem, KEGG) %>%
+  unique(.) %>%
+  write.table("metaboanalyst/30v5-day3_VIP_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take significant pairwise VIP data and join with lipid identifiers. Retain unique entries and write table
+```
+
+```{r}
 t.test_13v30_day22 %>%
   filter(., p.adj < 0.05) %>%
   left_join(., (rawMetabolomicsData %>% 
@@ -2845,6 +2856,36 @@ t.test_13v5_day22 %>%
   dplyr::select(., metabolite, PubChem, KEGG) %>%
   unique(.) %>%
   write.table("metaboanalyst/13v5-day22_VIP_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take significant pairwise VIP data and join with lipid identifiers. Retain unique entries and write table
+```
+
+```{r}
+t.test_30v5_day22 %>%
+  filter(., p.adj < 0.05) %>%
+  left_join(., (rawMetabolomicsData %>% 
+                  dplyr::rename(metabolite = BinBase.name)), 
+            by = "metabolite") %>%
+  dplyr::select(., metabolite, PubChem, KEGG) %>%
+  unique(.) %>%
+  write.table("../output/05-metabolomics-analysis/metaboanalyst/30v5-day22_VIP_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take significant pairwise VIP data and join with lipid identifiers. Retain unique entries and write table
+```
+
+```{r}
+t.test_30v5_day22 %>%
+  filter(., p.adj < 0.05) %>%
+  anti_join(x = ., y = (t.test_13v5_day22 %>%
+                          ungroup(.) %>%
+                          filter(., p.adj < 0.05)),
+            by = "metabolite") %>%
+  anti_join(x = ., y = (t.test_13v30_day22 %>%
+                          ungroup(.) %>%
+                          filter(., p.adj < 0.05)),
+            by = "metabolite") %>%
+  left_join(., (rawMetabolomicsData %>% 
+                  dplyr::rename(metabolite = BinBase.name)), 
+            by = "metabolite") %>%
+  dplyr::select(., metabolite, PubChem, KEGG) %>%
+  unique(.) %>%
+  write.table("../output/05-metabolomics-analysis/metaboanalyst/unique-30v5-day22_VIP_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take significant pairwise VIP data and join with lipid identifiers. Retain unique entries and write table
 ```
 
 ```{r}

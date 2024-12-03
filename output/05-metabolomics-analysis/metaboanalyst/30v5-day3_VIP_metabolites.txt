@@ -1,0 +1,10 @@
+metabolite	PubChem	KEGG
+3-Aminopiperidine-2,6-dione 	134508	
+asparagine	6267	C00152
+isoleucine 	6306	C00407
+leucine	6106	C00123
+lysine	5962	C00047
+methionine	6137	C00073
+ornithine 	6262	C00077
+phenylalanine	6140	C00079
+tyrosine	6057	C00082

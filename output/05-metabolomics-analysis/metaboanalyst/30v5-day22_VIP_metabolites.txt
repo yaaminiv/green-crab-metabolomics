@@ -1,0 +1,43 @@
+metabolite	PubChem	KEGG
+2-ketoadipic acid 	71	C00322
+4-hydroxybenzoate	135	C00156
+N-acetylgalactosamine	440552	C05021
+N-methylethanolamine	8016	
+UDP-N-acetylglucosamine 	445675	C00043
+adipic acid	196	C06104
+alanine	5950	C00041
+arabitol	94154	C01904
+arachidic acid	10467	C06425
+cadaverine	273	
+cytosine	597	C00380
+glucose-1-phosphate	65533	C00103
+glutaric acid	743	C00489
+glycine	750	C00037
+heptadecanoic acid	10465	
+hydroquinone	785	C00530
+hypotaurine	107812	C00519
+isogluconic acid	604	C02341
+isoleucine 	6306	C00407
+leucine	6106	C00123
+levoglucosan	2724705	C22350
+malic acid	525	C00711
+methionine	6137	C00073
+myo-inositol	892	C00137
+ononitol	230881	
+phenylalanine	6140	C00079
+phosphoinositol	4449629	
+phthalic acid	1017	C01606
+pinitol	164619	
+putrescine	1045	C00134
+pyrophosphate 	1023	C00013
+ribose-5-phosphate	77982	
+serine	5951	C00065
+spermidine 	1102	C00315
+stearic acid	5281	C01530
+terephthalic acid	22416364	C06337
+trans-4-hydroxyproline 	5810	C01157
+triethanolamine	7618	C06771
+tryptophan 	6305	C00078
+urea	1176	C00086
+valine 	6287	C00183
+xylitol	6912	C00379
