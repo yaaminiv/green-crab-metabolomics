@@ -567,6 +567,86 @@ t.test_13v5_day3 %>%
   nrow(.) #0 significantly different metabolites
 ```
 
+#### 30_3 vs. 5_3
+
+```{r}
+list <- c("30_3", "5_3") #Assign treatments to examine
+```
+
+```{r}
+X <- transMetabData %>%
+  dplyr::filter(., treatment_day %in% list) %>%
+  droplevels() #Filter transMetabData for desired contrasts
+Y <- as.factor(X$treatment_day) #Treatments for Y
+X <- X[, 5:156] #Retain data only
+```
+
+```{r}
+known.plsda_30v5_day3 <- plsda(X, Y, ncomp = 5) #Run PLSDA for desired contrast
+VIP_30v5_day3 <- as.data.frame(PLSDA.VIP(known.plsda_30v5_day3)[["tab"]]) %>%
+  rownames_to_column(., var = "metabolite") %>%
+  filter(., VIP >= 1) #Extract VIP list and filter for VIP > 1
+VIP_30v5_day3
+```
+
+```{r}
+clean_30v5_day3 <- transMetabData %>%
+  dplyr::filter(., treatment_day %in% list) %>%
+  droplevels() #Filter transMetabData for desired contrasts.
+VIP_select_30v5_day3 <- cbind(clean_30v5_day3[, 1:4], 
+                              log(clean_30v5_day3[, names(clean_30v5_day3) %in% VIP_30v5_day3$metabolite])) %>%
+  pivot_longer(., cols = 5:69, values_to = "log_norm_counts", names_to = "metabolite") %>%
+  group_by(., metabolite) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by metabolites.
+VIP_select_30v5_day3 #Confirm changes
+```
+
+```{r}
+t.test_30v5_day3 <-do(VIP_select_30v5_day3, tidy(t.test(.$log_norm_counts ~ .$treatment_day,
+                                                        alternative = "two.sided",
+                                                        mu = 0,
+                                                        var.equal = FALSE,
+                                                        conf.level = 0.95
+))) #Looped t-test for all metabolites with VIP > 1
+t.test_30v5_day3$p.adj <- p.adjust(t.test_30v5_day3$p.value, method = c("fdr"), n = length(VIP_30v5_day3$metabolite)) #Adjust p value for the number of comparisons
+t.test_30v5_day3
+```
+
+```{r}
+t.test_30v5_day3 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>%
+  nrow(.) #9 significantly different metabolites
+t.test_30v5_day3 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>% filter(., estimate1 > estimate2) %>%
+  nrow(.) #9 metabolites higher in 30ºC
+t.test_30v5_day3 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>% filter(., estimate1 < estimate2) %>%
+  nrow(.) #0 metabolites higher in 5ºC
+```
+
+```{r}
+t.test_30v5_day3 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>%
+  left_join(., VIP_30v5_day3, by = "metabolite") %>%
+  mutate(., direction = case_when(estimate > 0 ~ "30",
+                                  estimate < 0 ~ "5")) %>%
+  mutate(., score = case_when(estimate > 0 ~ VIP,
+                              estimate < 0 ~ -VIP)) %>%
+  arrange(score) %>%
+  ggplot(aes(x = score, y = reorder(metabolite, score, sum))) +
+  geom_bar(aes(fill = direction), stat = 'identity') +
+  xlab("VIP Score") + ylab("Metabolite") +
+  scale_fill_manual(values = c(plotColors[1], plotColors[3]), 
+                    name = "Temperature (ºC)",
+                    breaks = c("30", "5"),
+                    labels = c("30", "5")) +
+  theme_classic(base_size = 15) + theme() #Take t-test results and filter out significant metabolites. Create two new columns using estimate values: one for the direction of increase, and another for positive or negative VIP. Arrange by metabolite name and reorder by cumulative VIP score. Plot bars and change x and y axis labels. Add scale information.
+ggsave("PLSDA/figures/significant-VIP-30v5-day3.pdf", height = 8.5, width = 11)
+```
+
 ### Treatment differences at day 22
 
 #### 13_22 vs. 30_22
@@ -729,6 +809,160 @@ t.test_13v5_day22 %>%
                     labels = c("13", "5")) +
   theme_classic(base_size = 15) + theme() #Take t-test results and filter out significant metabolites. Create two new columns using estimate values: one for the direction of increase, and another for positive or negative VIP. Arrange by metabolite name and reorder by cumulative VIP score. Plot bars and change x and y axis labels. Add scale information.
 ggsave("PLSDA/figures/significant-VIP-13v5-day22.pdf", height = 8.5, width = 11)
+```
+
+#### 30_22 vs. 5_22
+
+```{r}
+list <- c("30_22", "5_22") #Assign treatments to examine
+```
+
+```{r}
+X <- transMetabData %>%
+  dplyr::filter(., treatment_day %in% list) %>%
+  droplevels() #Filter transMetabData for desired contrasts
+Y <- as.factor(X$treatment_day) #Treatments for Y
+X <- X[, 5:156] #Retain data only
+```
+
+```{r}
+known.plsda_30v5_day22 <- plsda(X, Y, ncomp = 5) #Run PLSDA for desired contrast
+VIP_30v5_day22 <- as.data.frame(PLSDA.VIP(known.plsda_30v5_day22)[["tab"]]) %>%
+  rownames_to_column(., var = "metabolite") %>%
+  filter(., VIP >= 1) #Extract VIP list and filter for VIP > 1
+VIP_30v5_day22
+```
+
+```{r}
+clean_30v5_day22 <- transMetabData %>%
+  dplyr::filter(., treatment_day %in% list) %>%
+  droplevels() #Filter transMetabData for desired contrasts.
+VIP_select_30v5_day22 <- cbind(clean_30v5_day22[, 1:4], 
+                               log(clean_30v5_day22[, names(clean_30v5_day22) %in% VIP_30v5_day22$metabolite])) %>%
+  pivot_longer(., cols = 5:70, values_to = "log_norm_counts", names_to = "metabolite") %>%
+  group_by(., metabolite) #cbind metadata columns (1:4) and log-transformed "clean" data for VIP. Pivot data longer and group by metabolites.
+VIP_select_30v5_day22 #Confirm changes
+```
+
+```{r}
+t.test_30v5_day22 <-do(VIP_select_30v5_day22, tidy(t.test(.$log_norm_counts ~ .$treatment_day,
+                                                          alternative = "two.sided",
+                                                          mu = 0,
+                                                          var.equal = FALSE,
+                                                          conf.level = 0.95
+))) #Looped t-test for all metabolites with VIP > 1
+t.test_30v5_day22$p.adj <- p.adjust(t.test_30v5_day22$p.value, method = c("fdr"), n = length(VIP_30v5_day22$metabolite)) #Adjust p value for the number of comparisons
+t.test_30v5_day22
+```
+
+```{r}
+t.test_30v5_day22 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>%
+  nrow(.) #42 significantly different metabolites
+t.test_30v5_day22 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>% filter(., estimate1 > estimate2) %>%
+  nrow(.) #10 metabolites higher in 30ºC
+t.test_30v5_day22 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>% filter(., estimate1 < estimate2) %>%
+  nrow(.) #32 metabolites higher in 5ºC
+```
+
+```{r}
+t.test_30v5_day22 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>%
+  left_join(., VIP_30v5_day22, by = "metabolite") %>%
+  mutate(., direction = case_when(estimate > 0 ~ "30",
+                                  estimate < 0 ~ "5")) %>%
+  mutate(., score = case_when(estimate > 0 ~ VIP,
+                              estimate < 0 ~ -VIP)) %>%
+  arrange(score) %>%
+  ggplot(aes(x = score, y = reorder(metabolite, score, sum))) +
+  geom_bar(aes(fill = direction), stat = 'identity') +
+  xlab("VIP Score") + ylab("Metabolite") +
+  scale_fill_manual(values = c(plotColors[1], plotColors[3]), 
+                    name = "Temperature (ºC)",
+                    breaks = c("30", "5"),
+                    labels = c("30", "5")) +
+  theme_classic(base_size = 15) + theme() #Take t-test results and filter out significant metabolites. Create two new columns using estimate values: one for the direction of increase, and another for positive or negative VIP. Arrange by metabolite name and reorder by cumulative VIP score. Plot bars and change x and y axis labels. Add scale information.
+ggsave("../output/05-metabolomics-analysis/PLSDA/figures/significant-VIP-30v5-day22.pdf", height = 8.5, width = 11)
+```
+
+Since I have identified VIP for 13ºC vs. either 30ºC or 5ºC at day 22, I want to see if the 30 vs. 5 VIP are unique to this contrast or not.
+
+```{r}
+#Take the t-test results and filter out the significant entries. Use anti-join to identify metabolites that are unique to the 30 vs. 5 comparison.
+
+t.test_30v5_day22 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>%
+  anti_join(x = ., y = (t.test_13v5_day22 %>%
+                          ungroup(.) %>%
+                          filter(., p.adj < 0.05)),
+            by = "metabolite") %>%
+  anti_join(x = ., y = (t.test_13v30_day22 %>%
+                          ungroup(.) %>%
+                          filter(., p.adj < 0.05)),
+            by = "metabolite") %>%
+  nrow(.) # 15 significantly different metabolites
+t.test_30v5_day22 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>%
+  anti_join(x = ., y = (t.test_13v5_day22 %>%
+                          ungroup(.) %>%
+                          filter(., p.adj < 0.05)),
+            by = "metabolite") %>%
+  anti_join(x = ., y = (t.test_13v30_day22 %>%
+                          ungroup(.) %>%
+                          filter(., p.adj < 0.05)),
+            by = "metabolite") %>%
+  filter(., p.adj < 0.05) %>% filter(., estimate1 > estimate2) %>%
+  nrow(.) #1 metabolites higher in 30ºC
+t.test_30v5_day22 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>%
+  anti_join(x = ., y = (t.test_13v5_day22 %>%
+                          ungroup(.) %>%
+                          filter(., p.adj < 0.05)),
+            by = "metabolite") %>%
+  anti_join(x = ., y = (t.test_13v30_day22 %>%
+                          ungroup(.) %>%
+                          filter(., p.adj < 0.05)),
+            by = "metabolite") %>%
+  filter(., p.adj < 0.05) %>% filter(., estimate1 < estimate2) %>%
+  nrow(.) #14 metabolites higher in 5ºC
+```
+
+```{r}
+t.test_30v5_day22 %>%
+  ungroup(.) %>%
+  filter(., p.adj < 0.05) %>%
+  anti_join(x = ., y = (t.test_13v5_day22 %>%
+                          ungroup(.) %>%
+                          filter(., p.adj < 0.05)),
+            by = "metabolite") %>%
+  anti_join(x = ., y = (t.test_13v30_day22 %>%
+                          ungroup(.) %>%
+                          filter(., p.adj < 0.05)),
+            by = "metabolite") %>%
+  left_join(., VIP_30v5_day22, by = "metabolite") %>%
+  mutate(., direction = case_when(estimate > 0 ~ "30",
+                                  estimate < 0 ~ "5")) %>%
+  mutate(., score = case_when(estimate > 0 ~ VIP,
+                              estimate < 0 ~ -VIP)) %>%
+  arrange(score) %>%
+  ggplot(aes(x = score, y = reorder(metabolite, score, sum))) +
+  geom_bar(aes(fill = direction), stat = 'identity') +
+  xlab("VIP Score") + ylab("metabolite") +
+  scale_fill_manual(values = c(plotColors[1], plotColors[3]), 
+                    name = "Temperature (ºC)",
+                    breaks = c("30", "5"),
+                    labels = c("30", "5")) +
+  theme_classic(base_size = 15) #Take t-test results and filter out significant metabolites. Create two new columns using estimate values: one for the direction of increase, and another for positive or negative VIP. Arrange by identifier name and reorder by cumulative VIP score. Plot bars and change x and y axis labels. Add scale information.
+ggsave("PLSDA/figures/unique-significant-VIP-30v5-day22.pdf.pdf", height = 8.5, width = 11)
 ```
 
 ### Day differences for each treatment
