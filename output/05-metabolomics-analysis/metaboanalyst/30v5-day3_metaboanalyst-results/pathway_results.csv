@@ -1,0 +1,13 @@
+"","Total","Expected","Hits","Raw p","-log10(p)","Holm adjust","FDR","Impact"
+"Phenylalanine, tyrosine and tryptophan biosynthesis",4,0.030534,2,0.00030388,3.5173,0.023399,0.023399,1
+"Phenylalanine metabolism",7,0.053435,2,0.0010514,2.9782,0.079908,0.035844,0.37931
+"Valine, leucine and isoleucine biosynthesis",8,0.061069,2,0.0013965,2.855,0.10474,0.035844,0
+"Valine, leucine and isoleucine degradation",38,0.29008,2,0.031239,1.5053,1,0.60135,0
+"Arginine biosynthesis",12,0.091603,1,0.088298,1.054,1,1,0.17143
+"Ubiquinone and other terpenoid-quinone biosynthesis",18,0.1374,1,0.12983,0.88662,1,1,0
+"Alanine, aspartate and glutamate metabolism",23,0.17557,1,0.16317,0.78737,1,1,0
+"Lysine degradation",26,0.19847,1,0.18263,0.73843,1,1,0
+"Glutathione metabolism",26,0.19847,1,0.18263,0.73843,1,1,0
+"Arginine and proline metabolism",29,0.22137,1,0.20169,0.69531,1,1,0.20889
+"Cysteine and methionine metabolism",32,0.24427,1,0.22036,0.65686,1,1,0.10718
+"Tyrosine metabolism",33,0.25191,1,0.2265,0.64493,1,1,0.14534
