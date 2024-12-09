@@ -194,7 +194,7 @@ dev.off()
 Module 0 is where the WCNA algorithm places compounds that are not co-expressed with any other compounds. I want to recreate this heatmap without module 0, since I'm interested in co-expressed metabolites that are associated wtih co-expressed lipids to understand pathway-level processes.
 
 ```{r}
-metabLipidCorNo0 <- as.data.frame(metabLipidCor) %>%
+metabLipidCorClean <- as.data.frame(metabLipidCor) %>%
   dplyr::select(., starts_with("lipid_")) %>%
   filter(., row_number() %in% 1:7) #Take correlation data and keep columns where metabolite modules and correlated with lipid modules
 head(metabLipidCorClean)
@@ -229,8 +229,83 @@ col_dend <- dendsort(hclust(dist(t(metabLipidCorNo0)))) #Create dendograms for c
 ```
 
 ```{r}
-pdf(file = "figures/metabolite-lipid-module-relationship-heatmap-no0.pdf", height = 8.5, width = 8.5)
+#pdf(file = "figures/metabolite-lipid-module-relationship-heatmap-no0.pdf", height = 8.5, width = 8.5)
 ht <- Heatmap(as.matrix(metabLipidCorNo0), name = "Eigengene", column_title = "Metabolomics-Lipidomics Eigengene Correlation",
+              col = blueWhiteRed(50), 
+              row_names_side = "left", 
+              row_dend_side = "left",
+              width = unit(5, "in"), 
+              height = unit(4.5, "in"), 
+              column_dend_reorder = TRUE, 
+              cluster_columns = col_dend,
+              row_dend_reorder = FALSE,  
+              #column_split = 3, 
+              #row_split = 3, 
+              #column_dend_height = unit(.5, "in"),
+              cluster_rows = row_dend, 
+              #row_gap = unit(2.5, "mm"), 
+              border = TRUE,
+              cell_fun = function(j, i, x, y, w, h, col) {
+                if(heatmappval[i, j] < 0.05) {
+                  grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+                }
+                else {
+                  grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+                }},
+              column_names_rot = 45,
+              column_names_gp =  gpar(fontsize = 12, border = FALSE),
+              column_title_gp = gpar(fontsize = 20),
+              row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
+draw(ht) #Draw heatmap
+#dev.off()
+```
+
+Removing these modules doesn't change the overall pattern! I will stick to this version without the null modules.
+
+### Repeat with temperature-specific correlations
+
+Now that I have established correlative relationships between metabolite and lipid modules, I want to understand how those relationships change with changing temperature. To do this, I want to examine these correlations for these same modules, but just using data for 30ºC, 13ºC, or 5ºC.
+
+#### 13ºC
+
+```{r}
+metabLipidCor13 <- correlationInput %>%
+  mutate(., treatment = gsub(pattern = " 13", replacement = "13", x = treatment)) %>%
+  filter(., treatment == "13") %>%
+  dplyr::select(., -c(1:4)) %>%
+  cor(., method = "pearson") %>%
+  as.data.frame(.) %>%
+  dplyr::select(., starts_with("lipid_")) %>%
+  filter(., row_number() %in% 1:7) %>%
+  filter(., rownames(.) != "metabolite_0") %>%
+  dplyr::select(-lipid_0) %>%
+  as.matrix(.) #Take correlation input and filter data for 13ºC. Remove metadata columns and calculate Pearson's correlation coefficients. Convert to dataframe. Keep correlations where lipids are correlated with metabolites. Remove "0" modules. Convert back to a matrix
+head(metabLipidCor13 %>% as.data.frame()) #Confirm formatting
+```
+
+```{r}
+nSamples13 <- nrow(metabolomicsMetadata %>% filter(., treatment == " 13")) #Count the number of samples at 13ºC
+metabLipidPvalue13 <- corPvalueStudent(metabLipidCor13, nSamples13) #Calculate p-values for metabolite-lipid module correlations
+head(metabLipidPvalue13 %>% as.data.frame()) #Confirm output
+```
+
+```{r}
+#Save dataframes
+write.csv(metabLipidCor13, "metabolite-lipid-module-correlations-13.csv", quote = FALSE, row.names = TRUE)
+write.csv(metabLipidPvalue13, "metabolite-lipid-module-pvalues-13.csv", quote = FALSE, row.names = TRUE)
+```
+
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+heatmappval <- signif(metabLipidPvalue13, 1) #Create list of pvalues for eigengene correlation with specific traits
+
+row_dend <- dendsort(hclust(dist(metabLipidCor13))) #Create dendograms for rows
+col_dend <- dendsort(hclust(dist(t(metabLipidCor13)))) #Create dendograms for columns
+```
+
+```{r}
+pdf(file = "figures/metabolite-lipid-module-relationship-heatmap-13.pdf", height = 8.5, width = 8.5)
+ht <- Heatmap(as.matrix(metabLipidCor13), name = "Eigengene", column_title = "Metabolomics-Lipidomics Eigengene Correlation at 13ºC",
               col = blueWhiteRed(50), 
               row_names_side = "left", 
               row_dend_side = "left",
@@ -260,9 +335,160 @@ draw(ht) #Draw heatmap
 dev.off()
 ```
 
-Removing these modules doesn't change the overall pattern! I will stick to this version without the null modules.
+#### 30ºC
+
+```{r}
+metabLipidCor30 <- correlationInput %>%
+  mutate(., treatment = gsub(pattern = " 30", replacement = "30", x = treatment)) %>%
+  filter(., treatment == "30") %>%
+  dplyr::select(., -c(1:4)) %>%
+  cor(., method = "pearson") %>%
+  as.data.frame(.) %>%
+  dplyr::select(., starts_with("lipid_")) %>%
+  filter(., row_number() %in% 1:7) %>%
+  filter(., rownames(.) != "metabolite_0") %>%
+  dplyr::select(-lipid_0) %>%
+  as.matrix(.) #Take correlation input and filter data for 30ºC. Remove metadata columns and calculate Pearson's correlation coefficients. Convert to dataframe. Keep correlations where lipids are correlated with metabolites. Remove "0" modules. Convert back to a matrix
+head(metabLipidCor30 %>% as.data.frame()) #Confirm formatting
+```
+
+```{r}
+nSamples30 <- nrow(metabolomicsMetadata %>% filter(., treatment == " 30")) #Count the number of samples at 30ºC
+metabLipidPvalue30 <- corPvalueStudent(metabLipidCor30, nSamples30) #Calculate p-values for metabolite-lipid module correlations
+head(metabLipidPvalue30 %>% as.data.frame()) #Confirm output
+```
+
+```{r}
+#Save dataframes
+write.csv(metabLipidCor30, "metabolite-lipid-module-correlations-30.csv", quote = FALSE, row.names = TRUE)
+write.csv(metabLipidPvalue30, "metabolite-lipid-module-pvalues-30.csv", quote = FALSE, row.names = TRUE)
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+heatmappval <- signif(metabLipidPvalue30, 1) #Create list of pvalues for eigengene correlation with specific traits
+
+row_dend <- dendsort(hclust(dist(metabLipidCor30))) #Create dendograms for rows
+col_dend <- dendsort(hclust(dist(t(metabLipidCor30)))) #Create dendograms for columns
+```
+
+```{r}
+pdf(file = "figures/metabolite-lipid-module-relationship-heatmap-30.pdf", height = 8.5, width = 8.5)
+ht <- Heatmap(as.matrix(metabLipidCor30), name = "Eigengene", column_title = "Metabolomics-Lipidomics Eigengene Correlation at 30ºC",
+              col = blueWhiteRed(50), 
+              row_names_side = "left", 
+              row_dend_side = "left",
+              width = unit(5, "in"), 
+              height = unit(4.5, "in"), 
+              column_dend_reorder = TRUE, 
+              cluster_columns = col_dend,
+              row_dend_reorder = FALSE,  
+              #column_split = 3, 
+              #row_split = 3, 
+              #column_dend_height = unit(.5, "in"),
+              cluster_rows = row_dend, 
+              #row_gap = unit(2.5, "mm"), 
+              border = TRUE,
+              cell_fun = function(j, i, x, y, w, h, col) {
+                if(heatmappval[i, j] < 0.05) {
+                  grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+                }
+                else {
+                  grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+                }},
+              column_names_rot = 45,
+              column_names_gp =  gpar(fontsize = 12, border = FALSE),
+              column_title_gp = gpar(fontsize = 20),
+              row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
+draw(ht) #Draw heatmap
+dev.off()
+```
+
+#### 5ºC
+
+```{r}
+metabLipidCor5 <- correlationInput %>%
+  mutate(., treatment = gsub(pattern = "  5", replacement = "5", x = treatment)) %>%
+  filter(., treatment == "5") %>%
+  dplyr::select(., -c(1:4)) %>%
+  cor(., method = "pearson") %>%
+  as.data.frame(.) %>%
+  dplyr::select(., starts_with("lipid_")) %>%
+  filter(., row_number() %in% 1:7) %>%
+  filter(., rownames(.) != "metabolite_0") %>%
+  dplyr::select(-lipid_0) %>%
+  as.matrix(.) #Take correlation input and filter data for 5ºC. Remove metadata columns and calculate Pearson's correlation coefficients. Convert to dataframe. Keep correlations where lipids are correlated with metabolites. Remove "0" modules. Convert back to a matrix
+head(metabLipidCor5 %>% as.data.frame()) #Confirm formatting
+```
+
+```{r}
+nSamples5 <- nrow(metabolomicsMetadata %>% filter(., treatment == "  5")) #Count the number of samples at 5ºC
+metabLipidPvalue5 <- corPvalueStudent(metabLipidCor5, nSamples5) #Calculate p-values for metabolite-lipid module correlations
+head(metabLipidPvalue5 %>% as.data.frame()) #Confirm output
+```
+
+```{r}
+#Save dataframes
+write.csv(metabLipidCor5, "metabolite-lipid-module-correlations-5.csv", quote = FALSE, row.names = TRUE)
+write.csv(metabLipidPvalue5, "metabolite-lipid-module-pvalues-5.csv", quote = FALSE, row.names = TRUE)
+```
+
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+heatmappval <- signif(metabLipidPvalue5, 1) #Create list of pvalues for eigengene correlation with specific traits
+
+row_dend <- dendsort(hclust(dist(metabLipidCor5))) #Create dendograms for rows
+col_dend <- dendsort(hclust(dist(t(metabLipidCor5)))) #Create dendograms for columns
+```
+
+```{r}
+pdf(file = "figures/metabolite-lipid-module-relationship-heatmap-5.pdf", height = 8.5, width = 8.5)
+ht <- Heatmap(as.matrix(metabLipidCor5), name = "Eigengene", column_title = "Metabolomics-Lipidomics Eigengene Correlation at 5ºC",
+              col = blueWhiteRed(50), 
+              row_names_side = "left", 
+              row_dend_side = "left",
+              width = unit(5, "in"), 
+              height = unit(4.5, "in"), 
+              column_dend_reorder = TRUE, 
+              cluster_columns = col_dend,
+              row_dend_reorder = FALSE,  
+              #column_split = 3, 
+              #row_split = 3, 
+              #column_dend_height = unit(.5, "in"),
+              cluster_rows = row_dend, 
+              #row_gap = unit(2.5, "mm"), 
+              border = TRUE,
+              cell_fun = function(j, i, x, y, w, h, col) {
+                if(heatmappval[i, j] < 0.05) {
+                  grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+                }
+                else {
+                  grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+                }},
+              column_names_rot = 45,
+              column_names_gp =  gpar(fontsize = 12, border = FALSE),
+              column_title_gp = gpar(fontsize = 20),
+              row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
+draw(ht) #Draw heatmap
+dev.off()
+```
+
+#### Create summary plot
+
+### VIP in significantly correlated modules
+
+do I use just these VIP in the DIABLO correlations??????
 
 # Individual metabolite and lipid correlations with DIABLO
+
+
+# TO-DO LIST:
+
+- module eigengene correlation plot
+  - overall module correlation vs. correlations with the data at specific temperatures
+  - module expression at high temperature
+  - module expressionat control temp
+  - module expression at low temp?
+- pull out VIP present in each module and plot abundance --> are there any a priori relationships to expect?
 
 
 
