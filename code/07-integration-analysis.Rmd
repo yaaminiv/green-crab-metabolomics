@@ -69,6 +69,7 @@ metabolomicsMetadata <- metabolomicsMetadata #Save metadata
 transMetabData <- transMetabData #Save transposed data used for PLSDA
 rowwiseMetabData <- rowwiseMetabData #Rowwise data used for WCNA
 mME_metabolomics <- mME_meta #Data used to create module expression matrix
+plotColors <- plotColors #Color scheme for plots
 detach("file:../05-metabolomics-analysis/05-metabolomics-analysis.RData") #Detach metabolomics RData
 ```
 
@@ -77,6 +78,7 @@ head(metabolomicsMetadata)
 head(transMetabData)
 head(rowwiseMetabData)
 head(mME_metabolomics)
+plotColors
 ```
 
 ## Lipidomics data
@@ -99,22 +101,20 @@ head(mME_lipidomics)
 
 ## Physiology data
 
-# Correlating physiology and -omics data
-
 # Correlating metabolomics and lipidomics data
 
 To do this, I'll take the module expression information from each analysis and correlate them together!
 
 ```{r}
 correlationInput <- left_join(mME_metabolomics %>%
-            pivot_wider(., names_prefix = "metabolite_", names_from = "Module", values_from = "value"),
-          mME_lipidomics %>%
-            pivot_wider(., names_prefix = "lipid_", names_from = "Module", values_from = "value"),
-          by = c("crab.ID")) %>%
+                                pivot_wider(., names_prefix = "metabolite_", names_from = "Module", values_from = "value"),
+                              mME_lipidomics %>%
+                                pivot_wider(., names_prefix = "lipid_", names_from = "Module", values_from = "value"),
+                              by = c("crab.ID")) %>%
   dplyr::select(., -c(treatment.y, day.y, treatment_day.y)) %>%
   dplyr::rename("treatment" = treatment.x, "day" = day.x, "treatment_day" = treatment_day.x) %>%
   dplyr::select(., -c("metabolite_1", "metabolite_8", "lipid_13", "lipid_14", "lipid_15"))
-  #Left join modified versions of module information tables from metabolomics and lipidomics data. Remove duplicate metadata information and rename columns to match standard naming conventions. Remove columns that were not significantly correlated to a treatment condition.
+#Left join modified versions of module information tables from metabolomics and lipidomics data. Remove duplicate metadata information and rename columns to match standard naming conventions. Remove columns that were not significantly correlated to a treatment condition.
 head(correlationInput)
 ```
 
@@ -474,22 +474,82 @@ dev.off()
 
 #### Create summary plot
 
-### VIP in significantly correlated modules
+My goal for this summary plot is to have the correlation coefficients for the metabolite x lipid modules across temperature. I will then be able to see if the correlation is primarily influenced by a specific temperature, or if it falls apart at a specific temperature.
 
-do I use just these VIP in the DIABLO correlations??????
+```{r}
+metabLipidCorNo0 %>%
+  rownames_to_column(., var = "metabolite") %>%
+  pivot_longer(cols = 2:13, names_to = "lipid", values_to = "correlation_overall") %>%
+  left_join(., 
+            (metabLipidPvalueNo0 %>%
+               rownames_to_column(., var = "metabolite") %>%
+               pivot_longer(cols = 2:13, names_to = "lipid", values_to = "pvalue_overall")),
+            by = c("metabolite", "lipid")) %>%
+  filter(., pvalue_overall < 0.05) %>%
+  left_join(.,
+            (metabLipidCor13 %>%
+               as.data.frame(.) %>%
+               rownames_to_column(., var = "metabolite") %>%
+               pivot_longer(cols = 2:13, names_to = "lipid", values_to = "correlation_13") %>%
+               left_join(., 
+                         (metabLipidPvalue13 %>%
+                            as.data.frame(.) %>%
+                            rownames_to_column(., var = "metabolite") %>%
+                            pivot_longer(cols = 2:13, names_to = "lipid", values_to = "pvalue_13")),
+                         by = c("metabolite", "lipid"))),
+            by = c("metabolite", "lipid")) %>%
+  left_join(.,
+            (metabLipidCor30 %>%
+               as.data.frame(.) %>%
+               rownames_to_column(., var = "metabolite") %>%
+               pivot_longer(cols = 2:13, names_to = "lipid", values_to = "correlation_30") %>%
+               left_join(., 
+                         (metabLipidPvalue30 %>%
+                            as.data.frame(.) %>%
+                            rownames_to_column(., var = "metabolite") %>%
+                            pivot_longer(cols = 2:13, names_to = "lipid", values_to = "pvalue_30")),
+                         by = c("metabolite", "lipid"))),
+            by = c("metabolite", "lipid")) %>%
+  left_join(.,
+            (metabLipidCor5 %>%
+               as.data.frame(.) %>%
+               rownames_to_column(., var = "metabolite") %>%
+               pivot_longer(cols = 2:13, names_to = "lipid", values_to = "correlation_05") %>%
+               left_join(., 
+                         (metabLipidPvalue5 %>%
+                            as.data.frame(.) %>%
+                            rownames_to_column(., var = "metabolite") %>%
+                            pivot_longer(cols = 2:13, names_to = "lipid", values_to = "pvalue_05")),
+                         by = c("metabolite", "lipid"))),
+            by = c("metabolite", "lipid")) %>%
+  pivot_longer(.,
+               cols = 3:10,
+               names_to = c(".value", "condition"),
+               names_pattern = "(.*)_(.*)") %>%
+  ggplot(., aes(x = condition, y = correlation, color = condition, shape = condition)) +
+  geom_point(size = 3) +
+  facet_grid(metabolite ~ lipid, scales = "free_y") +
+  labs(y = "Pearson's Correlation Coefficient") +
+  scale_color_manual(name = "Condition",
+                     values = c(rev(plotColors), "black"), 
+                     labels = c("5ºC", "13ºC", "30ºC", "Overall")) +
+  scale_shape_manual(values = c(15, 19, 17, 3),
+                     name = "Condition",
+                     labels = c("5ºC", "13ºC", "30ºC", "Overall")) +
+  theme_classic(base_size = 15) + theme(axis.title.x = element_blank(),
+                                        axis.ticks.x = element_blank(),
+                                        axis.text.x = element_blank(),
+                                        strip.background = element_rect(colour = "white"))
+ggsave("figures/metabolte-lipid-module-relationship-correlations.pdf", height = 8.5, width = 11)
+```
+
+# Correlating physiology and -omics data
+
+The next step is to add physiology information to the metabolomics and lipidomics WCNA analyses.
 
 # Individual metabolite and lipid correlations with DIABLO
 
-
-# TO-DO LIST:
-
-- module eigengene correlation plot
-  - overall module correlation vs. correlations with the data at specific temperatures
-  - module expression at high temperature
-  - module expressionat control temp
-  - module expression at low temp?
-- pull out VIP present in each module and plot abundance --> are there any a priori relationships to expect?
-
+Do correlations with VIP from significantly correlated modules?
 
 
 
