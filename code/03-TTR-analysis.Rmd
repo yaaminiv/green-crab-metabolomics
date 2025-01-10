@@ -382,7 +382,7 @@ modTTR %>%
   mutate(., day = gsub(x = day, pattern = 22, replacement = "22")) %>%
   ggplot(mapping = aes(x = day, y = TTRavg, color = treatment, shape = treatment)) +
   geom_boxplot(outlier.shape = NA) + geom_jitter(position = position_dodge(width = 0.75)) +
-  geom_hline(aes(yintercept = boxplot.stats(modTTR$TTRavg)$stats[5]), lty = 2, color = "black") +
+  # geom_hline(aes(yintercept = boxplot.stats(modTTR$TTRavg)$stats[5]), lty = 2, color = "black") +
   ylab("Average Time-to-Right (s)") +
   scale_x_discrete(name = "Day",
                    breaks = c("04", "08", "11", "18", "15", "22"),
