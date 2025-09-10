@@ -539,7 +539,7 @@ metabLipidCorNo0 %>%
   theme_classic(base_size = 15) + theme(axis.title.x = element_blank(),
                                         axis.ticks.x = element_blank(),
                                         axis.text.x = element_blank(),
-                                        strip.background = element_rect(colour = "white"))
+                                        strip.background = element_rect(colour = "white")) #Take original correlation data and use a series of left_joins to merge with correlation data for each specific temperature that has already been pivoted longer. Finally, combine all correlation data into a single column and all p-value information into a single column using a specific regex pattern. Use information in a ggplot.
 ggsave("figures/metabolte-lipid-module-relationship-correlations.pdf", height = 8.5, width = 11)
 ```
 
