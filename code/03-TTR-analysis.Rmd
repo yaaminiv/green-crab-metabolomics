@@ -21,14 +21,22 @@ getwd()
 # Install packages
 
 ```{r packages, include=FALSE}
-#install.packages("tidyverse")
-#install.packages("plotrix")
-#install.packages("RColorBrewer")
-#install.packages("cowplot")
+# install.packages("tidyverse")
+# install.packages("plotrix")
+# install.packages("RColorBrewer")
+# install.packages("cowplot")
+# install.packages("emmeans")
+# install.packages("multcompView")
+# install.packages("multcomp")
+# install.packages("patchwork")
 require(tidyverse)
 require(plotrix)
 require(RColorBrewer)
 require(cowplot)
+require(emmeans)
+require(multcompView)
+require(multcomp)
+require(patchwork)
 ```
 
 ```{r}
@@ -273,7 +281,8 @@ hist(x = log(modTTR$TTRavg)) #Log transformation helps normalize data
 ## GLM
 
 ```{r}
-TTRmodel <- glm(log(TTRavg) ~ treatment + day + treatment*day + as.factor(sex) + integument.cont + carapace.width + weight + as.factor(missing.legs), data = modTTR) #GLM, with log(TTRavg) as the response variable, and treatment, day, the interaction between treatment and day, sex, integument color, carapace width, weight, and whether or not a crab is missing legs as explanatory variables.
+TTRmodel <- glm(log(TTRavg) ~ as.factor(treatment) + day + as.factor(treatment)*day + 
+                  as.factor(sex) + integument.cont + carapace.width + weight + as.factor(missing.legs), data = modTTR) #GLM, with log(TTRavg) as the response variable, and treatment, day, the interaction between treatment and day, sex, integument color, carapace width, weight, and whether or not a crab is missing legs as explanatory variables.
 summary(TTRmodel) #5C different than control, 30C marg different than control
 ```
 
@@ -282,9 +291,24 @@ step(TTRmodel, direction = "backward") #Use a backwards deletion approach and AI
 ```
 
 ```{r}
-TTRmodel2 <- glm(log(TTRavg) ~ treatment + day + weight, data = modTTR) #Run the best fit model
+TTRmodel2 <- glm(log(TTRavg) ~ as.factor(treatment) + day + weight, data = modTTR) #Run the best fit model
 summary(TTRmodel2) #Both treatments are significantly different from the control. Day and weight are not significant
 ```
+
+Since day and weight are not significant, I am going to run a model without these factors and compare AIC scores.
+
+```{r}
+TTRmodel3 <- glm(log(TTRavg) ~ as.factor(treatment), data = modTTR) #Run model without insignificant variables
+AIC(TTRmodel2, TTRmodel3) #AIC is lower for the model that includes day and weight even though they are not significant.
+```
+
+## Final model
+
+```{r}
+summary(TTRmodel2) #Final model for assessing TTR differences
+```
+
+## Save model output
 
 ```{r}
 write.csv(broom::tidy(TTRmodel2), "TTR-glm-output.csv", quote = FALSE, row.names = FALSE) #Save table version of glm output
@@ -297,6 +321,18 @@ hist(residuals(TTRmodel2)) #Residuals normally distributed
 
 plot(fitted(TTRmodel2), residuals(TTRmodel2)) #Borderline heteroskedastic but probably okay? Lack of dispersion across x-axis is likely related to discrete variables
 abline(h = 0, lty = 2, col = "grey")
+```
+
+## Posthoc tests for significant predictors
+
+There was a significant impacts of treatment! I will investigate these effects using post-hoc tests with `emmeans`.
+
+```{r}
+TTRmodel_treatment <- emmeans(TTRmodel2, pairwise ~ treatment, adjust = "tukey", data = modTTR) #Use emmeans to obtain pairwise treatment differences
+TTRmodel_treatment$contrasts %>% broom::tidy(.) #Extract the contrast information to look at pairwise test output. Clean output using broom.
+TTRmodel_treatment$contrasts %>% 
+  broom::tidy(.) %>%
+  write.csv("tukey-test-treatment.csv", quote = FALSE, row.names = FALSE) #Save output as a csv.
 ```
 
 # Threshold analysis
@@ -329,12 +365,16 @@ summary(TTRthreshModel) #Only the contrast bewteen 5C and 13C control is signifi
 step(TTRthreshModel, test = "LRT") #Use likelihood ratio tests and backwards deletion approaches to identify the best model
 ```
 
+## Final model
+
 ```{r}
 TTRthreshModel2 <- glm(I(TTRthresh == 1) ~ treatment + day,
                        family = binomial(),
                        data = modTTR) #Run model selected by step with only significant terms
 summary(TTRthreshModel2) #control vs. 5C significantly different, significant impact of day
 ```
+
+## Save model output
 
 ```{r}
 write.csv(broom::tidy(TTRthreshModel2), "TTR-binomialModel.csv", quote = FALSE, row.names = FALSE) #Save binomal GLM output
@@ -366,7 +406,7 @@ modTTR %>%
                      breaks = c("13C", "30C", "5C"),
                      labels = c("13", "30", "5")) +
   theme_classic(base_size = 15) #Plot average TTR and add lm fits without SE bars. Add vertical line for boxplot outlier threshold. Modify x-axis to only show experimental days where TTR was measured. Scale y axis to include 91 = indication that crabs did not right within 90 s. Assign colors to each treatment. Increase base font size.
-ggsave("figures/time-to-right-avg.pdf", height = 8.5, width = 11)
+#ggsave("figures/time-to-right-avg.pdf", height = 8.5, width = 11)
 ```
 
 ```{r}
@@ -396,8 +436,13 @@ modTTR %>%
                      breaks = c("05C", "13C", "30C"),
                      labels = c("5", "13", "30")) +
   theme_classic(base_size = 15) #Select unique day, treatment, and TTRavg data. Replace numbers with characters to facilitate better ordering. Plot average TTR for each crab in a boxplot. Do not show outliers with the OG boxplot, but add them in with geom_jitter. Add horizontal line for boxplot outlier threshold. Assign colors to each treatment. Increase base font size.
-ggsave("figures/time-to-right-avg-boxplot.pdf", height = 8.5, width = 11)
+#ggsave("figures/time-to-right-avg-boxplot.pdf", height = 8.5, width = 11)
 ```
+
+```{r}
+TTRmodel_treatment$contrasts %>% broom::tidy(.) #Extract the contrast information to look at pairwise test output. Clean output using broom.
+```
+
 
 ```{r}
 mainPlot <- modTTR %>%
@@ -424,16 +469,16 @@ mainPlot <- modTTR %>%
                      name = "Temperature (ºC)",
                      breaks = c("05C", "13C", "30C"),
                      labels = c("5", "13", "30")) +
-  annotate(geom = "text", x = 4.5, y = 32, 
-           label = expression(paste(bolditalic("13ºC vs. 30ºC: "), "t = -2.66, p = 0.008")),
+  annotate(geom = "text", x = 4.5, y = 32,
+           label = expression(paste(bolditalic("13ºC vs. 30ºC: "), "t = 2.66, p = 0.02")),
            hjust = 0) +
-  annotate(geom = "text", x = 4.5, y = 30.5, 
-           label = expression(paste(bolditalic("13ºC vs. 5ºC: "), "t = 15.48, p = 2.27 x ", 10^-38)),
+  annotate(geom = "text", x = 4.5, y = 30.5,
+           label = expression(paste(bolditalic("13ºC vs. 5ºC: "), "t = -15.48, p < 0.0001")),
            hjust = 0) +
-    annotate(geom = "text", x = 4.5, y = 29, 
+  annotate(geom = "text", x = 4.5, y = 29,
            label = expression(paste(bolditalic("Day: "), "t = -1.55, p = 0.12")),
            hjust = 0) +
-    annotate(geom = "text", x = 4.5, y = 27.5, 
+  annotate(geom = "text", x = 4.5, y = 27.5,
            label = expression(paste(bolditalic("Crab weight: "), "t = 1.47, p = 0.14")),
            hjust = 0) +
   theme_classic(base_size = 15) #Select unique day, treatment, and TTRavg data. Replace numbers with characters to facilitate better ordering. Plot average TTR for each crab in a boxplot. Do not show outliers with the OG boxplot, but add them in with geom_jitter. Assign colors to each treatment. Increase base font size.
