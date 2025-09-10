@@ -30,6 +30,9 @@ getwd()
 # if ("patchwork" %in% rownames(installed.packages()) == 'FALSE') install.packages("patchwork")
 # if ("grid" %in% rownames(installed.packages()) == 'FALSE') install.packages('grid')
 # if ("plotrix" %in% rownames(installed.packages()) == 'FALSE') install.packages('plotrix')
+# install.packages("emmeans")
+# install.packages("multcompView")
+# install.packages("multcomp")
 require(tidyverse)
 require(RColorBrewer)
 require(lubridate)
@@ -39,6 +42,9 @@ require(broom)
 require(patchwork)
 require(grid)
 require(plotrix)
+require(emmeans)
+require(multcompView)
+require(multcomp)
 ```
 
 ```{r}
@@ -51,7 +57,7 @@ At each time point, I have data for six tanks (three treatments, two tanks/treat
 
 ```{r}
 test <- read_delim("../../data/respiration/2022-07-26-resp/2022-07-26_093345_Tank_3/2022-07-26_093345_Tank_3.txt", skip = 72, delim = "\t", col_names = FALSE) %>% 
-  select(., c(1:7, 12, 17, 21:25, 30, 35, 39:43, 48, 53, 57:61, 66, 71)) #Import data. Skip the first 72 rows
+  dplyr::select(., c(1:7, 12, 17, 21:25, 30, 35, 39:43, 48, 53, 57:61, 66, 71)) #Import data. Skip the first 72 rows
 colnames(test) <- c("date", "time", 
                     "dt_s_1", "perc_air_sat_1", "dphi_1", "signal_int_mV_1", "amb_light_mV_1", "temp_C_1", "pressure_mbar_1",
                     "dt_s_2", "perc_air_sat_2", "dphi_2", "signal_int_mV_2", "amb_light_mV_2", "temp_C_2", "pressure_mbar_2",
@@ -69,7 +75,7 @@ files20220708 #Confirm the list has the correct files
 
 ```{r}
 dat20220708 <- read_delim(files20220708, id = "tank", delim = "\t", skip = 72, col_names = FALSE) %>% 
-  select(., c(1:8, 13, 18, 20:26, 31, 36, 38:44, 49, 54)) #Import data from all files in the designated list. Specify tab-delimited files and skip the first 72 lines. There are no column names. Select data from probes 1-3 (probe 4 was never used). Use all date/time columns since some probes ran for longer than others.
+  dplyr::select(., c(1:8, 13, 18, 20:26, 31, 36, 38:44, 49, 54)) #Import data from all files in the designated list. Specify tab-delimited files and skip the first 72 lines. There are no column names. Select data from probes 1-3 (probe 4 was never used). Use all date/time columns since some probes ran for longer than others.
 colnames(dat20220708) <- c("path", 
                            "date_1", "time_1", "dt_s_1", "perc_air_sat_1", "dphi_1", "signal_int_mV_1", "amb_light_mV_1", "temp_C_1", "pressure_mbar_1",
                            "date_2", "time_2", "dt_s_2", "perc_air_sat_2", "dphi_2", "signal_int_mV_2", "amb_light_mV_2", "temp_C_2", "pressure_mbar_2",
@@ -80,7 +86,7 @@ head(dat20220708)
 ```{r}
 dat20220708 <- dat20220708 %>%
   mutate(., tank = str_sub(path, 82, 86)) %>%
-  select(-path) %>% 
+  dplyr::select(-path) %>% 
   mutate(., treatment = case_when(tank == "tank1" ~ "13C",
                                   tank == "tank2" ~ "5C",
                                   tank == "tank3" ~ "30C",
@@ -99,7 +105,7 @@ files20220712 #Confirm the list has the correct files
 
 ```{r}
 dat20220712 <- read_delim(files20220712, id = "tank", delim = "\t", skip = 72, col_names = FALSE)  %>% 
-  select(., c(1:8, 13, 18, 20:26, 31, 36, 38:44, 49, 54)) #Import data from all files in the designated list. Specify tab-delimited files and skip the first 72 lines. There are no column names. Select data from probes 1-3 (probe 4 was never used). Use all date/time columns since some probes ran for longer than others.
+  dplyr::select(., c(1:8, 13, 18, 20:26, 31, 36, 38:44, 49, 54)) #Import data from all files in the designated list. Specify tab-delimited files and skip the first 72 lines. There are no column names. Select data from probes 1-3 (probe 4 was never used). Use all date/time columns since some probes ran for longer than others.
 colnames(dat20220712) <- c("path", 
                            "date_1", "time_1", "dt_s_1", "perc_air_sat_1", "dphi_1", "signal_int_mV_1", "amb_light_mV_1", "temp_C_1", "pressure_mbar_1",
                            "date_2", "time_2", "dt_s_2", "perc_air_sat_2", "dphi_2", "signal_int_mV_2", "amb_light_mV_2", "temp_C_2", "pressure_mbar_2",
@@ -110,7 +116,7 @@ head(dat20220712)
 ```{r}
 dat20220712 <- dat20220712 %>%
   mutate(., tank = str_sub(path, 82, 86)) %>%
-  select(-path) %>% 
+  dplyr::select(-path) %>% 
   mutate(., treatment = case_when(tank == "tank1" ~ "13C",
                                   tank == "tank2" ~ "5C",
                                   tank == "tank3" ~ "30C",
@@ -129,7 +135,7 @@ files20220719 #Confirm the list has the correct files
 
 ```{r}
 dat20220719 <- read_delim(files20220719, id = "tank", delim = "\t", skip = 72, col_names = FALSE)  %>% 
-  select(., c(1:8, 13, 18, 20:26, 31, 36, 38:44, 49, 54)) #Import data from all files in the designated list. Specify tab-delimited files and skip the first 72 lines. There are no column names. Select data from probes 1-3 (probe 4 was never used). Use all date/time columns since some probes ran for longer than others.
+  dplyr::select(., c(1:8, 13, 18, 20:26, 31, 36, 38:44, 49, 54)) #Import data from all files in the designated list. Specify tab-delimited files and skip the first 72 lines. There are no column names. Select data from probes 1-3 (probe 4 was never used). Use all date/time columns since some probes ran for longer than others.
 colnames(dat20220719) <- c("path", 
                            "date_1", "time_1", "dt_s_1", "perc_air_sat_1", "dphi_1", "signal_int_mV_1", "amb_light_mV_1", "temp_C_1", "pressure_mbar_1",
                            "date_2", "time_2", "dt_s_2", "perc_air_sat_2", "dphi_2", "signal_int_mV_2", "amb_light_mV_2", "temp_C_2", "pressure_mbar_2",
@@ -140,7 +146,7 @@ head(dat20220719)
 ```{r}
 dat20220719 <- dat20220719 %>%
   mutate(., tank = str_sub(path, 83, 88)) %>%
-  select(-path) %>% 
+  dplyr::select(-path) %>% 
   mutate(., treatment = case_when(tank == "Tank_1" ~ "13C",
                                   tank == "Tank_2" ~ "5C",
                                   tank == "Tank_3" ~ "30C",
@@ -159,7 +165,7 @@ files20220726 #Confirm the list has the correct files
 
 ```{r}
 dat20220726 <- read_delim(files20220726, id = "tank", delim = "\t", skip = 72, col_names = FALSE)  %>% 
-  select(., c(1:8, 13, 18, 20:26, 31, 36, 38:44, 49, 54)) #Import data from all files in the designated list. Specify tab-delimited files and skip the first 72 lines. There are no column names. Select data from probes 1-3 (probe 4 was never used). Use all date/time columns since some probes ran for longer than others.
+  dplyr::select(., c(1:8, 13, 18, 20:26, 31, 36, 38:44, 49, 54)) #Import data from all files in the designated list. Specify tab-delimited files and skip the first 72 lines. There are no column names. Select data from probes 1-3 (probe 4 was never used). Use all date/time columns since some probes ran for longer than others.
 colnames(dat20220726) <- c("path", 
                            "date_1", "time_1", "dt_s_1", "perc_air_sat_1", "dphi_1", "signal_int_mV_1", "amb_light_mV_1", "temp_C_1", "pressure_mbar_1",
                            "date_2", "time_2", "dt_s_2", "perc_air_sat_2", "dphi_2", "signal_int_mV_2", "amb_light_mV_2", "temp_C_2", "pressure_mbar_2",
@@ -170,7 +176,7 @@ head(dat20220726)
 ```{r}
 dat20220726 <- dat20220726 %>%
   mutate(., tank = str_sub(path, 83, 88)) %>%
-  select(-path) %>% 
+  dplyr::select(-path) %>% 
   mutate(., treatment = case_when(tank == "Tank_1" ~ "13C",
                                   tank == "Tank_2" ~ "5C",
                                   tank == "Tank_3" ~ "30C",
@@ -192,7 +198,7 @@ colnames(dat20220708)
 
 ```{r}
 dat20220708mod <- dat20220708 %>%
-  select(., -c(5:7, 14:16, 23:25)) %>%
+  dplyr::select(., -c(5:7, 14:16, 23:25)) %>%
   mutate(., date = case_when(is.na(date_1) == FALSE ~ date_1,
                              is.na(date_1) == TRUE ~ date_2)) %>%
   mutate(., date = case_when(is.na(date_1) == FALSE ~ date_1,
@@ -206,7 +212,7 @@ dat20220708mod <- dat20220708 %>%
                              is.na(dt_s_1) == TRUE ~ dt_s_2)) %>%
   mutate(., dt_s = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
                              is.na(dt_s_1) == TRUE ~ dt_s_3)) %>%
-  select(., -c(date_1, date_2, date_3, 
+  dplyr::select(., -c(date_1, date_2, date_3, 
                time_1, time_2, time_3, 
                dt_s_1, dt_s_2, dt_s_3)) %>%
   mutate(., datetime = dmy_hms(paste(date, time))) %>%
@@ -225,7 +231,7 @@ dat20220708mod <- dat20220708 %>%
   mutate(., og_pressure = gsub("pressure_mbar_", replacement = "", x = og_pressure)) %>%
   filter(., og_perc == og_temp) %>% filter(og_temp == og_pressure) %>%
   dplyr::rename(., probe_num = og_perc) %>%
-  select(., -c(og_temp, og_pressure))
+  dplyr::select(., -c(og_temp, og_pressure))
 #Remove extraneous columns. Use case_when to combine date information across the different probes. Remove any rows without date. Repeat case_when series for time and delta time. Remove extraneous columns. Create a new datetime column for easy plotting. Add salinity information for all tanks based on lab notebook posts. Arrange by treatment and tank. Pivot all air saturation, temperature, and pressure columns, keeping the original column name as a new columm. Remove text before numbers and match based on probe numbers. Rename one column as the probe number and remove the other temperature and pressure columns.
 head(dat20220708mod) #Confirm formatting
 ```
@@ -244,7 +250,7 @@ head(dat20220708mod)
 
 ```{r}
 dat20220712mod <- dat20220712 %>%
-  select(., -c(5:7, 14:16, 23:25)) %>%
+  dplyr::select(., -c(5:7, 14:16, 23:25)) %>%
   mutate(., date = case_when(is.na(date_1) == FALSE ~ date_1,
                              is.na(date_1) == TRUE ~ date_2)) %>%
   mutate(., date = case_when(is.na(date_1) == FALSE ~ date_1,
@@ -258,7 +264,7 @@ dat20220712mod <- dat20220712 %>%
                              is.na(dt_s_1) == TRUE ~ dt_s_2)) %>%
   mutate(., dt_s = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
                              is.na(dt_s_1) == TRUE ~ dt_s_3)) %>%
-  select(., -c(date_1, date_2, date_3, 
+  dplyr::select(., -c(date_1, date_2, date_3, 
                time_1, time_2, time_3, 
                dt_s_1, dt_s_2, dt_s_3)) %>%
   mutate(., datetime = dmy_hms(paste(date, time))) %>%
@@ -277,7 +283,7 @@ dat20220712mod <- dat20220712 %>%
   mutate(., og_pressure = gsub("pressure_mbar_", replacement = "", x = og_pressure)) %>%
   filter(., og_perc == og_temp) %>% filter(og_temp == og_pressure) %>%
   dplyr::rename(., probe_num = og_perc) %>%
-  select(., -c(og_temp, og_pressure))
+  dplyr::select(., -c(og_temp, og_pressure))
 #Remove extraneous columns. Use case_when to combine date information across the different probes. Remove any rows without date. Repeat case_when series for time and delta time. Remove extraneous columns. Create a new datetime column for easy plotting. Add salinity information for all tanks based on lab notebook posts. Arrange by treatment and tank. Pivot all air saturation, temperature, and pressure columns, keeping the original column name as a new columm. Remove text before numbers and match based on probe numbers. Rename one column as the probe number and remove the other temperature and pressure columns.
 head(dat20220712mod)
 ```
@@ -296,7 +302,7 @@ head(dat20220712mod)
 
 ```{r}
 dat20220719mod <- dat20220719 %>%
-  select(., -c(5:7, 14:16, 23:25)) %>%
+  dplyr::select(., -c(5:7, 14:16, 23:25)) %>%
   mutate(., date = case_when(is.na(date_1) == FALSE ~ date_1,
                              is.na(date_1) == TRUE ~ date_2)) %>%
   mutate(., date = case_when(is.na(date_1) == FALSE ~ date_1,
@@ -310,7 +316,7 @@ dat20220719mod <- dat20220719 %>%
                              is.na(dt_s_1) == TRUE ~ dt_s_2)) %>%
   mutate(., dt_s = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
                              is.na(dt_s_1) == TRUE ~ dt_s_3)) %>%
-  select(., -c(date_1, date_2, date_3, 
+  dplyr::select(., -c(date_1, date_2, date_3, 
                time_1, time_2, time_3, 
                dt_s_1, dt_s_2, dt_s_3)) %>%
   mutate(., datetime = dmy_hms(paste(date, time))) %>%
@@ -329,7 +335,7 @@ dat20220719mod <- dat20220719 %>%
   mutate(., og_pressure = gsub("pressure_mbar_", replacement = "", x = og_pressure)) %>%
   filter(., og_perc == og_temp) %>% filter(og_temp == og_pressure) %>%
   dplyr::rename(., probe_num = og_perc) %>%
-  select(., -c(og_temp, og_pressure))
+  dplyr::select(., -c(og_temp, og_pressure))
 #Remove extraneous columns. Use case_when to combine date information across the different probes. Remove any rows without date. Repeat case_when series for time and delta time. Remove extraneous columns. Create a new datetime column for easy plotting. Add salinity information for all tanks based on lab notebook posts. Arrange by treatment and tank. Pivot all air saturation, temperature, and pressure columns, keeping the original column name as a new columm. Remove text before numbers and match based on probe numbers. Rename one column as the probe number and remove the other temperature and pressure columns.
 head(dat20220719mod)
 ```
@@ -348,7 +354,7 @@ head(dat20220719mod)
 
 ```{r}
 dat20220726mod <- dat20220726 %>%
-  select(., -c(5:7, 14:16, 23:25)) %>%
+  dplyr::select(., -c(5:7, 14:16, 23:25)) %>%
   mutate(., date = case_when(is.na(date_1) == FALSE ~ date_1,
                              is.na(date_1) == TRUE ~ date_2)) %>%
   mutate(., date = case_when(is.na(date_1) == FALSE ~ date_1,
@@ -362,7 +368,7 @@ dat20220726mod <- dat20220726 %>%
                              is.na(dt_s_1) == TRUE ~ dt_s_2)) %>%
   mutate(., dt_s = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
                              is.na(dt_s_1) == TRUE ~ dt_s_3)) %>%
-  select(., -c(date_1, date_2, date_3, 
+  dplyr::select(., -c(date_1, date_2, date_3, 
                time_1, time_2, time_3, 
                dt_s_1, dt_s_2, dt_s_3)) %>%
   mutate(., datetime = dmy_hms(paste(date, time))) %>%
@@ -381,7 +387,7 @@ dat20220726mod <- dat20220726 %>%
   mutate(., og_pressure = gsub("pressure_mbar_", replacement = "", x = og_pressure)) %>%
   filter(., og_perc == og_temp) %>% filter(og_temp == og_pressure) %>%
   dplyr::rename(., probe_num = og_perc) %>%
-  select(., -c(og_temp, og_pressure))
+  dplyr::select(., -c(og_temp, og_pressure))
 #Remove extraneous columns. Use case_when to combine date information across the different probes. Remove any rows without date. Repeat case_when series for time and delta time. Remove extraneous columns. Create a new datetime column for easy plotting. Add salinity information for all tanks based on lab notebook posts. Arrange by treatment and tank. Pivot all air saturation, temperature, and pressure columns, keeping the original column name as a new columm. Remove text before numbers and match based on probe numbers. Rename one column as the probe number and remove the other temperature and pressure columns.
 head(dat20220726mod)
 ```
@@ -1122,6 +1128,7 @@ dat20220708_MO2_slopes <- dat20220708data %>%
   unnest(tidied) #Create a list object that stores the regression results for each chamber. Nest data by treatment, tank, and probe number so the regression slopes are calculated appropriately. Use map to extract linear model fit information for DO_umol_L by time. Extract slopes using broom::tidy and unnest.
 dat20220708_MO2_slopes #Confirm dataframe creation
 ```
+
 ```{r}
 dat20220708_MO2_glance <- dat20220708data %>%
   nest(data = -c(treatment, tank, probe_num)) %>%
@@ -1652,7 +1659,7 @@ write.csv(dat20220708_MO2_all_slope_results, "20220708-MO2-slope-results.csv", q
 
 
 ```{r}
-dat20220708_MO2_slope_results %>%
+dat20220708_MO2_all_slope_results %>%
   ggplot(., aes(x = treatment, y = -slope_nmol_hr_corrected, color = treatment)) + 
   geom_boxplot() + geom_point(size = 2) +
   xlab("Temperature (ºC)") + ylab("Oxygen Consumption (nmol/hr)") +
@@ -2030,13 +2037,13 @@ ggsave("figures/2022-07-26-oxygen-consumption-nmolhr-corrected.pdf", width = 11,
 ## Between treatments within a timepoint
 
 ```{r}
-hist(-(dat20220708_MO2_slope_results$slope_nmol_hr_corrected)) #Check distribution
-hist(log(-(dat20220708_MO2_slope_results$slope_nmol_hr_corrected))) #Check log transformation
-hist(sqrt(-(dat20220708_MO2_slope_results$slope_nmol_hr_corrected))) #Check sqrt transformation
+hist(-(dat20220708_MO2_all_slope_results$slope_nmol_hr_corrected)) #Check distribution
+hist(log(-(dat20220708_MO2_all_slope_results$slope_nmol_hr_corrected))) #Check log transformation
+hist(sqrt(-(dat20220708_MO2_all_slope_results$slope_nmol_hr_corrected))) #Check sqrt transformation
 ```
 
 ```{r}
-lm20220708 <- lm(log(-slope_nmol_hr_corrected) ~ treatment, data = dat20220708_MO2_slope_results)
+lm20220708 <- lm(log(-slope_nmol_hr_corrected) ~ treatment, data = dat20220708_MO2_all_slope_results)
 summary(lm20220708)
 ```
 
@@ -2045,13 +2052,13 @@ write.csv(broom::tidy(lm20220708), "20220708-model-output.csv", quote = FALSE, r
 ```
 
 ```{r}
-hist(-(dat20220712_MO2_slope_results$slope_nmol_hr_corrected)) #Check distribution
-hist(log(-(dat20220712_MO2_slope_results$slope_nmol_hr_corrected))) #Check log transformation
-hist(sqrt(-(dat20220712_MO2_slope_results$slope_nmol_hr_corrected))) #Check sqrt transformation
+hist(-(dat20220712_MO2_all_slope_results$slope_nmol_hr_corrected)) #Check distribution
+hist(log(-(dat20220712_MO2_all_slope_results$slope_nmol_hr_corrected))) #Check log transformation
+hist(sqrt(-(dat20220712_MO2_all_slope_results$slope_nmol_hr_corrected))) #Check sqrt transformation
 ```
 
 ```{r}
-lm20220712 <- lm(log(-slope_nmol_hr_corrected) ~ treatment, data = dat20220712_MO2_slope_results)
+lm20220712 <- lm(log(-slope_nmol_hr_corrected) ~ treatment, data = dat20220712_MO2_all_slope_results)
 summary(lm20220712)
 ```
 
@@ -2060,13 +2067,13 @@ write.csv(broom::tidy(lm20220712), "20220712-model-output.csv", quote = FALSE, r
 ```
 
 ```{r}
-hist(-(dat20220719_MO2_slope_results$slope_nmol_hr_corrected)) #Check distribution
-hist(log(-(dat20220719_MO2_slope_results$slope_nmol_hr_corrected))) #Check log transformation
-hist(sqrt(-(dat20220719_MO2_slope_results$slope_nmol_hr_corrected))) #Check sqrt transformation
+hist(-(dat20220719_MO2_all_slope_results$slope_nmol_hr_corrected)) #Check distribution
+hist(log(-(dat20220719_MO2_all_slope_results$slope_nmol_hr_corrected))) #Check log transformation
+hist(sqrt(-(dat20220719_MO2_all_slope_results$slope_nmol_hr_corrected))) #Check sqrt transformation
 ```
 
 ```{r}
-lm20220719 <- lm(log(-slope_nmol_hr_corrected) ~ treatment, data = dat20220719_MO2_slope_results)
+lm20220719 <- lm(log(-slope_nmol_hr_corrected) ~ treatment, data = dat20220719_MO2_all_slope_results)
 summary(lm20220719)
 ```
 
@@ -2075,13 +2082,13 @@ write.csv(broom::tidy(lm20220719), "20220719-model-output.csv", quote = FALSE, r
 ```
 
 ```{r}
-hist(-(dat20220726_MO2_slope_results$slope_nmol_hr_corrected)) #Check distribution
-hist(log(-(dat20220726_MO2_slope_results$slope_nmol_hr_corrected))) #Check log transformation
-hist(sqrt(-(dat20220726_MO2_slope_results$slope_nmol_hr_corrected))) #Check sqrt transformation
+hist(-(dat20220726_MO2_all_slope_results$slope_nmol_hr_corrected)) #Check distribution
+hist(log(-(dat20220726_MO2_all_slope_results$slope_nmol_hr_corrected))) #Check log transformation
+hist(sqrt(-(dat20220726_MO2_all_slope_results$slope_nmol_hr_corrected))) #Check sqrt transformation
 ```
 
 ```{r}
-lm20220726 <- lm(log(-slope_nmol_hr_corrected) ~ treatment, data = dat20220726_MO2_slope_results)
+lm20220726 <- lm(log(-slope_nmol_hr_corrected) ~ treatment, data = dat20220726_MO2_all_slope_results)
 summary(lm20220726)
 ```
 
@@ -2122,7 +2129,7 @@ demTTRdata <- read.csv("../../data/time-to-right.csv", header = TRUE) %>%
                                      "RO" = 3.5)) %>%
   mutate(., missing.legs = case_when(number.legs < 10 ~ "Y",
                                      number.legs == 10 ~ "N")) %>%
-  select(., c(day, treatment, tank, probe_num, sex, integument.cont, weight, carapace.width, missing.legs)) #Import TTR data and modify to include only the desired demographic data and average TTR data for crabs used during respiration trials
+  dplyr::select(., c(day, treatment, tank, probe_num, sex, integument.cont, weight, carapace.width, missing.legs)) #Import TTR data and modify to include only the desired demographic data and average TTR data for crabs used during respiration trials
 head(demTTRdata) #Confirm dataframe creation
 ```
 
@@ -2162,9 +2169,9 @@ hist(log(-(all_MO2_slope_results$slope_nmol_hr_corrected))) #Check log transform
 hist(sqrt(-(all_MO2_slope_results$slope_nmol_hr_corrected))) #Check log transformation
 ```
 
-
 ```{r}
-lmAllSlopeResults <- glm(log(-slope_nmol_hr_corrected) ~ treatment*as.numeric(day) + sex + weight + carapace.width + integument.cont + missing.legs, data = (all_MO2_slope_results_demTTRdata %>% filter(., blank_ratio < 0.10))) #Examine the influence of treatment, day, and various demographic factors on respiration rate. Remove outliers based on blank ratios prior to analysis.
+lmAllSlopeResults <- glm(log(-slope_nmol_hr_corrected) ~ as.factor(treatment)*as.numeric(day) + 
+                           sex + weight + carapace.width + integument.cont + missing.legs, data = (all_MO2_slope_results_demTTRdata %>% filter(., blank_ratio < 0.10))) #Examine the influence of treatment, day, and various demographic factors on respiration rate. Remove outliers based on blank ratios prior to analysis.
 summary(lmAllSlopeResults) #Significant impact of treatment and day on respiration
 ```
 
@@ -2173,10 +2180,14 @@ lmAllSlopeResultsStep <- step(lmAllSlopeResults, direction = "backward") #Use ba
 summary(lmAllSlopeResultsStep)
 ```
 
+### Final model
+
 ```{r}
 lmAllSlopeResultsSig <- glm(log(-slope_nmol_hr_corrected) ~ treatment + as.numeric(day), data = all_MO2_slope_results_demTTRdata) #Run the most significant model identified by step
 summary(lmAllSlopeResultsSig) #Significant impact of treatment and day (not not day x treatment)
 ```
+
+### Save model outpt
 
 ```{r}
 write.csv(broom::tidy(lmAllSlopeResultsSig), "all-slope-results-model-output.csv", quote = FALSE, row.names = FALSE)
@@ -2189,6 +2200,43 @@ hist(residuals(lmAllSlopeResultsSig)) #Residuals normally distributed
 
 plot(fitted(lmAllSlopeResultsSig), residuals(lmAllSlopeResultsSig)) #No heteroskedasticity 
 abline(h = 0, lty = 2, col = "grey")
+```
+
+### Postdoc tests for significant predictors
+
+Temperature and day were significant predictors for righting response, but their interaction was not significant. I will conduct posthoc tests for both of these factors separately.
+
+### Treatment
+
+The first thing I will do is explore pairwise differences between treatment. Since there was not a significant interaction, I do not need to account for day when I examine pairwise differences.
+
+```{r}
+lmAllSlopeResultsSig_treatment <- emmeans(lmAllSlopeResultsSig, pairwise ~ treatment, adjust = "tukey", data = all_MO2_slope_results_demTTRdata) #Use emmeans to obtain pairwise treatment differences at the timepoints listed. 
+lmAllSlopeResultsSig_treatment$contrasts %>% broom::tidy(.) #Extract the contrast information to look at pairwise test output. Clean output using broom.
+lmAllSlopeResultsSig_treatment$contrasts %>% 
+  broom::tidy(.) %>%
+  write.csv("tukey-test-treatment.csv", quote = FALSE, row.names = FALSE) #Save output as a csv.
+```
+
+### Timepoint
+
+I want to understand how TTR varied by timepoint within different days There is no way to do this with my original model since day was (rightfully) coded as a continuous variable. In order to get pairwise estimates, I will need to refactor day as a categorical variable, rerun the model, and then use `emmeans` on this revised model.
+
+```{r}
+lmAllSlopeResultsSig <- glm(log(-slope_nmol_hr_corrected) ~ treatment + as.numeric(day), data = all_MO2_slope_results_demTTRdata) #Run the most significant model identified by step
+summary(lmAllSlopeResultsSig) #Significant impact of treatment and day (not not day x treatment)
+```
+
+```{r}
+all_MO2_slope_results_demTTRdata$day_factor <- as.factor(all_MO2_slope_results_demTTRdata$day) #Code day as a factor
+lmAllSlopeResultsSig_factor <- glm(log(-slope_nmol_hr_corrected) ~ treatment + day_factor, 
+                                   data = all_MO2_slope_results_demTTRdata) #Run the original model, but use day as a factor
+lmAllSlopeResultsSig_day <- emmeans(lmAllSlopeResultsSig_factor, pairwise ~ day_factor, 
+                         data = all_MO2_slope_results_demTTRdata) #Rerun emmeans using day as a factor
+lmAllSlopeResultsSig_day$contrasts %>% broom::tidy(.) #Extract contrasts to look at pairwise output. Clean output using broom.
+lmAllSlopeResultsSig_day$contrasts %>%
+  broom::tidy(.) %>%
+  write.csv("tukey-test-day.csv", quote = FALSE, row.names = FALSE) #Save output as a csv.
 ```
 
 ## Create multipanel figure for oxygen consumption
