@@ -35,6 +35,7 @@ getwd()
 # if ("dendsort" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('dendsort')
 # if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap')
 # if ("svglite" %in% rownames(installed.packages()) == 'FALSE') install.packages("svglite")
+# if ("ggfortify" %in% rownames(installed.packages()) == 'FALSE') install.packages("ggfortify")
 require(tidyverse)
 require(vegan)
 require(mixOmics)
@@ -47,6 +48,7 @@ require(WGCNA)
 require(dendsort)
 require(ComplexHeatmap)
 require(svglite)
+require(ggfortify)
 ```
 
 ```{r}
@@ -179,7 +181,12 @@ Overall, it seems like metabolite profiles are segregating by treatment, with th
 I'm going to make a very similar PCA to the one above, but only using metabolites identified by the sequencer.
 
 ```{r}
-scaled.pca.id <- prcomp(transMetabData[c(4:155)], scale = TRUE, center = TRUE) #Use prcomp to perform a centered and scaled PCA calculation
+transMetabData[c(5:156)] #All known metabolites
+```
+
+
+```{r}
+scaled.pca.id <- prcomp(transMetabData[c(5:156)], scale = TRUE, center = TRUE) #Use prcomp to perform a centered and scaled PCA calculation
 summary(scaled.pca.id) #Standard deviations for each PC
 ```
 
@@ -206,7 +213,7 @@ I'll use a global permutational multivariate analysis of variance (PERMANOVA) to
 ### All metabolites
 
 ```{r}
-permanova.metab <- adonis2(scale(transMetabData[c(5:601)]) ~ treatment*day, data = transMetabData, method = 'eu') #Conduct global PERMANOVA to assess significance of trends in PCA. Scale metabolomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
+permanova.metab <- adonis2(scale(transMetabData[c(5:601)]) ~ as.factor(treatment)*as.numeric(day), data = transMetabData, method = 'eu', by = "terms") #Conduct global PERMANOVA to assess significance of trends in PCA. Scale metabolomics data and assess influence of treatment, day, and treatment x day on metabolite profiles. Include "by = "terms"" to ensure test assess significance for each term.
 permanova.metab #Significant influence of all factors
 ```
 
@@ -220,12 +227,12 @@ broom::tidy(permanova.metab) %>%
 I'm going to repeat the same analysis, but only look at trends for metabolites identified by the West Coast Metabolomics Center.
 
 ```{r}
-permanova.metabid <- adonis2(scale(transMetabData[c(5:156)]) ~ treatment*day, data = transMetabData, method = 'eu') #Conduct global PERMANOVA to assess significance of trends in PCA. Scale metabolomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
+permanova.metabid <- adonis2(scale(transMetabData[c(5:156)]) ~ treatment*day, data = transMetabData, method = 'eu', by = "terms") #Conduct global PERMANOVA to assess significance of trends in PCA. Scale metabolomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
 permanova.metabid #Significant influence of all factors
 ```
 
 ```{r}
-broom::tidy(permanova.metab) %>%
+broom::tidy(permanova.metabid) %>%
   write.csv(., "PCA/known-metabolites-PERMANOVA-results.csv", quote = FALSE) #Save PERMANOVA output
 ```
 
