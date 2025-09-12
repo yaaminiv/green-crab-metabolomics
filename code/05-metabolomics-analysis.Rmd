@@ -213,7 +213,11 @@ I'll use a global permutational multivariate analysis of variance (PERMANOVA) to
 ### All metabolites
 
 ```{r}
-permanova.metab <- adonis2(scale(transMetabData[c(5:601)]) ~ as.factor(treatment)*as.numeric(day), data = transMetabData, method = 'eu', by = "terms") #Conduct global PERMANOVA to assess significance of trends in PCA. Scale metabolomics data and assess influence of treatment, day, and treatment x day on metabolite profiles. Include "by = "terms"" to ensure test assess significance for each term.
+dissim.metab <- vegdist(scale(transMetabData[c(5:601)]), "euclidean") #Create euclidean dissimilarity matrix to use for perMANOVA and PERMDISP
+```
+
+```{r}
+permanova.metab <- adonis2(dissim.metab ~ as.factor(treatment)*as.numeric(day), data = transMetabData, method = 'eu', by = "terms") #Conduct global PERMANOVA to assess significance of trends in PCA. Scale metabolomics data and assess influence of treatment, day, and treatment x day on metabolite profiles. Include "by = "terms"" to ensure test assess significance for each term.
 permanova.metab #Significant influence of all factors
 ```
 
@@ -221,6 +225,40 @@ permanova.metab #Significant influence of all factors
 broom::tidy(permanova.metab) %>%
   write.csv(., "PCA/all-data-PERMANOVA-results.csv", quote = FALSE) #Save PERMANOVA output
 ```
+
+I will need to use a PERMDISP test to determine if significant differences are due to centroid or variance differences. I will do a separate test for each variable.
+
+```{r}
+disp.metab.temp <- betadisper(dissim.metab, group = as.factor(transMetabData$treatment), type = 'centroid') #Run a beta dispersion model to assess if significant differences are due to differences in group centroid or variance
+plot(disp.metab.temp) #Dispersion differences exist
+boxplot(disp.metab.temp) #Show distance to group centroids, can clearly see dispersion differences between 30 and the other two
+anova(disp.metab.temp) #Variance is different between groups. Temperature significance is due to centroid and dispersion differences!
+```
+
+```{r}
+disp.metab.day <- betadisper(dissim.metab, group = as.factor(transMetabData$day), type = 'centroid') #Run a beta dispersion model to assess if significant differences are due to differences in group centroid or variance
+plot(disp.metab.day) #Similar dispersion, but some clear outliers for day 22
+boxplot(disp.metab.day) #Similar dispersion differences, outliers seen more easily
+anova(disp.metab.day) #Variance is the same between groups. Day significance is due to centroiddifferences!
+```
+
+```{r}
+disp.metab.tempDay <- betadisper(dissim.metab, group = as.factor(transMetabData$treatment_day), type = 'centroid') #Run a beta dispersion model to assess if significant differences are due to differences in group centroid or variance
+plot(disp.metab.tempDay) #Dispersion differences exist, especially with 30_22
+boxplot(disp.metab.tempDay) #Very clear dispersion differences for each unique treatment!
+anova(disp.metab.tempDay) #Variance is different between groups. Interaction significance is due to centroid and dispersion differences!
+```
+
+```{r}
+rbind(broom::tidy(anova(disp.metab.temp)) %>%
+        mutate(var = "temperature"),
+      broom::tidy(anova(disp.metab.day)) %>%
+        mutate(var = "day"),
+      broom::tidy(anova(disp.metab.tempDay)) %>%
+        mutate(var = "interaction")) %>%
+  write.csv("PCA/all-data-PERMDISP-results.csv", quote = FALSE, row.names = FALSE) #Combine PERMDISP output for each variable and add specifics for which variable was tested. Save output
+```
+
 
 ### Identified metabolites
 
