@@ -23,7 +23,6 @@ getwd()
 ```{r packages, warning = FALSE, message = FALSE}
 # if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse')
 # if ("vegan" %in% rownames(installed.packages()) == 'FALSE') install.packages('vegan')
-# if ("ggfortify" %in% rownames(installed.packages()) == 'FALSE') install.packages('ggfortify')
 # if (!requireNamespace("BiocManager", quietly = TRUE))
 #   install.packages("BiocManager")
 # if ("mixOmics" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("mixOmics")
@@ -36,9 +35,9 @@ getwd()
 # if ("dendsort" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('dendsort')
 # if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap')
 # if ("svglite" %in% rownames(installed.packages()) == 'FALSE') install.packages("svglite")
+# if ("ggfortify" %in% rownames(installed.packages()) == 'FALSE') install.packages("ggfortify")
 require(tidyverse)
 require(vegan)
-require(ggfortify)
 require(mixOmics)
 require(RVAideMemoire)
 require(broom)
@@ -49,6 +48,7 @@ require(WGCNA)
 require(dendsort)
 require(ComplexHeatmap)
 require(svglite)
+require(ggfortify)
 ```
 
 ```{r}
@@ -87,15 +87,16 @@ lipidomicsMetadata <- read.csv("../../data/metabolomics_metadata.csv", header = 
   dplyr::rename_with(~stringr::str_replace_all(., "V", "")) %>%
   t(.) %>% as.data.frame(.) %>% 
   purrr::set_names(as.character(dplyr::slice(., 1))) %>%
-  dplyr::slice(., -1) %>% 
-  mutate(., unite(., "treatment", treatment:day, sep = "_")) %>%
+  dplyr::slice(., -1) %>%
+  dplyr::rename(., temperature = treatment) %>%
+  mutate(., unite(., "treatment", temperature:day, sep = "_")) %>%
   mutate(., treatment = gsub(x = treatment, pattern = "_  3", replacement = "_3")) %>%
   mutate(., treatment = gsub(x = treatment, pattern = "_ 22", replacement = "_22")) %>%
   mutate(., treatment = gsub(x = treatment, pattern = " 13_", replacement = "13_")) %>%
   mutate(., treatment = gsub(x = treatment, pattern = " 30_", replacement = "30_")) %>%
   mutate(., treatment = gsub(x = treatment, pattern = "  5_", replacement = "5_")) %>% 
   mutate(., treatment = gsub(x = treatment, pattern = " ", replacement = "")) %>%
-  mutate(., day = gsub(x = day, pattern = " ", replacement = "")) #Import metadata. Do not include any header information. Remove "V" from column names. Transform so crab.ID, treatment, and day are all columns. Set the first row in the dataframe as column names, then remove that row. Transform characters in each column for correct formatting
+  mutate(., day = gsub(x = day, pattern = " ", replacement = "")) #Import metadata. Do not include any header information. Remove "V" from column names. Transform so crab.ID, treatment, and day are all columns. Rename treatment to temperature. Set the first row in the dataframe as column names, then remove that row. Transform characters in each column for correct formatting
 tail(lipidomicsMetadata) #Confirm import
 ```
 
@@ -223,17 +224,36 @@ Overall, it seems like lipid profiles are segregating by treatment, with the 30Â
 I'll use a global permutational multivariate analysis of variance (PERMANOVA) to determine if treatment and day had a significant influence on metabolite profiles. The significant effects from the PCA will be used in the downstream PLS-DA to interrogate trends.
 
 ```{r}
-permanova.lipid <- adonis2(scale((transLipidData[c(5:2407)] %>%
+dissim.lipid <- vegdist(scale((transLipidData[c(5:2407)] %>%
                                     log() %>%
                                     mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
-                                    replace(is.na(.), 0))) ~ treatment*day, data = transLipidData, method = 'eu') #Conduct global PERMANOVA to assess significance of trends in PCA. Scale lipidomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
-permanova.lipid #Significant influence of all factors
+                                    replace(is.na(.), 0))), "euclidean") #Create euclidean dissimilarity matrix to use for perMANOVA and PERMDISP
 ```
 
+```{r}
+permanova.lipid <- adonis2(dissim.lipid ~ temperature + day + temperature:day, data = transLipidData, by = "term") #Conduct global PERMANOVA to assess significance of trends in PCA. Scale lipidomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
+permanova.lipid #Significant influence temperature only.
+```
 ```{r}
 broom::tidy(permanova.lipid) %>%
   write.csv(., "PCA/all-data-PERMANOVA-results.csv", quote = FALSE) #Save PERMANOVA output
 ```
+
+I will need to use a PERMDISP test to determine if significant differences in temperature are due to centroid or variance differences.
+
+```{r}
+disp.lipid.temp <- betadisper(dissim.lipid, group = as.factor(transLipidData$temperature), type = 'centroid') #Run a beta dispersion model to assess if significant differences are due to differences in group centroid or variance
+plot(disp.lipid.temp) #Dispersion differences exist
+boxplot(disp.lipid.temp) #Show distance to group centroids, can clearly see dispersion differences between 30 and the other two
+anova(disp.lipid.temp) #Variance is different between groups. Temperature significance is due to centroid and dispersion differences!
+```
+
+```{r}
+broom::tidy(anova(disp.lipid.temp)) %>%
+  mutate(., var = "temperature") %>%
+  write.csv("PCA/all-data-PERMDISP-results.csv", quote = FALSE, row.names = FALSE) #Clean output and save
+```
+
 
 # PLSDA for all lipids
 
