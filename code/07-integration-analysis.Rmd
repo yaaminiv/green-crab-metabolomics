@@ -22,6 +22,7 @@ getwd()
 
 ```{r packages, warning = FALSE, message = FALSE}
 # if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse')
+# if ("plotrix" %in% rownames(installed.packages()) == 'FALSE') install.packages('plotrix')
 # if ("vegan" %in% rownames(installed.packages()) == 'FALSE') install.packages('vegan')
 # if ("ggfortify" %in% rownames(installed.packages()) == 'FALSE') install.packages('ggfortify')
 # if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -37,6 +38,7 @@ getwd()
 # if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap')
 # if ("svglite" %in% rownames(installed.packages()) == 'FALSE') install.packages("svglite")
 require(tidyverse)
+require(plotrix)
 require(vegan)
 require(ggfortify)
 require(mixOmics)
@@ -59,7 +61,7 @@ sessionInfo()
 mkdir figures
 ```
 
-# Import data
+# Import and format data
 
 ## Metabolomics data
 
@@ -100,6 +102,99 @@ head(mME_lipidomics)
 ```
 
 ## Physiology data
+
+### TTR data
+
+```{r}
+rawTTR <- read.csv("../../data/time-to-right.csv", header = TRUE) #Import raw data
+head(rawTTR) #Confirm import. Trial data is in seconds.
+```
+
+```{r}
+modTTR <- rawTTR %>%
+  mutate(., day = case_when(date == "7/8/2022" ~ 4,
+                            date == "7/12/2022" ~ 8,
+                            date == "7/15/2022" ~ 11,
+                            date == "7/19/2022" ~ 15,
+                            date == "7/22/2022" ~ 18,
+                            date == "7/26/2022" ~ 22)) %>%
+  mutate(., treatment = case_when(treatment.tank == "1" | treatment.tank == "4" ~ "13C",
+                                  treatment.tank == "2" | treatment.tank == "5" ~ "5C",
+                                  treatment.tank == "3" | treatment.tank == "6" ~ "30C")) %>%
+  mutate(., missing.legs = case_when(number.legs < 10 ~ "Y",
+                                     number.legs == 10 ~ "N")) %>%
+  mutate(., integument.cont = recode(integument.color,
+                                     "B" = 0,
+                                     "BG" = 0.5,
+                                     "G" = 1, 
+                                     "YG" = 1.5, 
+                                     "Y" = 2, 
+                                     "YO" = 2.5 , 
+                                     "O" = 3, 
+                                     "RO" = 3.5)) %>%
+  mutate(., trial.1 = na_if(trial.1, 91.00)) %>%
+  mutate(., trial.2 = na_if(trial.2, 91.00)) %>%
+  mutate(., trial.3 = na_if(trial.3, 91.00)) %>%
+  rowwise(.) %>% 
+  mutate(., TTRavg = mean(c(trial.1, trial.2, trial.3), na.rm = TRUE)) %>%
+  filter(., is.na(TTRavg) == FALSE) %>%
+  mutate(., TTRSE = std.error(c(trial.1, trial.2, trial.3), na.rm = TRUE)) %>%
+  filter(., is.na(TTRSE) == FALSE) %>%
+  group_by(., day, treatment) %>%
+  mutate(., TTRavgFull = mean(TTRavg)) %>%
+  mutate(., TTRSEFull = std.error(TTRavg)) %>%
+  mutate(., TTRavgFullLow = TTRavgFull - TTRSEFull) %>%
+  mutate(., TTRavgFullHigh = TTRavgFull + TTRSEFull) %>%
+  ungroup(.) #Remove sampling ID and notes columns. Add new column with day information. Add new column with treatment information. Create a a new column that with an index for width/length. Create new column as a binary for whether or not crabs are missing legs. Change all 91 to NA, calculate average and SE using data from the three TTR trials using rowwise operations, and remove rows where TTRavg | TTRSE = NA.  Calculate average and SE for all samples in a treatment for each day. Add/subtract TTRSEFull to/from TTRavgFull to get bounds. Ungroup.
+head(modTTR) #Confirm formatting
+```
+
+I want to reduce the dataset down to crabs that were sampled. There were some crabs saved in different tubes as indicated in the notes column, but I fixed the tube labels when I sent them off for metabolomics sequencing!
+
+```{r}
+modTTRSampled <- modTTR %>%
+  filter(is.na(sampling.ID) == FALSE) %>% 
+  dplyr::select(-c(date, trial.1:trial.3, carapace.length, notes, TTRavgFull:TTRavgFullHigh)) %>% 
+  rename(crab.ID = sampling.ID) %>%
+  rename(tank = treatment.tank) %>%
+  rename(probe_num = probe.number) %>% 
+  mutate(treatment = gsub(pattern = "C", replacement = "", x = treatment) %>% as.factor(.)) %>%
+  mutate(day = as.factor(day)) %>% 
+  mutate(., unite(., "treatment_day", treatment:day, sep = "_")) %>%
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = "_  3", replacement = "_3")) %>%
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = "_ 22", replacement = "_22")) %>%
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = " 13_", replacement = "13_")) %>%
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = " 30_", replacement = "30_")) %>%
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = "  5_", replacement = "5_")) #Retain only crabs that were sampled and remove any superfluous columns. Rename specific columns to match respirometry data. Change certain columns to characters in order to match with metabolomics/lipidomics data.
+head(modTTRSampled) #Confirm formatting
+```
+
+### Respirometry data
+
+```{r}
+attach("../04-respirometry-analysis/04-respirometry-analysis.RData") #Attach respirometry RData
+all_MO2_slope_results_demTTRdata <- all_MO2_slope_results_demTTRdata #Data used for respirometry GLM
+detach("file:../04-respirometry-analysis/04-respirometry-analysis.RData") #Detach respirometry RData
+```
+
+I want to match crab id with all of the demographic information in the respirometry dataframe.
+
+```{r}
+all_MO2_slope_results_demTTRdata %>%
+  mutate(treatment = gsub(pattern = "C", replacement = "", x = treatment) %>% as.factor(.)) %>%
+  mutate(., day = case_when(day == "04" ~ "4",
+                            day != "04" ~ day) %>%
+           as.factor(.)) %>%
+  mutate(., unite(., "treatment_day", treatment:day, sep = "_")) %>%
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = "_  3", replacement = "_3")) %>%
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = "_ 22", replacement = "_22")) %>%
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = " 13_", replacement = "13_")) %>%
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = " 30_", replacement = "30_")) %>%
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = "  5_", replacement = "5_")) %>%
+  filter(., day == "4" | day == "22") %>%
+  left_join(., modTTRSampled, by = c("treatment", "day", "treatment_day", "tank", "probe_num", "sex", "integument.cont", "weight", "carapace.width", "missing.legs")) %>%
+  dplyr::select(-c(TTRavg:TTRSE)) #Change treatment, day, and treatment_day columns to match metabolomics/lipidomics datasets. Retain only respirometry data on the days that sampling was done. Join with modTTRSampled by all columns in common to get crab.ID. Remove superfluous columns. 
+```
 
 # Correlating metabolomics and lipidomics data
 
@@ -521,7 +616,7 @@ metabLipidCorNo0 %>%
                             rownames_to_column(., var = "metabolite") %>%
                             pivot_longer(cols = 2:13, names_to = "lipid", values_to = "pvalue_05")),
                          by = c("metabolite", "lipid"))),
-            by = c("metabolite", "lipid")) %>%
+            by = c("metabolite", "lipid")) %>%=
   pivot_longer(.,
                cols = 3:10,
                names_to = c(".value", "condition"),
@@ -545,7 +640,7 @@ ggsave("figures/metabolte-lipid-module-relationship-correlations.pdf", height = 
 
 # Correlating physiology and -omics data
 
-The next step is to add physiology information to the metabolomics and lipidomics WCNA analyses.
+The next step is to add physiology information to the metabolomics and lipidomics WCNA analyses. I want to correlate metabolite and lipid profiles with average TTR and respirometry data on the days the crabs were dissected.
 
 # Individual metabolite and lipid correlations with DIABLO
 
