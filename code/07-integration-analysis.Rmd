@@ -161,11 +161,12 @@ modTTRSampled <- modTTR %>%
   mutate(treatment = gsub(pattern = "C", replacement = "", x = treatment) %>% as.factor(.)) %>%
   mutate(day = as.factor(day)) %>% 
   mutate(., unite(., "treatment_day", treatment:day, sep = "_")) %>%
-  mutate(., treatment_day = gsub(x = treatment_day, pattern = "_  3", replacement = "_3")) %>%
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = "_  4", replacement = "_4")) %>%
   mutate(., treatment_day = gsub(x = treatment_day, pattern = "_ 22", replacement = "_22")) %>%
   mutate(., treatment_day = gsub(x = treatment_day, pattern = " 13_", replacement = "13_")) %>%
   mutate(., treatment_day = gsub(x = treatment_day, pattern = " 30_", replacement = "30_")) %>%
-  mutate(., treatment_day = gsub(x = treatment_day, pattern = "  5_", replacement = "5_")) #Retain only crabs that were sampled and remove any superfluous columns. Rename specific columns to match respirometry data. Change certain columns to characters in order to match with metabolomics/lipidomics data.
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = "  5_", replacement = "5_")) %>%
+  mutate(., crab.ID = as.factor(crab.ID)) #Retain only crabs that were sampled and remove any superfluous columns. Rename specific columns to match respirometry data. Change certain columns to characters in order to match with metabolomics/lipidomics data.
 head(modTTRSampled) #Confirm formatting
 ```
 
@@ -180,20 +181,22 @@ detach("file:../04-respirometry-analysis/04-respirometry-analysis.RData") #Detac
 I want to match crab id with all of the demographic information in the respirometry dataframe.
 
 ```{r}
-all_MO2_slope_results_demTTRdata %>%
+all_MO2_slope_results_sampled <- all_MO2_slope_results_demTTRdata %>%
   mutate(treatment = gsub(pattern = "C", replacement = "", x = treatment) %>% as.factor(.)) %>%
   mutate(., day = case_when(day == "04" ~ "4",
                             day != "04" ~ day) %>%
            as.factor(.)) %>%
   mutate(., unite(., "treatment_day", treatment:day, sep = "_")) %>%
-  mutate(., treatment_day = gsub(x = treatment_day, pattern = "_  3", replacement = "_3")) %>%
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = "_  4", replacement = "_4")) %>%
   mutate(., treatment_day = gsub(x = treatment_day, pattern = "_ 22", replacement = "_22")) %>%
   mutate(., treatment_day = gsub(x = treatment_day, pattern = " 13_", replacement = "13_")) %>%
   mutate(., treatment_day = gsub(x = treatment_day, pattern = " 30_", replacement = "30_")) %>%
   mutate(., treatment_day = gsub(x = treatment_day, pattern = "  5_", replacement = "5_")) %>%
   filter(., day == "4" | day == "22") %>%
   left_join(., modTTRSampled, by = c("treatment", "day", "treatment_day", "tank", "probe_num", "sex", "integument.cont", "weight", "carapace.width", "missing.legs")) %>%
-  dplyr::select(-c(TTRavg:TTRSE)) #Change treatment, day, and treatment_day columns to match metabolomics/lipidomics datasets. Retain only respirometry data on the days that sampling was done. Join with modTTRSampled by all columns in common to get crab.ID. Remove superfluous columns. 
+  dplyr::select(-c(TTRavg:TTRSE)) %>%
+  mutate(., crab.ID = as.factor(crab.ID)) #Change treatment, day, and treatment_day columns to match metabolomics/lipidomics datasets. Retain only respirometry data on the days that sampling was done. Join with modTTRSampled by all columns in common to get crab.ID. Remove superfluous columns. 
+head(all_MO2_slope_results_sampled) #Confirm formatting
 ```
 
 # Correlating metabolomics and lipidomics data
@@ -616,7 +619,7 @@ metabLipidCorNo0 %>%
                             rownames_to_column(., var = "metabolite") %>%
                             pivot_longer(cols = 2:13, names_to = "lipid", values_to = "pvalue_05")),
                          by = c("metabolite", "lipid"))),
-            by = c("metabolite", "lipid")) %>%=
+            by = c("metabolite", "lipid")) %>%
   pivot_longer(.,
                cols = 3:10,
                names_to = c(".value", "condition"),
@@ -640,9 +643,66 @@ ggsave("figures/metabolte-lipid-module-relationship-correlations.pdf", height = 
 
 # Correlating physiology and -omics data
 
+## WCNA
+
 The next step is to add physiology information to the metabolomics and lipidomics WCNA analyses. I want to correlate metabolite and lipid profiles with average TTR and respirometry data on the days the crabs were dissected.
 
-# Individual metabolite and lipid correlations with DIABLO
+### Modify trait matrix
+
+```{r}
+datTraitsMet <- metabolomicsMetadata %>%
+  mutate(., "13ºC at Day 4" = case_when(treatment_day == "13_3" ~ 1,
+                                        treatment_day != "13_3" ~ 0)) %>%
+  mutate(., "5ºC at Day 4" = case_when(treatment_day == "5_3" ~ 1,
+                                       treatment_day != "5_3" ~ 0)) %>%
+  mutate(., "30ºC at Day 4" = case_when(treatment_day == "30_3" ~ 1,
+                                        treatment_day != "30_3" ~ 0)) %>%
+  mutate(., "13ºC at Day 22" = case_when(treatment_day == "13_22" ~ 1,
+                                         treatment_day != "13_22" ~ 0)) %>%
+  mutate(., "5ºC at Day 22" = case_when(treatment_day == "5_22" ~ 1,
+                                        treatment_day != "5_22" ~ 0)) %>%
+  mutate(., "30ºC at Day 22" = case_when(treatment_day == "30_22" ~ 1,
+                                         treatment_day != "30_22" ~ 0)) %>%
+  dplyr::select(., -c(2:4)) #Copy dataframe into datTraits, then use a series of case_when commands to create individual columns for each treatment or day, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns. 
+rownames(datTraitsMet) <- datTraitsMet$crab.ID #Convert crab.ID into rownames.
+datTraitsMet <- datTraitsMet %>%
+  dplyr::select(., -crab.ID) #Remove the crab.ID column
+head(datTraitsMet) #Confirm dataframe creation
+```
+
+```{r}
+metabolomicsMetadata %>%
+  mutate(., day = gsub(x = day, pattern = 3, replacement = 4) %>% as.factor(.)) %>%
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = "_3", replacement = "_4") %>% as.factor(.)) %>%
+  left_join(x = ., 
+            y = (modTTRSampled %>% 
+                   dplyr::select(c(crab.ID, treatment_day, TTRavg, TTRSE))), 
+            by = c("crab.ID", "treatment_day")) %>%
+  left_join(x = ., 
+            y = all_MO2_slope_results_sampled %>%
+              dplyr::select(c(crab.ID, treatment_day, slope_nmol_hr_corrected)), 
+            by = c("crab.ID", "treatment_day")) %>%
+  mutate(., "13ºC at Day 4" = case_when(treatment_day == "13_4" ~ 1,
+                                        treatment_day != "13_4" ~ 0)) %>%
+  mutate(., "5ºC at Day 4" = case_when(treatment_day == "5_4" ~ 1,
+                                       treatment_day != "5_4" ~ 0)) %>%
+  mutate(., "30ºC at Day 4" = case_when(treatment_day == "30_4" ~ 1,
+                                        treatment_day != "30_4" ~ 0)) %>%
+  mutate(., "13ºC at Day 22" = case_when(treatment_day == "13_22" ~ 1,
+                                         treatment_day != "13_22" ~ 0)) %>%
+  mutate(., "5ºC at Day 22" = case_when(treatment_day == "5_22" ~ 1,
+                                        treatment_day != "5_22" ~ 0)) %>%
+  mutate(., "30ºC at Day 22" = case_when(treatment_day == "30_22" ~ 1,
+                                         treatment_day != "30_22" ~ 0)) %>%
+  dplyr::select(-c(treatment:treatment_day))
+```
+
+- need to fix error in modTTR: double 302 and 303???? mixxing 305-308, 506
+- unclear why certain things are not merging for master datTraitsMet
+
+## ASCA
+
+## Individual metabolite and lipid correlations with DIABLO
 
 Do correlations with VIP from significantly correlated modules?
 
