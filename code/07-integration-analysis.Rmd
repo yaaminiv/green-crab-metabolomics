@@ -1138,35 +1138,27 @@ dev.off()
 
 ##### Append existing correlation information
 
-I noticed that the treatment x module eigengene correlations I got from this analysis were different from when I did just temperature. However, the correlations between physiology and module eigengenes were the same. This could be because I am using a different R version than I was for the original WCNA analysis. I'm going to try appending the physiology correlations to the previous treatment correlations to see if that removes the inconsistency.
-
 ```{r}
 moduleTraitCorLipidAppend <- moduleTraitCorLipid %>%
   as.data.frame(.) %>%
-  rename("13ºC at Day 4" = "13ºC at Day 3") %>%
-  rename("30ºC at Day 4" = "30ºC at Day 3") %>%
-  rename("5ºC at Day 4" = "5ºC at Day 3") %>% 
   rownames_to_column(., var = "ME") %>%
   left_join(., y = (moduleTraitCorLipidPhysOnly %>% 
                       as.data.frame(.) %>% 
                       rownames_to_column(., var = "ME"))) %>%
   column_to_rownames(., var = "ME") %>%
-  as.matrix(.) #Take previous correlations and convert to a dataframe. Rename columns and convert rownames to ME column. Join with phys correlations and reconvert column to rownames. Convert back to a matrix
+  as.matrix(.) #Take previous correlations and convert to a dataframe. Convert rownames to ME column. Join with phys correlations and reconvert column to rownames. Convert back to a matrix
 moduleTraitCorLipidAppend #Confirm matrix creation
 ```
 
 ```{r}
 moduleTraitPvalueLipidAppend <- moduleTraitPvalueLipid %>%
   as.data.frame(.) %>%
-  rename("13ºC at Day 4" = "13ºC at Day 3") %>%
-  rename("30ºC at Day 4" = "30ºC at Day 3") %>%
-  rename("5ºC at Day 4" = "5ºC at Day 3") %>% 
   rownames_to_column(., var = "ME") %>%
   left_join(., y = (moduleTraitPvalueLipidPhysOnly %>% 
                       as.data.frame(.) %>% 
                       rownames_to_column(., var = "ME"))) %>%
   column_to_rownames(., var = "ME") %>%
-  as.matrix(.) #Take previous correlations and convert to a dataframe. Rename columns and convert rownames to ME column. Join with phys correlations and reconvert column to rownames. Convert back to a matrix
+  as.matrix(.) #Take previous correlations and convert to a dataframe. Convert rownames to ME column. Join with phys correlations and reconvert column to rownames. Convert back to a matrix
 moduleTraitPvalueLipidAppend #Confirm matrix creation
 ```
 
@@ -1176,11 +1168,11 @@ heatmappvalLipidAppend <- signif(moduleTraitPvalueLipidAppend, 1) #Create list o
 row_dendLipidAppend <- dendsort(hclust(dist(moduleTraitCorLipidAppend))) #Create dendograms for rows
 col_dendLipidAppend <- dendsort(hclust(dist(t(moduleTraitCorLipidAppend)))) #Create dendograms for columns
 
-trait_orderLipidAppend <- c("Average TTR", "Oxygen Consumption", "5ºC at Day 3", "13ºC at Day 3", "30ºC at Day 3", "5ºC at Day 22", "13ºC at Day 22", "30ºC at Day 22") #Order of traits for heatmap
+trait_orderLipidAppend <- c("Average TTR", "Oxygen Consumption", "5ºC", "13º", "30ºC") #Order of traits for heatmap
 ```
 
 ```{r}
-pdf(file = "WCNA/lipidomics/figures/module-trait-relationship-heatmap-append.pdf", height = 8.5, width = 8.5)
+#pdf(file = "WCNA/lipidomics/figures/module-trait-relationship-heatmap-append.pdf", height = 8.5, width = 8.5)
 htLipidAppend <- Heatmap(moduleTraitCorLipidAppend, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
                          col = blueWhiteRed(50), 
                          row_names_side = "left", 
@@ -1190,7 +1182,7 @@ htLipidAppend <- Heatmap(moduleTraitCorLipidAppend, name = "Eigengene", column_t
                          column_dend_reorder = FALSE, 
                          cluster_columns = FALSE,
                          row_dend_reorder = FALSE,  
-                         column_split = c(rep("A", times = 6), rep("B", times = 2)), 
+                         column_split = c(rep("A", times = 3), rep("B", times = 2)), 
                          column_gap = unit(3, "mm"),
                          #row_split = 3, 
                          #column_dend_height = unit(.5, "in"),
@@ -1209,7 +1201,7 @@ htLipidAppend <- Heatmap(moduleTraitCorLipidAppend, name = "Eigengene", column_t
                          column_title_gp = gpar(fontsize = 20),
                          row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
 draw(htLipidAppend) #Draw heatmap
-dev.off()
+#dev.off()
 ```
 
 ### Combined metabolomics and lipidomics WCNs with physiology, temperature, and day
