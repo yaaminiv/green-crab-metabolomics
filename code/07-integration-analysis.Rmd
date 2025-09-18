@@ -70,6 +70,7 @@ attach("../05-metabolomics-analysis/05-metabolomics-analysis.RData") #Attach met
 metabolomicsMetadata <- metabolomicsMetadata #Save metadata
 transMetabData <- transMetabData #Save transposed data used for PLSDA
 rowwiseMetabData <- rowwiseMetabData #Rowwise data used for WCNA
+MEsMet <- MEs #Module eigengenes for metabolomics data
 mME_metabolomics <- mME_meta #Data used to create module expression matrix
 plotColors <- plotColors #Color scheme for plots
 detach("file:../05-metabolomics-analysis/05-metabolomics-analysis.RData") #Detach metabolomics RData
@@ -79,6 +80,7 @@ detach("file:../05-metabolomics-analysis/05-metabolomics-analysis.RData") #Detac
 head(metabolomicsMetadata)
 head(transMetabData)
 head(rowwiseMetabData)
+head(MEsMet)
 head(mME_metabolomics)
 plotColors
 ```
@@ -112,12 +114,12 @@ head(rawTTR) #Confirm import. Trial data is in seconds.
 
 ```{r}
 modTTR <- rawTTR %>%
-  mutate(., day = case_when(date == "7/8/2022" ~ 4,
-                            date == "7/12/2022" ~ 8,
-                            date == "7/15/2022" ~ 11,
-                            date == "7/19/2022" ~ 15,
-                            date == "7/22/2022" ~ 18,
-                            date == "7/26/2022" ~ 22)) %>%
+  mutate(., day = case_when(date == "7/8/22" ~ 4,
+                            date == "7/12/22" ~ 8,
+                            date == "7/15/22" ~ 11,
+                            date == "7/19/22" ~ 15,
+                            date == "7/22/22" ~ 18,
+                            date == "7/26/22" ~ 22)) %>%
   mutate(., treatment = case_when(treatment.tank == "1" | treatment.tank == "4" ~ "13C",
                                   treatment.tank == "2" | treatment.tank == "5" ~ "5C",
                                   treatment.tank == "3" | treatment.tank == "6" ~ "30C")) %>%
@@ -194,8 +196,9 @@ all_MO2_slope_results_sampled <- all_MO2_slope_results_demTTRdata %>%
   mutate(., treatment_day = gsub(x = treatment_day, pattern = "  5_", replacement = "5_")) %>%
   filter(., day == "4" | day == "22") %>%
   left_join(., modTTRSampled, by = c("treatment", "day", "treatment_day", "tank", "probe_num", "sex", "integument.cont", "weight", "carapace.width", "missing.legs")) %>%
-  dplyr::select(-c(TTRavg:TTRSE)) %>%
-  mutate(., crab.ID = as.factor(crab.ID)) #Change treatment, day, and treatment_day columns to match metabolomics/lipidomics datasets. Retain only respirometry data on the days that sampling was done. Join with modTTRSampled by all columns in common to get crab.ID. Remove superfluous columns. 
+  dplyr::select(-c(TTRavg:TTRSE, integument.color, number.legs)) %>%
+  mutate(., crab.ID = case_when(is.na(crab.ID) == TRUE ~ "304",
+                                is.na(crab.ID) == FALSE ~ crab.ID)) #Change treatment, day, and treatment_day columns to match metabolomics/lipidomics datasets. Retain only respirometry data on the days that sampling was done. Join with modTTRSampled by all columns in common to get crab.ID. Remove superfluous columns. Manually change NA crab.ID to 304, since 304 was not included in the TTR data due to not righting.
 head(all_MO2_slope_results_sampled) #Confirm formatting
 ```
 
@@ -647,31 +650,16 @@ ggsave("figures/metabolte-lipid-module-relationship-correlations.pdf", height = 
 
 The next step is to add physiology information to the metabolomics and lipidomics WCNA analyses. I want to correlate metabolite and lipid profiles with average TTR and respirometry data on the days the crabs were dissected.
 
+```{bash}
+mkdir WCNA
+mkdir WCNA/metabolomics
+mkdir WCNA/lipidomics
+```
+
 ### Modify trait matrix
 
 ```{r}
 datTraitsMet <- metabolomicsMetadata %>%
-  mutate(., "13ºC at Day 4" = case_when(treatment_day == "13_3" ~ 1,
-                                        treatment_day != "13_3" ~ 0)) %>%
-  mutate(., "5ºC at Day 4" = case_when(treatment_day == "5_3" ~ 1,
-                                       treatment_day != "5_3" ~ 0)) %>%
-  mutate(., "30ºC at Day 4" = case_when(treatment_day == "30_3" ~ 1,
-                                        treatment_day != "30_3" ~ 0)) %>%
-  mutate(., "13ºC at Day 22" = case_when(treatment_day == "13_22" ~ 1,
-                                         treatment_day != "13_22" ~ 0)) %>%
-  mutate(., "5ºC at Day 22" = case_when(treatment_day == "5_22" ~ 1,
-                                        treatment_day != "5_22" ~ 0)) %>%
-  mutate(., "30ºC at Day 22" = case_when(treatment_day == "30_22" ~ 1,
-                                         treatment_day != "30_22" ~ 0)) %>%
-  dplyr::select(., -c(2:4)) #Copy dataframe into datTraits, then use a series of case_when commands to create individual columns for each treatment or day, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns. 
-rownames(datTraitsMet) <- datTraitsMet$crab.ID #Convert crab.ID into rownames.
-datTraitsMet <- datTraitsMet %>%
-  dplyr::select(., -crab.ID) #Remove the crab.ID column
-head(datTraitsMet) #Confirm dataframe creation
-```
-
-```{r}
-metabolomicsMetadata %>%
   mutate(., day = gsub(x = day, pattern = 3, replacement = 4) %>% as.factor(.)) %>%
   mutate(., treatment_day = gsub(x = treatment_day, pattern = "_3", replacement = "_4") %>% as.factor(.)) %>%
   left_join(x = ., 
@@ -682,6 +670,7 @@ metabolomicsMetadata %>%
             y = all_MO2_slope_results_sampled %>%
               dplyr::select(c(crab.ID, treatment_day, slope_nmol_hr_corrected)), 
             by = c("crab.ID", "treatment_day")) %>%
+  arrange(., crab.ID) %>%
   mutate(., "13ºC at Day 4" = case_when(treatment_day == "13_4" ~ 1,
                                         treatment_day != "13_4" ~ 0)) %>%
   mutate(., "5ºC at Day 4" = case_when(treatment_day == "5_4" ~ 1,
@@ -694,11 +683,105 @@ metabolomicsMetadata %>%
                                         treatment_day != "5_22" ~ 0)) %>%
   mutate(., "30ºC at Day 22" = case_when(treatment_day == "30_22" ~ 1,
                                          treatment_day != "30_22" ~ 0)) %>%
-  dplyr::select(-c(treatment:treatment_day))
+  dplyr::select(-c(treatment:treatment_day, TTRSE)) %>%
+  column_to_rownames(., var = "crab.ID") %>% 
+  rename(., "Average TTR" = TTRavg) %>%
+  rename(., "Oxygen Consumption" = slope_nmol_hr_corrected)
+  #Take metadata and fix day to day 4 instead of day 3. Join with TTR data. 304, 308, and 506 do not have TTR data because they failed to right. Join with respirometry data (only select crabs have accompanying respirometry data). Use a series of case_when commands to create individual columns for each treatment or day, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns and TTRSE column. Convert crab.ID to rownames. Rename TTR and respirometry columns
+head(datTraitsMet) #Confirm dataframe creation
+nrow(datTraitsMet) == nrow(rowwiseMetabData) #Confirm that there are the same number of rows (samples) between the new trait matrix and the metabolite data
 ```
 
-- need to fix error in modTTR: double 302 and 303???? mixxing 305-308, 506
-- unclear why certain things are not merging for master datTraitsMet
+### Correlate trait matrix with WCNA modules
+
+```{r}
+#Define numbers of metabolites and samples and view 
+nMetabolites <- ncol(rowwiseMetabData)
+nSamples <- nrow(rowwiseMetabData)
+
+nMetabolites
+nSamples
+```
+
+Next correlate the trait matrix (treatment, day) with eigengenes (modules).  
+
+```{r}
+moduleTraitCorMet <- cor(MEsMet, datTraitsMet, use = "p") #Correlations of traits with eigengenes
+moduleTraitPvalueMet <- WGCNA::corPvalueStudent(moduleTraitCorMet, nSamples) #Get p-values for correlations
+head(moduleTraitCorMet %>% as.data.frame())
+head(moduleTraitPvalueMet %>% as.data.frame())
+```
+
+```{r}
+moduleTraitTreeMet <- hclust(dist(t(moduleTraitCorMet)), method = "average") #Create cluster dendogram for module-trait correlations
+```
+
+```{r}
+#pdf(file = "WCNA/figures/module-trait-cluster-dendogram.pdf", height = 8.5, width = 11)
+plot(moduleTraitTreeMet) #Plot cluster dendogram
+#dev.off()
+```
+
+### Plot correlations
+
+```{bash}
+mkdir WCNA/metabolomics/figures
+```
+
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+textMatrixMet <- paste(signif(moduleTraitCorMet, 2), "\n(",signif(moduleTraitPvalueMet, 1), ")", sep = "") #Create a matrix with the module-trait correlation and p-values
+dim(textMatrixMet) <- dim(moduleTraitCorMet) #Ensure this matrix has the appropriate dimensions
+head(textMatrixMet) #Confirm matrix creation
+```
+
+```{r}
+pdf("WCNA/metabolomics/figures/module-trait-relationships.pdf", height = 8.5, width = 11)
+labeledHeatmap(Matrix = moduleTraitCorMet, xLabels = names(datTraitsMet),  yLabels = names(MEsMet), ySymbols = names(MEsMet), cex.lab.y = 1.5, cex.lab.x = 1.5, colors = blueWhiteRed(50), textMatrix = textMatrixMet, setStdMargins = TRUE, cex.text = 1, zlim = c(-1,1), main = paste("Module-trait relationships"), cex.main = 2) #Use the textMatrix to create a heatmap with correlations between modules and the various treatments.
+dev.off()
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+heatmappval <- signif(moduleTraitPvalue, 1) #Create list of pvalues for eigengene correlation with specific traits
+
+row_dend <- dendsort(hclust(dist(moduleTraitCor))) #Create dendograms for rows
+col_dend <- dendsort(hclust(dist(t(moduleTraitCor)))) #Create dendograms for columns
+
+trait_order <- c("5ºC at Day 3", "13ºC at Day 3", "30ºC at Day 3", "5ºC at Day 22", "13ºC at Day 22", "30ºC at Day 22") #Order of traits for heatmap
+```
+
+```{r}
+#pdf(file = "WCNA/figures/module-trait-relationship-heatmap.pdf", height = 8.5, width = 8.5)
+ht <- Heatmap(moduleTraitCor, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
+              col = blueWhiteRed(50), 
+              row_names_side = "left", 
+              row_dend_side = "left",
+              width = unit(5, "in"), 
+              height = unit(4.5, "in"), 
+              column_dend_reorder = TRUE, 
+              cluster_columns = col_dend,
+              row_dend_reorder = FALSE,  
+              #column_split = 3, 
+              #row_split = 3, 
+              #column_dend_height = unit(.5, "in"),
+              cluster_rows = row_dend, 
+              #column_order = trait_order, 
+              #row_gap = unit(2.5, "mm"), 
+              border = TRUE,
+              cell_fun = function(j, i, x, y, w, h, col) {
+                if(heatmappval[i, j] < 0.05) {
+                  grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+                }
+                else {
+                  grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+                }},
+              column_names_rot = 45,
+              column_names_gp =  gpar(fontsize = 12, border = FALSE),
+              column_title_gp = gpar(fontsize = 20),
+              row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
+draw(ht) #Draw heatmap
+#dev.off()
+```
 
 ## ASCA
 
