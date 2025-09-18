@@ -648,18 +648,33 @@ ggsave("figures/metabolte-lipid-module-relationship-correlations.pdf", height = 
 
 ## WCNA
 
-The next step is to add physiology information to the metabolomics and lipidomics WCNA analyses. I want to correlate metabolite and lipid profiles with average TTR and respirometry data on the days the crabs were dissected.
+The next step is to add physiology information to the metabolomics and lipidomics WCNA analyses. I want to correlate metabolite and lipid profiles with average TTR and respirometry data on the days the crabs were dissected. I'm going to do this in three steps:
+
+1. Metabolomics and lipidomics WCNAs separately, correlate with physiology data only
+2. Metabolomics and lipidomics WCNAs separately, correlate with physiology and temperature data
+3. Combined metabolomics and lipidomics WCNAs
 
 ```{bash}
 mkdir WCNA
-mkdir WCNA/metabolomics
-mkdir WCNA/lipidomics
-```
 
-### Modify trait matrix
+mkdir WCNA/metabolomics
+mkdir WCNA/metabolomics/figures
+
+mkdir WCNA/lipidomics
+mkdir WCNA/lipidomics/figures
+```
+### Correlate separate metabolomics and lipidomics WCNAs with physiology only
+
+#### Metabolomics
+
+#### Lipidomics
+
+### Correlate separate metabolomics and lipidomics WCNAs with physiology, temperature, and day
+
+#### Modify trait matrix
 
 ```{r}
-datTraitsMet <- metabolomicsMetadata %>%
+datTraitsPhysTemp <- metabolomicsMetadata %>%
   mutate(., day = gsub(x = day, pattern = 3, replacement = 4) %>% as.factor(.)) %>%
   mutate(., treatment_day = gsub(x = treatment_day, pattern = "_3", replacement = "_4") %>% as.factor(.)) %>%
   left_join(x = ., 
@@ -688,11 +703,11 @@ datTraitsMet <- metabolomicsMetadata %>%
   rename(., "Average TTR" = TTRavg) %>%
   rename(., "Oxygen Consumption" = slope_nmol_hr_corrected)
   #Take metadata and fix day to day 4 instead of day 3. Join with TTR data. 304, 308, and 506 do not have TTR data because they failed to right. Join with respirometry data (only select crabs have accompanying respirometry data). Use a series of case_when commands to create individual columns for each treatment or day, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns and TTRSE column. Convert crab.ID to rownames. Rename TTR and respirometry columns
-head(datTraitsMet) #Confirm dataframe creation
-nrow(datTraitsMet) == nrow(rowwiseMetabData) #Confirm that there are the same number of rows (samples) between the new trait matrix and the metabolite data
+head(datTraitsPhysTemp) #Confirm dataframe creation
+nrow(datTraitsPhysTemp) == nrow(rowwiseMetabData) #Confirm that there are the same number of rows (samples) between the new trait matrix and the metabolite data
 ```
 
-### Correlate trait matrix with WCNA modules
+#### Metabolomics
 
 ```{r}
 #Define numbers of metabolites and samples and view 
@@ -703,85 +718,84 @@ nMetabolites
 nSamples
 ```
 
-Next correlate the trait matrix (treatment, day) with eigengenes (modules).  
+##### Correlate trait matrix with WCNA modules
 
 ```{r}
-moduleTraitCorMet <- cor(MEsMet, datTraitsMet, use = "p") #Correlations of traits with eigengenes
-moduleTraitPvalueMet <- WGCNA::corPvalueStudent(moduleTraitCorMet, nSamples) #Get p-values for correlations
-head(moduleTraitCorMet %>% as.data.frame())
-head(moduleTraitPvalueMet %>% as.data.frame())
-```
-
-```{r}
-moduleTraitTreeMet <- hclust(dist(t(moduleTraitCorMet)), method = "average") #Create cluster dendogram for module-trait correlations
+moduleTraitCorMetPhysTemp <- cor(MEsMet, datTraitsPhysTemp, use = "p") #Correlations of traits with eigengenes
+moduleTraitPvalueMetPhysTemp <- WGCNA::corPvalueStudent(moduleTraitCorMetPhysTemp, nSamples) #Get p-values for correlations
+head(moduleTraitCorMetPhysTemp %>% as.data.frame())
+head(moduleTraitPvalueMetPhysTemp %>% as.data.frame())
 ```
 
 ```{r}
-#pdf(file = "WCNA/figures/module-trait-cluster-dendogram.pdf", height = 8.5, width = 11)
-plot(moduleTraitTreeMet) #Plot cluster dendogram
-#dev.off()
+moduleTraitTreeMetPhysTemp <- hclust(dist(t(moduleTraitCorMetPhysTemp)), method = "average") #Create cluster dendogram for module-trait correlations
 ```
 
-### Plot correlations
-
-```{bash}
-mkdir WCNA/metabolomics/figures
+```{r}
+# pdf(file = "WCNA/metabolomics/figures/module-trait-cluster-dendogram-physTemp.pdf", height = 8.5, width = 11)
+plot(moduleTraitTreeMetPhysTemp) #Plot cluster dendogram
+# dev.off()
 ```
 
+##### Plot correlations
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
-textMatrixMet <- paste(signif(moduleTraitCorMet, 2), "\n(",signif(moduleTraitPvalueMet, 1), ")", sep = "") #Create a matrix with the module-trait correlation and p-values
-dim(textMatrixMet) <- dim(moduleTraitCorMet) #Ensure this matrix has the appropriate dimensions
-head(textMatrixMet) #Confirm matrix creation
+textMatrixMetPhysTemp <- paste(signif(moduleTraitCorMetPhysTemp, 2), "\n(",signif(moduleTraitPvalueMetPhysTemp, 1), ")", sep = "") #Create a matrix with the module-trait correlation and p-values
+dim(textMatrixMetPhysTemp) <- dim(moduleTraitCorMetPhysTemp) #Ensure this matrix has the appropriate dimensions
+head(textMatrixMetPhysTemp) #Confirm matrix creation
 ```
 
 ```{r}
-pdf("WCNA/metabolomics/figures/module-trait-relationships.pdf", height = 8.5, width = 11)
-labeledHeatmap(Matrix = moduleTraitCorMet, xLabels = names(datTraitsMet),  yLabels = names(MEsMet), ySymbols = names(MEsMet), cex.lab.y = 1.5, cex.lab.x = 1.5, colors = blueWhiteRed(50), textMatrix = textMatrixMet, setStdMargins = TRUE, cex.text = 1, zlim = c(-1,1), main = paste("Module-trait relationships"), cex.main = 2) #Use the textMatrix to create a heatmap with correlations between modules and the various treatments.
+pdf("WCNA/metabolomics/figures/module-trait-relationships-physTemp.pdf", height = 8.5, width = 11)
+labeledHeatmap(Matrix = moduleTraitCorMetPhysTemp, xLabels = names(datTraitsPhysTemp),  yLabels = names(MEsMet), ySymbols = names(MEsMet), cex.lab.y = 1.5, cex.lab.x = 1.5, colors = blueWhiteRed(50), textMatrix = textMatrixMetPhysTemp, setStdMargins = TRUE, cex.text = 1, zlim = c(-1,1), main = paste("Module-trait relationships"), cex.main = 2) #Use the textMatrix to create a heatmap with correlations between modules and the various treatments.
 dev.off()
 ```
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
-heatmappval <- signif(moduleTraitPvalue, 1) #Create list of pvalues for eigengene correlation with specific traits
+heatmappvalMetPhysTemp <- signif(moduleTraitPvalueMetPhysTemp, 1) #Create list of pvalues for eigengene correlation with specific traits
 
-row_dend <- dendsort(hclust(dist(moduleTraitCor))) #Create dendograms for rows
-col_dend <- dendsort(hclust(dist(t(moduleTraitCor)))) #Create dendograms for columns
+row_dendMetPhysTemp <- dendsort(hclust(dist(moduleTraitCorMetPhysTemp))) #Create dendograms for rows
+col_dendMetPhysTemp <- dendsort(hclust(dist(t(moduleTraitCorMetPhysTemp)))) #Create dendograms for columns
 
-trait_order <- c("5ºC at Day 3", "13ºC at Day 3", "30ºC at Day 3", "5ºC at Day 22", "13ºC at Day 22", "30ºC at Day 22") #Order of traits for heatmap
+trait_orderMetPhysTemp <- c("Average TTR", "Oxygen Consumption", "5ºC at Day 3", "13ºC at Day 3", "30ºC at Day 3", "5ºC at Day 22", "13ºC at Day 22", "30ºC at Day 22") #Order of traits for heatmap
 ```
 
 ```{r}
-#pdf(file = "WCNA/figures/module-trait-relationship-heatmap.pdf", height = 8.5, width = 8.5)
-ht <- Heatmap(moduleTraitCor, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
+#pdf(file = "WCNA/metabolomics/figures/module-trait-relationship-heatmap-phys.pdf", height = 8.5, width = 8.5)
+htMetPhysTemp <- Heatmap(moduleTraitCorMetPhysTemp, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
               col = blueWhiteRed(50), 
               row_names_side = "left", 
               row_dend_side = "left",
               width = unit(5, "in"), 
               height = unit(4.5, "in"), 
               column_dend_reorder = TRUE, 
-              cluster_columns = col_dend,
+              cluster_columns = col_dendMetPhysTemp,
               row_dend_reorder = FALSE,  
               #column_split = 3, 
               #row_split = 3, 
               #column_dend_height = unit(.5, "in"),
-              cluster_rows = row_dend, 
+              cluster_rows = row_dendMetPhysTemp, 
               #column_order = trait_order, 
               #row_gap = unit(2.5, "mm"), 
               border = TRUE,
               cell_fun = function(j, i, x, y, w, h, col) {
-                if(heatmappval[i, j] < 0.05) {
-                  grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+                if(heatmappvalMetPhysTemp[i, j] < 0.05) {
+                  grid.text(sprintf("%s", heatmappvalMetPhysTemp[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
                 }
                 else {
-                  grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+                  grid.text(sprintf("%s", heatmappvalMetPhysTemp[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
                 }},
               column_names_rot = 45,
               column_names_gp =  gpar(fontsize = 12, border = FALSE),
               column_title_gp = gpar(fontsize = 20),
               row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
-draw(ht) #Draw heatmap
+draw(htMetPhysTemp) #Draw heatmap
 #dev.off()
 ```
+
+#### Lipidomics
+
+### Combined metabolomics and lipidomics WCNs with physiology, temperature, and day
 
 ## ASCA
 
