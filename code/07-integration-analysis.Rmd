@@ -71,6 +71,8 @@ metabolomicsMetadata <- metabolomicsMetadata #Save metadata
 transMetabData <- transMetabData #Save transposed data used for PLSDA
 rowwiseMetabData <- rowwiseMetabData #Rowwise data used for WCNA
 MEsMet <- MEs #Module eigengenes for metabolomics data
+moduleTraitCorMet <- moduleTraitCor #Correlations between module eigengenes and treatment (temperature x day)
+moduleTraitPvalueMet <- moduleTraitPvalue #P values for correlations between module eigengenes and treatment (temperature x day)
 mME_metabolomics <- mME_meta #Data used to create module expression matrix
 plotColors <- plotColors #Color scheme for plots
 detach("file:../05-metabolomics-analysis/05-metabolomics-analysis.RData") #Detach metabolomics RData
@@ -92,6 +94,9 @@ attach("../06-lipidomics-analysis/06-lipidomics-analysis.RData") #Attach lipidom
 lipidomicsMetadata <- lipidomicsMetadata #Save metadata
 knownTransLipidData <- knownTransLipidData #Save transposed data used for PLSDA
 rowwiseLipidData <- rowwiseLipidData #Rowwise data used for WCNA
+MEsLipid <- MEs #Module eigengenes for lipidomics data
+moduleTraitCorLipid <- moduleTraitCor #Correlations between module eigengenes and temperature
+moduleTraitPvalueLipid <- moduleTraitPvalue #P values for correlations between module eigengenes and temperature
 mME_lipidomics <- mME_meta #Data used to create module expression matrix
 detach("file:../06-lipidomics-analysis/06-lipidomics-analysis.RData") #Detach lipidomics RData
 ```
@@ -100,6 +105,9 @@ detach("file:../06-lipidomics-analysis/06-lipidomics-analysis.RData") #Detach li
 head(lipidomicsMetadata)
 head(knownTransLipidData)
 head(rowwiseLipidData)
+head(MEsLipid)
+head(moduleTraitCorLipid)
+head(moduleTraitPvalueLipid)
 head(mME_lipidomics)
 ```
 
@@ -684,7 +692,7 @@ datTraitsPhysOnly <- metabolomicsMetadata %>%
   column_to_rownames(., var = "crab.ID") %>% 
   rename(., "Average TTR" = TTRavg) %>%
   rename(., "Oxygen Consumption" = slope_nmol_hr_corrected)
-  #Take metadata and fix day to day 4 instead of day 3. Join with TTR data. 304, 308, and 506 do not have TTR data because they failed to right. Join with respirometry data (only select crabs have accompanying respirometry data). Use a series of case_when commands to create individual columns for each treatment or day, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns and TTRSE column. Convert crab.ID to rownames. Rename TTR and respirometry columns
+#Take metadata and fix day to day 4 instead of day 3. Join with TTR data. 304, 308, and 506 do not have TTR data because they failed to right. Join with respirometry data (only select crabs have accompanying respirometry data). Use a series of case_when commands to create individual columns for each treatment or day, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns and TTRSE column. Convert crab.ID to rownames. Rename TTR and respirometry columns
 head(datTraitsPhysOnly) #Confirm dataframe creation
 nrow(datTraitsPhysOnly) == nrow(rowwiseMetabData) #Confirm that there are the same number of rows (samples) between the new trait matrix and the metabolite data
 ```
@@ -729,41 +737,114 @@ trait_orderMetPhysOnly <- c("Average TTR", "Oxygen Consumption") #Order of trait
 ```{r}
 pdf(file = "WCNA/metabolomics/figures/module-trait-relationship-heatmap-physOnly.pdf", height = 8.5, width = 8.5)
 htMetPhysOnly <- Heatmap(moduleTraitCorMetPhysOnly, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
-              col = blueWhiteRed(50), 
-              row_names_side = "left", 
-              row_dend_side = "left",
-              width = unit(5, "in"), 
-              height = unit(4.5, "in"), 
-              column_dend_reorder = TRUE, 
-              cluster_columns = col_dendMetPhysOnly,
-              row_dend_reorder = FALSE,  
-              #column_split = 3, 
-              #row_split = 3, 
-              #column_dend_height = unit(.5, "in"),
-              cluster_rows = row_dendMetPhysOnly, 
-              #column_order = trait_order, 
-              #row_gap = unit(2.5, "mm"), 
-              border = TRUE,
-              cell_fun = function(j, i, x, y, w, h, col) {
-                if(heatmappvalMetPhysOnly[i, j] < 0.05) {
-                  grid.text(sprintf("%s", heatmappvalMetPhysOnly[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
-                }
-                else {
-                  grid.text(sprintf("%s", heatmappvalMetPhysOnly[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
-                }},
-              column_names_rot = 45,
-              column_names_gp =  gpar(fontsize = 12, border = FALSE),
-              column_title_gp = gpar(fontsize = 20),
-              row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
+                         col = blueWhiteRed(50), 
+                         row_names_side = "left", 
+                         row_dend_side = "left",
+                         width = unit(5, "in"), 
+                         height = unit(4.5, "in"), 
+                         column_dend_reorder = TRUE, 
+                         cluster_columns = col_dendMetPhysOnly,
+                         row_dend_reorder = FALSE,  
+                         #column_split = 3, 
+                         #row_split = 3, 
+                         #column_dend_height = unit(.5, "in"),
+                         cluster_rows = row_dendMetPhysOnly, 
+                         #column_order = trait_order, 
+                         #row_gap = unit(2.5, "mm"), 
+                         border = TRUE,
+                         cell_fun = function(j, i, x, y, w, h, col) {
+                           if(heatmappvalMetPhysOnly[i, j] < 0.05) {
+                             grid.text(sprintf("%s", heatmappvalMetPhysOnly[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+                           }
+                           else {
+                             grid.text(sprintf("%s", heatmappvalMetPhysOnly[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+                           }},
+                         column_names_rot = 45,
+                         column_names_gp =  gpar(fontsize = 12, border = FALSE),
+                         column_title_gp = gpar(fontsize = 20),
+                         row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
 draw(htMetPhysOnly) #Draw heatmap
 dev.off()
 ```
 
 #### Lipidomics
 
+##### Correlate trait matrix with WCNA modules
+
+```{r}
+moduleTraitCorLipidPhysOnly <- cor(MEsLipid, datTraitsPhysOnly, use = "p") #Correlations of traits with eigengenes
+moduleTraitPvalueLipidPhysOnly <- WGCNA::corPvalueStudent(moduleTraitCorLipidPhysOnly, nSamples) #Get p-values for correlations
+head(moduleTraitCorLipidPhysOnly %>% as.data.frame())
+head(moduleTraitPvalueLipidPhysOnly %>% as.data.frame())
+```
+
+```{r}
+moduleTraitTreeLipidPhysOnly <- hclust(dist(t(moduleTraitCorLipidPhysOnly)), method = "average") #Create cluster dendogram for module-trait correlations
+```
+
+##### Plot correlations
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+textMatrixLipidPhysOnly <- paste(signif(moduleTraitCorLipidPhysOnly, 2), "\n(",signif(moduleTraitPvalueLipidPhysOnly, 1), ")", sep = "") #Create a matrix with the module-trait correlation and p-values
+dim(textMatrixLipidPhysOnly) <- dim(moduleTraitCorLipidPhysOnly) #Ensure this matrix has the appropriate dimensions
+head(textMatrixLipidPhysOnly) #Confirm matrix creation
+```
+
+```{r}
+pdf("WCNA/lipidomics/figures/module-trait-relationships-physOnly.pdf", height = 8.5, width = 11)
+labeledHeatmap(Matrix = moduleTraitCorLipidPhysOnly, xLabels = names(datTraitsPhysOnly),  yLabels = names(MEsLipid), ySymbols = names(MEsLipid), cex.lab.y = 1.5, cex.lab.x = 1.5, colors = blueWhiteRed(50), textMatrix = textMatrixLipidPhysOnly, setStdMargins = TRUE, cex.text = 1, zlim = c(-1,1), main = paste("Module-trait relationships"), cex.main = 2) #Use the textMatrix to create a heatmap with correlations between modules and the various treatments.
+dev.off()
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+heatmappvalLipidPhysOnly <- signif(moduleTraitPvalueLipidPhysOnly, 1) #Create list of pvalues for eigengene correlation with specific traits
+
+row_dendLipidPhysOnly <- dendsort(hclust(dist(moduleTraitCorLipidPhysOnly))) #Create dendograms for rows
+col_dendLipidPhysOnly <- dendsort(hclust(dist(t(moduleTraitCorLipidPhysOnly)))) #Create dendograms for columns
+
+trait_orderLipidPhysOnly <- c("Average TTR", "Oxygen Consumption") #Order of traits for heatmap
+```
+
+```{r}
+#pdf(file = "WCNA/lipidomics/figures/module-trait-relationship-heatmap-physOnly.pdf", height = 8.5, width = 8.5)
+htLipidPhysOnly <- Heatmap(moduleTraitCorLipidPhysOnly, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
+                           col = blueWhiteRed(50), 
+                           row_names_side = "left", 
+                           row_dend_side = "left",
+                           width = unit(5, "in"), 
+                           height = unit(4.5, "in"), 
+                           column_dend_reorder = TRUE, 
+                           cluster_columns = col_dendLipidPhysOnly,
+                           row_dend_reorder = FALSE,  
+                           #column_split = 3, 
+                           #row_split = 3, 
+                           #column_dend_height = unit(.5, "in"),
+                           cluster_rows = row_dendLipidPhysOnly, 
+                           #column_order = trait_order, 
+                           #row_gap = unit(2.5, "mm"), 
+                           border = TRUE,
+                           cell_fun = function(j, i, x, y, w, h, col) {
+                             if(heatmappvalLipidPhysOnly[i, j] < 0.05) {
+                               grid.text(sprintf("%s", heatmappvalLipidPhysOnly[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+                             }
+                             else {
+                               grid.text(sprintf("%s", heatmappvalLipidPhysOnly[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+                             }},
+                           column_names_rot = 45,
+                           column_names_gp =  gpar(fontsize = 12, border = FALSE),
+                           column_title_gp = gpar(fontsize = 20),
+                           row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
+draw(htLipidPhysOnly) #Draw heatmap
+#dev.off()
+```
+
 ### Correlate separate metabolomics and lipidomics WCNAs with physiology, temperature, and day
 
-#### Modify trait matrix
+#### Metabolomics
+
+##### Modify trait matrix
+
+The trait matricies for metabolomics and lipidomics will be separate since the interaction between temperature x day was significant for metabolites, and only temperature was significant for lipids.
 
 ```{r}
 datTraitsPhysTemp <- metabolomicsMetadata %>%
@@ -794,12 +875,10 @@ datTraitsPhysTemp <- metabolomicsMetadata %>%
   column_to_rownames(., var = "crab.ID") %>% 
   rename(., "Average TTR" = TTRavg) %>%
   rename(., "Oxygen Consumption" = slope_nmol_hr_corrected)
-  #Take metadata and fix day to day 4 instead of day 3. Join with TTR data. 304, 308, and 506 do not have TTR data because they failed to right. Join with respirometry data (only select crabs have accompanying respirometry data). Use a series of case_when commands to create individual columns for each treatment or day, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns and TTRSE column. Convert crab.ID to rownames. Rename TTR and respirometry columns
+#Take metadata and fix day to day 4 instead of day 3. Join with TTR data. 304, 308, and 506 do not have TTR data because they failed to right. Join with respirometry data (only select crabs have accompanying respirometry data). Use a series of case_when commands to create individual columns for each treatment or day, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns and TTRSE column. Convert crab.ID to rownames. Rename TTR and respirometry columns
 head(datTraitsPhysTemp) #Confirm dataframe creation
 nrow(datTraitsPhysTemp) == nrow(rowwiseMetabData) #Confirm that there are the same number of rows (samples) between the new trait matrix and the metabolite data
 ```
-
-#### Metabolomics
 
 ##### Correlate trait matrix with WCNA modules
 
@@ -846,37 +925,292 @@ trait_orderMetPhysTemp <- c("Average TTR", "Oxygen Consumption", "5ºC at Day 3"
 ```{r}
 #pdf(file = "WCNA/metabolomics/figures/module-trait-relationship-heatmap-physTemp.pdf", height = 8.5, width = 8.5)
 htMetPhysTemp <- Heatmap(moduleTraitCorMetPhysTemp, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
-              col = blueWhiteRed(50), 
-              row_names_side = "left", 
-              row_dend_side = "left",
-              width = unit(5, "in"), 
-              height = unit(4.5, "in"), 
-              column_dend_reorder = TRUE, 
-              cluster_columns = col_dendMetPhysTemp,
-              row_dend_reorder = FALSE,  
-              #column_split = 3, 
-              #row_split = 3, 
-              #column_dend_height = unit(.5, "in"),
-              cluster_rows = row_dendMetPhysTemp, 
-              #column_order = trait_order, 
-              #row_gap = unit(2.5, "mm"), 
-              border = TRUE,
-              cell_fun = function(j, i, x, y, w, h, col) {
-                if(heatmappvalMetPhysTemp[i, j] < 0.05) {
-                  grid.text(sprintf("%s", heatmappvalMetPhysTemp[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
-                }
-                else {
-                  grid.text(sprintf("%s", heatmappvalMetPhysTemp[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
-                }},
-              column_names_rot = 45,
-              column_names_gp =  gpar(fontsize = 12, border = FALSE),
-              column_title_gp = gpar(fontsize = 20),
-              row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
+                         col = blueWhiteRed(50), 
+                         row_names_side = "left", 
+                         row_dend_side = "left",
+                         width = unit(5, "in"), 
+                         height = unit(4.5, "in"), 
+                         column_dend_reorder = TRUE, 
+                         cluster_columns = col_dendMetPhysTemp,
+                         row_dend_reorder = FALSE,  
+                         #column_split = 3, 
+                         #row_split = 3, 
+                         #column_dend_height = unit(.5, "in"),
+                         cluster_rows = row_dendMetPhysTemp, 
+                         #column_order = trait_order, 
+                         #row_gap = unit(2.5, "mm"), 
+                         border = TRUE,
+                         cell_fun = function(j, i, x, y, w, h, col) {
+                           if(heatmappvalMetPhysTemp[i, j] < 0.05) {
+                             grid.text(sprintf("%s", heatmappvalMetPhysTemp[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+                           }
+                           else {
+                             grid.text(sprintf("%s", heatmappvalMetPhysTemp[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+                           }},
+                         column_names_rot = 45,
+                         column_names_gp =  gpar(fontsize = 12, border = FALSE),
+                         column_title_gp = gpar(fontsize = 20),
+                         row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
 draw(htMetPhysTemp) #Draw heatmap
 #dev.off()
 ```
 
+##### Append existing correlation information
+
+I noticed that the treatment x module eigengene correlations I got from this analysis were different from when I did just temperature. However, the correlations between physiology and module eigengenes were the same. This could be because I am using a different R version than I was for the original WCNA analysis. I'm going to try appending the physiology correlations to the previous treatment correlations to see if that removes the inconsistency.
+
+```{r}
+moduleTraitCorMetAppend <- moduleTraitCorMet %>%
+  as.data.frame(.) %>%
+  rename("13ºC at Day 4" = "13ºC at Day 3") %>%
+  rename("30ºC at Day 4" = "30ºC at Day 3") %>%
+  rename("5ºC at Day 4" = "5ºC at Day 3") %>% 
+  rownames_to_column(., var = "ME") %>%
+  left_join(., y = (moduleTraitCorMetPhysOnly %>% 
+                      as.data.frame(.) %>% 
+                      rownames_to_column(., var = "ME"))) %>%
+  column_to_rownames(., var = "ME") %>%
+  as.matrix(.) #Take previous correlations and convert to a dataframe. Rename columns and convert rownames to ME column. Join with phys correlations and reconvert column to rownames. Convert back to a matrix
+moduleTraitCorMetAppend #Confirm matrix creation
+```
+
+```{r}
+moduleTraitPvalueMetAppend <- moduleTraitPvalueMet %>%
+  as.data.frame(.) %>%
+  rename("13ºC at Day 4" = "13ºC at Day 3") %>%
+  rename("30ºC at Day 4" = "30ºC at Day 3") %>%
+  rename("5ºC at Day 4" = "5ºC at Day 3") %>% 
+  rownames_to_column(., var = "ME") %>%
+  left_join(., y = (moduleTraitPvalueMetPhysOnly %>% 
+                      as.data.frame(.) %>% 
+                      rownames_to_column(., var = "ME"))) %>%
+  column_to_rownames(., var = "ME") %>%
+  as.matrix(.) #Take previous correlations and convert to a dataframe. Rename columns and convert rownames to ME column. Join with phys correlations and reconvert column to rownames. Convert back to a matrix
+moduleTraitPvalueMetAppend #Confirm matrix creation
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+heatmappvalMetAppend <- signif(moduleTraitPvalueMetAppend, 1) #Create list of pvalues for eigengene correlation with specific traits
+
+row_dendMetAppend <- dendsort(hclust(dist(moduleTraitCorMetAppend))) #Create dendograms for rows
+col_dendMetAppend <- dendsort(hclust(dist(t(moduleTraitCorMetAppend)))) #Create dendograms for columns
+
+trait_orderMetAppend <- c("Average TTR", "Oxygen Consumption", "5ºC at Day 3", "13ºC at Day 3", "30ºC at Day 3", "5ºC at Day 22", "13ºC at Day 22", "30ºC at Day 22") #Order of traits for heatmap
+```
+
+```{r}
+pdf(file = "WCNA/metabolomics/figures/module-trait-relationship-heatmap-append.pdf", height = 8.5, width = 8.5)
+htMetAppend <- Heatmap(moduleTraitCorMetAppend, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
+                       col = blueWhiteRed(50), 
+                       row_names_side = "left", 
+                       row_dend_side = "left",
+                       width = unit(5, "in"), 
+                       height = unit(4.5, "in"), 
+                       column_dend_reorder = FALSE, 
+                       cluster_columns = FALSE,
+                       row_dend_reorder = FALSE,  
+                       column_split = c(rep("A", times = 6), rep("B", times = 2)), 
+                       column_gap = unit(3, "mm"),
+                       #row_split = 3, 
+                       #column_dend_height = unit(.5, "in"),
+                       cluster_rows = row_dendMetAppend, 
+                       #row_gap = unit(2.5, "mm"), 
+                       border = TRUE,
+                       cell_fun = function(j, i, x, y, w, h, col) {
+                         if(heatmappvalMetAppend[i, j] < 0.05) {
+                           grid.text(sprintf("%s", heatmappvalMetAppend[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+                         }
+                         else {
+                           grid.text(sprintf("%s", heatmappvalMetAppend[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+                         }},
+                       column_names_rot = 45,
+                       column_names_gp =  gpar(fontsize = 12, border = FALSE),
+                       column_title_gp = gpar(fontsize = 20),
+                       row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
+draw(htMetAppend) #Draw heatmap
+dev.off()
+```
+
 #### Lipidomics
+
+##### Modify trait matrix
+
+```{r}
+datTraitsPhysTempLipid <- lipidomicsMetadata %>%
+  dplyr::select(-c(day:treatment_day)) %>%
+  left_join(x = ., 
+            y = (modTTRSampled %>% 
+                   dplyr::select(c(crab.ID, treatment, TTRavg, TTRSE))), 
+            by = c("crab.ID", "treatment")) %>%
+  left_join(x = ., 
+            y = all_MO2_slope_results_sampled %>%
+              dplyr::select(c(crab.ID, treatment, slope_nmol_hr_corrected)), 
+            by = c("crab.ID", "treatment")) %>%
+  arrange(., crab.ID) %>%
+  mutate(., "13ºC" = case_when(treatment == "13" ~ 1,
+                               treatment != "13" ~ 0)) %>%
+  mutate(., "5ºC" = case_when(treatment == "5" ~ 1,
+                              treatment != "5" ~ 0)) %>%
+  mutate(., "30ºC" = case_when(treatment == "30" ~ 1,
+                               treatment != "30" ~ 0)) %>%
+  dplyr::select(-c(treatment, TTRSE)) %>%
+  column_to_rownames(., var = "crab.ID") %>% 
+  rename(., "Average TTR" = TTRavg) %>%
+  rename(., "Oxygen Consumption" = slope_nmol_hr_corrected) #Take metadata join with TTR data. 304, 308, and 506 do not have TTR data because they failed to right. Join with respirometry data (only select crabs have accompanying respirometry data). Use a series of case_when commands to create individual columns for each treatment, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns and TTRSE column. Convert crab.ID to rownames. Rename TTR and respirometry columns
+head(datTraitsPhysTempLipid) #Confirm dataframe creation
+nrow(datTraitsPhysTempLipid) == nrow(rowwiseLipidData) #Confirm that there are the same number of rows (samples) between the new trait matrix and the metabolite data
+```
+
+##### Correlate trait matrix with WCNA modules
+
+```{r}
+moduleTraitCorLipidPhysTemp <- cor(MEsLipid, datTraitsPhysTempLipid, use = "p") #Correlations of traits with eigengenes
+moduleTraitPvalueLipidPhysTemp <- WGCNA::corPvalueStudent(moduleTraitCorLipidPhysTemp, nSamples) #Get p-values for correlations
+head(moduleTraitCorLipidPhysTemp %>% as.data.frame())
+head(moduleTraitPvalueLipidPhysTemp %>% as.data.frame())
+```
+
+```{r}
+moduleTraitTreeLipidPhysTemp <- hclust(dist(t(moduleTraitCorLipidPhysTemp)), method = "average") #Create cluster dendogram for module-trait correlations
+```
+
+```{r}
+pdf(file = "WCNA/lipidomics/figures/module-trait-cluster-dendogram-physTemp.pdf", height = 8.5, width = 11)
+plot(moduleTraitTreeLipidPhysTemp) #Plot cluster dendogram
+dev.off()
+```
+
+##### Plot correlations
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+textMatrixLipidPhysTemp <- paste(signif(moduleTraitCorLipidPhysTemp, 2), "\n(",signif(moduleTraitPvalueLipidPhysTemp, 1), ")", sep = "") #Create a matrix with the module-trait correlation and p-values
+dim(textMatrixLipidPhysTemp) <- dim(moduleTraitCorLipidPhysTemp) #Ensure this matrix has the appropriate dimensions
+head(textMatrixLipidPhysTemp) #Confirm matrix creation
+```
+
+```{r}
+pdf("WCNA/lipidomics/figures/module-trait-relationships-physTemp.pdf", height = 8.5, width = 11)
+labeledHeatmap(Matrix = moduleTraitCorLipidPhysTemp, xLabels = names(datTraitsPhysTempLipid),  yLabels = names(MEsLipid), ySymbols = names(MEsLipid), cex.lab.y = 1.5, cex.lab.x = 1.5, colors = blueWhiteRed(50), textMatrix = textMatrixLipidPhysTemp, setStdMargins = TRUE, cex.text = 1, zlim = c(-1,1), main = paste("Module-trait relationships"), cex.main = 2) #Use the textMatrix to create a heatmap with correlations between modules and the various treatments.
+dev.off()
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+heatmappvalLipidPhysTemp <- signif(moduleTraitPvalueLipidPhysTemp, 1) #Create list of pvalues for eigengene correlation with specific traits
+
+row_dendLipidPhysTemp <- dendsort(hclust(dist(moduleTraitCorLipidPhysTemp))) #Create dendograms for rows
+col_dendLipidPhysTemp <- dendsort(hclust(dist(t(moduleTraitCorLipidPhysTemp)))) #Create dendograms for columns
+
+trait_orderLipidPhysTemp <- c("Average TTR", "Oxygen Consumption", "5ºC", "13ºC", "30ºC") #Order of traits for heatmap
+```
+
+```{r}
+pdf(file = "WCNA/lipidomics/figures/module-trait-relationship-heatmap-physTemp.pdf", height = 8.5, width = 8.5)
+htLipidPhysTemp <- Heatmap(moduleTraitCorLipidPhysTemp, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
+                           col = blueWhiteRed(50), 
+                           row_names_side = "left", 
+                           row_dend_side = "left",
+                           width = unit(5, "in"), 
+                           height = unit(4.5, "in"), 
+                           column_dend_reorder = TRUE, 
+                           cluster_columns = col_dendLipidPhysTemp,
+                           row_dend_reorder = FALSE,  
+                           #column_split = 3, 
+                           #row_split = 3, 
+                           #column_dend_height = unit(.5, "in"),
+                           cluster_rows = row_dendLipidPhysTemp, 
+                           #column_order = trait_order, 
+                           #row_gap = unit(2.5, "mm"), 
+                           border = TRUE,
+                           cell_fun = function(j, i, x, y, w, h, col) {
+                             if(heatmappvalLipidPhysTemp[i, j] < 0.05) {
+                               grid.text(sprintf("%s", heatmappvalLipidPhysTemp[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+                             }
+                             else {
+                               grid.text(sprintf("%s", heatmappvalLipidPhysTemp[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+                             }},
+                           column_names_rot = 45,
+                           column_names_gp =  gpar(fontsize = 12, border = FALSE),
+                           column_title_gp = gpar(fontsize = 20),
+                           row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
+draw(htLipidPhysTemp) #Draw heatmap
+dev.off()
+```
+
+##### Append existing correlation information
+
+I noticed that the treatment x module eigengene correlations I got from this analysis were different from when I did just temperature. However, the correlations between physiology and module eigengenes were the same. This could be because I am using a different R version than I was for the original WCNA analysis. I'm going to try appending the physiology correlations to the previous treatment correlations to see if that removes the inconsistency.
+
+```{r}
+moduleTraitCorLipidAppend <- moduleTraitCorLipid %>%
+  as.data.frame(.) %>%
+  rename("13ºC at Day 4" = "13ºC at Day 3") %>%
+  rename("30ºC at Day 4" = "30ºC at Day 3") %>%
+  rename("5ºC at Day 4" = "5ºC at Day 3") %>% 
+  rownames_to_column(., var = "ME") %>%
+  left_join(., y = (moduleTraitCorLipidPhysOnly %>% 
+                      as.data.frame(.) %>% 
+                      rownames_to_column(., var = "ME"))) %>%
+  column_to_rownames(., var = "ME") %>%
+  as.matrix(.) #Take previous correlations and convert to a dataframe. Rename columns and convert rownames to ME column. Join with phys correlations and reconvert column to rownames. Convert back to a matrix
+moduleTraitCorLipidAppend #Confirm matrix creation
+```
+
+```{r}
+moduleTraitPvalueLipidAppend <- moduleTraitPvalueLipid %>%
+  as.data.frame(.) %>%
+  rename("13ºC at Day 4" = "13ºC at Day 3") %>%
+  rename("30ºC at Day 4" = "30ºC at Day 3") %>%
+  rename("5ºC at Day 4" = "5ºC at Day 3") %>% 
+  rownames_to_column(., var = "ME") %>%
+  left_join(., y = (moduleTraitPvalueLipidPhysOnly %>% 
+                      as.data.frame(.) %>% 
+                      rownames_to_column(., var = "ME"))) %>%
+  column_to_rownames(., var = "ME") %>%
+  as.matrix(.) #Take previous correlations and convert to a dataframe. Rename columns and convert rownames to ME column. Join with phys correlations and reconvert column to rownames. Convert back to a matrix
+moduleTraitPvalueLipidAppend #Confirm matrix creation
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+heatmappvalLipidAppend <- signif(moduleTraitPvalueLipidAppend, 1) #Create list of pvalues for eigengene correlation with specific traits
+
+row_dendLipidAppend <- dendsort(hclust(dist(moduleTraitCorLipidAppend))) #Create dendograms for rows
+col_dendLipidAppend <- dendsort(hclust(dist(t(moduleTraitCorLipidAppend)))) #Create dendograms for columns
+
+trait_orderLipidAppend <- c("Average TTR", "Oxygen Consumption", "5ºC at Day 3", "13ºC at Day 3", "30ºC at Day 3", "5ºC at Day 22", "13ºC at Day 22", "30ºC at Day 22") #Order of traits for heatmap
+```
+
+```{r}
+pdf(file = "WCNA/lipidomics/figures/module-trait-relationship-heatmap-append.pdf", height = 8.5, width = 8.5)
+htLipidAppend <- Heatmap(moduleTraitCorLipidAppend, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
+                         col = blueWhiteRed(50), 
+                         row_names_side = "left", 
+                         row_dend_side = "left",
+                         width = unit(5, "in"), 
+                         height = unit(4.5, "in"), 
+                         column_dend_reorder = FALSE, 
+                         cluster_columns = FALSE,
+                         row_dend_reorder = FALSE,  
+                         column_split = c(rep("A", times = 6), rep("B", times = 2)), 
+                         column_gap = unit(3, "mm"),
+                         #row_split = 3, 
+                         #column_dend_height = unit(.5, "in"),
+                         cluster_rows = row_dendLipidAppend, 
+                         #row_gap = unit(2.5, "mm"), 
+                         border = TRUE,
+                         cell_fun = function(j, i, x, y, w, h, col) {
+                           if(heatmappvalLipidAppend[i, j] < 0.05) {
+                             grid.text(sprintf("%s", heatmappvalLipidAppend[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+                           }
+                           else {
+                             grid.text(sprintf("%s", heatmappvalLipidAppend[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+                           }},
+                         column_names_rot = 45,
+                         column_names_gp =  gpar(fontsize = 12, border = FALSE),
+                         column_title_gp = gpar(fontsize = 20),
+                         row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
+draw(htLipidAppend) #Draw heatmap
+dev.off()
+```
 
 ### Combined metabolomics and lipidomics WCNs with physiology, temperature, and day
 
