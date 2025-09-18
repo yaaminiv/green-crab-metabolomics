@@ -665,7 +665,99 @@ mkdir WCNA/lipidomics/figures
 ```
 ### Correlate separate metabolomics and lipidomics WCNAs with physiology only
 
+#### Modify trait matrix
+
+```{r}
+datTraitsPhysOnly <- metabolomicsMetadata %>%
+  mutate(., day = gsub(x = day, pattern = 3, replacement = 4) %>% as.factor(.)) %>%
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = "_3", replacement = "_4") %>% as.factor(.)) %>%
+  left_join(x = ., 
+            y = (modTTRSampled %>% 
+                   dplyr::select(c(crab.ID, treatment_day, TTRavg, TTRSE))), 
+            by = c("crab.ID", "treatment_day")) %>%
+  left_join(x = ., 
+            y = all_MO2_slope_results_sampled %>%
+              dplyr::select(c(crab.ID, treatment_day, slope_nmol_hr_corrected)), 
+            by = c("crab.ID", "treatment_day")) %>%
+  arrange(., crab.ID) %>%
+  dplyr::select(-c(treatment:treatment_day, TTRSE)) %>%
+  column_to_rownames(., var = "crab.ID") %>% 
+  rename(., "Average TTR" = TTRavg) %>%
+  rename(., "Oxygen Consumption" = slope_nmol_hr_corrected)
+  #Take metadata and fix day to day 4 instead of day 3. Join with TTR data. 304, 308, and 506 do not have TTR data because they failed to right. Join with respirometry data (only select crabs have accompanying respirometry data). Use a series of case_when commands to create individual columns for each treatment or day, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns and TTRSE column. Convert crab.ID to rownames. Rename TTR and respirometry columns
+head(datTraitsPhysOnly) #Confirm dataframe creation
+nrow(datTraitsPhysOnly) == nrow(rowwiseMetabData) #Confirm that there are the same number of rows (samples) between the new trait matrix and the metabolite data
+```
+
 #### Metabolomics
+
+##### Correlate trait matrix with WCNA modules
+
+```{r}
+moduleTraitCorMetPhysOnly <- cor(MEsMet, datTraitsPhysOnly, use = "p") #Correlations of traits with eigengenes
+moduleTraitPvalueMetPhysOnly <- WGCNA::corPvalueStudent(moduleTraitCorMetPhysOnly, nSamples) #Get p-values for correlations
+head(moduleTraitCorMetPhysOnly %>% as.data.frame())
+head(moduleTraitPvalueMetPhysOnly %>% as.data.frame())
+```
+
+```{r}
+moduleTraitTreeMetPhysOnly <- hclust(dist(t(moduleTraitCorMetPhysOnly)), method = "average") #Create cluster dendogram for module-trait correlations
+```
+##### Plot correlations
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+textMatrixMetPhysOnly <- paste(signif(moduleTraitCorMetPhysOnly, 2), "\n(",signif(moduleTraitPvalueMetPhysOnly, 1), ")", sep = "") #Create a matrix with the module-trait correlation and p-values
+dim(textMatrixMetPhysOnly) <- dim(moduleTraitCorMetPhysOnly) #Ensure this matrix has the appropriate dimensions
+head(textMatrixMetPhysOnly) #Confirm matrix creation
+```
+
+```{r}
+pdf("WCNA/metabolomics/figures/module-trait-relationships-physOnly.pdf", height = 8.5, width = 11)
+labeledHeatmap(Matrix = moduleTraitCorMetPhysOnly, xLabels = names(datTraitsPhysOnly),  yLabels = names(MEsMet), ySymbols = names(MEsMet), cex.lab.y = 1.5, cex.lab.x = 1.5, colors = blueWhiteRed(50), textMatrix = textMatrixMetPhysOnly, setStdMargins = TRUE, cex.text = 1, zlim = c(-1,1), main = paste("Module-trait relationships"), cex.main = 2) #Use the textMatrix to create a heatmap with correlations between modules and the various treatments.
+dev.off()
+```
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+heatmappvalMetPhysOnly <- signif(moduleTraitPvalueMetPhysOnly, 1) #Create list of pvalues for eigengene correlation with specific traits
+
+row_dendMetPhysOnly <- dendsort(hclust(dist(moduleTraitCorMetPhysOnly))) #Create dendograms for rows
+col_dendMetPhysOnly <- dendsort(hclust(dist(t(moduleTraitCorMetPhysOnly)))) #Create dendograms for columns
+
+trait_orderMetPhysOnly <- c("Average TTR", "Oxygen Consumption") #Order of traits for heatmap
+```
+
+```{r}
+pdf(file = "WCNA/metabolomics/figures/module-trait-relationship-heatmap-physOnly.pdf", height = 8.5, width = 8.5)
+htMetPhysOnly <- Heatmap(moduleTraitCorMetPhysOnly, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
+              col = blueWhiteRed(50), 
+              row_names_side = "left", 
+              row_dend_side = "left",
+              width = unit(5, "in"), 
+              height = unit(4.5, "in"), 
+              column_dend_reorder = TRUE, 
+              cluster_columns = col_dendMetPhysOnly,
+              row_dend_reorder = FALSE,  
+              #column_split = 3, 
+              #row_split = 3, 
+              #column_dend_height = unit(.5, "in"),
+              cluster_rows = row_dendMetPhysOnly, 
+              #column_order = trait_order, 
+              #row_gap = unit(2.5, "mm"), 
+              border = TRUE,
+              cell_fun = function(j, i, x, y, w, h, col) {
+                if(heatmappvalMetPhysOnly[i, j] < 0.05) {
+                  grid.text(sprintf("%s", heatmappvalMetPhysOnly[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+                }
+                else {
+                  grid.text(sprintf("%s", heatmappvalMetPhysOnly[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+                }},
+              column_names_rot = 45,
+              column_names_gp =  gpar(fontsize = 12, border = FALSE),
+              column_title_gp = gpar(fontsize = 20),
+              row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
+draw(htMetPhysOnly) #Draw heatmap
+dev.off()
+```
 
 #### Lipidomics
 
@@ -708,15 +800,6 @@ nrow(datTraitsPhysTemp) == nrow(rowwiseMetabData) #Confirm that there are the sa
 ```
 
 #### Metabolomics
-
-```{r}
-#Define numbers of metabolites and samples and view 
-nMetabolites <- ncol(rowwiseMetabData)
-nSamples <- nrow(rowwiseMetabData)
-
-nMetabolites
-nSamples
-```
 
 ##### Correlate trait matrix with WCNA modules
 
@@ -761,7 +844,7 @@ trait_orderMetPhysTemp <- c("Average TTR", "Oxygen Consumption", "5ºC at Day 3"
 ```
 
 ```{r}
-#pdf(file = "WCNA/metabolomics/figures/module-trait-relationship-heatmap-phys.pdf", height = 8.5, width = 8.5)
+#pdf(file = "WCNA/metabolomics/figures/module-trait-relationship-heatmap-physTemp.pdf", height = 8.5, width = 8.5)
 htMetPhysTemp <- Heatmap(moduleTraitCorMetPhysTemp, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
               col = blueWhiteRed(50), 
               row_names_side = "left", 
