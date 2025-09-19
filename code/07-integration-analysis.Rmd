@@ -882,7 +882,8 @@ datTraitsPhysTemp <- metabolomicsMetadata %>%
   dplyr::select(-c(treatment:treatment_day, TTRSE)) %>%
   column_to_rownames(., var = "crab.ID") %>% 
   rename(., "Average TTR" = TTRavg) %>%
-  rename(., "Oxygen Consumption" = slope_nmol_hr_corrected)
+  mutate(., "Oxygen Consumption" = -slope_nmol_hr_corrected) %>%
+  dplyr::select(-slope_nmol_hr_corrected)
 #Take metadata and fix day to day 4 instead of day 3. Join with TTR data. 304, 308, and 506 do not have TTR data because they failed to right. Join with respirometry data (only select crabs have accompanying respirometry data). Use a series of case_when commands to create individual columns for each treatment or day, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns and TTRSE column. Convert crab.ID to rownames. Rename TTR and respirometry columns
 head(datTraitsPhysTemp) #Confirm dataframe creation
 nrow(datTraitsPhysTemp) == nrow(rowwiseMetabData) #Confirm that there are the same number of rows (samples) between the new trait matrix and the metabolite data
@@ -902,9 +903,9 @@ moduleTraitTreeMetPhysTemp <- hclust(dist(t(moduleTraitCorMetPhysTemp)), method 
 ```
 
 ```{r}
-# pdf(file = "WCNA/metabolomics/figures/module-trait-cluster-dendogram-physTemp.pdf", height = 8.5, width = 11)
+pdf(file = "WCNA/metabolomics/figures/module-trait-cluster-dendogram-physTemp.pdf", height = 8.5, width = 11)
 plot(moduleTraitTreeMetPhysTemp) #Plot cluster dendogram
-# dev.off()
+dev.off()
 ```
 
 ##### Plot correlations
@@ -931,7 +932,7 @@ trait_orderMetPhysTemp <- c("Average TTR", "Oxygen Consumption", "5ºC at Day 3"
 ```
 
 ```{r}
-#pdf(file = "WCNA/metabolomics/figures/module-trait-relationship-heatmap-physTemp.pdf", height = 8.5, width = 8.5)
+pdf(file = "WCNA/metabolomics/figures/module-trait-relationship-heatmap-physTemp.pdf", height = 8.5, width = 8.5)
 htMetPhysTemp <- Heatmap(moduleTraitCorMetPhysTemp, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
                          col = blueWhiteRed(50), 
                          row_names_side = "left", 
@@ -960,7 +961,7 @@ htMetPhysTemp <- Heatmap(moduleTraitCorMetPhysTemp, name = "Eigengene", column_t
                          column_title_gp = gpar(fontsize = 20),
                          row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
 draw(htMetPhysTemp) #Draw heatmap
-#dev.off()
+dev.off()
 ```
 
 ##### Append existing correlation information
@@ -1064,7 +1065,9 @@ datTraitsPhysTempLipid <- lipidomicsMetadata %>%
   dplyr::select(-c(treatment, TTRSE)) %>%
   column_to_rownames(., var = "crab.ID") %>% 
   rename(., "Average TTR" = TTRavg) %>%
-  rename(., "Oxygen Consumption" = slope_nmol_hr_corrected) #Take metadata join with TTR data. 304, 308, and 506 do not have TTR data because they failed to right. Join with respirometry data (only select crabs have accompanying respirometry data). Use a series of case_when commands to create individual columns for each treatment, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns and TTRSE column. Convert crab.ID to rownames. Rename TTR and respirometry columns
+  mutate(., "Oxygen Consumption" = -slope_nmol_hr_corrected) %>%
+  dplyr::select(-slope_nmol_hr_corrected)
+  #Take metadata join with TTR data. 304, 308, and 506 do not have TTR data because they failed to right. Join with respirometry data (only select crabs have accompanying respirometry data). Use a series of case_when commands to create individual columns for each treatment, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns and TTRSE column. Convert crab.ID to rownames. Rename TTR and respirometry columns
 head(datTraitsPhysTempLipid) #Confirm dataframe creation
 nrow(datTraitsPhysTempLipid) == nrow(rowwiseLipidData) #Confirm that there are the same number of rows (samples) between the new trait matrix and the metabolite data
 ```
@@ -1180,7 +1183,7 @@ trait_orderLipidAppend <- c("Average TTR", "Oxygen Consumption", "5ºC", "13º",
 ```
 
 ```{r}
-#pdf(file = "WCNA/lipidomics/figures/module-trait-relationship-heatmap-append.pdf", height = 8.5, width = 8.5)
+pdf(file = "WCNA/lipidomics/figures/module-trait-relationship-heatmap-append.pdf", height = 8.5, width = 8.5)
 htLipidAppend <- Heatmap(moduleTraitCorLipidAppend, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
                          col = blueWhiteRed(50), 
                          row_names_side = "left", 
@@ -1209,7 +1212,7 @@ htLipidAppend <- Heatmap(moduleTraitCorLipidAppend, name = "Eigengene", column_t
                          column_title_gp = gpar(fontsize = 20),
                          row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
 draw(htLipidAppend) #Draw heatmap
-#dev.off()
+dev.off()
 ```
 
 ### Interpret correlations between physiology and module eigengenes
@@ -1224,7 +1227,7 @@ Moving forward, I'm going to focus on the version where I appended physiology in
 
 Righting response was not significantly correlated with any module.
 
-Oxygen consumption was positively correlated with ME5. ME5 had a negative correlation with 30ºC on boy days 4 and 22, as well as a positive correlation with 5ºC on day 22. Respiration was also negatively correlated with ME0, which was negatively correlated with 5ºC on day 22 and positively correlated with 30ºC on day 22.
+Oxygen consumption was neagtively correlated with ME5. ME5 had a negative correlation with 30ºC on boy days 4 and 22, as well as a positive correlation with 5ºC on day 22. Respiration was also positively correlated with ME0, which was negatively correlated with 5ºC on day 22 and positively correlated with 30ºC on day 22.
 
 ##### Identify metabolites present in significant modules
 
