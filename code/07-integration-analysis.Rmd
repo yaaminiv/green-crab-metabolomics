@@ -697,8 +697,9 @@ datTraitsPhysOnly <- metabolomicsMetadata %>%
   dplyr::select(-c(treatment:treatment_day, TTRSE)) %>%
   column_to_rownames(., var = "crab.ID") %>% 
   rename(., "Average TTR" = TTRavg) %>%
-  rename(., "Oxygen Consumption" = slope_nmol_hr_corrected)
-#Take metadata and fix day to day 4 instead of day 3. Join with TTR data. 304, 308, and 506 do not have TTR data because they failed to right. Join with respirometry data (only select crabs have accompanying respirometry data). Use a series of case_when commands to create individual columns for each treatment or day, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns and TTRSE column. Convert crab.ID to rownames. Rename TTR and respirometry columns
+  mutate(., "Oxygen Consumption" = -slope_nmol_hr_corrected) %>%
+  dplyr::select(-slope_nmol_hr_corrected)
+#Take metadata and fix day to day 4 instead of day 3. Join with TTR data. 304, 308, and 506 do not have TTR data because they failed to right. Join with respirometry data (only select crabs have accompanying respirometry data). Use a series of case_when commands to create individual columns for each treatment or day, with 1 indicating that sample is part of the group, and 0 indicating that sample is not part of the group. Remove previous treatment classification columns and TTRSE column. Convert crab.ID to rownames. Rename TTR column. Make oxygen consumption -slope, and then remove slope column.
 head(datTraitsPhysOnly) #Confirm dataframe creation
 nrow(datTraitsPhysOnly) == nrow(rowwiseMetabData) #Confirm that there are the same number of rows (samples) between the new trait matrix and the metabolite data
 ```
@@ -717,6 +718,7 @@ head(moduleTraitPvalueMetPhysOnly %>% as.data.frame())
 ```{r}
 moduleTraitTreeMetPhysOnly <- hclust(dist(t(moduleTraitCorMetPhysOnly)), method = "average") #Create cluster dendogram for module-trait correlations
 ```
+
 ##### Plot correlations
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
@@ -812,7 +814,7 @@ trait_orderLipidPhysOnly <- c("Average TTR", "Oxygen Consumption") #Order of tra
 ```
 
 ```{r}
-#pdf(file = "WCNA/lipidomics/figures/module-trait-relationship-heatmap-physOnly.pdf", height = 8.5, width = 8.5)
+pdf(file = "WCNA/lipidomics/figures/module-trait-relationship-heatmap-physOnly.pdf", height = 8.5, width = 8.5)
 htLipidPhysOnly <- Heatmap(moduleTraitCorLipidPhysOnly, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
                            col = blueWhiteRed(50), 
                            row_names_side = "left", 
@@ -841,7 +843,7 @@ htLipidPhysOnly <- Heatmap(moduleTraitCorLipidPhysOnly, name = "Eigengene", colu
                            column_title_gp = gpar(fontsize = 20),
                            row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
 draw(htLipidPhysOnly) #Draw heatmap
-#dev.off()
+dev.off()
 ```
 
 ### Correlate separate metabolomics and lipidomics WCNAs with physiology, temperature, and day
@@ -1293,7 +1295,7 @@ rbind(module5_metabolites %>%
 ) #Identify metabolites involved in various pre-ordained pathways
 ```
 
-##### Metaboanalyst pathway enrichment
+###### Metaboanalyst pathway enrichment
 
 I used Metaboanalyst as a tool to get pathway information for the metabolites in modules 0 and 5.
 
@@ -1427,6 +1429,50 @@ Valine biosynthesis, phenylalanine biosynthesis, phenylalanine metabolism, and v
 
 #### Lipidomics
 
+Righting response:
+
+- Negative correlation with ME15
+- Negative correlation with ME3, which was also negatively correlated with 5ºC and oxgygen consumption, and positively correlated with 30ºC
+- Negative correlation with ME6, which was positively correlated with 30ºC
+
+Oxygen consumption:
+
+- Negative correlation with ME5, which was negatively correlated with 30ºC
+- Positive correlation with ME9, which was positively correlated with 5ºC and negatively correlated with 30ºC
+- Positive correlation with ME0, which was positively correlated with 5ºC
+- Negative correlation with ME3, which was was negatively correlated with 5ºC and righting response, and positively correlated with 30ºC
+
+For interpretation, I need to keep in mind that the correlations were with slope, not -slope (what I ended up plotting). That means the larger the negative number, the more oxygen was being consumed. 
+
+- Positive correlation: lipid concentrations increased as slope became more positive (less consumption)
+- Negative correlation: lipid concentrations decreased as slope became more positive (less consumption)
+
+FOR CLARITY'S SAKE: DO CORRELATIONS WITH NEGATIVE SLOPE
+
+I will focus on modules 0, 3, 5, 6, 9, and 15.
+
+##### Identify metabolites present in significant modules
+
+```{r}
+module0_metabolites <- read.csv("../05-metabolomics-analysis/metaboanalyst/module0_metabolites.csv") #Import list of metabolites in module 0
+module5_metabolites <- read.csv("../05-metabolomics-analysis/metaboanalyst/module5_metabolites.csv") #Import list of metabolites in module 5
+```
+
+##### Identify VIP in significant modules
+
+```{r}
+VIP_module0 <- read.delim("../05-metabolomics-analysis/metaboanalyst/all-module-VIP.txt", sep = "\t") %>%
+  filter(., module == "module0") %>%
+  dplyr::select(metabolite, statistic, p.adj, comparison, module) #Import list of VIP in module 0. Retain columns of interest
+VIP_module0
+```
+
+```{r}
+VIP_module5 <- read.delim("../05-metabolomics-analysis/metaboanalyst/all-module-VIP.txt", sep = "\t") %>%
+  filter(., module == "module5") %>%
+  dplyr::select(metabolite, statistic, p.adj, comparison, module) #Import list of VIP in module 5. Retain columns of interest
+VIP_module5
+```
 
 
 ### Combined metabolomics and lipidomics WCNs with physiology, temperature, and day
