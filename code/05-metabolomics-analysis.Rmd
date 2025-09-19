@@ -2061,6 +2061,7 @@ transMetabData %>%
                                         strip.text.x = element_text(size = 10, color = "black", face="bold"))
 ggsave("metaboanalyst/figures/combined-respiration-inputs.pdf", height = 8.5, width = 11)
 ```
+
 ```{r}
 respirationMetabolites <- c("glucose ", "glucose-1-phosphate", "glucose-6-phosphate", "fructose-6-phosphate ", "fructose-1-phosphate", "3-phosphoglycerate",
                             "lactic acid",
