@@ -1,0 +1,11 @@
+metabolite,PubChem,KEGG,day2213v30,day2213v5,pathway,calciumSignaling,respiration,coldProtection,valineBiosynthesisPhys,phenylalanineBiosynthesisPhys,phenylalanineMetabolismPhys,valineDegradationPhys
+valine ,6287,C00183,1,0,valineBiosynthesis,0,0,0,1,0,0,1
+tyrosine,6057,C00082,0,0,NA,1,0,0,0,1,1,0
+tryptophan ,6305,C00078,1,0,NA,1,0,0,0,0,0,0
+ribose-5-phosphate,77982,,1,0,NA,0,0,0,0,0,0,0
+ribitol,827,C00474,0,0,NA,0,0,0,0,0,0,0
+phenylalanine,6140,C00079,0,0,NA,0,0,0,0,1,1,0
+methionine,6137,C00073,1,0,NA,0,0,0,0,0,0,0
+leucine,6106,C00123,1,0,valineBiosynthesis,0,0,0,1,0,0,1
+isoleucine ,6306,C00407,1,0,valineBiosynthesis,0,0,0,1,0,0,1
+hydroxylamine,787,C00192,0,0,NA,0,0,0,0,0,0,0

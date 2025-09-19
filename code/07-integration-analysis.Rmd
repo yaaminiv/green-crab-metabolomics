@@ -75,6 +75,11 @@ moduleTraitCorMet <- moduleTraitCor #Correlations between module eigengenes and 
 moduleTraitPvalueMet <- moduleTraitPvalue #P values for correlations between module eigengenes and treatment (temperature x day)
 mME_metabolomics <- mME_meta #Data used to create module expression matrix
 plotColors <- plotColors #Color scheme for plots
+
+respirationMetabolites <- respirationMetabolites #List of metabolites involved in respiration
+calciumSignalingMetabolites <- calciumSignalingMetabolites #List of metabolites involved in calcium signaling
+coldProtectionMetabolites <- coldProtectionMetabolites #List of metabolites involved in cold protection
+
 detach("file:../05-metabolomics-analysis/05-metabolomics-analysis.RData") #Detach metabolomics RData
 ```
 
@@ -671,6 +676,7 @@ mkdir WCNA/metabolomics/figures
 mkdir WCNA/lipidomics
 mkdir WCNA/lipidomics/figures
 ```
+
 ### Correlate separate metabolomics and lipidomics WCNAs with physiology only
 
 #### Modify trait matrix
@@ -1203,6 +1209,225 @@ htLipidAppend <- Heatmap(moduleTraitCorLipidAppend, name = "Eigengene", column_t
 draw(htLipidAppend) #Draw heatmap
 #dev.off()
 ```
+
+### Interpret correlations between physiology and module eigengenes
+
+Moving forward, I'm going to focus on the version where I appended physiology information onto the existing WCNA data. My next step is to understand what the significant correlations mean! I will do this in a few steps:
+
+1. Identify molecules present in module eigengenes that were significantly correlated with physiology traits
+2. Identify VIP molecules present in significantly correlated module eigengenes
+3. Identify major pathways present in significantly correlated modules
+
+#### Metabolomics
+
+Righting response was not significantly correlated with any module.
+
+Oxygen consumption was positively correlated with ME5. ME5 had a negative correlation with 30ºC on boy days 4 and 22, as well as a positive correlation with 5ºC on day 22. Respiration was also negatively correlated with ME0, which was negatively correlated with 5ºC on day 22 and positively correlated with 30ºC on day 22.
+
+##### Identify metabolites present in significant modules
+
+```{r}
+module0_metabolites <- read.csv("../05-metabolomics-analysis/metaboanalyst/module0_metabolites.csv") #Import list of metabolites in module 0
+module5_metabolites <- read.csv("../05-metabolomics-analysis/metaboanalyst/module5_metabolites.csv") #Import list of metabolites in module 5
+```
+
+##### Identify VIP in significant modules
+
+```{r}
+VIP_module0 <- read.delim("../05-metabolomics-analysis/metaboanalyst/all-module-VIP.txt", sep = "\t") %>%
+  filter(., module == "module0") %>%
+  dplyr::select(metabolite, statistic, p.adj, comparison, module) #Import list of VIP in module 0. Retain columns of interest
+VIP_module0
+```
+
+```{r}
+VIP_module5 <- read.delim("../05-metabolomics-analysis/metaboanalyst/all-module-VIP.txt", sep = "\t") %>%
+  filter(., module == "module5") %>%
+  dplyr::select(metabolite, statistic, p.adj, comparison, module) #Import list of VIP in module 5. Retain columns of interest
+VIP_module5
+```
+
+##### Identify pathways represented in the significant modules
+
+###### VIP enrihcment pathways 
+
+```{r}
+module0_pairwiseVIPpathway <- read.delim("../05-metabolomics-analysis/metaboanalyst/all-module-pairwise-VIP-pathways.txt", sep = "\t") %>%
+  filter(., module == "module0") %>%
+  dplyr::select(metabolite, statistic, p.adj, comparison, pathway, module) #Import list of VIP in module 0. Retain columns of interest
+module0_pairwiseVIPpathway
+```
+
+```{r}
+module5_pairwiseVIPpathway <- read.delim("../05-metabolomics-analysis/metaboanalyst/all-module-pairwise-VIP-pathways.txt", sep = "\t") %>%
+  filter(., module == "module5") %>%
+  dplyr::select(metabolite, statistic, p.adj, comparison, pathway, module) #Import list of VIP in module 0. Retain columns of interest
+module5_pairwiseVIPpathway
+```
+
+###### A priori pathways
+
+```{r}
+rbind(module0_metabolites %>%
+        filter(., Metabolite %in% respirationMetabolites) %>%
+        mutate(., category = "respiration", module = "module0"), #5 respiration metabolites
+      module0_metabolites %>%
+        filter(., Metabolite %in% calciumSignalingMetabolites) %>%
+        mutate(., category = "calciumSignaling", module = "module0"), #3 calcium
+      module0_metabolites %>%
+        filter(., Metabolite %in% coldProtectionMetabolites) %>%
+        mutate(., category = "coldProtection", module = "module0") #0 cold protection
+) #Identify metabolites involved in various pre-ordained pathways
+```
+
+```{r}
+rbind(module5_metabolites %>%
+        filter(., Metabolite %in% respirationMetabolites) %>%
+        mutate(., category = "respiration", module = "module5"), #0 respiration metabolites
+      module5_metabolites %>%
+        filter(., Metabolite %in% calciumSignalingMetabolites) %>%
+        mutate(., category = "calciumSignaling", module = "module5"), #2 calcium
+      module5_metabolites %>%
+        filter(., Metabolite %in% coldProtectionMetabolites) %>%
+        mutate(., category = "coldProtection", module = "module5") #0 cold protection
+) #Identify metabolites involved in various pre-ordained pathways
+```
+
+##### Metaboanalyst pathway enrichment
+
+I used Metaboanalyst as a tool to get pathway information for the metabolites in modules 0 and 5.
+
+Module 0: phosphoinositol, n-epsilon-trimethyllysine, and isothreonic acid not included
+
+Module 5: ribose-5-phosphate not included
+
+While there were no significantly enriched pathways in module 0, module 5 had several relating to valine and phenylalanine biosynthesis and metabolism.
+
+```{r}
+#Create lists of metabolites involved in significant pathways. Some names have spaces afterwards to reflect naming conventions in original dataframe
+valineBiosynthesis <- c("threonine", "isoleucine ", "leucine", "2-ketoisocaproic acid", "valine ")
+phenylalanineBiosynthesis <- c("phenylalanine", "tyrosine")
+phenylalanineMetabolism <- c("phenylalanine", "tyrosine")
+valineDegradation <- c("isoleucine ", "leucine", "valine ")
+```
+
+##### Combine all information
+
+```{r}
+module0_annotations <- module0_metabolites %>%
+  dplyr::rename(metabolite = Metabolite) %>%
+  left_join(., y = VIP_module0 %>% 
+              dplyr::select(-module) %>%
+              mutate(., comparison = case_when(comparison == "13v30_day22" ~ "day2213v30",
+                                               comparison == "13v5_day22" ~ "day2213v5")) %>%
+              pivot_wider(., id_cols = "metabolite", names_from = "comparison", values_from = "comparison"), 
+            by = "metabolite") %>%
+  left_join(., y = module0_pairwiseVIPpathway %>% 
+              dplyr::select(-module) %>%
+              mutate(., comparison = case_when(comparison == "13v30_day22" ~ "day2213v30",
+                                               comparison == "13v5_day22" ~ "day2213v5")) %>%
+              pivot_wider(., id_cols = c("metabolite", "pathway"), names_from = "comparison", values_from = "comparison"), 
+            by = c("metabolite", "day2213v5")) %>%
+  left_join(x = ., 
+            y = rbind(module0_metabolites %>%
+                        filter(., Metabolite %in% respirationMetabolites) %>%
+                        mutate(., category = "respiration"),
+                      module0_metabolites %>%
+                        filter(., Metabolite %in% calciumSignalingMetabolites) %>%
+                        mutate(., category = "calciumSignaling"),
+                      module0_metabolites %>%
+                        filter(., Metabolite %in% coldProtectionMetabolites) %>%
+                        mutate(., category = "coldProtection")) %>%
+              dplyr::rename(metabolite = "Metabolite") %>%
+              pivot_wider(., id_cols = "metabolite", names_from = "category", values_from = "category"), 
+            by = "metabolite") %>%
+  mutate(., respiration = case_when(is.na(respiration) == TRUE ~ 0,
+                                    is.na(respiration) == FALSE ~ 1)) %>%
+  mutate(., calciumSignaling = case_when(is.na(calciumSignaling) == TRUE ~ 0,
+                                         is.na(calciumSignaling) == FALSE ~ 1)) %>%
+  mutate(., coldProtection = 0) %>%
+  mutate(., day2213v30 = case_when(is.na(day2213v30) == TRUE ~ 0,
+                                   is.na(day2213v30) == FALSE ~ 1)) %>%
+  mutate(., day2213v5 = case_when(is.na(day2213v5) == TRUE ~ 0,
+                                  is.na(day2213v5) == FALSE ~ 1)) #Take module metabolite information and join with modified VIP information, enrichment information, and a priori pathway information.
+head(module0_annotations) #Confirm dataframe creation
+```
+
+```{r}
+module5_annotations <- module5_metabolites %>%
+  dplyr::rename(metabolite = Metabolite) %>%
+  left_join(., y = VIP_module5 %>% 
+              dplyr::select(-module) %>%
+              mutate(., comparison = case_when(comparison == "13v30_day22" ~ "day2213v30",
+                                               comparison == "13v5_day22" ~ "day2213v5")) %>%
+              pivot_wider(., id_cols = "metabolite", names_from = "comparison", values_from = "comparison"), 
+            by = "metabolite") %>%
+  mutate(., day2213v5 = 0) %>%
+  left_join(., y = module5_pairwiseVIPpathway %>% 
+              dplyr::select(-module) %>%
+              mutate(., comparison = case_when(comparison == "13v30_day22" ~ "day2213v30",
+                                               comparison == "13v5_day22" ~ "day2213v5")) %>%
+              pivot_wider(., id_cols = c("metabolite", "pathway"), names_from = "comparison", values_from = "comparison"), 
+            by = c("metabolite", "day2213v30")) %>%
+  left_join(x = ., 
+            y = rbind(module5_metabolites %>%
+                        filter(., Metabolite %in% respirationMetabolites) %>%
+                        mutate(., category = "respiration"),
+                      module5_metabolites %>%
+                        filter(., Metabolite %in% calciumSignalingMetabolites) %>%
+                        mutate(., category = "calciumSignaling"),
+                      module5_metabolites %>%
+                        filter(., Metabolite %in% coldProtectionMetabolites) %>%
+                        mutate(., category = "coldProtection")) %>%
+              dplyr::rename(metabolite = "Metabolite") %>%
+              pivot_wider(., id_cols = "metabolite", names_from = "category", values_from = "category"), 
+            by = "metabolite") %>%
+  mutate(., respiration = 0) %>%
+  mutate(., calciumSignaling = case_when(is.na(calciumSignaling) == TRUE ~ 0,
+                                         is.na(calciumSignaling) == FALSE ~ 1)) %>%
+  mutate(., coldProtection = 0) %>%
+  mutate(., day2213v30 = case_when(is.na(day2213v30) == TRUE ~ 0,
+                                   is.na(day2213v30) == FALSE ~ 1)) %>%
+  left_join(x = .,
+            y = rbind(module5_metabolites %>%
+                        dplyr::rename(metabolite = "Metabolite") %>%
+                        filter(., metabolite %in% valineBiosynthesis) %>%
+                        mutate(., physPathway = "valineBiosynthesisPhys"), 
+                      module5_metabolites %>%
+                        dplyr::rename(metabolite = "Metabolite") %>%
+                        filter(., metabolite %in% phenylalanineBiosynthesis) %>%
+                        mutate(., physPathway = "phenylalanineBiosynthesisPhys"), 
+                      module5_metabolites %>%
+                        dplyr::rename(metabolite = "Metabolite") %>%
+                        filter(., metabolite %in% phenylalanineMetabolism) %>%
+                        mutate(., physPathway = "phenylalanineMetabolismPhys"), module5_metabolites %>%
+                        dplyr::rename(metabolite = "Metabolite") %>%
+                        filter(., metabolite %in% valineDegradation) %>%
+                        mutate(., physPathway = "valineDegradationPhys")) %>%
+              pivot_wider(., id_cols = "metabolite", names_from = "physPathway", values_from = "physPathway"),
+            by = "metabolite") %>%
+  mutate(., valineBiosynthesisPhys = case_when(is.na(valineBiosynthesisPhys) == TRUE ~ 0,
+                                              is.na(valineBiosynthesisPhys) == FALSE ~ 1)) %>%
+  mutate(., phenylalanineBiosynthesisPhys = case_when(is.na(phenylalanineBiosynthesisPhys) == TRUE ~ 0,
+                                              is.na(phenylalanineBiosynthesisPhys) == FALSE ~ 1)) %>%
+    mutate(., phenylalanineMetabolismPhys = case_when(is.na(phenylalanineMetabolismPhys) == TRUE ~ 0,
+                                              is.na(phenylalanineMetabolismPhys) == FALSE ~ 1)) %>%
+    mutate(., valineDegradationPhys = case_when(is.na(valineDegradationPhys) == TRUE ~ 0,
+                                              is.na(valineDegradationPhys) == FALSE ~ 1)) #Take module metabolite information and join with modified VIP information, enrichment information, and a priori pathway information.
+head(module5_annotations) #Confirm dataframe creation
+```
+
+```{r}
+#Save annotation dataframes
+write.csv(module0_annotations, "WCNA/metabolomics/module0_annotations.csv", quote = FALSE, row.names = FALSE)
+write.csv(module5_annotations, "WCNA/metabolomics/module5_annotations.csv", quote = FALSE, row.names = FALSE)
+```
+
+Valine biosynthesis, phenylalanine biosynthesis, phenylalanine metabolism, and valine degradation seem to play an important role in temperature regulation of respiration! I will need to explore this further.
+
+#### Lipidomics
+
+
 
 ### Combined metabolomics and lipidomics WCNs with physiology, temperature, and day
 

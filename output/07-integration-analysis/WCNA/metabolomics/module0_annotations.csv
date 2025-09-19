@@ -1,0 +1,41 @@
+metabolite,PubChem,KEGG,day2213v30,day2213v5,pathway,respiration,calciumSignaling,coldProtection
+xylitol,6912,C00379,0,1,NA,0,0,0
+uric acid,1175,C00366,0,0,NA,0,0,0
+urea,1176,C00086,0,1,arginineBiosynthesis,0,0,0
+UDP-N-acetylglucosamine ,445675,C00043,0,1,NA,0,1,0
+trans-4-hydroxyproline ,5810,C01157,0,0,NA,0,0,0
+sucrose,5988,C00089,0,0,NA,0,0,0
+ribonic acid ,5460677,C01685,0,0,NA,0,0,0
+pyrrole-2-carboxylic acid,12473,C05942,0,1,NA,0,0,0
+phosphoinositol,4449629,,0,0,NA,0,1,0
+phosphoethanolamine,1015,C00346,1,1,NA,0,0,0
+para-xanthine ,53442229,C13747,0,0,NA,0,0,0
+octadecanol,8221,,0,0,NA,0,0,0
+n-epsilon-trimethyllysine,440121,,0,0,NA,0,0,0
+N-acetylputrescine ,122356,C02714,0,0,NA,0,0,0
+methionine sulfoxide,158980,C02989,0,1,NA,0,0,0
+malic acid,525,C00711,1,0,NA,1,0,0
+isoxanthopterin,10729,C03975,1,0,NA,0,0,0
+isothreonic acid ,151152,C00639,0,0,NA,0,0,0
+hypoxanthine,790,C00262,0,0,NA,0,0,0
+hypotaurine,107812,C00519,0,0,NA,0,0,0
+glycyl-glycine ,11163,C02037,0,0,NA,0,0,0
+glycerol,753,C00116,0,0,NA,0,0,0
+glyceric acid ,752,,0,0,NA,0,0,0
+glucose-6-phosphate,5958,C00092,0,0,NA,1,0,0
+fructose-6-phosphate ,440641,C05345,0,0,NA,1,0,0
+fructose-1-phosphate,439394,C01094,0,0,NA,1,0,0
+dimethylglycine,673,,0,1,NA,0,0,0
+cytosine,597,C00380,1,0,NA,0,0,0
+cystine,595,C01420,0,0,NA,0,0,0
+cysteine,5862,C00097,0,0,NA,0,0,0
+cystathionine,439258,C02291,0,0,NA,0,0,0
+citrulline,9750,C00327,0,0,NA,0,0,0
+citric acid,311,C00158,0,0,NA,1,1,0
+ciliatine,339,C03557,0,0,NA,0,0,0
+cadaverine,273,,0,0,NA,0,0,0
+beta-alanine,239,C00099,0,1,NA,0,0,0
+alpha-aminoadipic acid,92136,C00956,0,0,NA,0,0,0
+3-aminoisobutyric acid,64956,C05145,0,0,NA,0,0,0
+2-ketoadipic acid ,71,C00322,0,1,NA,0,0,0
+2-aminobutyric acid,6657,C02721,0,0,NA,0,0,0
