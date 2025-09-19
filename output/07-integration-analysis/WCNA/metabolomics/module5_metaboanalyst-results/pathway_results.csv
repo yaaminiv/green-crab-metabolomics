@@ -1,0 +1,11 @@
+"","Total","Expected","Hits","Raw p","-log10(p)","Holm adjust","FDR","Impact"
+"Valine, leucine and isoleucine biosynthesis",8,0.052731,3,9.7072e-06,5.0129,0.00074746,0.00074746,0
+"Phenylalanine, tyrosine and tryptophan biosynthesis",4,0.026365,2,0.00022224,3.6532,0.01689,0.0085563,1
+"Phenylalanine metabolism",7,0.046139,2,0.00077052,3.1132,0.057789,0.019777,0.37931
+"Valine, leucine and isoleucine degradation",38,0.25047,3,0.0013417,2.8723,0.099289,0.025829,0
+"Ubiquinone and other terpenoid-quinone biosynthesis",19,0.12524,1,0.11903,0.92435,1,1,0
+"Pantothenate and CoA biosynthesis",20,0.13183,1,0.12494,0.90329,1,1,0
+"One carbon pool by folate",23,0.1516,1,0.14248,0.84626,1,1,0.00864
+"Tryptophan metabolism",30,0.19774,1,0.18222,0.7394,1,1,0.21401
+"Cysteine and methionine metabolism",32,0.21092,1,0.19328,0.71381,1,1,0.10718
+"Tyrosine metabolism",33,0.21751,1,0.19877,0.70166,1,1,0.14534

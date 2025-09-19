@@ -1,0 +1,34 @@
+"","Total","Expected","Hits","Raw p","-log10(p)","Holm adjust","FDR","Impact"
+"Starch and sucrose metabolism",14,0.35593,3,0.0044311,2.3535,0.34119,0.34119,0.25323
+"Taurine and hypotaurine metabolism",7,0.17797,2,0.012089,1.9176,0.91877,0.46543,0.4
+"Glyoxylate and dicarboxylate metabolism",24,0.61017,3,0.020783,1.6823,1,0.48925,0.17808
+"Glycine, serine and threonine metabolism",29,0.73729,3,0.034471,1.4625,1,0.48925,0.03621
+"Glycerolipid metabolism",12,0.30508,2,0.035126,1.4544,1,0.48925,0.31474
+"Arginine biosynthesis",13,0.33051,2,0.040869,1.3886,1,0.48925,0
+"Cysteine and methionine metabolism",32,0.81356,3,0.044477,1.3519,1,0.48925,0.31634
+"Fructose and mannose metabolism",16,0.40678,2,0.060002,1.2218,1,0.57752,0.2918
+"Pantothenate and CoA biosynthesis",20,0.50847,2,0.08929,1.0492,1,0.68753,0.04459
+"Citrate cycle (TCA cycle)",20,0.50847,2,0.08929,1.0492,1,0.68753,0.1345
+"Pentose phosphate pathway",22,0.55932,2,0.10526,0.97775,1,0.71489,0.12366
+"One carbon pool by folate",23,0.58475,2,0.11352,0.94492,1,0.71489,0.05989
+"Phosphonate and phosphinate metabolism",5,0.12712,1,0.12103,0.91709,1,0.71489,0
+"Lysine degradation",26,0.66102,2,0.13926,0.85616,1,0.71489,0
+"Glutathione metabolism",26,0.66102,2,0.13926,0.85616,1,0.71489,0.0085
+"Thiamine metabolism",7,0.17797,1,0.16539,0.7815,1,0.75271,0
+"Arginine and proline metabolism",29,0.73729,2,0.16618,0.77942,1,0.75271,0.05333
+"Caffeine metabolism",10,0.25424,1,0.2279,0.64226,1,0.97489,0
+"Amino sugar and nucleotide sugar metabolism",39,0.99153,2,0.26078,0.58372,1,1,0.18298
+"beta-Alanine metabolism",14,0.35593,1,0.30427,0.51674,1,1,0.277
+"Galactose metabolism",15,0.38136,1,0.32219,0.49189,1,1,0.01
+"Pentose and glucuronate interconversions",17,0.4322,1,0.35672,0.44768,1,1,0.16867
+"Propanoate metabolism",20,0.50847,1,0.40535,0.39217,1,1,0
+"Pyruvate metabolism",23,0.58475,1,0.45043,0.34638,1,1,0.03571
+"Glycolysis or Gluconeogenesis",26,0.66102,1,0.49221,0.30785,1,1,0.06075
+"Lipoic acid metabolism",27,0.68644,1,0.50544,0.29633,1,1,0
+"Sphingolipid metabolism",27,0.68644,1,0.50544,0.29633,1,1,0.01709
+"Inositol phosphate metabolism",28,0.71186,1,0.51834,0.28538,1,1,0
+"Glycosylphosphatidylinositol (GPI)-anchor biosynthesis",28,0.71186,1,0.51834,0.28538,1,1,0
+"Purine metabolism",68,1.7288,2,0.52578,0.2792,1,1,0.03291
+"Tryptophan metabolism",30,0.76271,1,0.54318,0.26506,1,1,0
+"Glycerophospholipid metabolism",32,0.81356,1,0.56678,0.24658,1,1,0.0233
+"Pyrimidine metabolism",40,1.0169,1,0.64998,0.1871,1,1,0
