@@ -2025,10 +2025,6 @@ module15Lipids_enrichedPhys #Confirm dataframe creation
 Module 0 has no VIP nor any enriched pathways, so there won't be a table for that module.
 
 ```{r}
-module3Lipid_enrichment #Enriched pathways in module
-```
-
-```{r}
 allPhysModules_lipidAnnotations <- module3_lipids %>% 
   mutate(lipid = str_trim(lipid, side = "both")) %>%
   remove_rownames(.) %>%
