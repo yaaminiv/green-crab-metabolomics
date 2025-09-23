@@ -1258,7 +1258,7 @@ VIP_module5
 
 ##### Identify pathways represented in the significant modules
 
-###### VIP enrihcment pathways 
+###### VIP enrichment pathways 
 
 ```{r}
 module0_pairwiseVIPpathway <- read.delim("../05-metabolomics-analysis/metaboanalyst/all-module-pairwise-VIP-pathways.txt", sep = "\t") %>%
@@ -1757,11 +1757,10 @@ There are no VIP in modules 0 or 15, so I did not do this analysis with those mo
 I previously annotated VIP with lipid classes and saturation state., which would be useful for understanding differences in cell membranes across temperature.
 
 ```{r}
-significantVIP_13v30_annot %>%
+module3Lipids_VIPclasses <- significantVIP_13v30_annot %>%
   rbind(significantVIP_13v5_annot) %>%
   mutate(lipid = str_trim(lipid, side = "both")) %>%
   dplyr::select(lipid, comparison:saturation) %>%
-  arrange(., lipid) %>%
   mutate(comparison = case_when(comparison == "13 vs. 30" ~ "13v30",
                                 comparison == "13 vs. 5" ~ "13v5")) %>%
   unique(.) %>%
@@ -1769,20 +1768,94 @@ significantVIP_13v30_annot %>%
               mutate(lipid = str_trim(lipid, side = "both")),
             y = .,
             by = c("lipid", "comparison")) %>%
-  arrange(., lipid)
-  pivot_wider(., id_cols = c(lipid, module, class, targetClass, saturation, `13v30`, `13v5`), names_from = "comparison", values_from = c(statistic, p.adj))
-#Combine lists of VIP. Remove any leading or trailing white space from lipids and select columns of interest. Arrange by lipid name. Modify information in comparison column. Retain only unique rows. Pivot wider and change comparison information to be Y or N.
+  arrange(., lipid) %>%
+  pivot_wider(., id_cols = c(lipid, module, class, targetClass, saturation, p.adj), names_from = "comparison", names_prefix = "statistic.", values_from = "statistic") %>%
+  mutate(., comparison = case_when(is.na(statistic.13v30) == FALSE ~ "13v30",
+                                   is.na(statistic.13v5) == FALSE ~ "13v5")) %>%
+  pivot_wider(., id_cols = c(lipid, module, class, targetClass, saturation, statistic.13v30, statistic.13v5), names_from = "comparison", names_prefix = "padj.", values_from = "p.adj") #Combine lists of VIP. Remove any leading or trailing white space from lipids and select columns of interest. Modify information in comparison column. Retain only unique rows. Join with module VIP information and arrange by lipid. Pivot wider in two steps to assign correct statistic and p.adj information to each lipid.
+module3Lipids_VIPclasses
 ```
 
 ```{r}
-VIPlipids_module3
+module5Lipids_VIPclasses <- significantVIP_13v30_annot %>%
+  rbind(significantVIP_13v5_annot) %>%
+  mutate(lipid = str_trim(lipid, side = "both")) %>%
+  dplyr::select(lipid, comparison:saturation) %>%
+  mutate(comparison = case_when(comparison == "13 vs. 30" ~ "13v30",
+                                comparison == "13 vs. 5" ~ "13v5")) %>%
+  unique(.) %>%
+  left_join(x = VIPlipids_module5 %>%
+              mutate(lipid = str_trim(lipid, side = "both")),
+            y = .,
+            by = c("lipid", "comparison")) %>%
+  arrange(., lipid) %>%
+  dplyr::rename(statistic.13v30 = statistic) %>%
+  dplyr::rename(padj.13v30 = p.adj) %>%
+  dplyr::select(-comparison) %>%
+  mutate(., statistic.13v5 = NA,
+         padj.13v5 = NA) #Combine lists of VIP. Remove any leading or trailing white space from lipids and select columns of interest. Modify information in comparison column. Retain only unique rows. Join with module VIP information and arrange by lipid. Since there are no 13v5 anotated in this module, manually modify columns to match other dataframes.
+module5Lipids_VIPclasses
 ```
 
+```{r}
+module6Lipids_VIPclasses <- significantVIP_13v30_annot %>%
+  rbind(significantVIP_13v5_annot) %>%
+  mutate(lipid = str_trim(lipid, side = "both")) %>%
+  dplyr::select(lipid, comparison:saturation) %>%
+  mutate(comparison = case_when(comparison == "13 vs. 30" ~ "13v30",
+                                comparison == "13 vs. 5" ~ "13v5")) %>%
+  unique(.) %>%
+  left_join(x = VIPlipids_module6 %>%
+              mutate(lipid = str_trim(lipid, side = "both")),
+            y = .,
+            by = c("lipid", "comparison")) %>%
+  arrange(., lipid) %>%
+  dplyr::rename(statistic.13v30 = statistic) %>%
+  dplyr::rename(padj.13v30 = p.adj) %>%
+  dplyr::select(-comparison) %>%
+  mutate(., statistic.13v5 = NA,
+         padj.13v5 = NA) #Combine lists of VIP. Remove any leading or trailing white space from lipids and select columns of interest. Modify information in comparison column. Retain only unique rows. Join with module VIP information and arrange by lipid. Since there are no 13v5 anotated in this module, manually modify columns to match other dataframes.
+module6Lipids_VIPclasses
+```
 
-- import annotations for each class of VIP
-- add to VIP in specific modules
+```{r}
+module9Lipids_VIPclasses <- significantVIP_13v30_annot %>%
+  rbind(significantVIP_13v5_annot) %>%
+  mutate(lipid = str_trim(lipid, side = "both")) %>%
+  dplyr::select(lipid, comparison:saturation) %>%
+  mutate(comparison = case_when(comparison == "13 vs. 30" ~ "13v30",
+                                comparison == "13 vs. 5" ~ "13v5")) %>%
+  unique(.) %>%
+  left_join(x = VIPlipids_module9 %>%
+              mutate(lipid = str_trim(lipid, side = "both")),
+            y = .,
+            by = c("lipid", "comparison")) %>%
+  arrange(., lipid) %>%
+  pivot_wider(., id_cols = c(lipid, module, class, targetClass, saturation, p.adj), names_from = "comparison", names_prefix = "statistic.", values_from = "statistic") %>%
+  mutate(., comparison = case_when(is.na(statistic.13v30) == FALSE ~ "13v30",
+                                   is.na(statistic.13v5) == FALSE ~ "13v5")) %>%
+  pivot_wider(., id_cols = c(lipid, module, class, targetClass, saturation, statistic.13v30, statistic.13v5), names_from = "comparison", names_prefix = "padj.", values_from = "p.adj") #Combine lists of VIP. Remove any leading or trailing white space from lipids and select columns of interest. Modify information in comparison column. Retain only unique rows. Join with module VIP information and arrange by lipid. Pivot wider in two steps to assign correct statistic and p.adj information to each lipid.
+module9Lipids_VIPclasses
+```
 
--- CODE IN PROGRESS --
+###### LION/web pathway enrichment
+
+I am going to put the lipid information from modules 0, 3, 5, 6, 9, and 15 through LION/web enrichment. This will be to see if there are any overrepresented processes unique to the physiology modules, or to see if there are any overlapping enriched terms between modules significant for physiology and temperature.
+
+- Target-list mode: target list is a list of lipids in the module, background is a list of all detected and known lipids.
+
+
+##### Combine all information
+
+0 - only if there are sig pathways
+module 3
+module 5
+6
+9
+15 - only if there are sig pathways
+
+
+
 
 ### Combined metabolomics and lipidomics WCNs with physiology, temperature, and day
 
