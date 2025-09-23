@@ -1850,25 +1850,257 @@ module0Lipid_enrichment <- read.csv("WCNA/lipidomics/LION-enrichment-report-modu
 module0Lipid_enrichment #No enriched terms in module 0
 ```
 
-
 ```{r}
 module3Lipid_enrichment <- read.csv("WCNA/lipidomics/LION-enrichment-report-module3phys/LION-enrichment-results.csv") %>%
   filter(., FDR.q.value < 0.05)
-module3Lipid_enrichment #7 enriched terms in module 3
+module3Lipid_enrichment #7 enriched terms in module
 ```
 
+```{r}
+LIONtoTermmodule3 <- read.csv("WCNA/lipidomics/LION-enrichment-report-module3phys/LION-term-associations.csv") %>%
+  dplyr::select(LION.term, LION.name) %>%
+  slice(-1) %>%
+  filter(LION.term %in% module3Lipid_enrichment$Term.ID) %>% 
+  mutate(LION.term = gsub(x = LION.term, pattern = ":", replacement = "."))
+#Import dataframe with lion terms and term names. Retain only significantly enriched terms
+head(LIONtoTermmodule3) #Confirm formatting
+```
+
+```{r}
+module3Lipids_enrichedPhys <- read.csv("WCNA/lipidomics/LION-enrichment-report-module3phys/LION-lipid-associations.csv", strip.white = TRUE) %>%
+  slice(-1) %>%
+  mutate(LION.term = substr(x = LION.term, start = 9, stop = 1000000L)) %>%
+  rename(lipid = LION.term) %>%
+  mutate(lipid = str_trim(lipid, side = "both")) %>%
+  filter(., lipid %in% (module3_lipids$lipid %>%
+                          str_trim(side = "both"))) %>%
+  unique(.) %>%
+  remove_rownames() %>%
+  column_to_rownames(., var = "lipid") %>%
+  dplyr::select_if(colnames(.) %in% LIONtoTermmodule3$LION.term) %>%
+  rename_with(~ paste0(.x, ".PhysModule3")) %>%
+  rownames_to_column(., var = "lipid")
+#Import table with lion terms as columns and lipids as rows. Remove first row, which has lion term names. Remove leading characters from lipids, rename column, and remove white space on both sides of the string. Filter for lipids in module, modified to remove white space. Remove repetitive rows and remove rownames. Assign new rownames using unique lipid names. Select columns if they match with lion terms in LIONtoTerm13v30. Convert rownames back to a column. Add suffix to all columns to delineate these are enriched phys pathways, not associated with temperature VIP.
+module3Lipids_enrichedPhys #Confirm dataframe creation
+```
+
+```{r}
+module5Lipid_enrichment <- read.csv("WCNA/lipidomics/LION-enrichment-report-module5phys/LION-enrichment-results.csv") %>%
+  filter(., FDR.q.value < 0.05)
+module5Lipid_enrichment #6 enriched terms in module
+```
+
+```{r}
+LIONtoTermmodule5 <- read.csv("WCNA/lipidomics/LION-enrichment-report-module5phys/LION-term-associations.csv") %>%
+  dplyr::select(LION.term, LION.name) %>%
+  slice(-1) %>%
+  filter(LION.term %in% module5Lipid_enrichment$Term.ID) %>% 
+  mutate(LION.term = gsub(x = LION.term, pattern = ":", replacement = "."))
+#Import dataframe with lion terms and term names. Retain only significantly enriched terms
+head(LIONtoTermmodule5) #Confirm formatting
+```
+
+```{r}
+module5Lipids_enrichedPhys <- read.csv("WCNA/lipidomics/LION-enrichment-report-module5phys/LION-lipid-associations.csv", strip.white = TRUE) %>%
+  slice(-1) %>%
+  mutate(LION.term = substr(x = LION.term, start = 9, stop = 1000000L)) %>%
+  rename(lipid = LION.term) %>%
+  mutate(lipid = str_trim(lipid, side = "both")) %>%
+  filter(., lipid %in% (module5_lipids$lipid %>%
+                          str_trim(side = "both"))) %>%
+  unique(.) %>%
+  remove_rownames() %>%
+  column_to_rownames(., var = "lipid") %>%
+  dplyr::select_if(colnames(.) %in% LIONtoTermmodule5$LION.term) %>%
+  rename_with(~ paste0(.x, ".PhysModule5")) %>%
+  rownames_to_column(., var = "lipid")
+#Import table with lion terms as columns and lipids as rows. Remove first row, which has lion term names. Remove leading characters from lipids, rename column, and remove white space on both sides of the string. Filter for lipids in module, modified to remove white space. Remove repetitive rows and remove rownames. Assign new rownames using unique lipid names. Select columns if they match with lion terms in LIONtoTerm13v30. Convert rownames back to a column. Add suffix to all columns to delineate these are enriched phys pathways, not associated with temperature VIP.
+module5Lipids_enrichedPhys #Confirm dataframe creation
+```
+
+```{r}
+module6Lipid_enrichment <- read.csv("WCNA/lipidomics/LION-enrichment-report-module6phys/LION-enrichment-results.csv") %>%
+  filter(., FDR.q.value < 0.05)
+module6Lipid_enrichment #7 enriched terms in module
+```
+
+```{r}
+LIONtoTermmodule6 <- read.csv("WCNA/lipidomics/LION-enrichment-report-module6phys/LION-term-associations.csv") %>%
+  dplyr::select(LION.term, LION.name) %>%
+  slice(-1) %>%
+  filter(LION.term %in% module6Lipid_enrichment$Term.ID) %>% 
+  mutate(LION.term = gsub(x = LION.term, pattern = ":", replacement = "."))
+#Import dataframe with lion terms and term names. Retain only significantly enriched terms
+head(LIONtoTermmodule6) #Confirm formatting
+```
+
+```{r}
+module6Lipids_enrichedPhys <- read.csv("WCNA/lipidomics/LION-enrichment-report-module6phys/LION-lipid-associations.csv", strip.white = TRUE) %>%
+  slice(-1) %>%
+  mutate(LION.term = substr(x = LION.term, start = 9, stop = 1000000L)) %>%
+  rename(lipid = LION.term) %>%
+  mutate(lipid = str_trim(lipid, side = "both")) %>%
+  filter(., lipid %in% (module6_lipids$lipid %>%
+                          str_trim(side = "both"))) %>%
+  unique(.) %>%
+  remove_rownames() %>%
+  column_to_rownames(., var = "lipid") %>%
+  dplyr::select_if(colnames(.) %in% LIONtoTermmodule6$LION.term) %>%
+  rename_with(~ paste0(.x, ".PhysModule6")) %>%
+  rownames_to_column(., var = "lipid")
+#Import table with lion terms as columns and lipids as rows. Remove first row, which has lion term names. Remove leading characters from lipids, rename column, and remove white space on both sides of the string. Filter for lipids in module, modified to remove white space. Remove repetitive rows and remove rownames. Assign new rownames using unique lipid names. Select columns if they match with lion terms in LIONtoTerm13v30. Convert rownames back to a column. Add suffix to all columns to delineate these are enriched phys pathways, not associated with temperature VIP.
+module6Lipids_enrichedPhys #Confirm dataframe creation
+```
+
+```{r}
+module9Lipid_enrichment <- read.csv("WCNA/lipidomics/LION-enrichment-report-module9phys/LION-enrichment-results.csv") %>%
+  filter(., FDR.q.value < 0.05)
+module9Lipid_enrichment #1 enriched terms in module
+```
+
+```{r}
+LIONtoTermmodule9 <- read.csv("WCNA/lipidomics/LION-enrichment-report-module9phys/LION-term-associations.csv") %>%
+  dplyr::select(LION.term, LION.name) %>%
+  slice(-1) %>%
+  filter(LION.term %in% module9Lipid_enrichment$Term.ID) %>% 
+  mutate(LION.term = gsub(x = LION.term, pattern = ":", replacement = "."))
+#Import dataframe with lion terms and term names. Retain only significantly enriched terms
+head(LIONtoTermmodule9) #Confirm formatting
+```
+
+```{r}
+module9Lipids_enrichedPhys <- read.csv("WCNA/lipidomics/LION-enrichment-report-module9phys/LION-lipid-associations.csv", strip.white = TRUE) %>%
+  slice(-1) %>%
+  mutate(LION.term = substr(x = LION.term, start = 9, stop = 1000000L)) %>%
+  rename(lipid = LION.term) %>%
+  mutate(lipid = str_trim(lipid, side = "both")) %>%
+  filter(., lipid %in% (module9_lipids$lipid %>%
+                          str_trim(side = "both"))) %>%
+  unique(.) %>%
+  remove_rownames() %>%
+  column_to_rownames(., var = "lipid") %>%
+  dplyr::select_if(colnames(.) %in% LIONtoTermmodule9$LION.term) %>%
+  rename_with(~ paste0(.x, ".PhysModule9")) %>%
+  rownames_to_column(., var = "lipid")
+#Import table with lion terms as columns and lipids as rows. Remove first row, which has lion term names. Remove leading characters from lipids, rename column, and remove white space on both sides of the string. Filter for lipids in module, modified to remove white space. Remove repetitive rows and remove rownames. Assign new rownames using unique lipid names. Select columns if they match with lion terms in LIONtoTerm13v30. Convert rownames back to a column. Add suffix to all columns to delineate these are enriched phys pathways, not associated with temperature VIP.
+module9Lipids_enrichedPhys #Confirm dataframe creation
+```
+
+```{r}
+module15Lipid_enrichment <- read.csv("WCNA/lipidomics/LION-enrichment-report-module15phys/LION-enrichment-results.csv") %>%
+  filter(., FDR.q.value < 0.05)
+module15Lipid_enrichment #5 enriched terms in module
+```
+
+```{r}
+LIONtoTermmodule15 <- read.csv("WCNA/lipidomics/LION-enrichment-report-module15phys/LION-term-associations.csv") %>%
+  dplyr::select(LION.term, LION.name) %>%
+  slice(-1) %>%
+  filter(LION.term %in% module15Lipid_enrichment$Term.ID) %>% 
+  mutate(LION.term = gsub(x = LION.term, pattern = ":", replacement = "."))
+#Import dataframe with lion terms and term names. Retain only significantly enriched terms
+head(LIONtoTermmodule15) #Confirm formatting
+```
+
+```{r}
+module15Lipids_enrichedPhys <- read.csv("WCNA/lipidomics/LION-enrichment-report-module15phys/LION-lipid-associations.csv", strip.white = TRUE) %>%
+  slice(-1) %>%
+  mutate(LION.term = substr(x = LION.term, start = 9, stop = 1000000L)) %>%
+  rename(lipid = LION.term) %>%
+  mutate(lipid = str_trim(lipid, side = "both")) %>%
+  filter(., lipid %in% (module15_lipids$lipid %>%
+                          str_trim(side = "both"))) %>%
+  unique(.) %>%
+  remove_rownames() %>%
+  column_to_rownames(., var = "lipid") %>%
+  dplyr::select_if(colnames(.) %in% LIONtoTermmodule15$LION.term) %>%
+  rename_with(~ paste0(.x, ".PhysModule15")) %>%
+  rownames_to_column(., var = "lipid")
+#Import table with lion terms as columns and lipids as rows. Remove first row, which has lion term names. Remove leading characters from lipids, rename column, and remove white space on both sides of the string. Filter for lipids in module, modified to remove white space. Remove repetitive rows and remove rownames. Assign new rownames using unique lipid names. Select columns if they match with lion terms in LIONtoTerm13v30. Convert rownames back to a column. Add suffix to all columns to delineate these are enriched phys pathways, not associated with temperature VIP.
+module15Lipids_enrichedPhys #Confirm dataframe creation
+```
 
 ##### Combine all information
 
-0 - only if there are sig pathways
-module 3
-module 5
-6
-9
-15 - only if there are sig pathways
+Module 0 has no VIP nor any enriched pathways, so there won't be a table for that module.
 
-\
+```{r}
+module3Lipid_enrichment #Enriched pathways in module
+```
 
+```{r}
+allPhysModules_lipidAnnotations <- module3_lipids %>% 
+  mutate(lipid = str_trim(lipid, side = "both")) %>%
+  remove_rownames(.) %>%
+  left_join(., module3Lipids_VIPclasses, by = "lipid") %>%
+  dplyr::select(-c(PubChem.CID:module)) %>%
+  unique(.) %>%
+  group_by(., lipid, class, targetClass, saturation) %>%
+  summarise(across(starts_with(c("statistic.", "padj.")), ~sum(., na.rm = TRUE))) %>%
+  ungroup(.) %>%
+  mutate(., across(starts_with(c("statistic.", "padj.")), ~na_if(., 0))) %>%
+  left_join(., module3Lipids_enrichedVIP, by = "lipid") %>%
+  left_join(., module3Lipids_enrichedPhys, by = "lipid") %>%
+  full_join(x = ., 
+            y = (module5_lipids %>% 
+                   mutate(lipid = str_trim(lipid, side = "both")) %>%
+                   remove_rownames(.) %>%
+                   left_join(., module5Lipids_VIPclasses, by = "lipid") %>%
+                   dplyr::select(-c(PubChem.CID:module)) %>%
+                   unique(.) %>%
+                   group_by(., lipid, class, targetClass, saturation) %>%
+                   summarise(across(starts_with(c("statistic.", "padj.")), ~sum(., na.rm = TRUE))) %>%
+                   ungroup(.) %>%
+                   mutate(., across(starts_with(c("statistic.", "padj.")), ~na_if(., 0))) %>%
+                   left_join(., module5Lipids_enrichedVIP, by = "lipid") %>%
+                   left_join(., module5Lipids_enrichedPhys, by = "lipid")),
+            by = c("lipid", "class", "targetClass", "saturation", "statistic.13v5", "padj.13v5", 
+                   "LION.0000003", "LION.0000010", "LION.0000031", "LION.0000095", "LION.0000465", "LION.0012010", "LION.0012080", "LION.0000011", "LION.0012081")) %>%
+  full_join(x = ., 
+            y = (module6_lipids %>% 
+                   mutate(lipid = str_trim(lipid, side = "both")) %>%
+                   remove_rownames(.) %>%
+                   left_join(., module6Lipids_VIPclasses, by = "lipid") %>%
+                   dplyr::select(-c(PubChem.CID:module)) %>%
+                   unique(.) %>%
+                   group_by(., lipid, class, targetClass, saturation) %>%
+                   summarise(across(starts_with(c("statistic.", "padj.")), ~sum(., na.rm = TRUE))) %>%
+                   ungroup(.) %>%
+                   mutate(., across(starts_with(c("statistic.", "padj.")), ~na_if(., 0))) %>%
+                   left_join(., module6Lipids_enrichedVIP, by = "lipid") %>%
+                   left_join(., module6Lipids_enrichedPhys, by = "lipid")),
+            by = c("lipid", "class", "targetClass", "saturation", "statistic.13v5", "padj.13v5", 
+                   "LION.0000003", "LION.0000010", "LION.0000031", "LION.0000095", "LION.0000465", "LION.0012010", "LION.0012080", "LION.0000011", "LION.0012081")) %>%
+  full_join(x = ., 
+            y = (module9_lipids %>% 
+                   mutate(lipid = str_trim(lipid, side = "both")) %>%
+                   remove_rownames(.) %>%
+                   left_join(., module9Lipids_VIPclasses, by = "lipid") %>%
+                   dplyr::select(-c(PubChem.CID:module)) %>%
+                   unique(.) %>%
+                   group_by(., lipid, class, targetClass, saturation) %>%
+                   summarise(across(starts_with(c("statistic.", "padj.")), ~sum(., na.rm = TRUE))) %>%
+                   ungroup(.) %>%
+                   mutate(., across(starts_with(c("statistic.", "padj.")), ~na_if(., 0))) %>%
+                   left_join(., module9Lipids_enrichedVIP, by = "lipid") %>%
+                   left_join(., module9Lipids_enrichedPhys, by = "lipid")),
+            by = c("lipid", "class", "targetClass", "saturation", "statistic.13v30", "padj.13v30", "statistic.13v5", "padj.13v5", 
+                   "LION.0000003", "LION.0000010", "LION.0000031", "LION.0000095", "LION.0000465", "LION.0012010", "LION.0012080", "LION.0000011", "LION.0012081")) %>%
+  full_join(x = ., 
+            y = (module15_lipids %>% 
+                   mutate(lipid = str_trim(lipid, side = "both")) %>%
+                   remove_rownames(.) %>%
+                   dplyr::select(-c(PubChem.CID:INCHIKEY)) %>%
+                   unique(.) %>%
+                   left_join(., module15Lipids_enrichedPhys, by = "lipid")),
+            by = "lipid")
+#Remove white text from each side of lipid name and remove rownames. Join with class and saturation information for VIP and remove extra columns and duplicate rows. Group by lipid, class, targetClass, and saturation to collapse values across rows. Convert 0 to NA. Join with enriched lion term information for temperature VIP and enrichment information for phys module. Combine information across modules using full_join, modifying formatting as needed.
+allPhysModules_lipidAnnotations
+```
+
+```{r}
+write.csv(allPhysModules_lipidAnnotations, "WCNA/lipidomics/all-phys-module-lipid-annotations.csv", quote = FALSE, row.names = FALSE) #Save as .csv
+```
 
 ### Combined metabolomics and lipidomics WCNs with physiology, temperature, and day
 
