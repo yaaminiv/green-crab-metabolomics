@@ -1844,6 +1844,19 @@ I am going to put the lipid information from modules 0, 3, 5, 6, 9, and 15 throu
 
 - Target-list mode: target list is a list of lipids in the module, background is a list of all detected and known lipids.
 
+```{r}
+module0Lipid_enrichment <- read.csv("WCNA/lipidomics/LION-enrichment-report-module0phys/LION-enrichment-results.csv") %>%
+  filter(., FDR.q.value < 0.05)
+module0Lipid_enrichment #No enriched terms in module 0
+```
+
+
+```{r}
+module3Lipid_enrichment <- read.csv("WCNA/lipidomics/LION-enrichment-report-module3phys/LION-enrichment-results.csv") %>%
+  filter(., FDR.q.value < 0.05)
+module3Lipid_enrichment #7 enriched terms in module 3
+```
+
 
 ##### Combine all information
 
@@ -1854,7 +1867,7 @@ module 5
 9
 15 - only if there are sig pathways
 
-
+\
 
 
 ### Combined metabolomics and lipidomics WCNs with physiology, temperature, and day
