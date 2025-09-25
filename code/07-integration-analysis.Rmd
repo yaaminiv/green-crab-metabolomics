@@ -2527,31 +2527,10 @@ write.csv(module_allInformation, "combined-WCNA/module-information.csv", quote =
 ```
 
 ```{r}
-module_alldfs[[1]]
-```
-```{r}
-get(names(module_alldfs)[20])
-```
-
-```{r}
-walk(names(module_alldfs), ~write_delim(get(.x), paste0(.x, ‘.tsv), delim = "t", col_names = TRUE))
-```
-```{r}
 for (i in 0:19) {
-write_delim(module_alldfs[[i+1]], paste0("./module_", i, "compounds.tsv", delim = "\t", col_names = TRUE))
-}
+write_delim(module_alldfs[[i+1]], paste0("combined-WCNA/module", i, "_compounds.tsv"), delim = "\t", col_names = TRUE)
+} #Save each module dataframe from list as a tab-delimted file
 ```
-
-
-```{r}
-
-#Isolate metabolites and lipids for the module and annotate separately with raw data. For the lipids, duplicates need to be combined. Combine dataframes.
-nrow(module10_all %>% filter(., class == "metabolite")) #16 metabolites
-nrow(module10_all %>% filter(., class == "lipid")) #0 lipids
-write_delim(module10_all, "combined-WCNA/module10_compounds.tsv", delim = "\t", col_names = TRUE) #Save tab-delimited file
-head(module10_all)
-```
-
 
 ## ASCA
 
