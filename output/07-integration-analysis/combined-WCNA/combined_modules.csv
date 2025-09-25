@@ -1,0 +1,568 @@
+"","Metabolite","colors"
+"xylitol","xylitol",0
+"valine ","valine ",16
+"uridine","uridine",0
+"uric acid","uric acid",0
+"urea","urea",0
+"uracil","uracil",0
+"UDP-N-acetylglucosamine ","UDP-N-acetylglucosamine ",0
+"tyrosine","tyrosine",16
+"tyramine","tyramine",10
+"tryptophan ","tryptophan ",16
+"triethanolamine","triethanolamine",0
+"trans-4-hydroxyproline ","trans-4-hydroxyproline ",0
+"thymine","thymine",10
+"threonine","threonine",10
+"terephthalic acid","terephthalic acid",13
+"taurine","taurine",1
+"tagatose ","tagatose ",7
+"synephrine","synephrine",10
+"sulfuric acid","sulfuric acid",1
+"sucrose","sucrose",0
+"stearic acid","stearic acid",13
+"spermidine ","spermidine ",13
+"sophorose","sophorose",7
+"shikimic acid","shikimic acid",7
+"serotonin","serotonin",10
+"serine","serine",0
+"salicylic acid","salicylic acid",13
+"ribose-5-phosphate","ribose-5-phosphate",0
+"ribonic acid ","ribonic acid ",0
+"ribitol","ribitol",0
+"raffinose","raffinose",0
+"pyrrole-2-carboxylic acid","pyrrole-2-carboxylic acid",0
+"pyrophosphate ","pyrophosphate ",0
+"putrescine","putrescine",13
+"proline","proline",8
+"pinitol","pinitol",0
+"phthalic acid","phthalic acid",1
+"phosphoinositol","phosphoinositol",0
+"phosphoethanolamine","phosphoethanolamine",0
+"phosphate","phosphate",0
+"phenylethylamine","phenylethylamine",10
+"phenylalanine","phenylalanine",16
+"pentadecanoic acid","pentadecanoic acid",7
+"para-xanthine ","para-xanthine ",0
+"pantothenic acid","pantothenic acid",1
+"oxoproline","oxoproline",1
+"ornithine ","ornithine ",5
+"ononitol","ononitol",7
+"octadecanol","octadecanol",0
+"noradrenaline","noradrenaline",1
+"N-methylethanolamine","N-methylethanolamine",1
+"nicotinic acid","nicotinic acid",8
+"n-epsilon-trimethyllysine","n-epsilon-trimethyllysine",0
+"N-alpha-acetyllysine ","N-alpha-acetyllysine ",10
+"N-acetylputrescine ","N-acetylputrescine ",0
+"N-acetylmethionine ","N-acetylmethionine ",0
+"N-acetylglucosamine-6-phosphate ","N-acetylglucosamine-6-phosphate ",2
+"N-acetylgalactosamine","N-acetylgalactosamine",1
+"myo-inositol","myo-inositol",3
+"methionine sulfoxide","methionine sulfoxide",0
+"methionine sulfone ","methionine sulfone ",0
+"methionine","methionine",16
+"methanolphosphate","methanolphosphate",4
+"melezitose","melezitose",0
+"maltotriose","maltotriose",0
+"maltotriitol ","maltotriitol ",7
+"maltitol","maltitol",7
+"malic acid","malic acid",1
+"maleimide","maleimide",7
+"lyxose","lyxose",4
+"lysine","lysine",7
+"loganin","loganin",7
+"levoglucosan","levoglucosan",0
+"leucine","leucine",16
+"lactulose ","lactulose ",7
+"lactose ","lactose ",0
+"lactobionic acid ","lactobionic acid ",7
+"lactitol","lactitol",3
+"lactic acid","lactic acid",8
+"isoxanthopterin","isoxanthopterin",0
+"isothreonic acid ","isothreonic acid ",0
+"isoleucine ","isoleucine ",16
+"isogluconic acid","isogluconic acid",7
+"inosine","inosine",4
+"hypoxanthine","hypoxanthine",0
+"hypotaurine","hypotaurine",1
+"hydroxylamine","hydroxylamine",16
+"hydroxycarbamate ","hydroxycarbamate ",0
+"hydroquinone","hydroquinone",1
+"homocysteine ","homocysteine ",0
+"histamine ","histamine ",1
+"heptadecanoic acid","heptadecanoic acid",13
+"glycyl-proline","glycyl-proline",0
+"glycyl-glycine ","glycyl-glycine ",0
+"glycyl tyrosine","glycyl tyrosine",7
+"glycine","glycine",1
+"glycerol-alpha-phosphate","glycerol-alpha-phosphate",10
+"glycerol-3-galactoside ","glycerol-3-galactoside ",7
+"glycerol","glycerol",0
+"glyceric acid ","glyceric acid ",0
+"glutathione ","glutathione ",10
+"glutaric acid","glutaric acid",13
+"glutamine","glutamine",5
+"glutamate ","glutamate ",1
+"glucose-6-phosphate","glucose-6-phosphate",0
+"glucose-1-phosphate","glucose-1-phosphate",0
+"glucose ","glucose ",7
+"fumaric acid","fumaric acid",7
+"fructose-6-phosphate ","fructose-6-phosphate ",0
+"fructose-1-phosphate","fructose-1-phosphate",0
+"fructose ","fructose ",7
+"ethanolamine","ethanolamine",10
+"dopamine ","dopamine ",10
+"dimethylglycine","dimethylglycine",0
+"cytosine","cytosine",0
+"cystine","cystine",0
+"cysteine","cysteine",0
+"cystathionine","cystathionine",0
+"citrulline","citrulline",0
+"citric acid","citric acid",0
+"ciliatine","ciliatine",0
+"cellobiose","cellobiose",7
+"cadaverine","cadaverine",0
+"beta-glutamic acid","beta-glutamic acid",5
+"beta-alanine","beta-alanine",15
+"aspartate ","aspartate ",8
+"asparagine","asparagine",0
+"arachidic acid","arachidic acid",13
+"arabitol","arabitol",0
+"aminomalonic acid","aminomalonic acid",10
+"alpha-ketoglutarate","alpha-ketoglutarate",8
+"alpha-aminoadipic acid","alpha-aminoadipic acid",0
+"alanine-alanine","alanine-alanine",0
+"alanine","alanine",0
+"adipic acid","adipic acid",13
+"adenosine-5-monophosphate","adenosine-5-monophosphate",10
+"adenosine","adenosine",0
+"adenine","adenine",0
+"5-methoxytryptamine","5-methoxytryptamine",10
+"5-aminovaleric acid","5-aminovaleric acid",0
+"4-hydroxymandelic acid","4-hydroxymandelic acid",10
+"4-hydroxybenzoate","4-hydroxybenzoate",1
+"3-phosphoglycerate","3-phosphoglycerate",0
+"3-Aminopiperidine-2,6-dione ","3-Aminopiperidine-2,6-dione ",10
+"3-aminoisobutyric acid","3-aminoisobutyric acid",0
+"3-Amino-2-piperidone ","3-Amino-2-piperidone ",4
+"3,6-anhydro-D-galactose","3,6-anhydro-D-galactose",7
+"2-picolinic acid","2-picolinic acid",0
+"2-ketoisocaproic acid","2-ketoisocaproic acid",0
+"2-ketoadipic acid ","2-ketoadipic acid ",0
+"2-hydroxyglutaric acid","2-hydroxyglutaric acid",8
+"2-aminobutyric acid","2-aminobutyric acid",1
+"(Z)-9,12,13-trihydroxyoctadec-15-enoic acid ","(Z)-9,12,13-trihydroxyoctadec-15-enoic acid ",17
+"13-HODE ","13-HODE ",17
+"15-OxoETE ","15-OxoETE ",9
+"4-HDoHE ","4-HDoHE ",9
+"4-METHYL-2-OXO-PENTANOIC ACID ","4-METHYL-2-OXO-PENTANOIC ACID ",8
+"5-HETE ","5-HETE ",9
+"8,15-DiHETE ","8,15-DiHETE ",9
+"CAR 12:0 ","CAR 12:0 ",8
+"CAR 15:0","CAR 15:0",8
+"CAR 16:0 ","CAR 16:0 ",8
+"CAR 16:1","CAR 16:1",8
+"CAR 17:0","CAR 17:0",8
+"CAR 18:0 Isomer A ","CAR 18:0 Isomer A ",8
+"CAR 18:1 ","CAR 18:1 ",8
+"CAR 18:2 Isomer A ","CAR 18:2 Isomer A ",8
+"CAR 20:1 ","CAR 20:1 ",8
+"Cer 18:0;2O_20:0 ","Cer 18:0;2O_20:0 ",1
+"Cer 22:0;2O/26:0 ","Cer 22:0;2O/26:0 ",3
+"Cer 32:1;2O|Cer 14:1;O2/18:0","Cer 32:1;2O|Cer 14:1;O2/18:0",18
+"Cer 34:1;O2|Cer 14:1;O2/20:0","Cer 34:1;O2|Cer 14:1;O2/20:0",18
+"Cer 58:11;2O ","Cer 58:11;2O ",2
+"Cer d32:1 ","Cer d32:1 ",18
+"Cer d33:1 ","Cer d33:1 ",18
+"Cer d34:0 ","Cer d34:0 ",3
+"Cer d34:1 Isomer B","Cer d34:1 Isomer B",18
+"Cer d34:2 ","Cer d34:2 ",18
+"Cer d35:1 ","Cer d35:1 ",18
+"Cer d36:1 Isomer B","Cer d36:1 Isomer B",1
+"Cer d36:2 ","Cer d36:2 ",1
+"Cer d37:1 ","Cer d37:1 ",1
+"Cer d38:1 ","Cer d38:1 ",1
+"Cer d38:2 ","Cer d38:2 ",1
+"Cer d39:1 ","Cer d39:1 ",4
+"Cer d39:2 ","Cer d39:2 ",4
+"Cer d40:1 ","Cer d40:1 ",4
+"Cer d40:2 ","Cer d40:2 ",4
+"Cer d41:1 ","Cer d41:1 ",4
+"Cer d41:2 ","Cer d41:2 ",4
+"Cer d42:2 ","Cer d42:2 ",4
+"Cer d42:3 ","Cer d42:3 ",4
+"Cer d46:1 ","Cer d46:1 ",1
+"Cer-NDS d36:0 ","Cer-NDS d36:0 ",1
+"Cholesterol ","Cholesterol ",6
+"CoQ10","CoQ10",1
+"DG 34:1 ","DG 34:1 ",4
+"DG 36:5 ","DG 36:5 ",11
+"DG 38:5 ","DG 38:5 ",11
+"DG 38:6 ","DG 38:6 ",11
+"FA 17:1","FA 17:1",9
+"FA 18:1 (oleic acid) ","FA 18:1 (oleic acid) ",17
+"FA 18:1+2O ","FA 18:1+2O ",17
+"FA 18:2 (linoleic acid) ","FA 18:2 (linoleic acid) ",17
+"FA 18:2+2O ","FA 18:2+2O ",17
+"FA 18:3 (linolenic acid) ","FA 18:3 (linolenic acid) ",9
+"FA 19:1 ","FA 19:1 ",9
+"FA 20:1","FA 20:1",9
+"FA 20:2 (eicosadienoic acid) ","FA 20:2 (eicosadienoic acid) ",9
+"FA 20:3 (eicosatrienoic acid) ","FA 20:3 (eicosatrienoic acid) ",9
+"FA 20:4 (arachidonic acid) ","FA 20:4 (arachidonic acid) ",9
+"FA 20:5 (eicosapentaenoic acid) ","FA 20:5 (eicosapentaenoic acid) ",9
+"FA 22:1 (erucic acid) ","FA 22:1 (erucic acid) ",17
+"FA 22:2 (docosadienoic acid) ","FA 22:2 (docosadienoic acid) ",9
+"FA 22:4 ","FA 22:4 ",9
+"FA 22:6 (docosahexaenoic acid) ","FA 22:6 (docosahexaenoic acid) ",9
+"FA 24:0(2OH)","FA 24:0(2OH)",19
+"FA 25:0 ","FA 25:0 ",19
+"FA 30:0 ","FA 30:0 ",19
+"FAHFA 26:0 ","FAHFA 26:0 ",19
+"FAHFA 38:4 ","FAHFA 38:4 ",17
+"FAHFA 46:0 ","FAHFA 46:0 ",3
+"GlcADG 37:3 ","GlcADG 37:3 ",5
+"GlcCer d38:1 ","GlcCer d38:1 ",1
+"GlcCer d40:1 ","GlcCer d40:1 ",1
+"GlcCer d42:1 ","GlcCer d42:1 ",4
+"GlcCer d42:2 ","GlcCer d42:2 ",3
+"HexCer 32:0;O2","HexCer 32:0;O2",6
+"LNAPE 20:4_N-19:1 ","LNAPE 20:4_N-19:1 ",5
+"LPC 16:0 ","LPC 16:0 ",9
+"LPC 18:0 Isomer B ","LPC 18:0 Isomer B ",0
+"LPC 18:1 ","LPC 18:1 ",14
+"LPC 18:2 ","LPC 18:2 ",14
+"LPC 20:0 ","LPC 20:0 ",0
+"LPC 20:1 ","LPC 20:1 ",14
+"LPC 20:2 ","LPC 20:2 ",14
+"LPC 20:5 ","LPC 20:5 ",14
+"LPC 22:6 ","LPC 22:6 ",14
+"LPC 32:1 ","LPC 32:1 ",5
+"LPC 40:7 ","LPC 40:7 ",1
+"LPC O-16:0 ","LPC O-16:0 ",1
+"LPC O-18:0 ","LPC O-18:0 ",1
+"LPE 16:0 ","LPE 16:0 ",1
+"LPE 18:0 ","LPE 18:0 ",1
+"LPE 18:1 ","LPE 18:1 ",1
+"LPE 18:2 ","LPE 18:2 ",4
+"LPE 20:4 ","LPE 20:4 ",14
+"LPE 20:5","LPE 20:5",14
+"LPE 22:6 ","LPE 22:6 ",14
+"LPE O-18:1 ","LPE O-18:1 ",1
+"LPE O-20:0 ","LPE O-20:0 ",1
+"LPS 18:0 ","LPS 18:0 ",1
+"MGDG 16:0_20:5 ","MGDG 16:0_20:5 ",1
+"MGDG 34:3 ","MGDG 34:3 ",1
+"N-(eicosanoyl)sphingosine ","N-(eicosanoyl)sphingosine ",1
+"NAE 4:0","NAE 4:0",11
+"NAE 5:0","NAE 5:0",0
+"NAE 9:0","NAE 9:0",0
+"PC 14:0_16:1 ","PC 14:0_16:1 ",11
+"PC 16:0/9:0 CHO ","PC 16:0/9:0 CHO ",0
+"PC 16:0_14:0 ","PC 16:0_14:0 ",1
+"PC 16:0_18:2 ","PC 16:0_18:2 ",4
+"PC 16:0_22:6 ","PC 16:0_22:6 ",1
+"PC 16:1/18:4 ","PC 16:1/18:4 ",1
+"PC 18:0_18:1 ","PC 18:0_18:1 ",3
+"PC 18:0_22:6 ","PC 18:0_22:6 ",1
+"PC 18:2_20:5 ","PC 18:2_20:5 ",4
+"PC 19:1 ","PC 19:1 ",3
+"PC 20:1_20:1 ","PC 20:1_20:1 ",1
+"PC 21:4 ","PC 21:4 ",0
+"PC 22:4 ","PC 22:4 ",1
+"PC 24:0 ","PC 24:0 ",15
+"PC 24:0|PC 10:0_14:0","PC 24:0|PC 10:0_14:0",15
+"PC 26:0|PC 10:0_16:0","PC 26:0|PC 10:0_16:0",15
+"PC 29:0 ","PC 29:0 ",0
+"PC 31:0","PC 31:0",5
+"PC 31:1 ","PC 31:1 ",5
+"PC 32:0 ","PC 32:0 ",1
+"PC 32:1 Isomer A","PC 32:1 Isomer A",11
+"PC 32:1 Isomer B","PC 32:1 Isomer B",11
+"PC 32:2 Isomer A","PC 32:2 Isomer A",11
+"PC 32:2 Isomer B","PC 32:2 Isomer B",11
+"PC 33:0 ","PC 33:0 ",1
+"PC 33:1 Isomer A","PC 33:1 Isomer A",5
+"PC 33:1 Isomer B","PC 33:1 Isomer B",5
+"PC 33:2 Isomer A","PC 33:2 Isomer A",1
+"PC 33:2 Isomer B","PC 33:2 Isomer B",5
+"PC 34:0","PC 34:0",6
+"PC 34:1 Isomer A","PC 34:1 Isomer A",1
+"PC 34:1 Isomer B","PC 34:1 Isomer B",1
+"PC 34:2 Isomer A","PC 34:2 Isomer A",4
+"PC 34:2 Isomer B","PC 34:2 Isomer B",4
+"PC 34:3 ","PC 34:3 ",4
+"PC 34:3 Isomer B ","PC 34:3 Isomer B ",4
+"PC 34:4 Isomer A","PC 34:4 Isomer A",1
+"PC 34:4 Isomer B ","PC 34:4 Isomer B ",1
+"PC 35:1 Isomer A","PC 35:1 Isomer A",5
+"PC 35:1 Isomer B","PC 35:1 Isomer B",5
+"PC 35:2 ","PC 35:2 ",5
+"PC 35:2 Isomer B ","PC 35:2 Isomer B ",5
+"PC 35:3 ","PC 35:3 ",5
+"PC 35:4 Isomer A","PC 35:4 Isomer A",5
+"PC 35:4 Isomer B","PC 35:4 Isomer B",5
+"PC 36:1 Isomer A","PC 36:1 Isomer A",3
+"PC 36:1 Isomer B","PC 36:1 Isomer B",3
+"PC 36:2 Isomer A","PC 36:2 Isomer A",1
+"PC 36:2 Isomer B","PC 36:2 Isomer B",1
+"PC 36:3 Isomer A ","PC 36:3 Isomer A ",4
+"PC 36:3 Isomer AB","PC 36:3 Isomer AB",4
+"PC 36:4 Isomer A ","PC 36:4 Isomer A ",4
+"PC 36:4 Isomer B","PC 36:4 Isomer B",1
+"PC 36:4 Isomer C ","PC 36:4 Isomer C ",1
+"PC 36:5 Isomer A ","PC 36:5 Isomer A ",4
+"PC 36:5 Isomer B ","PC 36:5 Isomer B ",1
+"PC 36:5 Isomer C ","PC 36:5 Isomer C ",1
+"PC 36:5 Isomer D ","PC 36:5 Isomer D ",1
+"PC 36:6 ","PC 36:6 ",1
+"PC 37:2 Isomer A","PC 37:2 Isomer A",5
+"PC 37:2 Isomer B","PC 37:2 Isomer B",5
+"PC 37:3 ","PC 37:3 ",5
+"PC 37:4 ","PC 37:4 ",5
+"PC 38:2 Isomer A","PC 38:2 Isomer A",1
+"PC 38:3 Isomer A","PC 38:3 Isomer A",1
+"PC 38:4 Isomer A ","PC 38:4 Isomer A ",1
+"PC 38:4 Isomer C ","PC 38:4 Isomer C ",1
+"PC 38:5 Isomer A ","PC 38:5 Isomer A ",1
+"PC 38:5 Isomer B ","PC 38:5 Isomer B ",1
+"PC 38:6 Isomer A ","PC 38:6 Isomer A ",1
+"PC 38:6 Isomer B","PC 38:6 Isomer B",1
+"PC 38:6 Isomer C ","PC 38:6 Isomer C ",1
+"PC 38:7 ","PC 38:7 ",4
+"PC 38:8 ","PC 38:8 ",19
+"PC 39:5 Isomer B","PC 39:5 Isomer B",5
+"PC 39:6 ","PC 39:6 ",1
+"PC 40:3 ","PC 40:3 ",1
+"PC 40:4 Isomer B","PC 40:4 Isomer B",1
+"PC 40:4 Isomer C","PC 40:4 Isomer C",1
+"PC 40:5 Isomer A ","PC 40:5 Isomer A ",1
+"PC 40:5 Isomer B ","PC 40:5 Isomer B ",1
+"PC 40:6 Isomer A ","PC 40:6 Isomer A ",1
+"PC 40:6 Isomer B ","PC 40:6 Isomer B ",1
+"PC 40:7 ","PC 40:7 ",1
+"PC 40:7 Isomer A ","PC 40:7 Isomer A ",1
+"PC 40:7 Isomer B ","PC 40:7 Isomer B ",1
+"PC 40:8 Isomer A","PC 40:8 Isomer A",4
+"PC 40:8 Isomer B","PC 40:8 Isomer B",4
+"PC 41:6|PC 19:0_22:6","PC 41:6|PC 19:0_22:6",1
+"PC 42:5 ","PC 42:5 ",1
+"PC 42:6 Isomer A","PC 42:6 Isomer A",1
+"PC 42:6 Isomer B","PC 42:6 Isomer B",1
+"PC 42:7 ","PC 42:7 ",1
+"PC 42:9 ","PC 42:9 ",1
+"PC 44:12","PC 44:12",1
+"PC O-16:0_20:4 ","PC O-16:0_20:4 ",5
+"PC O-18:0_16:0 ","PC O-18:0_16:0 ",3
+"PC O-18:1_20:4 ","PC O-18:1_20:4 ",5
+"PC O-29:0","PC O-29:0",15
+"PC O-30:0|PC O-14:0_16:0","PC O-30:0|PC O-14:0_16:0",0
+"PC O-31:0","PC O-31:0",6
+"PC O-31:0|PC O-15:0_16:0","PC O-31:0|PC O-15:0_16:0",6
+"PC O-32:0 ","PC O-32:0 ",6
+"PC O-32:2 ","PC O-32:2 ",1
+"PC O-33:0 ","PC O-33:0 ",6
+"PC O-33:6 ","PC O-33:6 ",1
+"PC O-34:0 Isomer A","PC O-34:0 Isomer A",3
+"PC O-34:0 Isomer B","PC O-34:0 Isomer B",3
+"PC O-34:1|PC O-16:0_18:1","PC O-34:1|PC O-16:0_18:1",3
+"PC O-34:2 ","PC O-34:2 ",1
+"PC O-36:1 ","PC O-36:1 ",3
+"PC O-37:5 ","PC O-37:5 ",0
+"PC O-37:6 ","PC O-37:6 ",1
+"PC O-38:7 ","PC O-38:7 ",1
+"PC O-39:8 ","PC O-39:8 ",1
+"PC O-40:5 ","PC O-40:5 ",1
+"PC O-40:7 ","PC O-40:7 ",1
+"PC O-42:7 or PC 42:7e ","PC O-42:7 or PC 42:7e ",1
+"PC P-32:1 or PC O-32:2 ","PC P-32:1 or PC O-32:2 ",1
+"PC P-34:0 or PC O-34:1 ","PC P-34:0 or PC O-34:1 ",3
+"PC P-34:1 or PC O-34:2","PC P-34:1 or PC O-34:2",3
+"PC P-34:1 or PC O-34:2 ","PC P-34:1 or PC O-34:2 ",3
+"PC P-36:1 or PC O-36:2","PC P-36:1 or PC O-36:2",3
+"PC P-36:1 or PC O-36:2 ","PC P-36:1 or PC O-36:2 ",3
+"PC P-36:2 or PC O-36:3 ","PC P-36:2 or PC O-36:3 ",3
+"PC P-36:3 or PC O-36:4 ","PC P-36:3 or PC O-36:4 ",1
+"PC P-38:3 or PC O-38:4","PC P-38:3 or PC O-38:4",1
+"PC P-38:3 or PC O-38:4 ","PC P-38:3 or PC O-38:4 ",1
+"PC P-38:4 or PC O-38:5 Isomer A ","PC P-38:4 or PC O-38:5 Isomer A ",1
+"PC P-38:4 or PC O-38:5 Isomer B ","PC P-38:4 or PC O-38:5 Isomer B ",1
+"PC P-38:4 or PC O-38:5 Isomer C","PC P-38:4 or PC O-38:5 Isomer C",1
+"PC P-38:5 or PC O-38:6 ","PC P-38:5 or PC O-38:6 ",1
+"PC P-38:5 or PC O-38:6 Isomer A ","PC P-38:5 or PC O-38:6 Isomer A ",1
+"PC P-40:4 or PC O-40:5 ","PC P-40:4 or PC O-40:5 ",1
+"PC P-40:5 or PC O-40:6 ","PC P-40:5 or PC O-40:6 ",1
+"PC P-40:6 or PC O-40:7 Isomer A ","PC P-40:6 or PC O-40:7 Isomer A ",1
+"PC P-40:6 or PC O-40:7 Isomer B ","PC P-40:6 or PC O-40:7 Isomer B ",1
+"PC P-40:7 or PC O-40:8 ","PC P-40:7 or PC O-40:8 ",1
+"PC P-42:5 or PC O-42:6","PC P-42:5 or PC O-42:6",1
+"PC-O 16:0_18:1 ","PC-O 16:0_18:1 ",3
+"PC-p 18:0_22:6 ","PC-p 18:0_22:6 ",1
+"PE 16:0_16::1 ","PE 16:0_16::1 ",11
+"PE 16:1_18:1 ","PE 16:1_18:1 ",11
+"PE 18:0_22:3 ","PE 18:0_22:3 ",6
+"PE 34:0 ","PE 34:0 ",3
+"PE 34:1 ","PE 34:1 ",3
+"PE 36:1 ","PE 36:1 ",3
+"PE 36:2 ","PE 36:2 ",1
+"PE 36:3 ","PE 36:3 ",4
+"PE 36:4 ","PE 36:4 ",1
+"PE 36:5|PE 16:0_20:5","PE 36:5|PE 16:0_20:5",1
+"PE 37:5|PE 17:0_20:5","PE 37:5|PE 17:0_20:5",5
+"PE 38:2 ","PE 38:2 ",1
+"PE 38:4 ","PE 38:4 ",1
+"PE 38:4|PE 18:0_20:4","PE 38:4|PE 18:0_20:4",1
+"PE 38:5 ","PE 38:5 ",1
+"PE 38:6 ","PE 38:6 ",1
+"PE 38:6 Isomer B ","PE 38:6 Isomer B ",1
+"PE 38:7|PE 18:2_20:5 Isomer A","PE 38:7|PE 18:2_20:5 Isomer A",15
+"PE 38:7|PE 18:2_20:5 Isomer B","PE 38:7|PE 18:2_20:5 Isomer B",4
+"PE 40:10|PE 20:5_20:5","PE 40:10|PE 20:5_20:5",1
+"PE 40:6|PE 18:1_22:5","PE 40:6|PE 18:1_22:5",1
+"PE 40:7|PE 18:1_22:6","PE 40:7|PE 18:1_22:6",1
+"PE O-16:1_18:1 ","PE O-16:1_18:1 ",3
+"PE O-16:1_18:2 ","PE O-16:1_18:2 ",3
+"PE O-16:1_22:6 ","PE O-16:1_22:6 ",1
+"PE O-18:1_22:6 ","PE O-18:1_22:6 ",1
+"PE O-18:2_18:2 ","PE O-18:2_18:2 ",1
+"PE O-18:2_22:6 ","PE O-18:2_22:6 ",1
+"PE O-22:6_16:1 ","PE O-22:6_16:1 ",1
+"PE O-36:1 ","PE O-36:1 ",3
+"PE O-36:3 ","PE O-36:3 ",1
+"PE O-36:4 Isomer B","PE O-36:4 Isomer B",1
+"PE O-38:2 ","PE O-38:2 ",1
+"PE O-38:6 Isomer B ","PE O-38:6 Isomer B ",1
+"PE O-38:7 ","PE O-38:7 ",1
+"PE O-40:5 Isomer B ","PE O-40:5 Isomer B ",1
+"PE O-40:6 Isomer B ","PE O-40:6 Isomer B ",1
+"PE O-40:8 ","PE O-40:8 ",1
+"PE P-34:1 or PE O-34:2 ","PE P-34:1 or PE O-34:2 ",3
+"PE P-36:1 or PE O-36:2","PE P-36:1 or PE O-36:2",3
+"PE P-36:4 or PE O-36:5 ","PE P-36:4 or PE O-36:5 ",1
+"PE P-36:5 or PE O-36:6 ","PE P-36:5 or PE O-36:6 ",1
+"PE P-38:4 or PE O-38:5 Isomer A","PE P-38:4 or PE O-38:5 Isomer A",1
+"PE P-38:4 or PE O-38:5 Isomer B","PE P-38:4 or PE O-38:5 Isomer B",1
+"PE P-38:5 or PE O-38:6 ","PE P-38:5 or PE O-38:6 ",1
+"PE P-40:5 or PE O-40:6 ","PE P-40:5 or PE O-40:6 ",1
+"PE-O 18:1_22:6 ","PE-O 18:1_22:6 ",0
+"PEtOH 16:0_16:1 ","PEtOH 16:0_16:1 ",12
+"PEtOH 16:0_18:1 ","PEtOH 16:0_18:1 ",12
+"PEtOH 16:0_20:4 ","PEtOH 16:0_20:4 ",12
+"PEtOH 16:1_16:1 ","PEtOH 16:1_16:1 ",12
+"PEtOH 16:1_18:1 ","PEtOH 16:1_18:1 ",12
+"PEtOH 18:1_18:1 ","PEtOH 18:1_18:1 ",12
+"PEtOH 18:1_20:4 ","PEtOH 18:1_20:4 ",12
+"PG 36:2 ","PG 36:2 ",1
+"PG 38:7 ","PG 38:7 ",1
+"PG 44:12 ","PG 44:12 ",1
+"PI 18:0_20:2 ","PI 18:0_20:2 ",1
+"PI 18:0_20:4 ","PI 18:0_20:4 ",1
+"PI 18:1_22:4 ","PI 18:1_22:4 ",1
+"PI 18:1_22:6 ","PI 18:1_22:6 ",1
+"PI 34:1 Isomer A ","PI 34:1 Isomer A ",1
+"PI 34:2 ","PI 34:2 ",1
+"PI 36:3 Isomer B ","PI 36:3 Isomer B ",1
+"PI 36:5 ","PI 36:5 ",1
+"PI 38:4 ","PI 38:4 ",1
+"PI 38:5","PI 38:5",1
+"PI 38:5 ","PI 38:5 ",1
+"PMeOH 16:0_18:1 ","PMeOH 16:0_18:1 ",12
+"PMeOH 16:0_18:2 ","PMeOH 16:0_18:2 ",12
+"PMeOH 36:4 ","PMeOH 36:4 ",12
+"PS 16:0_22:4 ","PS 16:0_22:4 ",1
+"PS 18:0_22:6 ","PS 18:0_22:6 ",1
+"PS 34:1 ","PS 34:1 ",3
+"PS 36:1 ","PS 36:1 ",3
+"PS 36:2 ","PS 36:2 ",3
+"PS 38:5|PS 18:0_20:5","PS 38:5|PS 18:0_20:5",1
+"PS 40:5 ","PS 40:5 ",1
+"Phosphatidylethanolamine alkenyl 16:0-20:4 ","Phosphatidylethanolamine alkenyl 16:0-20:4 ",1
+"Phosphatidylethanolamine alkenyl 18:0-18:2 ","Phosphatidylethanolamine alkenyl 18:0-18:2 ",3
+"SM 29:2;2O/8:0 ","SM 29:2;2O/8:0 ",1
+"SM 35:1;2O ","SM 35:1;2O ",1
+"SM 37:4;3O ","SM 37:4;3O ",1
+"SM 41:3;3O ","SM 41:3;3O ",2
+"SM d30:1 ","SM d30:1 ",6
+"SM d31:1 ","SM d31:1 ",6
+"SM d32:0 ","SM d32:0 ",6
+"SM d32:0 Isomer B ","SM d32:0 Isomer B ",6
+"SM d32:1 Isomer A","SM d32:1 Isomer A",6
+"SM d32:1 Isomer B","SM d32:1 Isomer B",6
+"SM d32:2 ","SM d32:2 ",6
+"SM d33:1 ","SM d33:1 ",6
+"SM d34:0 ","SM d34:0 ",6
+"SM d34:1 Isomer A","SM d34:1 Isomer A",6
+"SM d34:1 Isomer B","SM d34:1 Isomer B",6
+"SM d34:2 ","SM d34:2 ",15
+"SM d35:1 ","SM d35:1 ",1
+"SM d35:2 ","SM d35:2 ",6
+"SM d36:0 ","SM d36:0 ",3
+"SM d36:1 Isomer A","SM d36:1 Isomer A",1
+"SM d36:1 Isomer B","SM d36:1 Isomer B",3
+"SM d36:2 Isomer A","SM d36:2 Isomer A",1
+"SM d36:4 ","SM d36:4 ",6
+"SM d37:1 ","SM d37:1 ",3
+"SM d38:1 ","SM d38:1 ",3
+"SM d38:2 Isomer A","SM d38:2 Isomer A",0
+"SM d38:2 Isomer B","SM d38:2 Isomer B",1
+"SM d39:2 ","SM d39:2 ",1
+"SM d40:2 Isomer B ","SM d40:2 Isomer B ",1
+"SM d41:2 Isomer A ","SM d41:2 Isomer A ",3
+"SM d42:2 Isomer B ","SM d42:2 Isomer B ",0
+"TG 14:0_16:0_17:1 ","TG 14:0_16:0_17:1 ",2
+"TG 16:0_18:1_20:0 ","TG 16:0_18:1_20:0 ",2
+"TG 16:2_18:2_18:3 ","TG 16:2_18:2_18:3 ",2
+"TG 18:0_18:1_22:0 ","TG 18:0_18:1_22:0 ",2
+"TG 19:2_19:2_19:2 ","TG 19:2_19:2_19:2 ",2
+"TG 42:0 ","TG 42:0 ",15
+"TG 44:0 ","TG 44:0 ",2
+"TG 46:0 ","TG 46:0 ",2
+"TG 46:1 ","TG 46:1 ",2
+"TG 46:2 ","TG 46:2 ",2
+"TG 48:0 ","TG 48:0 ",2
+"TG 48:1 ","TG 48:1 ",2
+"TG 48:2 ","TG 48:2 ",2
+"TG 49:0 ","TG 49:0 ",2
+"TG 50:0 ","TG 50:0 ",2
+"TG 50:1 ","TG 50:1 ",2
+"TG 50:2","TG 50:2",2
+"TG 50:2 ","TG 50:2 ",2
+"TG 50:3 Isomer A ","TG 50:3 Isomer A ",2
+"TG 50:3|TG 16:0_16:1_18:2","TG 50:3|TG 16:0_16:1_18:2",2
+"TG 50:4 ","TG 50:4 ",2
+"TG 51:1 Isomer B ","TG 51:1 Isomer B ",2
+"TG 51:3 ","TG 51:3 ",2
+"TG 52:0 ","TG 52:0 ",2
+"TG 52:1","TG 52:1",2
+"TG 52:3 ","TG 52:3 ",2
+"TG 52:3|TG 16:0_18:1_18:2","TG 52:3|TG 16:0_18:1_18:2",2
+"TG 52:4 ","TG 52:4 ",2
+"TG 52:5 ","TG 52:5 ",2
+"TG 52:6 ","TG 52:6 ",2
+"TG 53:1 ","TG 53:1 ",2
+"TG 53:4 ","TG 53:4 ",2
+"TG 53:6 ","TG 53:6 ",2
+"TG 54:0 ","TG 54:0 ",2
+"TG 54:1 ","TG 54:1 ",2
+"TG 54:2 ","TG 54:2 ",2
+"TG 54:3|TG 18:0_18:1_18:2","TG 54:3|TG 18:0_18:1_18:2",2
+"TG 54:4 ","TG 54:4 ",2
+"TG 54:5 Isomer A ","TG 54:5 Isomer A ",2
+"TG 54:5|TG 18:1_18:2_18:2","TG 54:5|TG 18:1_18:2_18:2",2
+"TG 54:6 Isomer A ","TG 54:6 Isomer A ",2
+"TG 54:6 Isomer C ","TG 54:6 Isomer C ",2
+"TG 55:7 ","TG 55:7 ",2
+"TG 56:1 ","TG 56:1 ",2
+"TG 56:2 Isomer A ","TG 56:2 Isomer A ",2
+"TG 56:2 Isomer B ","TG 56:2 Isomer B ",2
+"TG 56:3|TG 18:1_18:1_20:1","TG 56:3|TG 18:1_18:1_20:1",2
+"TG 56:5 Isomer A ","TG 56:5 Isomer A ",2
+"TG 56:6 ","TG 56:6 ",2
+"TG 56:7 Isomer B ","TG 56:7 Isomer B ",2
+"TG 58:2 ","TG 58:2 ",2
+"TG 58:3|TG 18:1_20:1_20:1","TG 58:3|TG 18:1_20:1_20:1",2
+"TG 58:4 ","TG 58:4 ",2
+"TG 64:1 ","TG 64:1 ",19
+"TG 8:0_10:0_18:1 ","TG 8:0_10:0_18:1 ",15
+"Taurine","Taurine",1
+"arachidonoylthiophosphorylcholine ","arachidonoylthiophosphorylcholine ",3

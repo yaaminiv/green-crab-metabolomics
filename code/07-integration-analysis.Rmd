@@ -2226,6 +2226,52 @@ plotDendroAndColors(
 #dev.off()
 ```
 
+### Relate modules to sample information
+
+``` {r, echo=TRUE, warning=FALSE, message=FALSE}
+module_df <- data.frame(
+  Metabolite = names(netwk$colors),
+  colors = netwk$colors
+  #colors = labels2colors(netwk$colors)
+)
+
+module_df[1:5,]
+
+write.csv(module_df, "combined-WCNA/combined_modules.csv")
+
+# Get Module Eigengenes per cluster
+MEs <- moduleEigengenes(rowwiseAllData, mergedColors)$eigengenes
+
+# Reorder modules so similar modules are next to each other
+MEs <- orderMEs(MEs)
+module_order = names(MEs) %>% gsub("ME","", .)
+
+# Add Sample names
+MEs0 <- MEs
+MEs0$crab.ID = row.names(MEs)
+
+# tidy & plot data
+mME = MEs0 %>%
+  pivot_longer(-crab.ID) %>%
+  mutate(
+    name = gsub("ME", "", name),
+    name = factor(name, levels = module_order)
+  )
+
+mME %>% ggplot(., aes(x=crab.ID, y=name, fill=value)) +
+  geom_tile() +
+  theme_bw() +
+  scale_fill_gradient2(
+    low = "blue",
+    high = "red",
+    mid = "white",
+    midpoint = 0,
+    limit = c(-1,1)) +
+  theme(axis.text.x = element_text(angle=90)) +
+  labs(title = "Module-Sample Relationships", y = "Modules", fill="corr")
+```
+
+
 ## ASCA
 
 ## Individual metabolite and lipid correlations with DIABLO
