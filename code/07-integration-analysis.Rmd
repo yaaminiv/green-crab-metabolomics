@@ -2154,7 +2154,7 @@ text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1,col="red")
 
 When choosing a soft thresholding power, want to choose the lowest number that reaches the R<sup>2</sup> cutoff. From this data, it appears that the **soft thresholding power is 8**.  
 
-### Identify modules using `blockwiseModules`  
+##### Identify modules using `blockwiseModules`  
 
 Use `blockwiseModules` to identify modules of metabolites.  
 
@@ -2226,7 +2226,7 @@ plotDendroAndColors(
 #dev.off()
 ```
 
-### Relate modules to sample information
+##### Relate modules to sample information
 
 ``` {r, echo=TRUE, warning=FALSE, message=FALSE}
 module_df <- data.frame(
@@ -2270,6 +2270,139 @@ mME %>% ggplot(., aes(x=crab.ID, y=name, fill=value)) +
   theme(axis.text.x = element_text(angle=90)) +
   labs(title = "Module-Sample Relationships", y = "Modules", fill="corr")
 ```
+
+##### Relate modules to treatment and day
+
+I already have trait matrices from correlating physiology information with my existing WCNAs. I am going to do my correlations between the combined WCNA and temperature or physiology traits separately to be consistent with previous methods.
+
+```{r}
+datTraitsPhysOnly #Trait matrix for physiology data
+datTraitsTempOnly <- datTraitsPhysTempLipid %>%
+  dplyr::select(2:4) #Trait matrix for temperature only
+datTraitsTempOnly
+```
+
+```{r}
+#Define numbers of metabolites and samples and view 
+nMetabolites <- ncol(rowwiseAllData)
+nSamples <- nrow(rowwiseAllData)
+
+nMetabolites #567 compounds
+nSamples #69 samples
+```
+
+###### Physiology
+
+```{r}
+moduleTraitCorPhys <- cor(MEs, datTraitsPhysOnly, use = "p") #Correlations of traits with eigengenes
+moduleTraitPvaluePhys <- corPvalueStudent(moduleTraitCorPhys, nSamples) #Get p-values for correlations
+head(moduleTraitCorPhys %>% as.data.frame())
+head(moduleTraitPvaluePhys %>% as.data.frame())
+```
+
+```{r}
+moduleTraitTreePhys <- hclust(dist(t(moduleTraitCorPhys)), method = "average") #Create cluster dendogram for module-trait correlations
+```
+
+```{r}
+#pdf(file = "combined-WCNA/figures/module-trait-cluster-dendogram-phys.pdf", height = 8.5, width = 11)
+#plot(moduleTraitTreePhys) #Plot cluster dendogram
+#dev.off()
+```
+
+###### Temperature
+
+```{r}
+moduleTraitCorTemp <- cor(MEs, datTraitsTempOnly, use = "p") #Correlations of traits with eigengenes
+moduleTraitPvalueTemp <- corPvalueStudent(moduleTraitCorTemp, nSamples) #Get p-values for correlations
+head(moduleTraitCorTemp %>% as.data.frame())
+head(moduleTraitPvalueTemp %>% as.data.frame())
+```
+
+```{r}
+moduleTraitTreeTemp <- hclust(dist(t(moduleTraitCorTemp)), method = "average") #Create cluster dendogram for module-trait correlations
+```
+
+```{r}
+# pdf(file = "combined-WCNA/figures/module-trait-cluster-dendogram-temp.pdf", height = 8.5, width = 11)
+plot(moduleTraitTreeTemp) #Plot cluster dendogram
+# dev.off()
+```
+
+##### Append physiology to temperature correlations
+
+```{r}
+moduleTraitCorAppend <- moduleTraitCorTemp %>%
+  as.data.frame(.) %>%
+  rownames_to_column(., var = "ME") %>%
+  left_join(., y = (moduleTraitCorPhys %>% 
+                      as.data.frame(.) %>% 
+                      rownames_to_column(., var = "ME"))) %>%
+  column_to_rownames(., var = "ME") %>%
+  as.matrix(.) #Take previous correlations and convert to a dataframe. Convert rownames to ME column. Join with phys correlations and reconvert column to rownames. Convert back to a matrix
+moduleTraitCorAppend #Confirm matrix creation
+```
+
+```{r}
+moduleTraitPvalueAppend <- moduleTraitPvalueTemp %>%
+  as.data.frame(.) %>%
+  rownames_to_column(., var = "ME") %>%
+  left_join(., y = (moduleTraitPvaluePhys %>% 
+                      as.data.frame(.) %>% 
+                      rownames_to_column(., var = "ME"))) %>%
+  column_to_rownames(., var = "ME") %>%
+  as.matrix(.) #Take previous correlations and convert to a dataframe. Convert rownames to ME column. Join with phys correlations and reconvert column to rownames. Convert back to a matrix
+moduleTraitPvalueAppend #Confirm matrix creation
+```
+
+###### Plot module-trait associations
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+heatmappvalAppend <- signif(moduleTraitPvalueAppend, 1) #Create list of pvalues for eigengene correlation with specific traits
+
+row_dendAppend <- dendsort(hclust(dist(moduleTraitCorAppend))) #Create dendograms for rows
+col_dendAppend <- dendsort(hclust(dist(t(moduleTraitCorAppend)))) #Create dendograms for columns
+
+trait_orderAppend <- c("Average TTR", "Oxygen Consumption", "5ºC", "13º", "30ºC") #Order of traits for heatmap
+```
+
+```{r}
+# pdf(file = "combined-WCNA/figures/module-trait-relationship-heatmap-append.pdf", height = 8.5, width = 8.5)
+htAppend <- Heatmap(moduleTraitCorAppend, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
+                         col = blueWhiteRed(50), 
+                         row_names_side = "left", 
+                         row_dend_side = "left",
+                         width = unit(5, "in"), 
+                         height = unit(4.5, "in"), 
+                         column_dend_reorder = FALSE, 
+                         cluster_columns = FALSE,
+                         row_dend_reorder = FALSE,  
+                         column_split = c(rep("A", times = 3), rep("B", times = 2)), 
+                         column_gap = unit(3, "mm"),
+                         #row_split = 3, 
+                         #column_dend_height = unit(.5, "in"),
+                         cluster_rows = row_dendAppend, 
+                         #row_gap = unit(2.5, "mm"), 
+                         border = TRUE,
+                         cell_fun = function(j, i, x, y, w, h, col) {
+                           if(heatmappvalAppend[i, j] < 0.05) {
+                             grid.text(sprintf("%s", heatmappvalAppend[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+                           }
+                           else {
+                             grid.text(sprintf("%s", heatmappvalAppend[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+                           }},
+                         column_names_rot = 45,
+                         column_names_gp =  gpar(fontsize = 12, border = FALSE),
+                         column_title_gp = gpar(fontsize = 20),
+                         row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
+draw(htAppend) #Draw heatmap
+# dev.off()
+```
+
+
+
+
+
 
 
 ## ASCA
