@@ -2399,6 +2399,50 @@ draw(htAppend) #Draw heatmap
 # dev.off()
 ```
 
+##### Plot mean eigengene values for each module
+
+```{r}
+#Ensure metadata columns are factors
+metabolomicsMetadata$crab.ID <- as.factor(metabolomicsMetadata$crab.ID)
+metabolomicsMetadata$treatment <- as.factor(metabolomicsMetadata$treatment)
+metabolomicsMetadata$day <- as.factor(metabolomicsMetadata$day)
+metabolomicsMetadata$treatment_day <- as.factor(metabolomicsMetadata$treatment_day)
+```
+
+```{r}
+mME_all <- merge(mME, metabolomicsMetadata, by = "crab.ID") %>%
+  rename(Module = name) %>%
+  dplyr::select(-treatment_day) %>%
+  remove_rownames()
+#Create new dataframe with metadata
+head(mME_all) #Confirm dataframe creation
+```
+
+```{r}
+write.csv(combined-WCNA/mME_all, "module-expression.csv", quote = FALSE, row.names = FALSE) #Save module expression dataframe
+```
+
+```{r, warning = FALSE, message = FALSE}
+pdf("combined-WCNA/figures/eigengene-expression-boxplot.pdf", height = 8.5, width = 11)
+mME_all %>%
+  ggplot(aes(x = treatment, y = value, colour = treatment)) +
+  facet_wrap(~ Module) +
+  ylab("Module Expression") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey")+
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
+  stat_summary(fun=mean, geom="line", aes(group = treatment, color = treatment), position = position_dodge(width = 0.5))  + 
+  geom_point(pch = 21, position = position_dodge(width = 0.5)) +
+  scale_fill_manual(name = "Temperature (ºC)", 
+                    values = c("#2171B5", "#525252", "#CB181D"),
+                    labels = c("5ºC", "13ºC", "30ºC")) +
+  scale_colour_manual(name = "Temperature (ºC)", 
+                      values = c("#2171B5", "#525252", "#CB181D"),
+                    labels = c("5ºC", "13ºC", "30ºC")) +
+  xlab("") + #Axis titles
+  theme_classic(base_size = 15) + theme(axis.text.x = element_text(color = "white"),
+                                        axis.ticks.x = element_blank()) #Create a boxplot with data points for module expression on the y-axis and values for each treatment combination. Facet by module eigengene. Add a horizontal line at y = 0.
+dev.off()
+```
 
 
 
