@@ -2098,13 +2098,138 @@ allPhysModules_lipidAnnotations
 write.csv(allPhysModules_lipidAnnotations, "WCNA/lipidomics/all-phys-module-lipid-annotations.csv", quote = FALSE, row.names = FALSE) #Save as .csv
 ```
 
-### Combined metabolomics and lipidomics WCNs with physiology, temperature, and day
+### Combined metabolomics and lipidomics WCNA with physiology and temperature
+
+The next thing I want to do is run a combined WCNA with all metabolomics and lipidomics data. Then, I will correlate the combined module eigengenes with temperature and physiology. I won't use day, since day was not a significant predictor for the lipid PCA. This will allow me to identify metabolomics and lipidomics in shared pathways.
+
+```{bash}
+mkdir combined-WCNA
+mkdir combined-WCNA/figures
+```
+
+#### Combine metabolite and lipid data
+
+```{r}
+rowwiseAllData <- left_join(x = rowwiseMetabData %>%
+                              rownames_to_column(., var = "crab.ID"),
+                            y = rowwiseLipidData %>%
+                              rownames_to_column(., var = "crab.ID"),
+                            by = "crab.ID") %>%
+  column_to_rownames(., var = "crab.ID") #Combine metabolite and lipid data through left_join. Change crab.ID column back to rownames
+head(rowwiseAllData) #Confirm dataframe creation
+```
+
+I don't need to do p over A filtering for the combined dataset, since all metabolites and all lipids were used in the downstream analysis. 
+
+#### Network construction and consensus module detection
+
+##### Choosing a soft-thresholding power: Analysis of a network topology β  
+
+The soft thresholding power (β) is the number to which the co-expression similarity is raised to calculate adjacency. The function `pickSoftThreshold` performs a network topology analysis. The user chooses a set of candidate powers, however the default parameters are suitable values.  
+
+```{r, message=FALSE, warning=FALSE}
+allowWGCNAThreads()
+powers <- c(c(1:20), seq(from = 12, to=20, by=2)) #Create a string of numbers from 1 through 10, and even numbers from 10 through 20
+sft <-pickSoftThreshold(rowwiseAllData, powerVector = powers, verbose = 5) # Call the network topology analysis function
+```
+
+```{r}
+sizeGrWindow(9, 5)
+par(mfrow = c(1,2));
+cex1 = 0.9;
+# # # Scale-free topology fit index as a function of the soft-thresholding power
+plot(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2],
+     xlab="Soft Threshold (power)",ylab="Scale Free Topology Model Fit,signed R^2",type="n",
+     main = paste("Scale independence"));
+text(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2],
+     labels=powers,cex=cex1,col="red");
+# # # this line corresponds to using an R^2 cut-off
+abline(h=0.85,col="red")
+# # # Mean connectivity as a function of the soft-thresholding power
+plot(sft$fitIndices[,1], sft$fitIndices[,5],
+     xlab="Soft Threshold (power)",ylab="Mean Connectivity", type="n",
+     main = paste("Mean connectivity"))
+text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1,col="red")
+```
+
+When choosing a soft thresholding power, want to choose the lowest number that reaches the R<sup>2</sup> cutoff. From this data, it appears that the **soft thresholding power is 8**.  
+
+### Identify modules using `blockwiseModules`  
+
+Use `blockwiseModules` to identify modules of metabolites.  
+
+Settings used: 
+
+networkType = "unsigned" 
+deepSplit = 2
+pamRespectsDendro = F
+minModuleSize = 5
+maxBlockSize = 4000
+reassignThreshold = 0
+mergeCutHeight = 0.25
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+
+picked_power = 8
+temp_cor <- cor       
+cor <- WGCNA::cor # Force it to use WGCNA cor function (fix a namespace conflict issue)
+netwk <- blockwiseModules(rowwiseAllData,                         # <= input here
+                          
+                          # == Adjacency Function ==
+                          power = picked_power,               # <= power here
+                          networkType = "unsigned",
+                          
+                          # == Tree and Block Options ==
+                          deepSplit = 2,
+                          pamRespectsDendro = F,
+                          # detectCutHeight = 0.75,
+                          minModuleSize = 5,                  
+                          maxBlockSize = 4000,
+                          
+                          # == Module Adjustments ==
+                          reassignThreshold = 0,
+                          mergeCutHeight = 0.25,
+                          
+                          # == TOM == Archive the run results in TOM file (saves time) but it doesn't save a file
+                          saveTOMs = F,
+                          saveTOMFileBase = "ER",
+                          
+                          # == Output Options
+                          numericLabels = T,
+                          verbose = 3)
+
+cor <- temp_cor     # Return cor function to original namespace
+```
+
+```{r}
+mergedColors = netwk$colors # Identify labels as numbers 
+table(mergedColors)
+```
+
+Module sizes are as follows: 
+
+0    1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19 
+78 172  55  40  30  26  21  20  16  16  16  11  10   9   9   9   8   8   7   6 
+ 
+```{r}
+# Plot the dendrogram and the module colors underneath
+
+#pdf("combined-WCNA/figures/cluster-dendogram-mergedME.pdf")
+plotDendroAndColors(
+  netwk$dendrograms[[1]],
+  mergedColors[netwk$blockGenes[[1]]],
+  "Module colors",
+  dendroLabels = FALSE,
+  hang = 0.03,
+  addGuide = TRUE,
+  guideHang = 0.05 )
+#dev.off()
+```
 
 ## ASCA
 
 ## Individual metabolite and lipid correlations with DIABLO
 
 Do correlations with VIP from significantly correlated modules?
-
 
 
