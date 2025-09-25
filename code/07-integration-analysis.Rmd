@@ -67,6 +67,7 @@ mkdir figures
 
 ```{r}
 attach("../05-metabolomics-analysis/05-metabolomics-analysis.RData") #Attach metabolomics RData
+rawMetabolomicsData <- rawMetabolomicsData #Save raw metabolomics data from sequencer
 metabolomicsMetadata <- metabolomicsMetadata #Save metadata
 transMetabData <- transMetabData #Save transposed data used for PLSDA
 rowwiseMetabData <- rowwiseMetabData #Rowwise data used for WCNA
@@ -84,6 +85,7 @@ detach("file:../05-metabolomics-analysis/05-metabolomics-analysis.RData") #Detac
 ```
 
 ```{r}
+head(rawMetabolomicsData)
 head(metabolomicsMetadata)
 head(transMetabData)
 head(rowwiseMetabData)
@@ -96,6 +98,8 @@ plotColors
 
 ```{r}
 attach("../06-lipidomics-analysis/06-lipidomics-analysis.RData") #Attach lipidomics RData
+rawLipidomicsData <- rawLipidomicsData
+lipidIdentifiers <- lipidIdentifiers
 lipidomicsMetadata <- lipidomicsMetadata #Save metadata
 knownTransLipidData <- knownTransLipidData #Save transposed data used for PLSDA
 rowwiseLipidData <- rowwiseLipidData #Rowwise data used for WCNA
@@ -111,6 +115,8 @@ detach("file:../06-lipidomics-analysis/06-lipidomics-analysis.RData") #Detach li
 ```
 
 ```{r}
+head(rawLipidomicsData)
+head(lipidIdentifiers)
 head(lipidomicsMetadata)
 head(knownTransLipidData)
 head(rowwiseLipidData)
@@ -2210,7 +2216,7 @@ Module sizes are as follows:
 
 0    1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19 
 78 172  55  40  30  26  21  20  16  16  16  11  10   9   9   9   8   8   7   6 
- 
+
 ```{r}
 # Plot the dendrogram and the module colors underneath
 
@@ -2369,32 +2375,32 @@ trait_orderAppend <- c("Average TTR", "Oxygen Consumption", "5ºC", "13º", "30�
 ```{r}
 # pdf(file = "combined-WCNA/figures/module-trait-relationship-heatmap-append.pdf", height = 8.5, width = 8.5)
 htAppend <- Heatmap(moduleTraitCorAppend, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
-                         col = blueWhiteRed(50), 
-                         row_names_side = "left", 
-                         row_dend_side = "left",
-                         width = unit(5, "in"), 
-                         height = unit(4.5, "in"), 
-                         column_dend_reorder = FALSE, 
-                         cluster_columns = FALSE,
-                         row_dend_reorder = FALSE,  
-                         column_split = c(rep("A", times = 3), rep("B", times = 2)), 
-                         column_gap = unit(3, "mm"),
-                         #row_split = 3, 
-                         #column_dend_height = unit(.5, "in"),
-                         cluster_rows = row_dendAppend, 
-                         #row_gap = unit(2.5, "mm"), 
-                         border = TRUE,
-                         cell_fun = function(j, i, x, y, w, h, col) {
-                           if(heatmappvalAppend[i, j] < 0.05) {
-                             grid.text(sprintf("%s", heatmappvalAppend[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
-                           }
-                           else {
-                             grid.text(sprintf("%s", heatmappvalAppend[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
-                           }},
-                         column_names_rot = 45,
-                         column_names_gp =  gpar(fontsize = 12, border = FALSE),
-                         column_title_gp = gpar(fontsize = 20),
-                         row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
+                    col = blueWhiteRed(50), 
+                    row_names_side = "left", 
+                    row_dend_side = "left",
+                    width = unit(5, "in"), 
+                    height = unit(4.5, "in"), 
+                    column_dend_reorder = FALSE, 
+                    cluster_columns = FALSE,
+                    row_dend_reorder = FALSE,  
+                    column_split = c(rep("A", times = 3), rep("B", times = 2)), 
+                    column_gap = unit(3, "mm"),
+                    #row_split = 3, 
+                    #column_dend_height = unit(.5, "in"),
+                    cluster_rows = row_dendAppend, 
+                    #row_gap = unit(2.5, "mm"), 
+                    border = TRUE,
+                    cell_fun = function(j, i, x, y, w, h, col) {
+                      if(heatmappvalAppend[i, j] < 0.05) {
+                        grid.text(sprintf("%s", heatmappvalAppend[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+                      }
+                      else {
+                        grid.text(sprintf("%s", heatmappvalAppend[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+                      }},
+                    column_names_rot = 45,
+                    column_names_gp =  gpar(fontsize = 12, border = FALSE),
+                    column_title_gp = gpar(fontsize = 20),
+                    row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
 draw(htAppend) #Draw heatmap
 # dev.off()
 ```
@@ -2437,16 +2443,114 @@ mME_all %>%
                     labels = c("5ºC", "13ºC", "30ºC")) +
   scale_colour_manual(name = "Temperature (ºC)", 
                       values = c("#2171B5", "#525252", "#CB181D"),
-                    labels = c("5ºC", "13ºC", "30ºC")) +
+                      labels = c("5ºC", "13ºC", "30ºC")) +
   xlab("") + #Axis titles
   theme_classic(base_size = 15) + theme(axis.text.x = element_text(color = "white"),
                                         axis.ticks.x = element_blank()) #Create a boxplot with data points for module expression on the y-axis and values for each treatment combination. Facet by module eigengene. Add a horizontal line at y = 0.
 dev.off()
 ```
 
+##### Create lists of compounds in each module
+
+For each module, I want the compound name, but I also want all of the PubChem and KEGG ID information provided by the sequencing facility, and other annotation information. I also want to determine if a compound is a metabolite or lipid.
+
+```{r}
+module_alldfs <- list() #Create a list to save dataframes
+
+for (i in 0:19) {
+  module_alldfs[[i+1]] <- rbind(module_df %>%
+          dplyr::rename(., Module = colors,
+                        Compound = Metabolite) %>%
+          mutate(Compound = str_trim(Compound, side = "both")) %>%
+          filter(., Module == i) %>%
+          inner_join(., (rawMetabolomicsData %>%
+                           dplyr::rename(Compound = BinBase.name) %>%
+                           mutate(Compound = str_trim(Compound, side = "both"))),
+                     by = "Compound") %>%
+          dplyr::select(., -c(ret.index:mass.spec, InChI.Key)) %>%
+          mutate(class = "metabolite"), #Take metabolite information from the module of interest. Trim white space on each side of the compound name. Join with raw metabolomics data and retain columns of interest
+        module_df %>%
+          dplyr::rename(., Module = colors,
+                        Compound = Metabolite) %>%
+          mutate(Compound = str_trim(Compound, side = "both")) %>%
+          filter(., Module == i) %>%
+          inner_join(., (rawLipidomicsData %>% 
+                           dplyr::rename(Compound = lipid) %>%
+                           mutate(Compound = str_trim(Compound, side = "both"))),
+                     by = c("Compound")) %>%
+          dplyr::select(., -c(identifier:ESI.mode)) %>%
+          unique(.) %>%
+          group_by(Compound) %>%
+          summarise_if(is.numeric, ~sum(., na.rm = TRUE)) %>%
+          ungroup(.) %>%
+          mutate(., PubChem = NA,
+                 KEGG = NA,
+                 Module = i,
+                 class = "lipid") #Take lipid information from the module of interest. Trim white space on each side of the compound name. Join with raw lipid data and retain columns of interest. Concatenate any duplicate rows for lipids with the same name.
+  )
+} #Use a for loop to create a list of module dataframes
+```
+
+```{r}
+names(module_alldfs) <- c("module0_all",
+                          "module1_all",
+                          "module2_all",
+                          "module3_all",
+                          "module4_all",
+                          "module5_all",
+                          "module6_all",
+                          "module7_all",
+                          "module8_all",
+                          "module9_all",
+                          "module10_all",
+                          "module11_all",
+                          "module12_all",
+                          "module13_all",
+                          "module14_all",
+                          "module15_all",
+                          "module16_all",
+                          "module17_all",
+                          "module18_all",
+                          "module19_all") #Rename dataframes within list
+```
+
+```{r}
+module_allInformation <- data.frame("Module" = 0:19,
+                                    "Metabolites" = rep(0, times = 20),
+                                    "Lipids" = rep(0, times = 20)) #Create empty dataframe to store information 
+for (i in 0:19) {
+  module_allInformation$Metabolites[i+1] <- nrow(module_alldfs[[i+1]] %>% filter(., class == "metabolite")) #Count the number of metabolites in specified list
+  module_allInformation$Lipids[i+1] <- nrow(module_alldfs[[i+1]] %>% filter(., class == "lipid")) #Count the number of lipids in the specified list
+}
+head(module_allInformation) #Confirm dataframe modification
+write.csv(module_allInformation, "combined-WCNA/module-information.csv", quote = FALSE, row.names = FALSE)
+```
+
+```{r}
+module_alldfs[[1]]
+```
+```{r}
+get(names(module_alldfs)[20])
+```
+
+```{r}
+walk(names(module_alldfs), ~write_delim(get(.x), paste0(.x, ‘.tsv), delim = "t", col_names = TRUE))
+```
+```{r}
+for (i in 0:19) {
+write_delim(module_alldfs[[i+1]], paste0("./module_", i, "compounds.tsv", delim = "\t", col_names = TRUE))
+}
+```
 
 
+```{r}
 
+#Isolate metabolites and lipids for the module and annotate separately with raw data. For the lipids, duplicates need to be combined. Combine dataframes.
+nrow(module10_all %>% filter(., class == "metabolite")) #16 metabolites
+nrow(module10_all %>% filter(., class == "lipid")) #0 lipids
+write_delim(module10_all, "combined-WCNA/module10_compounds.tsv", delim = "\t", col_names = TRUE) #Save tab-delimited file
+head(module10_all)
+```
 
 
 ## ASCA
