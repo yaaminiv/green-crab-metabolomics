@@ -2532,6 +2532,70 @@ write_delim(module_alldfs[[i+1]], paste0("combined-WCNA/module", i, "_compounds.
 } #Save each module dataframe from list as a tab-delimted file
 ```
 
+##### Interpret correlations
+
+I am going to focus on modules that had correlations with temperature and physiology, since I want this analysis to provide insight into how metabolite-lipid interactions impact whole-organism responses.
+
+- ME3: Negatively correlated with 5ºC, negatively correlated with righting response, positively correlated with oxygen consumption
+- ME6: Negatively correlated with 5ºC, negatively correlated with TTR
+- ME13: Negatively correlated with 5ºC, positively correlated with 30ºC, negatively correlated with TTR
+- ME11: Negatively correlated with 30ºC, negatively correlated with oxygen consumption
+
+```{r}
+module_allInformation %>%
+  filter(., Module == 3 | Module == 6 | Module == 13 | Module == 11)
+```
+
+It's interesting to see that the majority of these modules contain either metabolites or lipids — not both! That in itself suggests that metabolites and lipids have unique roles in regulating the physiological endpoints we are interested in. My next step is annotate the compounds in these modules.
+
+```{r}
+names(module_alldfs)
+```
+
+###### Module 3
+
+```{r}
+module_alldfs[[4]] %>%
+  dplyr::select(Compound:KEGG, class) %>%
+  filter(., class == "metabolite") %>%
+  mutate(., respirationMetabolites = case_when(Compound %in% respirationMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                               Compound %in% respirationMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+    mutate(., calciumSignalingMetabolites = case_when(Compound %in% calciumSignalingMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                               Compound %in% calciumSignalingMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+    mutate(., coldProtectionMetabolites = case_when(Compound %in% coldProtectionMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                               Compound %in% coldProtectionMetabolites %>% str_trim(., side = "both") == FALSE ~ "N"))
+  
+```
+
+- is it a VIP from the temperature comparisons?
+- is it in a significantly enriched pathway from the temperature comparisons?
+
+```{r}
+read.delim("../05-metabolomics-analysis/metaboanalyst/all-module-VIP.txt", sep = "\t") %>%
+  dplyr::select(metabolite, comparison) %>%
+  mutate(metabolite = str_trim(metabolite, side = "both")) %>%
+  pivot_wider(., id_cols = metabolite, names_from = "comparison", names_prefix = "VIP", values_from = "comparison") %>%
+  mutate(., VIP13v30_day22 = case_when(is.na(VIP13v30_day22) == FALSE ~ "Y",
+                                       is.na(VIP13v30_day22) == TRUE ~ "N")) %>%
+  mutate(., VIP13v5_day22 = case_when(is.na(VIP13v5_day22) == FALSE ~ "Y",
+                                       is.na(VIP13v5_day22) == TRUE ~ "N")) %>%
+  mutate(., VIP5_day3v22 = case_when(is.na(VIP5_day3v22) == FALSE ~ "Y",
+                                       is.na(VIP5_day3v22) == TRUE ~ "N"))
+```
+
+
+##### Identify pathways represented in the significant modules
+
+###### VIP enrichment pathways 
+
+```{r}
+module0_pairwiseVIPpathway <- read.delim("../05-metabolomics-analysis/metaboanalyst/all-module-pairwise-VIP-pathways.txt", sep = "\t") %>%
+  filter(., module == "module0") %>%
+  dplyr::select(metabolite, statistic, p.adj, comparison, pathway, module) #Import list of VIP in module 0. Retain columns of interest
+module0_pairwiseVIPpathway
+```
+
+
 ## ASCA
 
 ## Individual metabolite and lipid correlations with DIABLO
