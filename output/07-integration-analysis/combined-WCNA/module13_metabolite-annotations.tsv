@@ -1,0 +1,10 @@
+Compound	Module	PubChem	KEGG	class	respirationMetabolites	calciumSignalingMetabolites	coldProtectionMetabolites	VIP13v30_day22	VIP13v5_day22	VIP5_day3v22	valineBiosynthesis	arginineBiosynthesis	glutathioneMetabolism	alanineMetabolism
+terephthalic acid	13	22416364	C06337	metabolite	N	N	N	Y	N	N	N	N	N	N
+stearic acid	13	5281	C01530	metabolite	N	N	N	N	N	N	N	N	N	N
+spermidine	13	1102	C00315	metabolite	N	N	N	N	N	N	N	N	N	N
+salicylic acid	13	338	C00805	metabolite	N	N	N	Y	N	N	N	N	N	N
+putrescine	13	1045	C00134	metabolite	N	N	N	Y	N	Y	N	N	Y	N
+heptadecanoic acid	13	10465		metabolite	N	N	N	N	N	N	N	N	N	N
+glutaric acid	13	743	C00489	metabolite	N	N	N	Y	N	N	N	N	N	N
+arachidic acid	13	10467	C06425	metabolite	N	N	N	N	N	N	N	N	N	N
+adipic acid	13	196	C06104	metabolite	N	N	N	N	N	N	N	N	N	N

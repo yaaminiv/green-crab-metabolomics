@@ -1,0 +1,12 @@
+Compound	PubChem	KEGG	class	VIP13v30	VIP13v5	lipidClass	targetClass	saturation	LION.0000003	LION.0000010	LION.0000031	LION.0000095	LION.0000465	LION.0012010	LION.0012080	LION.0000011	LION.0012081
+DG 36:5	NA	NA	lipid	Y	N	DG	Other	Polyunsaturated	NA	NA	NA	NA	NA	13v30	NA	NA	NA
+DG 38:5	NA	NA	lipid	Y	N	DG	Other	Polyunsaturated	NA	NA	NA	NA	NA	13v30	NA	NA	NA
+DG 38:6	NA	NA	lipid	Y	N	DG	Other	Polyunsaturated	NA	NA	NA	NA	NA	13v30	NA	NA	NA
+NAE 4:0	NA	NA	lipid	N	N	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
+PC 14:0_16:1	NA	NA	lipid	N	Y	PC	PC	Monounsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC 32:1 Isomer A	NA	NA	lipid	Y	N	PC	PC	Monounsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC 32:1 Isomer B	NA	NA	lipid	Y	N	PC	PC	Monounsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC 32:2 Isomer A	NA	NA	lipid	N	N	NA	NA	NA	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC 32:2 Isomer B	NA	NA	lipid	Y	N	PC	PC	Polyunsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PE 16:0_16::1	NA	NA	lipid	N	N	NA	NA	NA	both	NA	NA	13v30	NA	13v30	both	13v5	13v5
+PE 16:1_18:1	NA	NA	lipid	N	N	NA	NA	NA	both	NA	NA	13v30	NA	13v30	both	13v5	13v5

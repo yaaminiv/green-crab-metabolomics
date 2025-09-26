@@ -1,0 +1,37 @@
+Compound	Module	PubChem	KEGG	class	VIP13v30	VIP13v5	lipidClass	targetClass	saturation	LION.0000003	LION.0000010	LION.0000031	LION.0000095	LION.0000465	LION.0012010	LION.0012080	LION.0000011	LION.0012081
+Cer 22:0;2O/26:0	3	NA	NA	lipid	N	N	NA	NA	NA	NA	NA	NA	NA	NA	NA	both	NA	NA
+Cer d34:0	3	NA	NA	lipid	Y	N	Cer	Other	Saturated	NA	NA	NA	NA	NA	NA	both	NA	NA
+FAHFA 46:0	3	NA	NA	lipid	Y	N	FAHFA	Other	Saturated	NA	NA	NA	NA	NA	NA	NA	NA	NA
+GlcCer d42:2	3	NA	NA	lipid	N	N	NA	NA	NA	NA	NA	NA	NA	NA	13v30	NA	NA	NA
+PC 18:0_18:1	3	NA	NA	lipid	N	Y	PC	PC	Monounsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC 19:1	3	NA	NA	lipid	Y	N	PC	PC	Monounsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC 36:1 Isomer A	3	NA	NA	lipid	N	Y	PC	PC	Monounsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC 36:1 Isomer B	3	NA	NA	lipid	N	Y	PC	PC	Monounsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC O-18:0_16:0	3	NA	NA	lipid	Y	N	PC	PC	Saturated	both	13v30	13v30	13v30	13v30	13v30	both	NA	NA
+PC O-34:0 Isomer A	3	NA	NA	lipid	Y	Y	PC	PC	Saturated	both	13v30	13v30	13v30	13v30	13v30	both	NA	NA
+PC O-34:0 Isomer B	3	NA	NA	lipid	Y	N	PC	PC	Saturated	both	13v30	13v30	13v30	13v30	13v30	both	NA	NA
+PC O-34:1|PC O-16:0_18:1	3	NA	NA	lipid	Y	Y	PC	PC	Monounsaturated	both	13v30	13v30	13v30	13v30	13v30	both	NA	NA
+PC O-36:1	3	NA	NA	lipid	Y	Y	PC	PC	Monounsaturated	both	13v30	13v30	13v30	13v30	13v30	both	NA	NA
+PC P-34:0 or PC O-34:1	3	NA	NA	lipid	Y	Y	PC	PC	Saturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC P-34:1 or PC O-34:2	3	NA	NA	lipid	Y	Y	PC	PC	Monounsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC P-36:1 or PC O-36:2	3	NA	NA	lipid	Y	Y	PC	PC	Monounsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC P-36:2 or PC O-36:3	3	NA	NA	lipid	Y	N	PC	PC	Polyunsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC-O 16:0_18:1	3	NA	NA	lipid	N	Y	PC-O	Other	Monounsaturated	NA	NA	NA	NA	NA	NA	NA	NA	NA
+PE 34:0	3	NA	NA	lipid	N	Y	PE	PE	Saturated	both	NA	NA	13v30	NA	13v30	both	13v5	13v5
+PE 34:1	3	NA	NA	lipid	N	Y	PE	PE	Monounsaturated	both	NA	NA	13v30	NA	13v30	both	13v5	13v5
+PE 36:1	3	NA	NA	lipid	Y	Y	PE	PE	Monounsaturated	both	NA	NA	13v30	NA	13v30	both	13v5	13v5
+PE O-16:1_18:1	3	NA	NA	lipid	Y	Y	PE	PE	Polyunsaturated	both	NA	NA	13v30	NA	13v30	both	13v5	13v5
+PE O-16:1_18:2	3	NA	NA	lipid	N	Y	PE	PE	Polyunsaturated	both	NA	NA	13v30	NA	13v30	both	13v5	13v5
+PE O-36:1	3	NA	NA	lipid	N	Y	PE	PE	Monounsaturated	both	NA	NA	13v30	NA	13v30	both	13v5	13v5
+PE P-34:1 or PE O-34:2	3	NA	NA	lipid	Y	Y	PE	PE	Monounsaturated	both	NA	NA	13v30	NA	13v30	both	13v5	13v5
+PE P-36:1 or PE O-36:2	3	NA	NA	lipid	Y	Y	PE	PE	Monounsaturated	both	NA	NA	13v30	NA	13v30	both	13v5	13v5
+PS 34:1	3	NA	NA	lipid	N	N	NA	NA	NA	both	NA	NA	NA	13v30	13v30	NA	NA	NA
+PS 36:1	3	NA	NA	lipid	N	N	NA	NA	NA	both	NA	NA	NA	13v30	13v30	NA	NA	NA
+PS 36:2	3	NA	NA	lipid	N	N	NA	NA	NA	both	NA	NA	NA	13v30	13v30	NA	NA	NA
+Phosphatidylethanolamine alkenyl 18:0-18:2	3	NA	NA	lipid	Y	Y	PE	PE	Polyunsaturated	NA	NA	NA	NA	NA	NA	NA	NA	NA
+SM d36:0	3	NA	NA	lipid	Y	N	SM	Other	Saturated	NA	NA	NA	13v30	NA	13v30	NA	NA	NA
+SM d36:1 Isomer B	3	NA	NA	lipid	Y	N	SM	Other	Monounsaturated	NA	NA	NA	13v30	NA	13v30	NA	NA	NA
+SM d37:1	3	NA	NA	lipid	Y	N	SM	Other	Monounsaturated	NA	NA	NA	13v30	NA	13v30	NA	NA	NA
+SM d38:1	3	NA	NA	lipid	Y	N	SM	Other	Monounsaturated	NA	NA	NA	13v30	NA	13v30	NA	NA	NA
+SM d41:2 Isomer A	3	NA	NA	lipid	N	N	NA	NA	NA	NA	NA	NA	13v30	NA	13v30	NA	NA	NA
+arachidonoylthiophosphorylcholine	3	NA	NA	lipid	N	N	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA
