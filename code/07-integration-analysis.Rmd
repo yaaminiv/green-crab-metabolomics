@@ -2982,7 +2982,7 @@ perf.diablo.tcga.ML$error.rate  # Lists the different types of error rates
 # Plot of the error rates based on weighted vote
 plot(perf.diablo.tcga.ML) #Based on the plot, 4 components should be chosen for classification. Max distance and BER offer the lowest classification error rates
 perf.diablo.tcga.ML$choice.ncomp$WeightedVote #Confirm that 4 components is the best decision based on the table
-ncompML <- perf.diablo.tcga.ML$choice.ncomp$WeightedVote["Overall.BER", "max.dist"] #The number of components that should be chosen
+ncompML <- perf.diablo.tcga.ML$choice.ncomp$WeightedVote["Overall.BER", "mahalanobis.dist"] #The number of components that should be chosen
 ```
 
 The analysis says to use 4 components. However, my variable of interest is temperature, which has 3 conditions maximum. Therefore, I will only use 3 components.
