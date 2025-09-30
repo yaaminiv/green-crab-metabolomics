@@ -37,6 +37,7 @@ getwd()
 # if ("dendsort" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('dendsort')
 # if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap')
 # if ("svglite" %in% rownames(installed.packages()) == 'FALSE') install.packages("svglite")
+# if ("svglite" %in% rownames(installed.packages()) == 'FALSE') install.packages("svglite")
 require(tidyverse)
 require(plotrix)
 require(vegan)
@@ -70,6 +71,7 @@ attach("../05-metabolomics-analysis/05-metabolomics-analysis.RData") #Attach met
 rawMetabolomicsData <- rawMetabolomicsData #Save raw metabolomics data from sequencer
 metabolomicsMetadata <- metabolomicsMetadata #Save metadata
 transMetabData <- transMetabData #Save transposed data used for PLSDA
+
 rowwiseMetabData <- rowwiseMetabData #Rowwise data used for WCNA
 MEsMet <- MEs #Module eigengenes for metabolomics data
 moduleTraitCorMet <- moduleTraitCor #Correlations between module eigengenes and treatment (temperature x day)
@@ -102,6 +104,7 @@ rawLipidomicsData <- rawLipidomicsData
 lipidIdentifiers <- lipidIdentifiers
 lipidomicsMetadata <- lipidomicsMetadata #Save metadata
 knownTransLipidData <- knownTransLipidData #Save transposed data used for PLSDA
+
 rowwiseLipidData <- rowwiseLipidData #Rowwise data used for WCNA
 MEsLipid <- MEs #Module eigengenes for lipidomics data
 moduleTraitCorLipid <- moduleTraitCor #Correlations between module eigengenes and temperature
@@ -2898,6 +2901,157 @@ write_delim(module11_allLipidAnnot, "combined-WCNA/module11_lipid-annotations.ts
 
 ## Individual metabolite and lipid correlations with DIABLO
 
-Do correlations with VIP from significantly correlated modules?
+- [`mixOmics` vignette](https://mixomicsteam.github.io/mixOmics-Vignette/id_06.html)
+- [DIABLO case study](https://mixomics.org/mixdiablo/diablo-tcga-case-study/)
+- [Ariana's lab notebook](https://ahuffmyer.github.io/ASH_Putnam_Lab_Notebook/Multi-Omic-Integration-Analysis-Part-1/)
+
+```{bash}
+mkdir DIABLO
+mkdir DIABLO/figures
+```
+
+### Run SPLS
+
+The first step before running a DIABLO is to investigate correlations between the component variables. I've already done some of that with the WCNAs, but I will run an SPLS separately for the metabolomics and lipidomics data.
+
+```{r}
+list.keepX = c(25, 25) # select arbitrary values of features to keep
+list.keepY = c(25, 25)
+```
+
+```{r}
+X <- log(transMetabData[c(5:156)]) #Assign known metabolite data to the X dataframe after log transformation
+Y <- log(knownTransLipidData[-c(1:4)])  %>%
+  mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+  replace(is.na(.), 0) #Assign known metabolite data to the X dataframe after log transformation
+```
+
+```{r}
+pls1 <- spls(X, Y, 
+             keepX = list.keepX, keepY = list.keepY) #Generate PLS model for metabolomics and lipidomics
+```
+
+```{r}
+# plot features of first PLS
+plotVar(pls1, cutoff = 0.5, title = "metabolomics vs. lipidomics", 
+        legend = c("metabolomics", "lipidomics"), 
+        var.names = FALSE, style = 'graphics', 
+        pch = c(16, 17), cex = c(2,2), 
+        col = c('darkorchid', 'lightgreen'))
+```
+
+Some of the features have very strong clustering while other do not, suggesting that some features of the metabolomics and lipidomics dataframes are highly correlated. This agrees with what I saw with WCNAs. Unclear if clustering is stronger across component 1 or 2 (everyone's just hanging out in that bottom left quadrant). I'm going to rerun the PLS with one component to get a better idea of the correlation.
+
+```{r}
+res1.pls.tcga <- pls(X, Y, ncomp = 1)
+cor(res1.pls.tcga$variates$X, res1.pls.tcga$variates$Y) #Metabolites and lipids are highly correlated
+```
+
+
+### Run DIABLO
+
+#### All known molecules
+
+##### Tune parameters
+
+```{r}
+dataML <- list("Metabolites" = X, "Lipids" = Y) #Store metabolite and lipid data as a list
+outcomeML <- transMetabData$treatment #Outcome information is what I want the DIABLO to classify, which in this case is temperature.
+```
+
+```{r}
+designML <- matrix(cor(res1.pls.tcga$variates$X, res1.pls.tcga$variates$Y), 
+                   ncol = length(dataML), nrow = length(dataML), 
+                   dimnames = list(names(dataML), names(dataML))) #Create a matrix with the design of the DIABLO experiment. Lower weights increase predictive capability. I am using a correlation based on previous PLS
+diag(designML) <- 0
+designML 
+```
+
+```{r}
+diablo.tcga.ML <- block.plsda(X = dataML, 
+                              Y = outcomeML, 
+                              ncomp = 5, 
+                              design = designML) #Run a DIABLO analysis to identify the number of components that should be included
+
+perf.diablo.tcga.ML = perf(diablo.tcga.ML, validation = 'Mfold', folds = 10, nrepeat = 10)
+
+perf.diablo.tcga.ML$error.rate  # Lists the different types of error rates
+```
+
+```{r}
+# Plot of the error rates based on weighted vote
+plot(perf.diablo.tcga.ML) #Based on the plot, 4 components should be chosen for classification. Max distance and BER offer the lowest classification error rates
+perf.diablo.tcga.ML$choice.ncomp$WeightedVote #Confirm that 4 components is the best decision based on the table
+ncompML <- perf.diablo.tcga.ML$choice.ncomp$WeightedVote["Overall.BER", "max.dist"] #The number of components that should be chosen
+```
+
+The analysis says to use 4 components. However, my variable of interest is temperature, which has 3 conditions maximum. Therefore, I will only use 3 components.
+
+```{r}
+# chunk takes about 2 min to run
+set.seed(123) # for reproducibility
+test.keep.ML <- list(metabolomics = c(5:9, seq(10, 100, 5)),
+                   lipidomics = c(5:9, seq(10, 100, 5)))
+
+tune.diablo.ML <- tune.block.splsda(X = dataML, Y = outcomeML, ncomp = 3, 
+                              test.keepX = test.keep.ML, design = designML,
+                              validation = 'Mfold', folds = 10, nrepeat = 1, 
+                              BPPARAM = BiocParallel::SnowParam(workers = 2),
+                              dist = "mahalanobis.dist")
+
+list.keep.ML <- tune.diablo.ML$choice.keepX
+```
+##### Run analysis
+
+```{r}
+diablo.tcga.ML <- block.splsda(X = dataML, Y = outcomeML, 
+                               ncomp = 3,
+                               keepX = list.keep.ML,
+                               design = designML) #Run DIABLO with all variables tested above
+diablo.tcga.ML$design #Outcomes now included in the design so that the covariance between each block’s component and the outcome is maximised
+```
+
+##### Visualize output
+
+```{r}
+plotDiablo(diablo.tcga.ML, ncomp = 1)
+plotDiablo(diablo.tcga.ML, ncomp = 2)
+plotDiablo(diablo.tcga.ML, ncomp = 3)
+```
+
+```{r}
+plotIndiv(diablo.tcga.ML, ind.names = FALSE, legend = TRUE, 
+          title = 'DIABLO comp 1 - 2') #Easier to classify 30 group in both datasets, harder to discriminate between 5 and 13
+```
+
+```{r}
+pdf("DIABLO/figures/circos-metabolite-lipids.pdf")
+circosPlot(diablo.tcga.ML, cutoff = 0.70, line = TRUE, 
+           color.blocks = c('plum1', 'lightgreen'),
+           color.cor = c("chocolate3","grey20"), 
+           size.labels = 1,
+           legend.title = "Temperature (ºC)", color.Y = rev(plotColors)) #Use circos plot to visualise correlations between individual metabolites and lipids
+dev.off()
+```
+
+The plot shows that there are very few correlations between compounds. When I messed around with the correlations, I could only get this plot when corr < 0.75, so these aren't very strong correlations to begin with. The current functionality (`cor_matML <- circosPlot(diablo.tcga.ML, cutoff = 0.70)`) pulls out correlations projected onto the components, which isn't helpful for understanding individual compounds that are correlated with eachother (see [this link](https://mixomics-users.discourse.group/t/diablo-circosplot-export-correlation-matrix/22).
+
+```{r}
+pdf("DIABLO/figures/circos-metabolite-lipids-intralink.pdf")
+circosPlot(diablo.tcga.ML, cutoff = 0.70, line = TRUE, showIntraLinks = TRUE,
+           color.blocks = c('plum1', 'lightgreen'),
+           color.cor = c("chocolate3","grey20"), 
+           size.labels = 1,
+           legend.title = "Temperature (ºC)", color.Y = rev(plotColors)) #Use circos plot to visualise correlations between individual metabolites and lipids
+```
+
+It's interesting (and kind of obvious) that there are much stronger correlations within a block than between blocks!
+
+#### Only VIP molecules
+
+- try DIABLO tuning with just VIP?
+
+
+
 
 
