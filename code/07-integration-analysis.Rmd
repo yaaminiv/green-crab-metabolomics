@@ -3043,15 +3043,125 @@ circosPlot(diablo.tcga.ML, cutoff = 0.70, line = TRUE, showIntraLinks = TRUE,
            color.cor = c("chocolate3","grey20"), 
            size.labels = 1,
            legend.title = "Temperature (ºC)", color.Y = rev(plotColors)) #Use circos plot to visualise correlations between individual metabolites and lipids
+dev.off()
 ```
 
 It's interesting (and kind of obvious) that there are much stronger correlations within a block than between blocks!
 
 #### Only VIP molecules
 
-- try DIABLO tuning with just VIP?
+I'm going to run DIABLO again, but this time use just VIP molecules in the input list.
 
+##### Format input data
 
+```{r}
+metaboliteVIP <- read.delim("../05-metabolomics-analysis/metaboanalyst/all-module-VIP.txt", sep = "\t") %>% dplyr::select(metabolite) %>% unique(.) #Save list of unique VIP metabolites
+```
+
+```{r}
+X.VIP <- X %>%
+  dplyr::select(any_of(metaboliteVIP$metabolite)) #Metabolomics data but only VIP
+head(X.VIP) #Confirm changes
+```
+
+```{r}
+lipidVIP <- rbind(significantVIP_13v30_annot,
+  significantVIP_13v5_annot) %>%
+  dplyr::select(lipid) %>%
+  unique(.) #Save list of unique VIP lipids
+```
+
+```{r}
+Y.VIP <- Y %>%
+  dplyr::select(any_of(lipidVIP$lipid)) #Lipid data but only VIP
+head(Y.VIP) #Confirm changes
+```
+
+##### Tune parameters
+
+```{r}
+dataML.VIP <- list("Metabolites" = X.VIP, "Lipids" = Y.VIP) #Store metabolite and lipid data VIPs as a list
+```
+
+```{r}
+diablo.ML.VIP <- block.plsda(X = dataML.VIP, 
+                              Y = outcomeML, 
+                              ncomp = 5, 
+                              design = designML) #Run a DIABLO analysis to identify the number of components that should be included
+
+perf.diablo.ML.VIP = perf(diablo.ML.VIP, validation = 'Mfold', folds = 10, nrepeat = 10)
+
+perf.diablo.ML.VIP$error.rate  # Lists the different types of error rates
+```
+
+```{r}
+# Plot of the error rates based on weighted vote
+plot(perf.diablo.ML.VIP) #Based on the plot, 3 components should be chosen for classification. Max distance and BER offer the lowest classification error rates
+perf.diablo.ML.VIP$choice.ncomp$WeightedVote #Confirm that 3 components is the best decision based on the table
+ncompML <- perf.diablo.ML.VIP$choice.ncomp$WeightedVote["Overall.BER", "mahalanobis.dist"] #The number of components that should be chosen
+```
+
+The analysis says to use 4 components. However, my variable of interest is temperature, which has 3 conditions maximum. Therefore, I will only use 3 components.
+
+```{r}
+# chunk takes about 2 min to run
+set.seed(123) # for reproducibility
+test.keep.ML <- list(metabolomics = c(5:9, seq(10, 100, 5)),
+                   lipidomics = c(5:9, seq(10, 100, 5)))
+
+tune.diablo.ML.VIP <- tune.block.splsda(X = dataML, Y = outcomeML, ncomp = 3, 
+                              test.keepX = test.keep.ML, design = designML,
+                              validation = 'Mfold', folds = 10, nrepeat = 1, 
+                              BPPARAM = BiocParallel::SnowParam(workers = 2),
+                              dist = "mahalanobis.dist")
+
+list.keep.ML.VIP <- tune.diablo.ML.VIP$choice.keepX
+```
+
+##### Run analysis
+
+```{r}
+diablo.ML.VIP <- block.splsda(X = dataML.VIP, Y = outcomeML, 
+                               ncomp = 3,
+                               keepX = list.keep.ML.VIP,
+                               design = designML) #Run DIABLO with all variables tested above
+diablo.ML.VIP$design #Outcomes now included in the design so that the covariance between each block’s component and the outcome is maximised
+```
+
+##### Visualize output
+
+```{r}
+plotDiablo(diablo.ML.VIP, ncomp = 1)
+plotDiablo(diablo.ML.VIP, ncomp = 2)
+plotDiablo(diablo.ML.VIP, ncomp = 3)
+```
+
+```{r}
+plotIndiv(diablo.ML.VIP, ind.names = FALSE, legend = TRUE, 
+          title = 'DIABLO comp 1 - 2') #Easier to classify 30 group in both datasets, harder to discriminate between 5 and 13
+```
+
+```{r}
+pdf("DIABLO/figures/circos-metabolite-lipids-VIP.pdf")
+circosPlot(diablo.ML.VIP, cutoff = 0.70, line = TRUE, 
+           color.blocks = c('plum1', 'lightgreen'),
+           color.cor = c("chocolate3","grey20"), 
+           size.labels = 1,
+           legend.title = "Temperature (ºC)", color.Y = rev(plotColors)) #Use circos plot to visualise correlations between individual metabolites and lipids
+dev.off()
+```
+
+The plot shows that there are very few correlations between compounds. This time there were a handful of compounds that had stronger correlations (> 0.8), but still not a huge difference in terms of correlation strength. The temperature lines aren't that much clearer, but I think focusing on VIP could make the discussion narrative a lot clearer.
+
+```{r}
+pdf("DIABLO/figures/circos-metabolite-lipids-intralink-VIP.pdf")
+circosPlot(diablo.ML.VIP, cutoff = 0.70, line = TRUE, showIntraLinks = TRUE,
+           color.blocks = c('plum1', 'lightgreen'),
+           color.cor = c("chocolate3","grey20"), 
+           size.labels = 1,
+           legend.title = "Temperature (ºC)", color.Y = rev(plotColors)) #Use circos plot to visualise correlations between individual metabolites and lipids
+dev.off()
+```
 
 
 
