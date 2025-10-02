@@ -2897,8 +2897,6 @@ write_delim(module11_allLipidAnnot, "combined-WCNA/module11_lipid-annotations.ts
 ```
 
 
-## ASCA
-
 ## Individual metabolite and lipid correlations with DIABLO
 
 - [`mixOmics` vignette](https://mixomicsteam.github.io/mixOmics-Vignette/id_06.html)
