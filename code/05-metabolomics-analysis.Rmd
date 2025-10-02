@@ -36,6 +36,9 @@ getwd()
 # if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap')
 # if ("svglite" %in% rownames(installed.packages()) == 'FALSE') install.packages("svglite")
 # if ("ggfortify" %in% rownames(installed.packages()) == 'FALSE') install.packages("ggfortify")
+# if (!requireNamespace("devtools", quietly = TRUE))
+#     install.packages("devtools")
+# devtools::install_github("andjar/ALASCA", ref = "main")
 require(tidyverse)
 require(vegan)
 require(mixOmics)
@@ -49,6 +52,8 @@ require(dendsort)
 require(ComplexHeatmap)
 require(svglite)
 require(ggfortify)
+require(devtools)
+require(ALASCA)
 ```
 
 ```{r}
@@ -4269,5 +4274,129 @@ pheatmap((transMetabData %>%
             t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = metabolomicsAvgAnnotation, annotation_colors = metabolomicsColors, name = "Z-Score")
 #dev.off()
 ```
+
+# ASCA
+
+My WCNAs grouped compounds into module eigengenes and correlated those with temperature and physiological traits. I am going to use an ASCA to classify trends in compound abundance over temperature. Similar to the WCNA, this will provide me groups of compounds, but in a more statistically rigorous manner.
+
+- [ALASCA tutorial](https://andjar.github.io/ALASCA/articles/ALASCA.html)
+- [Ariana's lab notebook](https://ahuffmyer.github.io/ASH_Putnam_Lab_Notebook/Analysis-of-Variance-Simultaneous-Component-Analyses-ASCA-for-CEABIGR-project/)
+- [Ariana's code from CEABiGR](https://github.com/sr320/ceabigr/blob/main/code/00-77-asca-exon.Rmd)
+
+```{bash}
+mkdir ASCA
+mkdir ASCA/figures
+```
+
+## Format data
+
+```{r}
+metabolomics.ASCA <- rowwiseMetabData %>%
+  log(.) %>%
+  rownames_to_column(., var = "crab.ID") %>%
+  pivot_longer(., cols = !crab.ID, names_to = "variable", values_to = "value") %>%
+  left_join(metabolomicsMetadata, ., by = "crab.ID") %>%
+  dplyr::select(-treatment_day) %>%
+  mutate(., day = str_trim(day, side = "both")) %>%
+  mutate(day = case_when(day == "3" ~ "04",
+                         day != "3" ~ day)) %>%
+  mutate(day = as.factor(day)) #Log-transform data. Pivot data longer for ASCA. Compound information should be "variable." Add metadata to dataframe with all compound information. Update metadata for day and reconvert day to a factor
+head(metabolomics.ASCA) #Confirm changes
+```
+
+## Run model
+
+```{r}
+metabolomics.ASCAmodel <- ALASCA(df = metabolomics.ASCA,
+                            formula = value ~ day*treatment + (1|crab.ID),
+                            n_validation_runs = 100,
+                            validate = TRUE,
+                            reduce_dimensions = TRUE) #Run ASCA to identify temperature effects on compound abundance
+```
+
+## Visualize ASCA
+
+```{r}
+# pdf("ASCA/figures/scree-plot")
+plot(metabolomics.ASCAmodel, component = 1:6, type = "scree") #Scree plot of variance explained by each PC. There were 6 components identified, with the sixth component explaining very little variance
+# dev.off()
+```
+
+I'm now going to investigate the trends of the first five components, since those were the ones that explained any variance.
+
+```{r}
+plot(metabolomics.ASCAmodel, effect = 1, component = seq(1,5), type = 'effect', 
+     n_limit = 10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "Day",
+     group_label = "Temperature (ºC)")
+ggsave("ASCA/figures/effect-plot-all-components.pdf", height = 11, width = 8.5)
+```
+
+### Component 1
+
+This component shows metabolites with consistently higher or lower abundance than 5ºC or 13ºC that change abundance (generally increasing) at 30ºC over time.
+
+```{r}
+plot(metabolomics.ASCAmodel, effect = 1, component = 1, type = 'effect', 
+     n_limit = 10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "Day",
+     group_label = "Temperature (ºC)")
+ggsave("ASCA/figures/effect-plot-PC1.pdf", height = 11, width = 8.5)
+```
+```{r}
+plot(metabolomics.ASCAmodel, effect = 1, component = 1, type = 'prediction', 
+     n_limit = 10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "Day",
+     group_label = "Temperature (ºC)")
+ggsave("ASCA/figures/prediction-plot-PC1.pdf", height = 11, width = 8.5)
+```
+```{r}
+plot(metabolomics.ASCAmodel, effect = 1, component = 2, type = 'effect', 
+     n_limit = 10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "Day",
+     group_label = "Temperature (ºC)")
+ggsave("ASCA/figures/effect-plot-PC2.pdf", height = 11, width = 8.5)
+```
+
+```{r}
+plot(metabolomics.ASCAmodel, effect = 1, component = 2, type = 'prediction', 
+     n_limit = 10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "Day",
+     group_label = "Temperature (ºC)")
+ggsave("ASCA/figures/prediction-plot-PC2.pdf", height = 11, width = 8.5)
+```
+
+### Component 2
+
+### Component 3
+
+### Component 4
+
+### Component 5
 
 
