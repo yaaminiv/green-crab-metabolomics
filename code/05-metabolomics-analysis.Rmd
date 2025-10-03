@@ -4366,22 +4366,27 @@ loadingsPC1.annot <- loadingsPC1[[1]] %>%
   left_join(., 
             y = rbind(t.test_30v5_day3 %>%
                         dplyr::select(metabolite, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
                         mutate(metabolite = str_trim(metabolite, "both"),
                                comparison = "30v5_day3"),
                       t.test_13v30_day22 %>%
                         dplyr::select(metabolite, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
                         mutate(metabolite = str_trim(metabolite, "both"),
                                comparison = "13v30_day22"),
                       t.test_13v5_day22 %>%
                         dplyr::select(metabolite, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
                         mutate(metabolite = str_trim(metabolite, "both"),
                                comparison = "13v5_day22"),
                       t.test_30v5_day22 %>%
                         dplyr::select(metabolite, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
                         mutate(metabolite = str_trim(metabolite, "both"),
                                comparison = "30v5_day22"),
                       t.test_5_day3v22 %>%
                         dplyr::select(metabolite, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
                         mutate(metabolite = str_trim(metabolite, "both"),
                                comparison = "5_day3v22")) %>%
               arrange(metabolite), 
@@ -4450,22 +4455,27 @@ loadingsPC2.annot <- loadingsPC2[[1]] %>%
   left_join(., 
             y = rbind(t.test_30v5_day3 %>%
                         dplyr::select(metabolite, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
                         mutate(metabolite = str_trim(metabolite, "both"),
                                comparison = "30v5_day3"),
                       t.test_13v30_day22 %>%
                         dplyr::select(metabolite, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
                         mutate(metabolite = str_trim(metabolite, "both"),
                                comparison = "13v30_day22"),
                       t.test_13v5_day22 %>%
                         dplyr::select(metabolite, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
                         mutate(metabolite = str_trim(metabolite, "both"),
                                comparison = "13v5_day22"),
                       t.test_30v5_day22 %>%
                         dplyr::select(metabolite, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
                         mutate(metabolite = str_trim(metabolite, "both"),
                                comparison = "30v5_day22"),
                       t.test_5_day3v22 %>%
                         dplyr::select(metabolite, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
                         mutate(metabolite = str_trim(metabolite, "both"),
                                comparison = "5_day3v22")) %>%
               arrange(metabolite), 
@@ -4534,22 +4544,27 @@ loadingsPC3.annot <- loadingsPC3[[1]] %>%
   left_join(., 
             y = rbind(t.test_30v5_day3 %>%
                         dplyr::select(metabolite, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
                         mutate(metabolite = str_trim(metabolite, "both"),
                                comparison = "30v5_day3"),
                       t.test_13v30_day22 %>%
                         dplyr::select(metabolite, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
                         mutate(metabolite = str_trim(metabolite, "both"),
                                comparison = "13v30_day22"),
                       t.test_13v5_day22 %>%
                         dplyr::select(metabolite, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
                         mutate(metabolite = str_trim(metabolite, "both"),
                                comparison = "13v5_day22"),
                       t.test_30v5_day22 %>%
                         dplyr::select(metabolite, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
                         mutate(metabolite = str_trim(metabolite, "both"),
                                comparison = "30v5_day22"),
                       t.test_5_day3v22 %>%
                         dplyr::select(metabolite, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
                         mutate(metabolite = str_trim(metabolite, "both"),
                                comparison = "5_day3v22")) %>%
               arrange(metabolite), 
@@ -4618,22 +4633,27 @@ loadingsPC4.annot <- loadingsPC4[[1]] %>%
   left_join(., 
             y = rbind(t.test_30v5_day3 %>%
                         dplyr::select(metabolite, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
                         mutate(metabolite = str_trim(metabolite, "both"),
                                comparison = "30v5_day3"),
                       t.test_13v30_day22 %>%
                         dplyr::select(metabolite, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
                         mutate(metabolite = str_trim(metabolite, "both"),
                                comparison = "13v30_day22"),
                       t.test_13v5_day22 %>%
                         dplyr::select(metabolite, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
                         mutate(metabolite = str_trim(metabolite, "both"),
                                comparison = "13v5_day22"),
                       t.test_30v5_day22 %>%
                         dplyr::select(metabolite, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
                         mutate(metabolite = str_trim(metabolite, "both"),
                                comparison = "30v5_day22"),
                       t.test_5_day3v22 %>%
                         dplyr::select(metabolite, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
                         mutate(metabolite = str_trim(metabolite, "both"),
                                comparison = "5_day3v22")) %>%
               arrange(metabolite), 
