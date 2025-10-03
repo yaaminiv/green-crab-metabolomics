@@ -4277,7 +4277,7 @@ pheatmap((transMetabData %>%
 
 # ASCA
 
-My WCNAs grouped compounds into module eigengenes and correlated those with temperature and physiological traits. I am going to use an ASCA to classify trends in compound abundance over temperature. Similar to the WCNA, this will provide me groups of compounds, but in a more statistically rigorous manner.
+My WCNAs grouped compounds into module eigengenes and correlated those with temperature and physiological traits. I am going to use an ASCA to classify trends in metabolite abundance over temperature and time. Similar to the WCNA, this will provide me groups of compounds, but in a more statistically rigorous manner.
 
 - [ALASCA tutorial](https://andjar.github.io/ALASCA/articles/ALASCA.html)
 - [Ariana's lab notebook](https://ahuffmyer.github.io/ASH_Putnam_Lab_Notebook/Analysis-of-Variance-Simultaneous-Component-Analyses-ASCA-for-CEABIGR-project/)
@@ -4311,7 +4311,7 @@ metabolomics.ASCAmodel <- ALASCA(df = metabolomics.ASCA,
                                  formula = value ~ day*treatment + (1|crab.ID),
                                  n_validation_runs = 100,
                                  validate = TRUE,
-                                 reduce_dimensions = TRUE) #Run ASCA to identify temperature effects on compound abundance
+                                 reduce_dimensions = TRUE) #Run ASCA to identify day and temperature effects on compound abundance
 ```
 
 ## Interpret ASCA

@@ -36,6 +36,9 @@ getwd()
 # if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap')
 # if ("svglite" %in% rownames(installed.packages()) == 'FALSE') install.packages("svglite")
 # if ("ggfortify" %in% rownames(installed.packages()) == 'FALSE') install.packages("ggfortify")
+# if (!requireNamespace("devtools", quietly = TRUE))
+#     install.packages("devtools")
+# devtools::install_github("andjar/ALASCA", ref = "main")
 require(tidyverse)
 require(vegan)
 require(mixOmics)
@@ -49,6 +52,8 @@ require(dendsort)
 require(ComplexHeatmap)
 require(svglite)
 require(ggfortify)
+require(devtools)
+require(ALASCA)
 ```
 
 ```{r}
@@ -225,9 +230,9 @@ I'll use a global permutational multivariate analysis of variance (PERMANOVA) to
 
 ```{r}
 dissim.lipid <- vegdist(scale((transLipidData[c(5:2407)] %>%
-                                    log() %>%
-                                    mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
-                                    replace(is.na(.), 0))), "euclidean") #Create euclidean dissimilarity matrix to use for perMANOVA and PERMDISP
+                                 log() %>%
+                                 mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+                                 replace(is.na(.), 0))), "euclidean") #Create euclidean dissimilarity matrix to use for perMANOVA and PERMDISP
 ```
 
 ```{r}
@@ -3665,3 +3670,225 @@ pheatmap((knownTransLipidData %>%
             t(.)), cluster_row = TRUE, show_rownames = TRUE, cluster_cols = FALSE, show_colnames = FALSE, scale = "row", color = heatmapColors, annotation_col = lipidomicsAvgAnnotation, annotation_colors = lipidomicsColors, name = "Z-Score")
 #dev.off()
 ```
+
+# ASCA
+
+I am going to use ASCA to classify trends in lipid abundance over temperature. Similar to the WCNA, this will provide me groups of compounds, but in a more statistically rigorous manner.
+
+- [ALASCA tutorial](https://andjar.github.io/ALASCA/articles/ALASCA.html)
+- [Ariana's lab notebook](https://ahuffmyer.github.io/ASH_Putnam_Lab_Notebook/Analysis-of-Variance-Simultaneous-Component-Analyses-ASCA-for-CEABIGR-project/)
+- [Ariana's code from CEABiGR](https://github.com/sr320/ceabigr/blob/main/code/00-77-asca-exon.Rmd)
+
+
+```{bash}
+mkdir ASCA
+mkdir ASCA/figures
+```
+
+## Format data
+
+```{r}
+lipid.ASCA <- rowwiseLipidData %>%
+  rownames_to_column(., var = "crab.ID") %>%
+  pivot_longer(., cols = !crab.ID, names_to = "variable", values_to = "value") %>%
+  left_join(lipidomicsMetadata, ., by = "crab.ID") %>%
+  dplyr::select(-c(day, treatment_day)) %>%
+  mutate(., variable = str_trim(variable, side = "both"),
+         treatment = case_when(treatment == "5" ~ "05",
+                               treatment != "5" ~ treatment)) %>%
+  mutate(., treatment = as.factor(treatment)) %>%
+  unique(.) %>%
+  group_by(crab.ID, treatment, variable) %>%
+  summarise(value = sum(value, na.rm = TRUE)) #Take data that has already been log-transformed and corrected for 0s. Pivot data longer for ASCA. Compound information should be "variable." Add metadata to dataframe with all compound information. Remove day, change temperature to 05, and refactor. Filter for unique rows and summarise values since there are some instances of duplication (sequencer did not catch all components)
+head(lipid.ASCA) #Confirm changes
+```
+
+## Run model
+
+```{r}
+lipid.ASCAmodel <- ALASCA(df = lipid.ASCA,
+                          formula = value ~ treatment + (1|crab.ID),
+                          n_validation_runs = 100,
+                          validate = TRUE,
+                          reduce_dimensions = TRUE) #Run ASCA to identify temperature effects on compound abundance
+```
+
+## Interpret ASCA
+
+```{r}
+# pdf("ASCA/figures/scree-plot")
+plot(lipid.ASCAmodel, component = 1:3, type = "scree") #Scree plot of variance explained by each PC. There were 3 components identified, with the third component explaining very little variance
+# dev.off()
+```
+
+### Component 1
+
+This component shows lipids with lower absolute abundance at 5ºC and much lower absolute abundance at 30ºC
+
+```{r}
+plot(lipid.ASCAmodel, effect = 1, component = 1, type = 'effect', 
+     n_limit = 5, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = "black",
+     my_theme = theme_classic(),
+     x_label = "Temperature (ºC)")
+ggsave("ASCA/figures/effect-plot-PC1.pdf", height = 11, width = 8.5)
+```
+
+```{r}
+plot(lipid.ASCAmodel, effect = 1, component = 1, type = 'prediction', 
+     n_limit = 10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "Temperature (ºC)")
+ggsave("ASCA/figures/prediction-plot-PC1.pdf", height = 11, width = 8.5)
+```
+
+```{r}
+loadingsPC1 <- get_loadings(lipid.ASCAmodel, component = 1, effect = 1, n_limit = 10) #Get loadings for the top 10 positively and negatively loaded compounds on the PC
+head(loadingsPC1)
+```
+
+```{r}
+loadingsPC1[[1]] %>%
+  rename(lipid = "covars") %>%
+  mutate(lipid = str_trim(lipid, "both")) %>%
+  dplyr::select(PC:lipid) %>%
+  left_join(., 
+            y = rbind(t.test_13v30 %>%
+                        dplyr::select(lipid, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
+                        mutate(lipid = str_trim(lipid, "both"),
+                               comparison = "13v30"),
+                      t.test_13v5 %>%
+                        dplyr::select(lipid, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
+                        mutate(lipid = str_trim(lipid, "both"),
+                               comparison = "3v5"),
+                      t.test_30v5 %>%
+                        dplyr::select(lipid, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
+                        mutate(lipid = str_trim(lipid, "both"),
+                               comparison = "30v5")) %>%
+              arrange(lipid), 
+            by = "lipid") %>%
+  left_join(.,
+            y = rbind(significantVIP_13v30_annot, significantVIP_13v5_annot) %>%
+              dplyr::select(lipid, class, targetClass, saturation) %>%
+              mutate(lipid = str_trim(lipid, "both")) %>%
+              unique(.),
+            by = "lipid")
+```
+
+```{r}
+rbind(significantVIP_13v30_annot, significantVIP_13v5_annot) %>%
+  dplyr::select(lipid, class, targetClass, saturation) %>%
+  mutate(lipid = str_trim(lipid, "both")) %>%
+  unique(.)
+```
+
+
+- LION annotation information
+
+```{r}
+LIONtoTerm13v30 <- read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v30/LION-term-associations-13v30.csv") %>%
+  dplyr::select(LION.term, LION.name) %>%
+  slice(-1) %>%
+  filter(LION.term == "LION:0012080" | LION.term == "LION:0000095" | LION.term == "LION:0000465" | LION.term == "LION:0000010" | LION.term == "LION:0012010" | LION.term == "LION:0000003" | LION.term == "LION:0000031") %>% 
+  mutate(LION.term = gsub(x = LION.term, pattern = ":", replacement = "."))
+#Import dataframe with lion terms and term names. Retain only significantly enriched terms
+head(LIONtoTerm13v30) #Confirm formatting
+```
+
+```{r}
+LIONtoTerm13v5 <- read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v5/LION-term-associations-13v5.csv") %>%
+  dplyr::select(LION.term, LION.name) %>%
+  slice(-1) %>%
+  filter(LION.term == "LION:0012080" | LION.term == "LION:0012081" | LION.term == "LION:0000011" | LION.term == "LION:0000003") %>% 
+  mutate(LION.term = gsub(x = LION.term, pattern = ":", replacement = ".")) #Import dataframe with lion terms and term names. Retain only significantly enriched terms
+head(LIONtoTerm13v5) #Confirm formatting
+```
+
+```{r}
+module3Lipids_enrichedVIP <- read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v30/LION-lipid-associations-13v30.csv", strip.white = TRUE) %>%
+  slice(-1) %>%
+  mutate(LION.term = substr(x = LION.term, start = 9, stop = 1000000L)) %>%
+  rename(lipid = LION.term) %>%
+  mutate(lipid = str_trim(lipid, side = "both")) %>%
+  filter(., lipid %in% (VIPlipids_module3$lipid %>%
+                          str_trim(side = "both"))) %>%
+  unique(.) %>%
+  remove_rownames() %>%
+  column_to_rownames(., var = "lipid") %>%
+  dplyr::select_if(colnames(.) %in% LIONtoTerm13v30$LION.term) %>%
+  rownames_to_column(., var = "lipid") %>%
+  left_join(x = .,
+            y = read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v5/LION-lipid-associations-13v5.csv", strip.white = TRUE) %>%
+              slice(-1) %>%
+              mutate(LION.term = substr(x = LION.term, start = 9, stop = 1000000L)) %>%
+              rename(lipid = LION.term) %>%
+              mutate(lipid = str_trim(lipid, side = "both")) %>%
+              filter(., lipid %in% (VIPlipids_module3$lipid %>%
+                                      str_trim(side = "both"))) %>%
+              unique(.) %>%
+              remove_rownames() %>%
+              column_to_rownames(., var = "lipid") %>%
+              dplyr::select_if(colnames(.) %in% LIONtoTerm13v5$LION.term) %>%
+              rownames_to_column(., var = "lipid"),
+            by = c("lipid", "LION.0000003", "LION.0012080")) %>%
+  mutate(., LION.0000003 = case_when(LION.0000003 == "x" ~ "both",
+                                     LION.0000003 != "x" ~ NA)) %>%
+  mutate(., LION.0000010 = case_when(LION.0000010 == "x" ~ "13v30",
+                                     LION.0000010 != "x" ~ NA)) %>% 
+  mutate(., LION.0000031 = case_when(LION.0000031 == "x" ~ "13v30",
+                                     LION.0000031 != "x" ~ NA)) %>% 
+  mutate(., LION.0000095 = case_when(LION.0000095 == "x" ~ "13v30",
+                                     LION.0000095 != "x" ~ NA)) %>%   
+  mutate(., LION.0000465 = case_when(LION.0000465 == "x" ~ "13v30",
+                                     LION.0000465 != "x" ~ NA)) %>%    
+  mutate(., LION.0012010 = case_when(LION.0012010 == "x" ~ "13v30",
+                                     LION.0012010 != "x" ~ NA)) %>%
+  mutate(., LION.0012080 = case_when(LION.0012080 == "x" ~ "both",
+                                     LION.0012080 != "x" ~ NA)) %>%
+  mutate(., LION.0000011 = case_when(LION.0000011 == "x" ~ "13v5",
+                                     LION.0000011 != "x" ~ NA)) %>%
+  mutate(., LION.0012081 = case_when(LION.0012081 == "x" ~ "13v5",
+                                     LION.0012081 != "x" ~ NA))
+#Import table with lion terms as columns and lipids as rows. Remove first row, which has lion term names. Remove leading characters from lipids, rename column, and remove white space on both sides of the string. Filter for VIP lipids in module, modified to remove white space. Remove repetitive rows and remove rownames. Assign new rownames using unique lipid names. Select columns if they match with lion terms in LIONtoTerm13v30. Convert rownames back to a column. Repeat process with 13v5 LION terms and join with dataframe based on common LION terms and lipids. Use case_when to pinpoint which LION terms ar related to specific enrichment categories
+module3Lipids_enrichedVIP #Confirm dataframe creation
+```
+
+
+
+
+
+```{r}
+write.csv(loadingsPC1.annot, "ASCA/loadings-PC1-annotations.csv", quote = FALSE, row.names = FALSE)
+```
+
+
+## Final plot
+
+```{r}
+effect.PC1 <- plot(lipid.ASCAmodel, effect = 1, component = 1, type = 'score', 
+                   n_limit = 5, 
+                   ribbon = TRUE,
+                   x_angle = 0, x_h_just= 0.5,
+                   flip_axis = TRUE,
+                   palette = rev(plotColors),
+                   my_theme = theme_classic(),
+                   x_label = "Temperature (ºC)")
+
+effect.PC1 +
+  scale_x_discrete(labels = c("5", "13", "30")) +
+  theme_classic() + theme(legend.position = "none")
+
+# ggsave("ASCA/figures/effect-plot-PC1.pdf", height = 11, width = 8.5)
+```
+
+
