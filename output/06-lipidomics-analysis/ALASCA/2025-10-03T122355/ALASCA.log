@@ -245,3 +245,19 @@ INFO  [2025-10-03 12:43:58] Selecting the 5 variables with highest/lowest loadin
 INFO  [2025-10-03 12:44:09] Prediction plot. Selected effect (nr 1): `treatment`. Component: 1.
 INFO  [2025-10-03 12:44:09] Selecting the 5 variables with highest/lowest loading on `treatment` (PC1). Use `variable` to specify variables to plot
 INFO  [2025-10-03 12:45:20] Loadings for effect number 1 and principal component(s) 1
+INFO  [2025-10-03 13:51:46] Effect plot. Selected effect (nr 1): `treatment`. Component: 2.
+WARN  [2025-10-03 13:51:46] Showing 10 of 410 variables. Adjust the number with `n_limit`
+INFO  [2025-10-03 13:51:50] Prediction plot. Selected effect (nr 1): `treatment`. Component: 2.
+INFO  [2025-10-03 13:51:50] Selecting the 5 variables with highest/lowest loading on `treatment` (PC2). Use `variable` to specify variables to plot
+INFO  [2025-10-03 13:52:53] Loadings for effect number 1 and principal component(s) 2
+INFO  [2025-10-03 13:53:56] Effect plot. Selected effect (nr 1): `treatment`. Component: 3.
+WARN  [2025-10-03 13:53:56] Showing 10 of 410 variables. Adjust the number with `n_limit`
+INFO  [2025-10-03 13:54:03] Prediction plot. Selected effect (nr 1): `treatment`. Component: 3.
+INFO  [2025-10-03 13:54:03] Selecting the 5 variables with highest/lowest loading on `treatment` (PC3). Use `variable` to specify variables to plot
+INFO  [2025-10-03 13:55:25] Loadings for effect number 1 and principal component(s) 3
+INFO  [2025-10-03 13:56:18] Effect plot. Selected effect (nr 1): `treatment`. Component: 1 and 2.
+WARN  [2025-10-03 13:56:18] Showing 10 of 410 variables. Adjust the number with `n_limit`
+WARN  [2025-10-03 13:56:18] Showing 10 of 410 variables. Adjust the number with `n_limit`
+INFO  [2025-10-03 13:56:44] Effect plot. Selected effect (nr 1): `treatment`. Component: 1 and 2.
+WARN  [2025-10-03 13:56:44] Showing 10 of 410 variables. Adjust the number with `n_limit`
+WARN  [2025-10-03 13:56:45] Showing 10 of 410 variables. Adjust the number with `n_limit`

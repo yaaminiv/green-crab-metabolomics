@@ -3755,7 +3755,25 @@ head(loadingsPC1)
 ```
 
 ```{r}
-loadingsPC1[[1]] %>%
+LIONtoTerm13v30 <- read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v30/LION-term-associations-13v30.csv") %>%
+  dplyr::select(LION.term, LION.name) %>%
+  slice(-1) %>%
+  filter(LION.term == "LION:0012080" | LION.term == "LION:0000095" | LION.term == "LION:0000465" | LION.term == "LION:0000010" | LION.term == "LION:0012010" | LION.term == "LION:0000003" | LION.term == "LION:0000031") %>% 
+  mutate(LION.term = gsub(x = LION.term, pattern = ":", replacement = "."))
+#Import dataframe with lion terms and term names. Retain only significantly enriched terms
+head(LIONtoTerm13v30) #Confirm formatting
+```
+
+```{r}
+LIONtoTerm13v5 <- read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v5/LION-term-associations-13v5.csv") %>%
+  dplyr::select(LION.term, LION.name) %>%
+  slice(-1) %>%
+  filter(LION.term == "LION:0012080" | LION.term == "LION:0012081" | LION.term == "LION:0000011" | LION.term == "LION:0000003") %>% 
+  mutate(LION.term = gsub(x = LION.term, pattern = ":", replacement = ".")) #Import dataframe with lion terms and term names. Retain only significantly enriched terms
+head(LIONtoTerm13v5) #Confirm formatting
+```
+```{r}
+loadingsPC1.annot <- loadingsPC1[[1]] %>%
   rename(lipid = "covars") %>%
   mutate(lipid = str_trim(lipid, "both")) %>%
   dplyr::select(PC:lipid) %>%
@@ -3782,113 +3800,300 @@ loadingsPC1[[1]] %>%
               dplyr::select(lipid, class, targetClass, saturation) %>%
               mutate(lipid = str_trim(lipid, "both")) %>%
               unique(.),
-            by = "lipid")
-```
-
-```{r}
-rbind(significantVIP_13v30_annot, significantVIP_13v5_annot) %>%
-  dplyr::select(lipid, class, targetClass, saturation) %>%
-  mutate(lipid = str_trim(lipid, "both")) %>%
-  unique(.)
-```
-
-
-- LION annotation information
-
-```{r}
-LIONtoTerm13v30 <- read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v30/LION-term-associations-13v30.csv") %>%
-  dplyr::select(LION.term, LION.name) %>%
-  slice(-1) %>%
-  filter(LION.term == "LION:0012080" | LION.term == "LION:0000095" | LION.term == "LION:0000465" | LION.term == "LION:0000010" | LION.term == "LION:0012010" | LION.term == "LION:0000003" | LION.term == "LION:0000031") %>% 
-  mutate(LION.term = gsub(x = LION.term, pattern = ":", replacement = "."))
-#Import dataframe with lion terms and term names. Retain only significantly enriched terms
-head(LIONtoTerm13v30) #Confirm formatting
-```
-
-```{r}
-LIONtoTerm13v5 <- read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v5/LION-term-associations-13v5.csv") %>%
-  dplyr::select(LION.term, LION.name) %>%
-  slice(-1) %>%
-  filter(LION.term == "LION:0012080" | LION.term == "LION:0012081" | LION.term == "LION:0000011" | LION.term == "LION:0000003") %>% 
-  mutate(LION.term = gsub(x = LION.term, pattern = ":", replacement = ".")) #Import dataframe with lion terms and term names. Retain only significantly enriched terms
-head(LIONtoTerm13v5) #Confirm formatting
-```
-
-```{r}
-module3Lipids_enrichedVIP <- read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v30/LION-lipid-associations-13v30.csv", strip.white = TRUE) %>%
-  slice(-1) %>%
-  mutate(LION.term = substr(x = LION.term, start = 9, stop = 1000000L)) %>%
-  rename(lipid = LION.term) %>%
-  mutate(lipid = str_trim(lipid, side = "both")) %>%
-  filter(., lipid %in% (VIPlipids_module3$lipid %>%
-                          str_trim(side = "both"))) %>%
-  unique(.) %>%
-  remove_rownames() %>%
-  column_to_rownames(., var = "lipid") %>%
-  dplyr::select_if(colnames(.) %in% LIONtoTerm13v30$LION.term) %>%
-  rownames_to_column(., var = "lipid") %>%
+            by = "lipid") %>%
   left_join(x = .,
-            y = read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v5/LION-lipid-associations-13v5.csv", strip.white = TRUE) %>%
+            y = read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v30/LION-lipid-associations-13v30.csv", strip.white = TRUE) %>%
               slice(-1) %>%
               mutate(LION.term = substr(x = LION.term, start = 9, stop = 1000000L)) %>%
               rename(lipid = LION.term) %>%
               mutate(lipid = str_trim(lipid, side = "both")) %>%
-              filter(., lipid %in% (VIPlipids_module3$lipid %>%
+              filter(., lipid %in% (loadingsPC1[[1]]$covars %>%
                                       str_trim(side = "both"))) %>%
               unique(.) %>%
               remove_rownames() %>%
               column_to_rownames(., var = "lipid") %>%
-              dplyr::select_if(colnames(.) %in% LIONtoTerm13v5$LION.term) %>%
-              rownames_to_column(., var = "lipid"),
-            by = c("lipid", "LION.0000003", "LION.0012080")) %>%
-  mutate(., LION.0000003 = case_when(LION.0000003 == "x" ~ "both",
-                                     LION.0000003 != "x" ~ NA)) %>%
-  mutate(., LION.0000010 = case_when(LION.0000010 == "x" ~ "13v30",
-                                     LION.0000010 != "x" ~ NA)) %>% 
-  mutate(., LION.0000031 = case_when(LION.0000031 == "x" ~ "13v30",
-                                     LION.0000031 != "x" ~ NA)) %>% 
-  mutate(., LION.0000095 = case_when(LION.0000095 == "x" ~ "13v30",
-                                     LION.0000095 != "x" ~ NA)) %>%   
-  mutate(., LION.0000465 = case_when(LION.0000465 == "x" ~ "13v30",
-                                     LION.0000465 != "x" ~ NA)) %>%    
-  mutate(., LION.0012010 = case_when(LION.0012010 == "x" ~ "13v30",
-                                     LION.0012010 != "x" ~ NA)) %>%
-  mutate(., LION.0012080 = case_when(LION.0012080 == "x" ~ "both",
-                                     LION.0012080 != "x" ~ NA)) %>%
-  mutate(., LION.0000011 = case_when(LION.0000011 == "x" ~ "13v5",
-                                     LION.0000011 != "x" ~ NA)) %>%
-  mutate(., LION.0012081 = case_when(LION.0012081 == "x" ~ "13v5",
-                                     LION.0012081 != "x" ~ NA))
-#Import table with lion terms as columns and lipids as rows. Remove first row, which has lion term names. Remove leading characters from lipids, rename column, and remove white space on both sides of the string. Filter for VIP lipids in module, modified to remove white space. Remove repetitive rows and remove rownames. Assign new rownames using unique lipid names. Select columns if they match with lion terms in LIONtoTerm13v30. Convert rownames back to a column. Repeat process with 13v5 LION terms and join with dataframe based on common LION terms and lipids. Use case_when to pinpoint which LION terms ar related to specific enrichment categories
-module3Lipids_enrichedVIP #Confirm dataframe creation
+              dplyr::select_if(colnames(.) %in% LIONtoTerm13v30$LION.term) %>%
+              rownames_to_column(., var = "lipid") %>%
+              left_join(x = .,
+                        y = read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v5/LION-lipid-associations-13v5.csv", strip.white = TRUE) %>%
+                          slice(-1) %>%
+                          mutate(LION.term = substr(x = LION.term, start = 9, stop = 1000000L)) %>%
+                          rename(lipid = LION.term) %>%
+                          mutate(lipid = str_trim(lipid, side = "both")) %>%
+                          filter(., lipid %in% (loadingsPC1[[1]]$covars %>%
+                                                  str_trim(side = "both"))) %>%
+                          unique(.) %>%
+                          remove_rownames() %>%
+                          column_to_rownames(., var = "lipid") %>%
+                          dplyr::select_if(colnames(.) %in% LIONtoTerm13v5$LION.term) %>%
+                          rownames_to_column(., var = "lipid"),
+                        by = c("lipid", "LION.0000003", "LION.0012080")) %>%
+              mutate(., LION.0000003 = case_when(LION.0000003 == "x" ~ "both",
+                                                 LION.0000003 != "x" ~ NA)) %>%
+              mutate(., LION.0000010 = case_when(LION.0000010 == "x" ~ "13v30",
+                                                 LION.0000010 != "x" ~ NA)) %>% 
+              mutate(., LION.0000031 = case_when(LION.0000031 == "x" ~ "13v30",
+                                                 LION.0000031 != "x" ~ NA)) %>% 
+              mutate(., LION.0000095 = case_when(LION.0000095 == "x" ~ "13v30",
+                                                 LION.0000095 != "x" ~ NA)) %>%   
+              mutate(., LION.0000465 = case_when(LION.0000465 == "x" ~ "13v30",
+                                                 LION.0000465 != "x" ~ NA)) %>%    
+              mutate(., LION.0012010 = case_when(LION.0012010 == "x" ~ "13v30",
+                                                 LION.0012010 != "x" ~ NA)) %>%
+              mutate(., LION.0012080 = case_when(LION.0012080 == "x" ~ "both",
+                                                 LION.0012080 != "x" ~ NA)) %>%
+              mutate(., LION.0000011 = case_when(LION.0000011 == "x" ~ "13v5",
+                                                 LION.0000011 != "x" ~ NA)) %>%
+              mutate(., LION.0012081 = case_when(LION.0012081 == "x" ~ "13v5",
+                                                 LION.0012081 != "x" ~ NA)),
+            by = "lipid") #Obtain loadings dataframe from list and modify columns. Join with VIP information, a priori pathway information, and enrichment information. For enrichment information, import table with lion terms as columns and lipids as rows. Remove first row, which has lion term names. Remove leading characters from lipids, rename column, and remove white space on both sides of the string. Filter for VIP lipids in module, modified to remove white space. Remove repetitive rows and remove rownames. Assign new rownames using unique lipid names. Select columns if they match with lion terms in LIONtoTerm13v30. Convert rownames back to a column. Repeat process with 13v5 LION terms and join with dataframe based on common LION terms and lipids. Use case_when to pinpoint which LION terms ar related to specific enrichment categories
+head(loadingsPC1.annot) #Confirm changes
 ```
-
-
-
-
 
 ```{r}
 write.csv(loadingsPC1.annot, "ASCA/loadings-PC1-annotations.csv", quote = FALSE, row.names = FALSE)
 ```
 
+### Component 2
+
+This component shows lipids with lower absolute abundance at 30ºC and much lower absolute abundance at 5ºC
+
+```{r}
+plot(lipid.ASCAmodel, effect = 1, component = 2, type = 'effect', 
+     n_limit = 5, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = "black",
+     my_theme = theme_classic(),
+     x_label = "Temperature (ºC)")
+ggsave("ASCA/figures/effect-plot-PC2.pdf", height = 11, width = 8.5)
+```
+
+```{r}
+plot(lipid.ASCAmodel, effect = 1, component = 2, type = 'prediction', 
+     n_limit = 10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "Temperature (ºC)")
+ggsave("ASCA/figures/prediction-plot-PC2.pdf", height = 11, width = 8.5)
+```
+
+```{r}
+loadingsPC2 <- get_loadings(lipid.ASCAmodel, component = 2, effect = 1, n_limit = 10) #Get loadings for the top 10 positively and negatively loaded compounds on the PC
+head(loadingsPC2)
+```
+
+```{r}
+loadingsPC2.annot <- loadingsPC2[[1]] %>%
+  rename(lipid = "covars") %>%
+  mutate(lipid = str_trim(lipid, "both")) %>%
+  dplyr::select(PC:lipid) %>%
+  left_join(., 
+            y = rbind(t.test_13v30 %>%
+                        dplyr::select(lipid, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
+                        mutate(lipid = str_trim(lipid, "both"),
+                               comparison = "13v30"),
+                      t.test_13v5 %>%
+                        dplyr::select(lipid, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
+                        mutate(lipid = str_trim(lipid, "both"),
+                               comparison = "3v5"),
+                      t.test_30v5 %>%
+                        dplyr::select(lipid, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
+                        mutate(lipid = str_trim(lipid, "both"),
+                               comparison = "30v5")) %>%
+              arrange(lipid), 
+            by = "lipid") %>%
+  left_join(.,
+            y = rbind(significantVIP_13v30_annot, significantVIP_13v5_annot) %>%
+              dplyr::select(lipid, class, targetClass, saturation) %>%
+              mutate(lipid = str_trim(lipid, "both")) %>%
+              unique(.),
+            by = "lipid") %>%
+  left_join(x = .,
+            y = read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v30/LION-lipid-associations-13v30.csv", strip.white = TRUE) %>%
+              slice(-1) %>%
+              mutate(LION.term = substr(x = LION.term, start = 9, stop = 1000000L)) %>%
+              rename(lipid = LION.term) %>%
+              mutate(lipid = str_trim(lipid, side = "both")) %>%
+              filter(., lipid %in% (loadingsPC2[[1]]$covars %>%
+                                      str_trim(side = "both"))) %>%
+              unique(.) %>%
+              remove_rownames() %>%
+              column_to_rownames(., var = "lipid") %>%
+              dplyr::select_if(colnames(.) %in% LIONtoTerm13v30$LION.term) %>%
+              rownames_to_column(., var = "lipid") %>%
+              left_join(x = .,
+                        y = read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v5/LION-lipid-associations-13v5.csv", strip.white = TRUE) %>%
+                          slice(-1) %>%
+                          mutate(LION.term = substr(x = LION.term, start = 9, stop = 1000000L)) %>%
+                          rename(lipid = LION.term) %>%
+                          mutate(lipid = str_trim(lipid, side = "both")) %>%
+                          filter(., lipid %in% (loadingsPC2[[1]]$covars %>%
+                                                  str_trim(side = "both"))) %>%
+                          unique(.) %>%
+                          remove_rownames() %>%
+                          column_to_rownames(., var = "lipid") %>%
+                          dplyr::select_if(colnames(.) %in% LIONtoTerm13v5$LION.term) %>%
+                          rownames_to_column(., var = "lipid"),
+                        by = c("lipid", "LION.0000003", "LION.0012080")) %>%
+              mutate(., LION.0000003 = case_when(LION.0000003 == "x" ~ "both",
+                                                 LION.0000003 != "x" ~ NA)) %>%
+              mutate(., LION.0000010 = case_when(LION.0000010 == "x" ~ "13v30",
+                                                 LION.0000010 != "x" ~ NA)) %>% 
+              mutate(., LION.0000031 = case_when(LION.0000031 == "x" ~ "13v30",
+                                                 LION.0000031 != "x" ~ NA)) %>% 
+              mutate(., LION.0000095 = case_when(LION.0000095 == "x" ~ "13v30",
+                                                 LION.0000095 != "x" ~ NA)) %>%   
+              mutate(., LION.0000465 = case_when(LION.0000465 == "x" ~ "13v30",
+                                                 LION.0000465 != "x" ~ NA)) %>%    
+              mutate(., LION.0012010 = case_when(LION.0012010 == "x" ~ "13v30",
+                                                 LION.0012010 != "x" ~ NA)) %>%
+              mutate(., LION.0012080 = case_when(LION.0012080 == "x" ~ "both",
+                                                 LION.0012080 != "x" ~ NA)) %>%
+              mutate(., LION.0000011 = case_when(LION.0000011 == "x" ~ "13v5",
+                                                 LION.0000011 != "x" ~ NA)) %>%
+              mutate(., LION.0012081 = case_when(LION.0012081 == "x" ~ "13v5",
+                                                 LION.0012081 != "x" ~ NA)),
+            by = "lipid") #Obtain loadings dataframe from list and modify columns. Join with VIP information, a priori pathway information, and enrichment information. For enrichment information, import table with lion terms as columns and lipids as rows. Remove first row, which has lion term names. Remove leading characters from lipids, rename column, and remove white space on both sides of the string. Filter for VIP lipids in module, modified to remove white space. Remove repetitive rows and remove rownames. Assign new rownames using unique lipid names. Select columns if they match with lion terms in LIONtoTerm13v30. Convert rownames back to a column. Repeat process with 13v5 LION terms and join with dataframe based on common LION terms and lipids. Use case_when to pinpoint which LION terms ar related to specific enrichment categories
+head(loadingsPC2.annot) #Confirm changes
+```
+
+```{r}
+write.csv(loadingsPC2.annot, "ASCA/loadings-PC2-annotations.csv", quote = FALSE, row.names = FALSE)
+```
+
+### Component 3
+
+This component shows lipids with higher absolute abundance at 5ºC, but it also explains 0% of the variance. I'll focus my analyses on PCs 1 and 2, since those explain >10% of the variance (same cutoff used with metabolomics data).
+
+```{r}
+plot(lipid.ASCAmodel, effect = 1, component = 3, type = 'effect', 
+     n_limit = 5, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = "black",
+     my_theme = theme_classic(),
+     x_label = "Temperature (ºC)")
+ggsave("ASCA/figures/effect-plot-PC3.pdf", height = 11, width = 8.5)
+```
+
+```{r}
+plot(lipid.ASCAmodel, effect = 1, component = 3, type = 'prediction', 
+     n_limit = 10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "Temperature (ºC)")
+ggsave("ASCA/figures/prediction-plot-PC3.pdf", height = 11, width = 8.5)
+```
+
+```{r}
+loadingsPC3 <- get_loadings(lipid.ASCAmodel, component = 3, effect = 1, n_limit = 10) #Get loadings for the top 10 positively and negatively loaded compounds on the PC
+head(loadingsPC3)
+```
+
+```{r}
+loadingsPC3.annot <- loadingsPC3[[1]] %>%
+  rename(lipid = "covars") %>%
+  mutate(lipid = str_trim(lipid, "both")) %>%
+  dplyr::select(PC:lipid) %>%
+  left_join(., 
+            y = rbind(t.test_13v30 %>%
+                        dplyr::select(lipid, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
+                        mutate(lipid = str_trim(lipid, "both"),
+                               comparison = "13v30"),
+                      t.test_13v5 %>%
+                        dplyr::select(lipid, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
+                        mutate(lipid = str_trim(lipid, "both"),
+                               comparison = "3v5"),
+                      t.test_30v5 %>%
+                        dplyr::select(lipid, statistic, p.adj) %>%
+                        filter(., p.adj < 0.05) %>%
+                        mutate(lipid = str_trim(lipid, "both"),
+                               comparison = "30v5")) %>%
+              arrange(lipid), 
+            by = "lipid") %>%
+  left_join(.,
+            y = rbind(significantVIP_13v30_annot, significantVIP_13v5_annot) %>%
+              dplyr::select(lipid, class, targetClass, saturation) %>%
+              mutate(lipid = str_trim(lipid, "both")) %>%
+              unique(.),
+            by = "lipid") %>%
+  left_join(x = .,
+            y = read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v30/LION-lipid-associations-13v30.csv", strip.white = TRUE) %>%
+              slice(-1) %>%
+              mutate(LION.term = substr(x = LION.term, start = 9, stop = 1000000L)) %>%
+              rename(lipid = LION.term) %>%
+              mutate(lipid = str_trim(lipid, side = "both")) %>%
+              filter(., lipid %in% (loadingsPC3[[1]]$covars %>%
+                                      str_trim(side = "both"))) %>%
+              unique(.) %>%
+              remove_rownames() %>%
+              column_to_rownames(., var = "lipid") %>%
+              dplyr::select_if(colnames(.) %in% LIONtoTerm13v30$LION.term) %>%
+              rownames_to_column(., var = "lipid") %>%
+              left_join(x = .,
+                        y = read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v5/LION-lipid-associations-13v5.csv", strip.white = TRUE) %>%
+                          slice(-1) %>%
+                          mutate(LION.term = substr(x = LION.term, start = 9, stop = 1000000L)) %>%
+                          rename(lipid = LION.term) %>%
+                          mutate(lipid = str_trim(lipid, side = "both")) %>%
+                          filter(., lipid %in% (loadingsPC3[[1]]$covars %>%
+                                                  str_trim(side = "both"))) %>%
+                          unique(.) %>%
+                          remove_rownames() %>%
+                          column_to_rownames(., var = "lipid") %>%
+                          dplyr::select_if(colnames(.) %in% LIONtoTerm13v5$LION.term) %>%
+                          rownames_to_column(., var = "lipid"),
+                        by = c("lipid", "LION.0000003", "LION.0012080")) %>%
+              mutate(., LION.0000003 = case_when(LION.0000003 == "x" ~ "both",
+                                                 LION.0000003 != "x" ~ NA)) %>%
+              mutate(., LION.0000010 = case_when(LION.0000010 == "x" ~ "13v30",
+                                                 LION.0000010 != "x" ~ NA)) %>% 
+              mutate(., LION.0000031 = case_when(LION.0000031 == "x" ~ "13v30",
+                                                 LION.0000031 != "x" ~ NA)) %>% 
+              mutate(., LION.0000095 = case_when(LION.0000095 == "x" ~ "13v30",
+                                                 LION.0000095 != "x" ~ NA)) %>%   
+              mutate(., LION.0000465 = case_when(LION.0000465 == "x" ~ "13v30",
+                                                 LION.0000465 != "x" ~ NA)) %>%    
+              mutate(., LION.0012010 = case_when(LION.0012010 == "x" ~ "13v30",
+                                                 LION.0012010 != "x" ~ NA)) %>%
+              mutate(., LION.0012080 = case_when(LION.0012080 == "x" ~ "both",
+                                                 LION.0012080 != "x" ~ NA)) %>%
+              mutate(., LION.0000011 = case_when(LION.0000011 == "x" ~ "13v5",
+                                                 LION.0000011 != "x" ~ NA)) %>%
+              mutate(., LION.0012081 = case_when(LION.0012081 == "x" ~ "13v5",
+                                                 LION.0012081 != "x" ~ NA)),
+            by = "lipid") #Obtain loadings dataframe from list and modify columns. Join with VIP information, a priori pathway information, and enrichment information. For enrichment information, import table with lion terms as columns and lipids as rows. Remove first row, which has lion term names. Remove leading characters from lipids, rename column, and remove white space on both sides of the string. Filter for VIP lipids in module, modified to remove white space. Remove repetitive rows and remove rownames. Assign new rownames using unique lipid names. Select columns if they match with lion terms in LIONtoTerm13v30. Convert rownames back to a column. Repeat process with 13v5 LION terms and join with dataframe based on common LION terms and lipids. Use case_when to pinpoint which LION terms ar related to specific enrichment categories
+head(loadingsPC3.annot) #Confirm changes
+```
+
+```{r}
+write.csv(loadingsPC3.annot, "ASCA/loadings-PC3-annotations.csv", quote = FALSE, row.names = FALSE)
+```
 
 ## Final plot
 
 ```{r}
-effect.PC1 <- plot(lipid.ASCAmodel, effect = 1, component = 1, type = 'score', 
-                   n_limit = 5, 
-                   ribbon = TRUE,
-                   x_angle = 0, x_h_just= 0.5,
-                   flip_axis = TRUE,
-                   palette = rev(plotColors),
-                   my_theme = theme_classic(),
-                   x_label = "Temperature (ºC)")
-
-effect.PC1 +
-  scale_x_discrete(labels = c("5", "13", "30")) +
-  theme_classic() + theme(legend.position = "none")
-
-# ggsave("ASCA/figures/effect-plot-PC1.pdf", height = 11, width = 8.5)
+plot(lipid.ASCAmodel, effect = 1, component = c(1,2), type = 'effect', 
+     n_limit = 5, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = "black",
+     my_theme = theme_classic(),
+     x_label = "Temperature (ºC)")
+ggsave("ASCA/figures/effect-plot-all-components.pdf", height = 11, width = 8.5)
 ```
-
-
