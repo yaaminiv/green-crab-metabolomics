@@ -260,3 +260,10 @@ WARN  [2025-10-03 09:18:05] Showing 10 of 152 variables. Adjust the number with 
 WARN  [2025-10-03 09:18:05] Showing 10 of 152 variables. Adjust the number with `n_limit`
 WARN  [2025-10-03 09:18:05] Showing 10 of 152 variables. Adjust the number with `n_limit`
 WARN  [2025-10-03 09:18:05] Showing 10 of 152 variables. Adjust the number with `n_limit`
+INFO  [2025-10-03 09:33:59] Loadings for effect number 1 and principal component(s) 1
+INFO  [2025-10-03 10:01:41] Loadings for effect number 1 and principal component(s) 2
+INFO  [2025-10-03 10:02:28] Loadings for effect number 1 and principal component(s) 3
+INFO  [2025-10-03 10:02:52] Loadings for effect number 1 and principal component(s) 4
+INFO  [2025-10-03 10:03:40] Loadings for effect number 1 and principal component(s) 5
+INFO  [2025-10-03 10:04:12] Effect plot. Selected effect (nr 1): `day+day:treatment+treatment`. Component: 5.
+WARN  [2025-10-03 10:04:12] Showing 10 of 152 variables. Adjust the number with `n_limit`

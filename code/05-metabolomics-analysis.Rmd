@@ -4308,13 +4308,13 @@ head(metabolomics.ASCA) #Confirm changes
 
 ```{r}
 metabolomics.ASCAmodel <- ALASCA(df = metabolomics.ASCA,
-                            formula = value ~ day*treatment + (1|crab.ID),
-                            n_validation_runs = 100,
-                            validate = TRUE,
-                            reduce_dimensions = TRUE) #Run ASCA to identify temperature effects on compound abundance
+                                 formula = value ~ day*treatment + (1|crab.ID),
+                                 n_validation_runs = 100,
+                                 validate = TRUE,
+                                 reduce_dimensions = TRUE) #Run ASCA to identify temperature effects on compound abundance
 ```
 
-## Visualize ASCA
+## Interpret ASCA
 
 ```{r}
 # pdf("ASCA/figures/scree-plot")
@@ -4353,6 +4353,60 @@ plot(metabolomics.ASCAmodel, effect = 1, component = 1, type = 'prediction',
 ggsave("ASCA/figures/prediction-plot-PC1.pdf", height = 11, width = 8.5)
 ```
 
+```{r}
+loadingsPC1 <- get_loadings(metabolomics.ASCAmodel, component = 1, effect = 1, n_limit = 10) #Get loadings for the top 10 positively and negatively loaded compounds on the PC
+head(loadingsPC1)
+```
+
+```{r}
+loadingsPC1.annot <- loadingsPC1[[1]] %>%
+  rename(metabolite = "covars") %>%
+  mutate(metabolite = str_trim(metabolite, "both")) %>%
+  dplyr::select(PC:metabolite) %>%
+  left_join(., 
+            y = rbind(t.test_30v5_day3 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "30v5_day3"),
+                      t.test_13v30_day22 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "13v30_day22"),
+                      t.test_13v5_day22 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "13v5_day22"),
+                      t.test_30v5_day22 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "30v5_day22"),
+                      t.test_5_day3v22 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "5_day3v22")) %>%
+              arrange(metabolite), 
+            by = "metabolite") %>%
+  mutate(., respirationMetabolites = case_when(metabolite %in% respirationMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                               metabolite %in% respirationMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., calciumSignalingMetabolites = case_when(metabolite %in% calciumSignalingMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                    metabolite %in% calciumSignalingMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., coldProtectionMetabolites = case_when(metabolite %in% coldProtectionMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                  metabolite %in% coldProtectionMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., valineBiosynthesis = case_when(metabolite %in% valineBiosynthesis %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                           metabolite %in% valineBiosynthesis %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., arginineBiosynthesis = case_when(metabolite %in% arginineBiosynthesis %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                             metabolite %in% arginineBiosynthesis %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., glutathioneMetabolism = case_when(metabolite %in% glutathioneMetabolism %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                              metabolite %in% glutathioneMetabolism %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., alanineMetabolism = case_when(metabolite %in% alanineMetabolism %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                          metabolite %in% alanineMetabolism %>% str_trim(., side = "both") == FALSE ~ "N")) #Obtain loadings dataframe from list and modify columns. Join with VIP information, a priori pathway information, and enrichment information.
+head(loadingsPC1.annot) #Confirm changes
+```
+
+```{r}
+write.csv(loadingsPC1.annot, "ASCA/loadings-PC1-annotations.csv", quote = FALSE, row.names = FALSE)
+```
+
 ### Component 2
 
 This component highlights compounds in 5ºC that have similar abundance to 13ºC in day 4, but different in day 22.
@@ -4381,6 +4435,60 @@ plot(metabolomics.ASCAmodel, effect = 1, component = 2, type = 'prediction',
      x_label = "Day",
      group_label = "Temperature (ºC)")
 ggsave("ASCA/figures/prediction-plot-PC2.pdf", height = 11, width = 8.5)
+```
+
+```{r}
+loadingsPC2 <- get_loadings(metabolomics.ASCAmodel, component = 2, effect = 1, n_limit = 10) #Get loadings for the top 10 positively and negatively loaded compounds on the PC
+head(loadingsPC2)
+```
+
+```{r}
+loadingsPC2.annot <- loadingsPC2[[1]] %>%
+  rename(metabolite = "covars") %>%
+  mutate(metabolite = str_trim(metabolite, "both")) %>%
+  dplyr::select(PC:metabolite) %>%
+  left_join(., 
+            y = rbind(t.test_30v5_day3 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "30v5_day3"),
+                      t.test_13v30_day22 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "13v30_day22"),
+                      t.test_13v5_day22 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "13v5_day22"),
+                      t.test_30v5_day22 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "30v5_day22"),
+                      t.test_5_day3v22 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "5_day3v22")) %>%
+              arrange(metabolite), 
+            by = "metabolite") %>%
+  mutate(., respirationMetabolites = case_when(metabolite %in% respirationMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                               metabolite %in% respirationMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., calciumSignalingMetabolites = case_when(metabolite %in% calciumSignalingMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                    metabolite %in% calciumSignalingMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., coldProtectionMetabolites = case_when(metabolite %in% coldProtectionMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                  metabolite %in% coldProtectionMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., valineBiosynthesis = case_when(metabolite %in% valineBiosynthesis %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                           metabolite %in% valineBiosynthesis %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., arginineBiosynthesis = case_when(metabolite %in% arginineBiosynthesis %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                             metabolite %in% arginineBiosynthesis %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., glutathioneMetabolism = case_when(metabolite %in% glutathioneMetabolism %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                              metabolite %in% glutathioneMetabolism %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., alanineMetabolism = case_when(metabolite %in% alanineMetabolism %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                          metabolite %in% alanineMetabolism %>% str_trim(., side = "both") == FALSE ~ "N")) #Obtain loadings dataframe from list and modify columns. Join with VIP information, a priori pathway information, and enrichment information.
+head(loadingsPC2.annot) #Confirm changes
+```
+
+```{r}
+write.csv(loadingsPC2.annot, "ASCA/loadings-PC2-annotations.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ### Component 3
@@ -4413,6 +4521,60 @@ plot(metabolomics.ASCAmodel, effect = 1, component = 3, type = 'prediction',
 ggsave("ASCA/figures/prediction-plot-PC3.pdf", height = 11, width = 8.5)
 ```
 
+```{r}
+loadingsPC3 <- get_loadings(metabolomics.ASCAmodel, component = 3, effect = 1, n_limit = 10) #Get loadings for the top 10 positively and negatively loaded compounds on the PC
+head(loadingsPC3)
+```
+
+```{r}
+loadingsPC3.annot <- loadingsPC3[[1]] %>%
+  rename(metabolite = "covars") %>%
+  mutate(metabolite = str_trim(metabolite, "both")) %>%
+  dplyr::select(PC:metabolite) %>%
+  left_join(., 
+            y = rbind(t.test_30v5_day3 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "30v5_day3"),
+                      t.test_13v30_day22 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "13v30_day22"),
+                      t.test_13v5_day22 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "13v5_day22"),
+                      t.test_30v5_day22 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "30v5_day22"),
+                      t.test_5_day3v22 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "5_day3v22")) %>%
+              arrange(metabolite), 
+            by = "metabolite") %>%
+  mutate(., respirationMetabolites = case_when(metabolite %in% respirationMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                               metabolite %in% respirationMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., calciumSignalingMetabolites = case_when(metabolite %in% calciumSignalingMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                    metabolite %in% calciumSignalingMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., coldProtectionMetabolites = case_when(metabolite %in% coldProtectionMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                  metabolite %in% coldProtectionMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., valineBiosynthesis = case_when(metabolite %in% valineBiosynthesis %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                           metabolite %in% valineBiosynthesis %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., arginineBiosynthesis = case_when(metabolite %in% arginineBiosynthesis %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                             metabolite %in% arginineBiosynthesis %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., glutathioneMetabolism = case_when(metabolite %in% glutathioneMetabolism %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                              metabolite %in% glutathioneMetabolism %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., alanineMetabolism = case_when(metabolite %in% alanineMetabolism %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                          metabolite %in% alanineMetabolism %>% str_trim(., side = "both") == FALSE ~ "N")) #Obtain loadings dataframe from list and modify columns. Join with VIP information, a priori pathway information, and enrichment information.
+head(loadingsPC3.annot) #Confirm changes
+```
+
+```{r}
+write.csv(loadingsPC3.annot, "ASCA/loadings-PC3-annotations.csv", quote = FALSE, row.names = FALSE)
+```
+
 ### Component 4
 
 Absolute change in abundance over time in 30ºC is more extreme than at 5ºC.
@@ -4441,6 +4603,60 @@ plot(metabolomics.ASCAmodel, effect = 1, component = 4, type = 'prediction',
      x_label = "Day",
      group_label = "Temperature (ºC)")
 ggsave("ASCA/figures/prediction-plot-PC4.pdf", height = 11, width = 8.5)
+```
+
+```{r}
+loadingsPC4 <- get_loadings(metabolomics.ASCAmodel, component = 4, effect = 1, n_limit = 10) #Get loadings for the top 10 positively and negatively loaded compounds on the PC
+head(loadingsPC4)
+```
+
+```{r}
+loadingsPC4.annot <- loadingsPC4[[1]] %>%
+  rename(metabolite = "covars") %>%
+  mutate(metabolite = str_trim(metabolite, "both")) %>%
+  dplyr::select(PC:metabolite) %>%
+  left_join(., 
+            y = rbind(t.test_30v5_day3 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "30v5_day3"),
+                      t.test_13v30_day22 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "13v30_day22"),
+                      t.test_13v5_day22 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "13v5_day22"),
+                      t.test_30v5_day22 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "30v5_day22"),
+                      t.test_5_day3v22 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "5_day3v22")) %>%
+              arrange(metabolite), 
+            by = "metabolite") %>%
+  mutate(., respirationMetabolites = case_when(metabolite %in% respirationMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                               metabolite %in% respirationMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., calciumSignalingMetabolites = case_when(metabolite %in% calciumSignalingMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                    metabolite %in% calciumSignalingMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., coldProtectionMetabolites = case_when(metabolite %in% coldProtectionMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                  metabolite %in% coldProtectionMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., valineBiosynthesis = case_when(metabolite %in% valineBiosynthesis %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                           metabolite %in% valineBiosynthesis %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., arginineBiosynthesis = case_when(metabolite %in% arginineBiosynthesis %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                             metabolite %in% arginineBiosynthesis %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., glutathioneMetabolism = case_when(metabolite %in% glutathioneMetabolism %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                              metabolite %in% glutathioneMetabolism %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., alanineMetabolism = case_when(metabolite %in% alanineMetabolism %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                          metabolite %in% alanineMetabolism %>% str_trim(., side = "both") == FALSE ~ "N")) #Obtain loadings dataframe from list and modify columns. Join with VIP information, a priori pathway information, and enrichment information.
+head(loadingsPC4.annot) #Confirm changes
+```
+
+```{r}
+write.csv(loadingsPC4.annot, "ASCA/loadings-PC4-annotations.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ### Component 5
@@ -4474,6 +4690,62 @@ ggsave("ASCA/figures/prediction-plot-PC5.pdf", height = 11, width = 8.5)
 ```
 
 Component 5 explains < 10% of the variance in this dataset. Additionally, the top 10 compounds strongly loaded onto PC5 have errors that cross 0. I think this makes the PC5 results difficult to interpret. I will go ahead and say that PCs that explain > 10% variance are my cutoff for analysis.
+
+It's still good to have the list of loadings, so I'll save those anyways.
+
+```{r}
+loadingsPC5 <- get_loadings(metabolomics.ASCAmodel, component = 5, effect = 1, n_limit = 10) #Get loadings for the top 10 positively and negatively loaded compounds on the PC
+head(loadingsPC5)
+```
+
+```{r}
+loadingsPC5.annot <- loadingsPC5[[1]] %>%
+  rename(metabolite = "covars") %>%
+  mutate(metabolite = str_trim(metabolite, "both")) %>%
+  dplyr::select(PC:metabolite) %>%
+  left_join(., 
+            y = rbind(t.test_30v5_day3 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "30v5_day3"),
+                      t.test_13v30_day22 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "13v30_day22"),
+                      t.test_13v5_day22 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "13v5_day22"),
+                      t.test_30v5_day22 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "30v5_day22"),
+                      t.test_5_day3v22 %>%
+                        dplyr::select(metabolite, statistic, p.adj) %>%
+                        mutate(metabolite = str_trim(metabolite, "both"),
+                               comparison = "5_day3v22")) %>%
+              arrange(metabolite), 
+            by = "metabolite") %>%
+  mutate(., respirationMetabolites = case_when(metabolite %in% respirationMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                               metabolite %in% respirationMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., calciumSignalingMetabolites = case_when(metabolite %in% calciumSignalingMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                    metabolite %in% calciumSignalingMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., coldProtectionMetabolites = case_when(metabolite %in% coldProtectionMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                  metabolite %in% coldProtectionMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., valineBiosynthesis = case_when(metabolite %in% valineBiosynthesis %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                           metabolite %in% valineBiosynthesis %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., arginineBiosynthesis = case_when(metabolite %in% arginineBiosynthesis %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                             metabolite %in% arginineBiosynthesis %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., glutathioneMetabolism = case_when(metabolite %in% glutathioneMetabolism %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                              metabolite %in% glutathioneMetabolism %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+  mutate(., alanineMetabolism = case_when(metabolite %in% alanineMetabolism %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                          metabolite %in% alanineMetabolism %>% str_trim(., side = "both") == FALSE ~ "N")) #Obtain loadings dataframe from list and modify columns. Join with VIP information, a priori pathway information, and enrichment information.
+head(loadingsPC5.annot) #Confirm changes
+```
+
+```{r}
+write.csv(loadingsPC5.annot, "ASCA/loadings-PC5-annotations.csv", quote = FALSE, row.names = FALSE)
+```
 
 ### Final figure
 
