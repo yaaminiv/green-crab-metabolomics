@@ -4324,26 +4324,13 @@ plot(metabolomics.ASCAmodel, component = 1:6, type = "scree") #Scree plot of var
 
 I'm now going to investigate the trends of the first five components, since those were the ones that explained any variance.
 
-```{r}
-plot(metabolomics.ASCAmodel, effect = 1, component = seq(1,5), type = 'effect', 
-     n_limit = 10, 
-     ribbon = TRUE,
-     x_angle = 0, x_h_just= 0.5,
-     flip_axis = TRUE,
-     palette = rev(plotColors),
-     my_theme = theme_classic(),
-     x_label = "Day",
-     group_label = "Temperature (ºC)")
-ggsave("ASCA/figures/effect-plot-all-components.pdf", height = 11, width = 8.5)
-```
-
 ### Component 1
 
 This component shows metabolites with consistently higher or lower abundance than 5ºC or 13ºC that change abundance (generally increasing) at 30ºC over time.
 
 ```{r}
 plot(metabolomics.ASCAmodel, effect = 1, component = 1, type = 'effect', 
-     n_limit = 10, 
+     n_limit = 5, 
      ribbon = TRUE,
      x_angle = 0, x_h_just= 0.5,
      flip_axis = TRUE,
@@ -4365,9 +4352,14 @@ plot(metabolomics.ASCAmodel, effect = 1, component = 1, type = 'prediction',
      group_label = "Temperature (ºC)")
 ggsave("ASCA/figures/prediction-plot-PC1.pdf", height = 11, width = 8.5)
 ```
+
+### Component 2
+
+This component highlights compounds in 5ºC that have similar abundance to 13ºC in day 4, but different in day 22.
+
 ```{r}
 plot(metabolomics.ASCAmodel, effect = 1, component = 2, type = 'effect', 
-     n_limit = 10, 
+     n_limit = 5, 
      ribbon = TRUE,
      x_angle = 0, x_h_just= 0.5,
      flip_axis = TRUE,
@@ -4391,12 +4383,109 @@ plot(metabolomics.ASCAmodel, effect = 1, component = 2, type = 'prediction',
 ggsave("ASCA/figures/prediction-plot-PC2.pdf", height = 11, width = 8.5)
 ```
 
-### Component 2
-
 ### Component 3
+
+Absolute abundance in 5ºC changes over time but 30ºC remains stable
+
+```{r}
+plot(metabolomics.ASCAmodel, effect = 1, component = 3, type = 'effect', 
+     n_limit = 5, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "Day",
+     group_label = "Temperature (ºC)")
+ggsave("ASCA/figures/effect-plot-PC3.pdf", height = 11, width = 8.5)
+```
+
+```{r}
+plot(metabolomics.ASCAmodel, effect = 1, component = 3, type = 'prediction', 
+     n_limit = 10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "Day",
+     group_label = "Temperature (ºC)")
+ggsave("ASCA/figures/prediction-plot-PC3.pdf", height = 11, width = 8.5)
+```
 
 ### Component 4
 
+Absolute change in abundance over time in 30ºC is more extreme than at 5ºC.
+
+```{r}
+plot(metabolomics.ASCAmodel, effect = 1, component = 4, type = 'effect', 
+     n_limit = 5, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "Day",
+     group_label = "Temperature (ºC)")
+ggsave("ASCA/figures/effect-plot-PC4.pdf", height = 11, width = 8.5)
+```
+
+```{r}
+plot(metabolomics.ASCAmodel, effect = 1, component = 4, type = 'prediction', 
+     n_limit = 10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "Day",
+     group_label = "Temperature (ºC)")
+ggsave("ASCA/figures/prediction-plot-PC4.pdf", height = 11, width = 8.5)
+```
+
 ### Component 5
 
+Absolute trends at 13ºC vary, absolute trends at 5ºC and 30ºC are similar.
 
+```{r}
+plot(metabolomics.ASCAmodel, effect = 1, component = 5, type = 'effect', 
+     n_limit = 5, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "Day",
+     group_label = "Temperature (ºC)")
+ggsave("ASCA/figures/effect-plot-PC5.pdf", height = 11, width = 8.5)
+```
+
+```{r}
+plot(metabolomics.ASCAmodel, effect = 1, component = 5, type = 'prediction', 
+     n_limit = 10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "Day",
+     group_label = "Temperature (ºC)")
+ggsave("ASCA/figures/prediction-plot-PC5.pdf", height = 11, width = 8.5)
+```
+
+Component 5 explains < 10% of the variance in this dataset. Additionally, the top 10 compounds strongly loaded onto PC5 have errors that cross 0. I think this makes the PC5 results difficult to interpret. I will go ahead and say that PCs that explain > 10% variance are my cutoff for analysis.
+
+### Final figure
+
+```{r}
+plot(metabolomics.ASCAmodel, effect = 1, component = seq(1,4), type = 'effect', 
+     n_limit = 5, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "Day",
+     group_label = "Temperature (ºC)")
+ggsave("ASCA/figures/effect-plot-all-components.pdf", height = 11, width = 8.5)
+```
