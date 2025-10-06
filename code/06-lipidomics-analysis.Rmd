@@ -3716,7 +3716,7 @@ lipid.ASCAmodel <- ALASCA(df = lipid.ASCA,
 ## Interpret ASCA
 
 ```{r}
-# pdf("ASCA/figures/scree-plot")
+# pdf("ASCA/figures/scree-plot.pdf")
 plot(lipid.ASCAmodel, component = 1:3, type = "scree") #Scree plot of variance explained by each PC. There were 3 components identified, with the third component explaining very little variance
 # dev.off()
 ```

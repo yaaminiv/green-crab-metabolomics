@@ -4317,7 +4317,7 @@ metabolomics.ASCAmodel <- ALASCA(df = metabolomics.ASCA,
 ## Interpret ASCA
 
 ```{r}
-# pdf("ASCA/figures/scree-plot")
+# pdf("ASCA/figures/scree-plot.pdf")
 plot(metabolomics.ASCAmodel, component = 1:6, type = "scree") #Scree plot of variance explained by each PC. There were 6 components identified, with the sixth component explaining very little variance
 # dev.off()
 ```
