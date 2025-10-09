@@ -2989,13 +2989,13 @@ The analysis says to use 4 components. However, my variable of interest is tempe
 # chunk takes about 2 min to run
 set.seed(123) # for reproducibility
 test.keep.ML <- list(metabolomics = c(5:9, seq(10, 100, 5)),
-                   lipidomics = c(5:9, seq(10, 100, 5)))
+                     lipidomics = c(5:9, seq(10, 100, 5)))
 
 tune.diablo.ML <- tune.block.splsda(X = dataML, Y = outcomeML, ncomp = 3, 
-                              test.keepX = test.keep.ML, design = designML,
-                              validation = 'Mfold', folds = 10, nrepeat = 1, 
-                              BPPARAM = BiocParallel::SnowParam(workers = 2),
-                              dist = "mahalanobis.dist")
+                                    test.keepX = test.keep.ML, design = designML,
+                                    validation = 'Mfold', folds = 10, nrepeat = 1, 
+                                    BPPARAM = BiocParallel::SnowParam(workers = 2),
+                                    dist = "mahalanobis.dist")
 
 list.keep.ML <- tune.diablo.ML$choice.keepX
 ```
@@ -3064,7 +3064,7 @@ head(X.VIP) #Confirm changes
 
 ```{r}
 lipidVIP <- rbind(significantVIP_13v30_annot,
-  significantVIP_13v5_annot) %>%
+                  significantVIP_13v5_annot) %>%
   dplyr::select(lipid) %>%
   unique(.) #Save list of unique VIP lipids
 ```
@@ -3083,9 +3083,9 @@ dataML.VIP <- list("Metabolites" = X.VIP, "Lipids" = Y.VIP) #Store metabolite an
 
 ```{r}
 diablo.ML.VIP <- block.plsda(X = dataML.VIP, 
-                              Y = outcomeML, 
-                              ncomp = 5, 
-                              design = designML) #Run a DIABLO analysis to identify the number of components that should be included
+                             Y = outcomeML, 
+                             ncomp = 5, 
+                             design = designML) #Run a DIABLO analysis to identify the number of components that should be included
 
 perf.diablo.ML.VIP = perf(diablo.ML.VIP, validation = 'Mfold', folds = 10, nrepeat = 10)
 
@@ -3105,13 +3105,13 @@ The analysis says to use 4 components. However, my variable of interest is tempe
 # chunk takes about 2 min to run
 set.seed(123) # for reproducibility
 test.keep.ML <- list(metabolomics = c(5:9, seq(10, 100, 5)),
-                   lipidomics = c(5:9, seq(10, 100, 5)))
+                     lipidomics = c(5:9, seq(10, 100, 5)))
 
 tune.diablo.ML.VIP <- tune.block.splsda(X = dataML, Y = outcomeML, ncomp = 3, 
-                              test.keepX = test.keep.ML, design = designML,
-                              validation = 'Mfold', folds = 10, nrepeat = 1, 
-                              BPPARAM = BiocParallel::SnowParam(workers = 2),
-                              dist = "mahalanobis.dist")
+                                        test.keepX = test.keep.ML, design = designML,
+                                        validation = 'Mfold', folds = 10, nrepeat = 1, 
+                                        BPPARAM = BiocParallel::SnowParam(workers = 2),
+                                        dist = "mahalanobis.dist")
 
 list.keep.ML.VIP <- tune.diablo.ML.VIP$choice.keepX
 ```
@@ -3120,9 +3120,9 @@ list.keep.ML.VIP <- tune.diablo.ML.VIP$choice.keepX
 
 ```{r}
 diablo.ML.VIP <- block.splsda(X = dataML.VIP, Y = outcomeML, 
-                               ncomp = 3,
-                               keepX = list.keep.ML.VIP,
-                               design = designML) #Run DIABLO with all variables tested above
+                              ncomp = 3,
+                              keepX = list.keep.ML.VIP,
+                              design = designML) #Run DIABLO with all variables tested above
 diablo.ML.VIP$design #Outcomes now included in the design so that the covariance between each block’s component and the outcome is maximised
 ```
 
@@ -3161,5 +3161,140 @@ circosPlot(diablo.ML.VIP, cutoff = 0.70, line = TRUE, showIntraLinks = TRUE,
 dev.off()
 ```
 
+##### Annotate output
+
+```{r}
+#Create vectors of correlated molecules
+diablo.ML.VIP.group1 <- c("myo-inositol", "PE 40:7|PE 18:1_22:6", "PC 18:2_20:5", "PC 33:2 Isomer A", "DG 38:6", "PC 32:1 Isomer A", "PC 40:8 Isomer A", "PC 39:6", "PE 40:6|PE 18:1_22:5", "SM 37:4;3O", "PC 44:12", "PC 40:7 Isomer A") #myo-inositol and correlated lipids
+diablo.ML.VIP.group2 <- c("hydroquinone", "PE 40:7|PE 18:1_22:6", "PC 33:2 Isomer A", "PE 40:6IPE 18:1_22:5") #hydroquinone and correlated lipids
+diablo.ML.VIP.group3 <- c("threonine", "PC 38:3 Isomer A", "Cer d37:1", "PC O-34:2", "Cer d36:1 Isomer B", "N-(eicosanoyl)sphingosine", "Cer d38:1", "PC 38:6 Isomer C", "Cer d38:2", "PC 36:3 Isomer A", "Cer d39:1", "Cer d40:1") #threonine and correlated lipids
+```
+
+
+
+
+```{r}
+diablo.ML.VIP.metabAnnot <- rbind(
+  rawMetabolomicsData %>%
+    filter(., BinBase.name %in% diablo.ML.VIP.group1) %>%
+    dplyr::rename(metabolite = BinBase.name) %>%
+    dplyr::select(., metabolite) %>%
+    column_to_rownames(var = "metabolite") %>%
+    mutate_all(~log(.)) %>%
+    rownames_to_column(var = "metabolite") %>%
+    mutate(., group = 1) %>%
+    mutate(., respirationMetabolites = case_when(metabolite %in% respirationMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                 metabolite %in% respirationMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+    mutate(., calciumSignalingMetabolites = case_when(metabolite %in% calciumSignalingMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                      metabolite %in% calciumSignalingMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+    mutate(., coldProtectionMetabolites = case_when(metabolite %in% coldProtectionMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                    metabolite %in% coldProtectionMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+    left_join(x = .,
+              y = read.delim("../05-metabolomics-analysis/metaboanalyst/all-module-VIP.txt", sep = "\t") %>%
+                dplyr::select(metabolite, comparison) %>%
+                mutate(metabolite = str_trim(metabolite, side = "both")) %>%
+                pivot_wider(., id_cols = metabolite, names_from = "comparison", names_prefix = "VIP", values_from = "comparison") %>%
+                mutate(., VIP13v30_day22 = case_when(is.na(VIP13v30_day22) == FALSE ~ "Y",
+                                                     is.na(VIP13v30_day22) == TRUE ~ "N")) %>%
+                mutate(., VIP13v5_day22 = case_when(is.na(VIP13v5_day22) == FALSE ~ "Y",
+                                                    is.na(VIP13v5_day22) == TRUE ~ "N")) %>%
+                mutate(., VIP5_day3v22 = case_when(is.na(VIP5_day3v22) == FALSE ~ "Y",
+                                                   is.na(VIP5_day3v22) == TRUE ~ "N")),
+              by = "metabolite") %>%
+    mutate(., valineBiosynthesis = case_when(metabolite %in% valineBiosynthesis %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                             metabolite %in% valineBiosynthesis %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+    mutate(., arginineBiosynthesis = case_when(metabolite %in% arginineBiosynthesis %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                               metabolite %in% arginineBiosynthesis %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+    mutate(., glutathioneMetabolism = case_when(metabolite %in% glutathioneMetabolism %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                metabolite %in% glutathioneMetabolism %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+    mutate(., alanineMetabolism = case_when(metabolite %in% alanineMetabolism %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                            metabolite %in% alanineMetabolism %>% str_trim(., side = "both") == FALSE ~ "N")),
+  rawMetabolomicsData %>%
+    filter(., BinBase.name %in% diablo.ML.VIP.group2) %>%
+    dplyr::rename(metabolite = BinBase.name) %>%
+    dplyr::select(., metabolite) %>%
+    column_to_rownames(var = "metabolite") %>%
+    mutate_all(~log(.)) %>%
+    rownames_to_column(var = "metabolite") %>%
+    mutate(., group = 2) %>%
+    mutate(., respirationMetabolites = case_when(metabolite %in% respirationMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                 metabolite %in% respirationMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+    mutate(., calciumSignalingMetabolites = case_when(metabolite %in% calciumSignalingMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                      metabolite %in% calciumSignalingMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+    mutate(., coldProtectionMetabolites = case_when(metabolite %in% coldProtectionMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                    metabolite %in% coldProtectionMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+    left_join(x = .,
+              y = read.delim("../05-metabolomics-analysis/metaboanalyst/all-module-VIP.txt", sep = "\t") %>%
+                dplyr::select(metabolite, comparison) %>%
+                mutate(metabolite = str_trim(metabolite, side = "both")) %>%
+                pivot_wider(., id_cols = metabolite, names_from = "comparison", names_prefix = "VIP", values_from = "comparison") %>%
+                mutate(., VIP13v30_day22 = case_when(is.na(VIP13v30_day22) == FALSE ~ "Y",
+                                                     is.na(VIP13v30_day22) == TRUE ~ "N")) %>%
+                mutate(., VIP13v5_day22 = case_when(is.na(VIP13v5_day22) == FALSE ~ "Y",
+                                                    is.na(VIP13v5_day22) == TRUE ~ "N")) %>%
+                mutate(., VIP5_day3v22 = case_when(is.na(VIP5_day3v22) == FALSE ~ "Y",
+                                                   is.na(VIP5_day3v22) == TRUE ~ "N")),
+              by = "metabolite") %>%
+    mutate(., valineBiosynthesis = case_when(metabolite %in% valineBiosynthesis %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                             metabolite %in% valineBiosynthesis %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+    mutate(., arginineBiosynthesis = case_when(metabolite %in% arginineBiosynthesis %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                               metabolite %in% arginineBiosynthesis %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+    mutate(., glutathioneMetabolism = case_when(metabolite %in% glutathioneMetabolism %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                metabolite %in% glutathioneMetabolism %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+    mutate(., alanineMetabolism = case_when(metabolite %in% alanineMetabolism %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                            metabolite %in% alanineMetabolism %>% str_trim(., side = "both") == FALSE ~ "N")),
+  rawMetabolomicsData %>%
+    filter(., BinBase.name %in% diablo.ML.VIP.group3) %>%
+    dplyr::rename(metabolite = BinBase.name) %>%
+    dplyr::select(., metabolite) %>%
+    column_to_rownames(var = "metabolite") %>%
+    mutate_all(~log(.)) %>%
+    rownames_to_column(var = "metabolite") %>%
+    mutate(., group = 3) %>%
+    mutate(., respirationMetabolites = case_when(metabolite %in% respirationMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                 metabolite %in% respirationMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+    mutate(., calciumSignalingMetabolites = case_when(metabolite %in% calciumSignalingMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                      metabolite %in% calciumSignalingMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+    mutate(., coldProtectionMetabolites = case_when(metabolite %in% coldProtectionMetabolites %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                    metabolite %in% coldProtectionMetabolites %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+    left_join(x = .,
+              y = read.delim("../05-metabolomics-analysis/metaboanalyst/all-module-VIP.txt", sep = "\t") %>%
+                dplyr::select(metabolite, comparison) %>%
+                mutate(metabolite = str_trim(metabolite, side = "both")) %>%
+                pivot_wider(., id_cols = metabolite, names_from = "comparison", names_prefix = "VIP", values_from = "comparison") %>%
+                mutate(., VIP13v30_day22 = case_when(is.na(VIP13v30_day22) == FALSE ~ "Y",
+                                                     is.na(VIP13v30_day22) == TRUE ~ "N")) %>%
+                mutate(., VIP13v5_day22 = case_when(is.na(VIP13v5_day22) == FALSE ~ "Y",
+                                                    is.na(VIP13v5_day22) == TRUE ~ "N")) %>%
+                mutate(., VIP5_day3v22 = case_when(is.na(VIP5_day3v22) == FALSE ~ "Y",
+                                                   is.na(VIP5_day3v22) == TRUE ~ "N")),
+              by = "metabolite") %>%
+    mutate(., valineBiosynthesis = case_when(metabolite %in% valineBiosynthesis %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                             metabolite %in% valineBiosynthesis %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+    mutate(., arginineBiosynthesis = case_when(metabolite %in% arginineBiosynthesis %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                               metabolite %in% arginineBiosynthesis %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+    mutate(., glutathioneMetabolism = case_when(metabolite %in% glutathioneMetabolism %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                                metabolite %in% glutathioneMetabolism %>% str_trim(., side = "both") == FALSE ~ "N")) %>%
+    mutate(., alanineMetabolism = case_when(metabolite %in% alanineMetabolism %>% str_trim(., side = "both") == TRUE ~ "Y",
+                                            metabolite %in% alanineMetabolism %>% str_trim(., side = "both") == FALSE ~ "N"))
+) #Annotate metabolites with lipid correlations > 0.7
+head(diablo.ML.VIP.metabAnnot) #Confirm dataframe creation
+```
+
+```{r}
+write.csv(diablo.ML.VIP.metabAnnot, "DIABLO/ML-VIP-metabolite-annotations.csv", quote = FALSE, row.names = FALSE) #Save dataframe
+```
+
+
+do separately for each compound type
+
+- VIP comparisons
+- VIP enrichment
+- a priori pathways
+
+- VIP comparisons
+- VIP enrichment
+- class 
+- state
 
 
