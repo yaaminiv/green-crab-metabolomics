@@ -1,0 +1,26 @@
+lipid	group	VIP13v30	VIP13v5	class	targetClass	saturation	LION.0000003	LION.0000010	LION.0000031	LION.0000095	LION.0000465	LION.0012010	LION.0012080	LION.0000011	LION.0012081
+DG 38:6	1	Y	N	DG	Other	Polyunsaturated	NA	NA	NA	NA	NA	13v30	NA	NA	NA
+PC 18:2_20:5	1	Y	N	PC	PC	Polyunsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC 32:1 Isomer A	1	Y	N	PC	PC	Monounsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC 33:2 Isomer A	1	Y	N	PC	PC	Polyunsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC 39:6	1	Y	N	PC	PC	Polyunsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC 40:7 Isomer A	1	Y	N	PC	PC	Polyunsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC 40:8 Isomer A	1	Y	N	PC	PC	Polyunsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC 44:12	1	Y	N	PC	PC	Polyunsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PE 40:6|PE 18:1_22:5	1	Y	N	PE	PE	Polyunsaturated	both	NA	NA	13v30	NA	13v30	both	13v5	13v5
+PE 40:7|PE 18:1_22:6	1	Y	N	PE	PE	Polyunsaturated	both	NA	NA	13v30	NA	13v30	both	13v5	13v5
+SM 37:4;3O	1	Y	N	SM	Other	Polyunsaturated	NA	NA	NA	13v30	NA	13v30	NA	NA	NA
+PC 33:2 Isomer A	2	Y	N	PC	PC	Polyunsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PE 40:6|PE 18:1_22:5	2	Y	N	PE	PE	Polyunsaturated	both	NA	NA	13v30	NA	13v30	both	13v5	13v5
+PE 40:7|PE 18:1_22:6	2	Y	N	PE	PE	Polyunsaturated	both	NA	NA	13v30	NA	13v30	both	13v5	13v5
+Cer d36:1 Isomer B	3	Y	N	Cer	Other	Monounsaturated	NA	NA	NA	NA	NA	NA	both	NA	NA
+Cer d37:1	3	Y	N	Cer	Other	Monounsaturated	NA	NA	NA	NA	NA	NA	both	NA	NA
+Cer d38:1	3	Y	N	Cer	Other	Monounsaturated	NA	NA	NA	NA	NA	NA	both	NA	NA
+Cer d38:2	3	Y	N	Cer	Other	Polyunsaturated	NA	NA	NA	NA	NA	NA	both	NA	NA
+Cer d39:1	3	Y	N	Cer	Other	Monounsaturated	NA	NA	NA	NA	NA	NA	both	NA	NA
+Cer d40:1	3	Y	N	Cer	Other	Monounsaturated	NA	NA	NA	NA	NA	NA	both	NA	NA
+N-(eicosanoyl)sphingosine	3	Y	N	Cer	Other	Monounsaturated	NA	NA	NA	NA	NA	NA	NA	NA	NA
+PC 36:3 Isomer A	3	Y	N	PC	PC	Polyunsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC 38:3 Isomer A	3	N	Y	PC	PC	Polyunsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC 38:6 Isomer C	3	Y	N	PC	PC	Polyunsaturated	both	13v30	NA	13v30	13v30	13v30	both	NA	NA
+PC O-34:2	3	Y	N	PC	PC	Polyunsaturated	both	13v30	13v30	13v30	13v30	13v30	both	NA	NA
