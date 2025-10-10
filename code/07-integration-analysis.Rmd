@@ -38,6 +38,7 @@ getwd()
 # if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap')
 # if ("svglite" %in% rownames(installed.packages()) == 'FALSE') install.packages("svglite")
 # if ("svglite" %in% rownames(installed.packages()) == 'FALSE') install.packages("svglite")
+# if ("patchwork" %in% rownames(installed.packages()) == 'FALSE') install.packages("patchwork")
 require(tidyverse)
 require(plotrix)
 require(vegan)
@@ -52,6 +53,7 @@ require(WGCNA)
 require(dendsort)
 require(ComplexHeatmap)
 require(svglite)
+require(patchwork)
 ```
 
 ```{r}
@@ -3161,6 +3163,136 @@ circosPlot(diablo.ML.VIP, cutoff = 0.70, line = TRUE, showIntraLinks = TRUE,
 dev.off()
 ```
 
+I also want to create plots that show the abundance of each molecule in my three temperature conditions so I can understand how the abundances are correlated.
+
+```{r}
+metabolite_facets <- c("1" = "myo-inositol",
+                       "2" = "hydroquinone",
+                       "3" = "threonine") #Assign labels for facets
+```
+
+```{r}
+diablo.metPlot <- rowwiseAllData %>%
+  dplyr::select_if(colnames(.) %>% str_trim(., side = "both") %in% c(diablo.ML.VIP.group1[1], diablo.ML.VIP.group2[1], diablo.ML.VIP.group3[1]))%>%
+  rownames_to_column(., var = "crab.ID") %>%
+  left_join(x = metabolomicsMetadata,
+            y = .,
+            by = "crab.ID") %>%
+  mutate(., treatment = gsub(pattern = "5", replacement = "05", x = treatment)) %>%
+  pivot_longer(., cols = -c(1:4), names_to = "compound", values_to = "value") %>%
+  mutate(., order = case_when(compound == "myo-inositol" ~ 1,
+                              compound == "hydroquinone" ~ 2,
+                              compound == "threonine" ~ 3)) %>%
+  ggplot(., mapping = aes(x = treatment, y = value, color = treatment)) +
+  facet_wrap(~order, scales = "free_y", ncol = 1, labeller = labeller(order = metabolite_facets)) +
+  ylab("Metabolite Abundance") +
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  scale_fill_manual(name = "Temperature (ºC)", 
+                    values = rev(plotColors),
+                    labels = c("5", "13", "30")) +
+  scale_colour_manual(name = "Temperature (ºC) ", 
+                    values = rev(plotColors),
+                    labels = c("5", "13", "30")) +
+  xlab("") +
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.justification = c(0,1), legend.position = c(0,1), 
+                                        legend.title = element_text(size = 10),
+                                        legend.text = element_text(color = "black", size = 8), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"))
+diablo.metPlot
+```
+
+```{r}
+diabloLipid1 <- rowwiseAllData %>%
+  dplyr::select_if(colnames(.) %>% str_trim(., side = "both") %in% diablo.ML.VIP.group1[-1]) %>%
+  rownames_to_column(., var = "crab.ID") %>%
+  left_join(x = metabolomicsMetadata,
+            y = .,
+            by = "crab.ID") %>%
+  mutate(., treatment = gsub(pattern = "5", replacement = "05", x = treatment)) %>%
+  pivot_longer(., cols = -c(1:4), names_to = "compound", values_to = "value") %>%
+  ggplot(., mapping = aes(x = treatment, y = value, color = treatment)) +
+  facet_wrap(~compound, scales = "free_y") +
+  ylab("") +
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  scale_fill_manual(guide = "none", 
+                    values = rev(plotColors),
+                    labels = c("5", "13", "30")) +
+  scale_colour_manual(guide = "none",
+                    values = rev(plotColors),
+                    labels = c("5", "13", "30")) +
+  xlab("") +
+  ggtitle("Lipids Negatively Correlated with Myo-Inositol") +
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        strip.text.x = element_text(size = 7, color = "black", face="bold"))
+diabloLipid1
+```
+
+```{r}
+diabloLipid2 <- rowwiseAllData %>%
+  dplyr::select_if(colnames(.) %>% str_trim(., side = "both") %in% diablo.ML.VIP.group2[-1]) %>%
+  rownames_to_column(., var = "crab.ID") %>%
+  left_join(x = metabolomicsMetadata,
+            y = .,
+            by = "crab.ID") %>%
+  mutate(., treatment = gsub(pattern = "5", replacement = "05", x = treatment)) %>%
+  pivot_longer(., cols = -c(1:4), names_to = "compound", values_to = "value") %>%
+  ggplot(., mapping = aes(x = treatment, y = value, color = treatment)) +
+  facet_wrap(~compound, scales = "free_y") +
+  ylab("Lipid Abundance") +
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  scale_fill_manual(guide = "none", 
+                    values = rev(plotColors),
+                    labels = c("5", "13", "30")) +
+  scale_colour_manual(guide = "none",
+                    values = rev(plotColors),
+                    labels = c("5", "13", "30")) +
+  xlab("") +
+  ggtitle("Lipids Negatively Correlated with Hydroquinone") +
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        strip.text.x = element_text(size = 7, color = "black", face="bold"))
+diabloLipid2
+```
+
+```{r}
+diabloLipid3 <- rowwiseAllData %>%
+  dplyr::select_if(colnames(.) %>% str_trim(., side = "both") %in% diablo.ML.VIP.group3[-1]) %>%
+  rownames_to_column(., var = "crab.ID") %>%
+  left_join(x = metabolomicsMetadata,
+            y = .,
+            by = "crab.ID") %>%
+  mutate(., treatment = gsub(pattern = "5", replacement = "05", x = treatment)) %>%
+  pivot_longer(., cols = -c(1:4), names_to = "compound", values_to = "value") %>%
+  ggplot(., mapping = aes(x = treatment, y = value, color = treatment)) +
+  facet_wrap(~compound, scales = "free_y") +
+  ylab("") +
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  scale_fill_manual(guide = "none", 
+                    values = rev(plotColors),
+                    labels = c("5", "13", "30")) +
+  scale_colour_manual(guide = "none",
+                    values = rev(plotColors),
+                    labels = c("5", "13", "30")) +
+  xlab("") +
+  ggtitle("Lipids Positively Correlated with Threonine") +
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        strip.text.x = element_text(size = 7, color = "black", face="bold"))
+diabloLipid3
+```
+
+```{r}
+(diablo.metPlot | (diabloLipid1 / diabloLipid2 / diabloLipid3)) + plot_layout(widths = c(1,3)) #Assemble plot and change column widths
+ggsave("DIABLO/figures/correlated-metabolties-lipids.pdf", height = 14, width = 11)
+```
+
 ##### Annotate output
 
 ```{r}
@@ -3477,15 +3609,3 @@ head(diablo.ML.VIP.lipidAnnot) #Confirm dataframe creation
 ```{r}
 write_delim(diablo.ML.VIP.lipidAnnot, "DIABLO/ML-VIP-lipid-annotations.tsv", delim = "\t", col_names = TRUE) #Save dataframe
 ```
-
-
-
-
-
-
-- VIP comparisons
-- VIP enrichment
-- class 
-- state
-
-
