@@ -2442,7 +2442,6 @@ write.csv(combined-WCNA/mME_all, "module-expression.csv", quote = FALSE, row.nam
 ```
 
 ```{r, warning = FALSE, message = FALSE}
-pdf("combined-WCNA/figures/eigengene-expression-boxplot.pdf", height = 8.5, width = 11)
 mME_all %>%
   ggplot(aes(x = treatment, y = value, colour = treatment)) +
   facet_wrap(~ Module) +
@@ -2460,7 +2459,41 @@ mME_all %>%
   xlab("") + #Axis titles
   theme_classic(base_size = 15) + theme(axis.text.x = element_text(color = "white"),
                                         axis.ticks.x = element_blank()) #Create a boxplot with data points for module expression on the y-axis and values for each treatment combination. Facet by module eigengene. Add a horizontal line at y = 0.
-dev.off()
+ggsave("combined-WCNA/figures/eigengene-expression-boxplot.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+module_facets <- c("1" = "ME 3",
+                   "2" = "ME 6",
+                   "3" = "ME 11",
+                   "4" = "ME 13") #Assign labels for facets
+```
+
+
+```{r, warning = FALSE, message = FALSE}
+mME_all %>%
+  filter(., Module == "3" | Module == "6" | Module == "11" | Module == "13") %>%
+  mutate(order = case_when(Module == "3" ~ "1",
+                            Module == "6" ~ "2",
+                            Module == "11" ~ "3",
+                            Module == "13" ~ "4")) %>%
+  ggplot(aes(x = treatment, y = value, colour = treatment)) +
+  facet_wrap(~ order, labeller = labeller(order = module_facets)) +
+  ylab("Module Expression") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey")+
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
+  stat_summary(fun=mean, geom="line", aes(group = treatment, color = treatment), position = position_dodge(width = 0.5))  + 
+  geom_point(pch = 21, position = position_dodge(width = 0.5)) +
+  scale_fill_manual(name = "Temperature (ºC)", 
+                    values = c("#2171B5", "#525252", "#CB181D"),
+                    labels = c("5ºC", "13ºC", "30ºC")) +
+  scale_colour_manual(name = "Temperature (ºC)", 
+                      values = c("#2171B5", "#525252", "#CB181D"),
+                      labels = c("5ºC", "13ºC", "30ºC")) +
+  xlab("") + #Axis titles
+  theme_classic(base_size = 15) + theme(axis.text.x = element_text(color = "white"),
+                                        axis.ticks.x = element_blank()) #Create a boxplot with data points for module expression on the y-axis and values for each treatment combination. Facet by module eigengene. Add a horizontal line at y = 0.
+ggsave("combined-WCNA/figures/sig-modules-expression-boxplot.pdf", height = 8.5, width = 11)
 ```
 
 ##### Create lists of compounds in each module
@@ -2689,6 +2722,15 @@ head(module3_allLipidAnnot)
 ```
 
 ```{r}
+module3_allLipidAnnot %>% 
+  group_by(saturation, targetClass) %>% 
+  summarise(., count = n())
+module3_allLipidAnnot %>%
+  filter(., VIP13v5 == "Y")
+```
+
+
+```{r}
 write_delim(module3_allLipidAnnot, "combined-WCNA/module3_lipid-annotations.tsv", delim = "\t", col_names = TRUE) #Save annotations
 ```
 
@@ -2818,6 +2860,10 @@ head(module13_allAnnot)
 write_delim(module13_allAnnot, "combined-WCNA/module13_metabolite-annotations.tsv", delim = "\t", col_names = TRUE) #Save annotations
 ```
 
+```{r}
+module13_allAnnot
+```
+
 ###### Module 11
 
 ```{r}
@@ -2892,6 +2938,14 @@ module11_allLipidAnnot <- module_alldfs[[12]] %>%
                                      LION.0012081 != "x" ~ NA))
 #Take module information and retain columns of interest. Subset for lipid information. Add annotation information for VIP for temperature treatments, class and saturation state for VIP, and enrichment for temperature treatment.
 head(module11_allLipidAnnot)
+```
+
+```{r}
+module11_allLipidAnnot %>% 
+  group_by(saturation, targetClass) %>% 
+  summarise(., count = n())
+module11_allLipidAnnot %>%
+  filter(., VIP13v30 == "Y")
 ```
 
 ```{r}
