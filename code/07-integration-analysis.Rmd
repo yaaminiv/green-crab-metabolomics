@@ -2418,84 +2418,6 @@ draw(htAppend) #Draw heatmap
 # dev.off()
 ```
 
-##### Plot mean eigengene values for each module
-
-```{r}
-#Ensure metadata columns are factors
-metabolomicsMetadata$crab.ID <- as.factor(metabolomicsMetadata$crab.ID)
-metabolomicsMetadata$treatment <- as.factor(metabolomicsMetadata$treatment)
-metabolomicsMetadata$day <- as.factor(metabolomicsMetadata$day)
-metabolomicsMetadata$treatment_day <- as.factor(metabolomicsMetadata$treatment_day)
-```
-
-```{r}
-mME_all <- merge(mME, metabolomicsMetadata, by = "crab.ID") %>%
-  rename(Module = name) %>%
-  dplyr::select(-treatment_day) %>%
-  remove_rownames()
-#Create new dataframe with metadata
-head(mME_all) #Confirm dataframe creation
-```
-
-```{r}
-write.csv(combined-WCNA/mME_all, "module-expression.csv", quote = FALSE, row.names = FALSE) #Save module expression dataframe
-```
-
-```{r, warning = FALSE, message = FALSE}
-mME_all %>%
-  ggplot(aes(x = treatment, y = value, colour = treatment)) +
-  facet_wrap(~ Module) +
-  ylab("Module Expression") +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "grey")+
-  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
-  stat_summary(fun=mean, geom="line", aes(group = treatment, color = treatment), position = position_dodge(width = 0.5))  + 
-  geom_point(pch = 21, position = position_dodge(width = 0.5)) +
-  scale_fill_manual(name = "Temperature (ºC)", 
-                    values = c("#2171B5", "#525252", "#CB181D"),
-                    labels = c("5ºC", "13ºC", "30ºC")) +
-  scale_colour_manual(name = "Temperature (ºC)", 
-                      values = c("#2171B5", "#525252", "#CB181D"),
-                      labels = c("5ºC", "13ºC", "30ºC")) +
-  xlab("") + #Axis titles
-  theme_classic(base_size = 15) + theme(axis.text.x = element_text(color = "white"),
-                                        axis.ticks.x = element_blank()) #Create a boxplot with data points for module expression on the y-axis and values for each treatment combination. Facet by module eigengene. Add a horizontal line at y = 0.
-ggsave("combined-WCNA/figures/eigengene-expression-boxplot.pdf", height = 8.5, width = 11)
-```
-
-```{r}
-module_facets <- c("1" = "ME 3",
-                   "2" = "ME 6",
-                   "3" = "ME 11",
-                   "4" = "ME 13") #Assign labels for facets
-```
-
-
-```{r, warning = FALSE, message = FALSE}
-mME_all %>%
-  filter(., Module == "3" | Module == "6" | Module == "11" | Module == "13") %>%
-  mutate(order = case_when(Module == "3" ~ "1",
-                            Module == "6" ~ "2",
-                            Module == "11" ~ "3",
-                            Module == "13" ~ "4")) %>%
-  ggplot(aes(x = treatment, y = value, colour = treatment)) +
-  facet_wrap(~ order, labeller = labeller(order = module_facets)) +
-  ylab("Module Expression") +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "grey")+
-  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
-  stat_summary(fun=mean, geom="line", aes(group = treatment, color = treatment), position = position_dodge(width = 0.5))  + 
-  geom_point(pch = 21, position = position_dodge(width = 0.5)) +
-  scale_fill_manual(name = "Temperature (ºC)", 
-                    values = c("#2171B5", "#525252", "#CB181D"),
-                    labels = c("5ºC", "13ºC", "30ºC")) +
-  scale_colour_manual(name = "Temperature (ºC)", 
-                      values = c("#2171B5", "#525252", "#CB181D"),
-                      labels = c("5ºC", "13ºC", "30ºC")) +
-  xlab("") + #Axis titles
-  theme_classic(base_size = 15) + theme(axis.text.x = element_text(color = "white"),
-                                        axis.ticks.x = element_blank()) #Create a boxplot with data points for module expression on the y-axis and values for each treatment combination. Facet by module eigengene. Add a horizontal line at y = 0.
-ggsave("combined-WCNA/figures/sig-modules-expression-boxplot.pdf", height = 8.5, width = 11)
-```
-
 ##### Create lists of compounds in each module
 
 For each module, I want the compound name, but I also want all of the PubChem and KEGG ID information provided by the sequencing facility, and other annotation information. I also want to determine if a compound is a metabolite or lipid.
@@ -2952,6 +2874,223 @@ module11_allLipidAnnot %>%
 write_delim(module11_allLipidAnnot, "combined-WCNA/module11_lipid-annotations.tsv", delim = "\t", col_names = TRUE) #Save annotations
 ```
 
+##### Visualize results
+
+###### Plot mean eigengene values for each module
+
+```{r}
+#Ensure metadata columns are factors
+metabolomicsMetadata$crab.ID <- as.factor(metabolomicsMetadata$crab.ID)
+metabolomicsMetadata$treatment <- as.factor(metabolomicsMetadata$treatment)
+metabolomicsMetadata$day <- as.factor(metabolomicsMetadata$day)
+metabolomicsMetadata$treatment_day <- as.factor(metabolomicsMetadata$treatment_day)
+```
+
+```{r}
+mME_all <- merge(mME, metabolomicsMetadata, by = "crab.ID") %>%
+  rename(Module = name) %>%
+  dplyr::select(-treatment_day) %>%
+  remove_rownames()
+#Create new dataframe with metadata
+head(mME_all) #Confirm dataframe creation
+```
+
+```{r}
+write.csv(combined-WCNA/mME_all, "module-expression.csv", quote = FALSE, row.names = FALSE) #Save module expression dataframe
+```
+
+```{r, warning = FALSE, message = FALSE}
+mME_all %>%
+  ggplot(aes(x = treatment, y = value, colour = treatment)) +
+  facet_wrap(~ Module) +
+  ylab("Module Expression") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey")+
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
+  stat_summary(fun=mean, geom="line", aes(group = treatment, color = treatment), position = position_dodge(width = 0.5))  + 
+  geom_point(pch = 21, position = position_dodge(width = 0.5)) +
+  scale_fill_manual(name = "Temperature (ºC)", 
+                    values = c("#2171B5", "#525252", "#CB181D"),
+                    labels = c("5ºC", "13ºC", "30ºC")) +
+  scale_colour_manual(name = "Temperature (ºC)", 
+                      values = c("#2171B5", "#525252", "#CB181D"),
+                      labels = c("5ºC", "13ºC", "30ºC")) +
+  xlab("") + #Axis titles
+  theme_classic(base_size = 15) + theme(axis.text.x = element_text(color = "white"),
+                                        axis.ticks.x = element_blank()) #Create a boxplot with data points for module expression on the y-axis and values for each treatment combination. Facet by module eigengene. Add a horizontal line at y = 0.
+ggsave("combined-WCNA/figures/eigengene-expression-boxplot.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+module_facets <- c("1" = "ME 3",
+                   "2" = "ME 6",
+                   "3" = "ME 11",
+                   "4" = "ME 13") #Assign labels for facets
+```
+
+
+```{r, warning = FALSE, message = FALSE}
+mME_all %>%
+  filter(., Module == "3" | Module == "6" | Module == "11" | Module == "13") %>%
+  mutate(order = case_when(Module == "3" ~ "1",
+                            Module == "6" ~ "2",
+                            Module == "11" ~ "3",
+                            Module == "13" ~ "4")) %>%
+  ggplot(aes(x = treatment, y = value, colour = treatment)) +
+  facet_wrap(~ order, labeller = labeller(order = module_facets)) +
+  ylab("Module Expression") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey")+
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
+  stat_summary(fun=mean, geom="line", aes(group = treatment, color = treatment), position = position_dodge(width = 0.5))  + 
+  geom_point(pch = 21, position = position_dodge(width = 0.5)) +
+  scale_fill_manual(name = "Temperature (ºC)", 
+                    values = c("#2171B5", "#525252", "#CB181D"),
+                    labels = c("5ºC", "13ºC", "30ºC")) +
+  scale_colour_manual(name = "Temperature (ºC)", 
+                      values = c("#2171B5", "#525252", "#CB181D"),
+                      labels = c("5ºC", "13ºC", "30ºC")) +
+  xlab("") + #Axis titles
+  theme_classic(base_size = 15) + theme(axis.text.x = element_text(color = "white"),
+                                        axis.ticks.x = element_blank()) #Create a boxplot with data points for module expression on the y-axis and values for each treatment combination. Facet by module eigengene. Add a horizontal line at y = 0.
+ggsave("combined-WCNA/figures/sig-modules-expression-boxplot.pdf", height = 8.5, width = 11)
+```
+
+###### Plot abundance for compounds in each module
+
+```{r}
+rowwiseAllData %>%
+  dplyr::select_if(colnames(.) %>% str_trim(., side = "both") %in% module_alldfs[[3+1]]$Compound) %>%
+  rownames_to_column(., var = "crab.ID") %>%
+  left_join(x = metabolomicsMetadata,
+            y = .,
+            by = "crab.ID") %>%
+  dplyr::select(-c(day:treatment_day)) %>%
+  mutate(., treatment = gsub(pattern = "5", replacement = "05", x = treatment)) %>%
+  pivot_longer(., cols = -c(1:2), names_to = "compound", values_to = "value") %>%
+  mutate(., compound = str_trim(compound, side = "both")) %>%
+  group_by(crab.ID, treatment, compound) %>%
+  summarise_if(is.numeric, ~sum(., na.rm = TRUE)) %>%
+  ggplot(., mapping = aes(x = treatment, y = value, color = treatment)) +
+  facet_wrap(~compound, scales = "free_y") +
+  ylab("ME 3 Compound Abundance") +
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  scale_fill_manual(name = "Temperature (ºC)", 
+                    values = rev(plotColors),
+                    labels = c("5", "13", "30")) +
+  scale_colour_manual(name = "Temperature (ºC) ", 
+                    values = rev(plotColors),
+                    labels = c("5", "13", "30")) +
+  xlab("") +
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.title = element_text(size = 10),
+                                        legend.text = element_text(color = "black", size = 8), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"))
+ggsave("combined-WCNA/figures/ME3-compound-abundance.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+rowwiseAllData %>%
+  dplyr::select_if(colnames(.) %>% str_trim(., side = "both") %in% module_alldfs[[6+1]]$Compound) %>%
+  rownames_to_column(., var = "crab.ID") %>%
+  left_join(x = metabolomicsMetadata,
+            y = .,
+            by = "crab.ID") %>%
+  dplyr::select(-c(day:treatment_day)) %>%
+  mutate(., treatment = gsub(pattern = "5", replacement = "05", x = treatment)) %>%
+  pivot_longer(., cols = -c(1:2), names_to = "compound", values_to = "value") %>%
+  mutate(., compound = str_trim(compound, side = "both")) %>%
+  group_by(crab.ID, treatment, compound) %>%
+  summarise_if(is.numeric, ~sum(., na.rm = TRUE)) %>%
+  ggplot(., mapping = aes(x = treatment, y = value, color = treatment)) +
+  facet_wrap(~compound, scales = "free_y") +
+  ylab("ME 6 Compound Abundance") +
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  scale_fill_manual(name = "Temperature (ºC)", 
+                    values = rev(plotColors),
+                    labels = c("5", "13", "30")) +
+  scale_colour_manual(name = "Temperature (ºC) ", 
+                    values = rev(plotColors),
+                    labels = c("5", "13", "30")) +
+  xlab("") +
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.title = element_text(size = 10),
+                                        legend.text = element_text(color = "black", size = 8), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"))
+ggsave("combined-WCNA/figures/ME6-compound-abundance.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+rowwiseAllData %>%
+  dplyr::select_if(colnames(.) %>% str_trim(., side = "both") %in% module_alldfs[[11+1]]$Compound) %>%
+  rownames_to_column(., var = "crab.ID") %>%
+  left_join(x = metabolomicsMetadata,
+            y = .,
+            by = "crab.ID") %>%
+  dplyr::select(-c(day:treatment_day)) %>%
+  mutate(., treatment = gsub(pattern = "5", replacement = "05", x = treatment)) %>%
+  pivot_longer(., cols = -c(1:2), names_to = "compound", values_to = "value") %>%
+  mutate(., compound = str_trim(compound, side = "both")) %>%
+  group_by(crab.ID, treatment, compound) %>%
+  summarise_if(is.numeric, ~sum(., na.rm = TRUE)) %>%
+  ggplot(., mapping = aes(x = treatment, y = value, color = treatment)) +
+  facet_wrap(~compound, scales = "free_y") +
+  ylab("ME 11 Compound Abundance") +
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  scale_fill_manual(name = "Temperature (ºC)", 
+                    values = rev(plotColors),
+                    labels = c("5", "13", "30")) +
+  scale_colour_manual(name = "Temperature (ºC) ", 
+                    values = rev(plotColors),
+                    labels = c("5", "13", "30")) +
+  xlab("") +
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.title = element_text(size = 10),
+                                        legend.text = element_text(color = "black", size = 8), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"))
+ggsave("combined-WCNA/figures/ME11-compound-abundance.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+rowwiseAllData %>%
+  dplyr::select_if(colnames(.) %>% str_trim(., side = "both") %in% module_alldfs[[13+1]]$Compound) %>%
+  rownames_to_column(., var = "crab.ID") %>%
+  left_join(x = metabolomicsMetadata,
+            y = .,
+            by = "crab.ID") %>%
+  dplyr::select(-c(day:treatment_day)) %>%
+  mutate(., treatment = gsub(pattern = "5", replacement = "05", x = treatment)) %>%
+  pivot_longer(., cols = -c(1:2), names_to = "compound", values_to = "value") %>%
+  mutate(., compound = str_trim(compound, side = "both")) %>%
+  group_by(crab.ID, treatment, compound) %>%
+  summarise_if(is.numeric, ~sum(., na.rm = TRUE)) %>%
+  ggplot(., mapping = aes(x = treatment, y = value, color = treatment)) +
+  facet_wrap(~compound, scales = "free_y") +
+  ylab("ME 13 Compound Abundance") +
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.7) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  scale_fill_manual(name = "Temperature (ºC)", 
+                    values = rev(plotColors),
+                    labels = c("5", "13", "30")) +
+  scale_colour_manual(name = "Temperature (ºC) ", 
+                    values = rev(plotColors),
+                    labels = c("5", "13", "30")) +
+  xlab("") +
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.title = element_text(size = 10),
+                                        legend.text = element_text(color = "black", size = 8), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"))
+ggsave("combined-WCNA/figures/ME13-compound-abundance.pdf", height = 8.5, width = 11)
+```
 
 ## Individual metabolite and lipid correlations with DIABLO
 
