@@ -2986,7 +2986,7 @@ rowwiseAllData %>%
                                         legend.position = "bottom", 
                                         legend.title = element_text(size = 10),
                                         legend.text = element_text(color = "black", size = 8), 
-                                        strip.text.x = element_text(size = 10, color = "black", face="bold"))
+                                        strip.text.x = element_text(size = 4.5, color = "black", face="bold"))
 ggsave("combined-WCNA/figures/ME3-compound-abundance.pdf", height = 8.5, width = 11)
 ```
 
@@ -3020,7 +3020,7 @@ rowwiseAllData %>%
                                         legend.position = "bottom", 
                                         legend.title = element_text(size = 10),
                                         legend.text = element_text(color = "black", size = 8), 
-                                        strip.text.x = element_text(size = 10, color = "black", face="bold"))
+                                        strip.text.x = element_text(size = 7, color = "black", face="bold"))
 ggsave("combined-WCNA/figures/ME6-compound-abundance.pdf", height = 8.5, width = 11)
 ```
 
