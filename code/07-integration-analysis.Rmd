@@ -3250,14 +3250,16 @@ plotIndiv(diablo.tcga.ML, ind.names = FALSE, legend = TRUE,
 ```
 
 ```{r}
-pdf("DIABLO/figures/circos-metabolite-lipids.pdf")
+# pdf("DIABLO/figures/circos-metabolite-lipids.pdf")
 circosPlot(diablo.tcga.ML, cutoff = 0.70, line = FALSE, 
            color.blocks = c('plum1', 'lightgreen'),
            color.cor = c("chocolate3","grey20"), 
            size.labels = 1,
            legend.title = "Temperature (ºC)", color.Y = rev(plotColors)) #Use circos plot to visualise correlations between individual metabolites and lipids
-dev.off()
+# dev.off()
 ```
+- remove temperature lines
+- increase font size (if possible)
 
 The plot shows that there are very few correlations between compounds. When I messed around with the correlations, I could only get this plot when corr < 0.75, so these aren't very strong correlations to begin with. The current functionality (`cor_matML <- circosPlot(diablo.tcga.ML, cutoff = 0.70)`) pulls out correlations projected onto the components, which isn't helpful for understanding individual compounds that are correlated with eachother (see [this link](https://mixomics-users.discourse.group/t/diablo-circosplot-export-correlation-matrix/22).
 
