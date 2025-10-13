@@ -2374,7 +2374,7 @@ moduleTraitPvalueAppend <- moduleTraitPvalueTemp %>%
 moduleTraitPvalueAppend #Confirm matrix creation
 ```
 
-###### Plot module-trait associations
+##### Plot module-trait associations
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 heatmappvalAppend <- signif(moduleTraitPvalueAppend, 1) #Create list of pvalues for eigengene correlation with specific traits
@@ -2416,6 +2416,38 @@ htAppend <- Heatmap(moduleTraitCorAppend, name = "Eigengene", column_title = "Mo
                     row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE)) #Create a heatmap object
 draw(htAppend) #Draw heatmap
 # dev.off()
+```
+```{r}
+#svg(file = "combined-WCNA/figures/module-trait-relationship-heatmap-append.svg", height = 8.5, width = 8.5)
+htAppend2 <- Heatmap(moduleTraitCorAppend, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
+                    # col = blueWhiteRed(50), 
+                    row_names_side = "left", 
+                    row_dend_side = "left",
+                    width = unit(5, "in"), 
+                    height = unit(4.5, "in"), 
+                    column_dend_reorder = FALSE, 
+                    cluster_columns = FALSE,
+                    row_dend_reorder = FALSE,  
+                    column_split = c(rep("A", times = 3), rep("B", times = 2)), 
+                    column_gap = unit(3, "mm"),
+                    #row_split = 3, 
+                    #column_dend_height = unit(.5, "in"),
+                    cluster_rows = row_dendAppend, 
+                    #row_gap = unit(2.5, "mm"), 
+                    border = TRUE,
+                    cell_fun = function(j, i, x, y, w, h, col) {
+                      if(heatmappvalAppend[i, j] < 0.05) {
+                        grid.text(sprintf("%s", heatmappvalAppend[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+                      }
+                      else {
+                        grid.text(sprintf("%s", heatmappvalAppend[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+                      }},
+                    column_names_rot = 45,
+                    column_names_gp =  gpar(fontsize = 12, border = FALSE),
+                    column_title_gp = gpar(fontsize = 20),
+                    row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE))
+draw(htAppend2) #Draw heatmap
+#dev.off()
 ```
 
 ##### Create lists of compounds in each module
