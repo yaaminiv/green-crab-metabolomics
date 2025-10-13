@@ -1,0 +1,12 @@
+"","Total","Expected","Hits","Raw p","-log10(p)","Holm adjust","FDR","Impact"
+"Tyrosine metabolism",33,0.27966,3,0.0020244,2.6937,0.15588,0.15588,0.16919
+"Alanine, aspartate and glutamate metabolism",23,0.19492,2,0.014734,1.8317,1,0.56725,0.00338
+"Phenylalanine metabolism",7,0.059322,1,0.057995,1.2366,1,1,0.27586
+"Glycerolipid metabolism",12,0.10169,1,0.097569,1.0107,1,1,0.04464
+"Arginine biosynthesis",13,0.11017,1,0.1053,0.97755,1,1,0
+"Citrate cycle (TCA cycle)",20,0.16949,1,0.15782,0.80184,1,1,0.02981
+"Pyruvate metabolism",23,0.19492,1,0.17948,0.746,1,1,0
+"Arginine and proline metabolism",29,0.24576,1,0.22131,0.65501,1,1,0
+"Glycerophospholipid metabolism",32,0.27119,1,0.2415,0.61708,1,1,0.09023
+"Pyrimidine metabolism",40,0.33898,1,0.2931,0.53298,1,1,0
+"Purine metabolism",68,0.57627,1,0.45002,0.34676,1,1,0.02081

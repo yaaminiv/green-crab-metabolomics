@@ -1,0 +1,20 @@
+"","Total","Expected","Hits","Raw p","-log10(p)","Holm adjust","FDR","Impact"
+"Valine, leucine and isoleucine biosynthesis",8,0.090395,2,0.0031583,2.5005,0.24319,0.24319,0
+"beta-Alanine metabolism",14,0.15819,2,0.0098835,2.0051,0.75115,0.38052,0
+"Pantothenate and CoA biosynthesis",20,0.22599,2,0.01987,1.7018,1,0.43346,0
+"Alanine, aspartate and glutamate metabolism",23,0.25989,2,0.025964,1.5856,1,0.43346,0.15203
+"Glyoxylate and dicarboxylate metabolism",24,0.27119,2,0.028147,1.5506,1,0.43346,0.03653
+"Sphingolipid metabolism",27,0.30508,2,0.035126,1.4544,1,0.44134,0.01709
+"Glycine, serine and threonine metabolism",29,0.32768,2,0.040122,1.3966,1,0.44134,0.31817
+"Cysteine and methionine metabolism",32,0.36158,2,0.0481,1.3179,1,0.46296,0.0437
+"Arginine biosynthesis",13,0.14689,1,0.13806,0.85992,1,1,0
+"Citrate cycle (TCA cycle)",20,0.22599,1,0.20495,0.68836,1,1,0.04412
+"Pyruvate metabolism",23,0.25989,1,0.23213,0.63428,1,1,0.03571
+"One carbon pool by folate",23,0.25989,1,0.23213,0.63428,1,1,0.06787
+"Glutathione metabolism",26,0.29379,1,0.25845,0.58762,1,1,0.32134
+"Glycosylphosphatidylinositol (GPI)-anchor biosynthesis",28,0.31638,1,0.27554,0.55982,1,1,0
+"Arginine and proline metabolism",29,0.32768,1,0.28395,0.54677,1,1,0.04889
+"Glycerophospholipid metabolism",32,0.36158,1,0.30863,0.51056,1,1,0.0233
+"Tyrosine metabolism",33,0.37288,1,0.31669,0.49937,1,1,0.07375
+"Valine, leucine and isoleucine degradation",38,0.42938,1,0.35569,0.44893,1,1,0.01038
+"Pyrimidine metabolism",40,0.45198,1,0.37071,0.43097,1,1,0.08516

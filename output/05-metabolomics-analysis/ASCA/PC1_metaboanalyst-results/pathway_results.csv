@@ -1,0 +1,19 @@
+"","Total","Expected","Hits","Raw p","-log10(p)","Holm adjust","FDR","Impact"
+"Valine, leucine and isoleucine biosynthesis",8,0.10546,3,9.847e-05,4.0067,0.0075822,0.0075822,0
+"Glutathione metabolism",26,0.34275,4,0.00024009,3.6196,0.018247,0.0092434,0.12772
+"One carbon pool by folate",23,0.3032,2,0.034869,1.4576,1,0.68641,0.13569
+"Phenylalanine, tyrosine and tryptophan biosynthesis",4,0.052731,1,0.051769,1.2859,1,0.68641,0.5
+"Arginine and proline metabolism",29,0.3823,2,0.053486,1.2718,1,0.68641,0.19111
+"Glycine, serine and threonine metabolism",29,0.3823,2,0.053486,1.2718,1,0.68641,0.35224
+"Valine, leucine and isoleucine degradation",38,0.50094,2,0.086564,1.0627,1,0.85614,0
+"Phenylalanine metabolism",7,0.092279,1,0.08895,1.0509,1,0.85614,0.37931
+"Ascorbate and aldarate metabolism",8,0.10546,1,0.10104,0.99551,1,0.86445,0
+"Pentose phosphate pathway",22,0.29002,1,0.25539,0.5928,1,1,0.20598
+"Porphyrin metabolism",24,0.31638,1,0.27531,0.56018,1,1,0
+"Glyoxylate and dicarboxylate metabolism",24,0.31638,1,0.27531,0.56018,1,1,0.09132
+"Lipoic acid metabolism",27,0.35593,1,0.30427,0.51674,1,1,0.00189
+"Inositol phosphate metabolism",28,0.36911,1,0.31368,0.50352,1,1,0.11704
+"Tryptophan metabolism",30,0.39548,1,0.33215,0.47867,1,1,0.21401
+"Cysteine and methionine metabolism",32,0.42185,1,0.35015,0.45574,1,1,0.10718
+"Amino sugar and nucleotide sugar metabolism",39,0.51412,1,0.40968,0.38755,1,1,0
+"Purine metabolism",68,0.89642,1,0.60636,0.21727,1,1,0.01222
