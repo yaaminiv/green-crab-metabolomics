@@ -2418,8 +2418,8 @@ draw(htAppend) #Draw heatmap
 # dev.off()
 ```
 ```{r}
-#svg(file = "combined-WCNA/figures/module-trait-relationship-heatmap-append.svg", height = 8.5, width = 8.5)
-htAppend2 <- Heatmap(moduleTraitCorAppend, name = "Eigengene", column_title = "Module-Group Eigengene Correlation",
+# svg(file = "combined-WCNA/figures/module-trait-relationship-heatmap-append.svg", height = 8.5, width = 8.5)
+htAppend2 <- Heatmap(moduleTraitCorAppend, name = "Correlation", column_title = "Module-Group Eigengene Correlation",
                     # col = blueWhiteRed(50), 
                     row_names_side = "left", 
                     row_dend_side = "left",
@@ -2447,7 +2447,7 @@ htAppend2 <- Heatmap(moduleTraitCorAppend, name = "Eigengene", column_title = "M
                     column_title_gp = gpar(fontsize = 20),
                     row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE))
 draw(htAppend2) #Draw heatmap
-#dev.off()
+# dev.off()
 ```
 
 ##### Create lists of compounds in each module
@@ -3251,7 +3251,7 @@ plotIndiv(diablo.tcga.ML, ind.names = FALSE, legend = TRUE,
 
 ```{r}
 pdf("DIABLO/figures/circos-metabolite-lipids.pdf")
-circosPlot(diablo.tcga.ML, cutoff = 0.70, line = TRUE, 
+circosPlot(diablo.tcga.ML, cutoff = 0.70, line = FALSE, 
            color.blocks = c('plum1', 'lightgreen'),
            color.cor = c("chocolate3","grey20"), 
            size.labels = 1,
