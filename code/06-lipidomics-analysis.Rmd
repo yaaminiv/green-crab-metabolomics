@@ -3969,6 +3969,37 @@ head(loadingsPC2.annot) #Confirm changes
 write.csv(loadingsPC2.annot, "ASCA/loadings-PC2-annotations.csv", quote = FALSE, row.names = FALSE)
 ```
 
+#### LION/web figure
+
+```{r}
+enrichmentResultsPC2 <- read.csv("ASCA/LION-enrichment-report-PC2/LION-enrichment-results-PC2.csv") %>%
+  dplyr::rename(Description = "Discription") %>%
+  dplyr::rename(Observed = "Significant") %>%
+  mutate(., Significant = case_when(FDR.q.value < 0.05 ~ "Yes",
+                                    FDR.q.value >= 0.05 ~ "No")) %>%
+  mutate(., "-log(FDR)" = -log(FDR.q.value)) %>%
+  arrange(desc("-log(FDR)")) %>%
+  slice(., 1:25) #Import enrichment results. Rename description and observed column and create new column
+head(enrichmentResultsPC2) #Look at results
+enrichmentResultsPC2 %>% filter(., FDR.q.value < 0.05) %>% nrow() #There are 7 significantly enriched terms
+```
+
+```{r}
+enrichmentResultsPC2 %>%
+  mutate(., order = rev(1:25)) %>%
+  ggplot(., aes(x = `-log(FDR)`, y = as.factor(order), fill = Significant)) +
+  geom_bar(stat = "identity") +
+  labs(x = "-log(FDR)") +
+  scale_y_discrete(name = "LION Term",
+                   labels = rev(enrichmentResultsPC2$Description)) +
+  scale_fill_manual(name = "FDR",
+                    values = c("grey20", "springgreen4"),
+                    labels = c(expression("">=0.05), expression(""<0.05))) +
+  xlim(0,8) +
+  theme_classic(base_size = 15)
+ggsave("ASCA/figures/PC2-logFDR.svg", heigh = 8.5, width = 11)
+```
+
 ### Component 3
 
 This component shows lipids with higher absolute abundance at 5ºC, but it also explains 0% of the variance. I'll focus my analyses on PCs 1 and 2, since those explain >10% of the variance (same cutoff used with metabolomics data).
