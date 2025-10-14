@@ -3995,7 +3995,6 @@ enrichmentResultsPC2 %>%
   scale_fill_manual(name = "FDR",
                     values = c("grey20", "springgreen4"),
                     labels = c(expression("">=0.05), expression(""<0.05))) +
-  xlim(0,8) +
   theme_classic(base_size = 15)
 ggsave("ASCA/figures/PC2-logFDR.svg", heigh = 8.5, width = 11)
 ```
