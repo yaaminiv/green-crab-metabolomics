@@ -4412,6 +4412,35 @@ head(loadingsPC1.annot) #Confirm changes
 write.csv(loadingsPC1.annot, "ASCA/loadings-PC1-annotations.csv", quote = FALSE, row.names = FALSE)
 ```
 
+#### Metaboanalyst enrichment results
+
+```{r}
+topPathwayResultsPC1 <- read.csv("ASCA/PC1_metaboanalyst-results/pathway_results.csv") %>%
+  dplyr::rename(metabolite = "X") %>%
+  mutate(., Observed = Hits/Total) %>%
+  mutate(., Significant = case_when(FDR < 0.05 ~ "Yes",
+                                    FDR >= 0.05 ~ "No")) %>%
+  mutate(., enrichmentRatio = Hits/Expected) %>%
+  mutate(., negLogFDR = -log(FDR)) %>%
+  arrange(desc(enrichmentRatio)) %>%
+  mutate(., order = rev(1:18)) #Import MetaboAnalyst results and modify for figure
+head(topPathwayResultsPC1) #Confirm dataframe creation
+```
+
+```{r}
+topPathwayResultsPC1 %>%
+  ggplot(., aes(x = enrichmentRatio, y = as.factor(order), fill = Significant)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Enrichment Ratio") +
+  scale_y_discrete(name = "",
+                   labels = rev(topPathwayResultsPC1$metabolite)) +
+  scale_fill_manual(name = "FDR",
+                    values = c("grey20", "springgreen4"),
+                    labels = c(expression("">=0.05), expression(""<0.05))) +
+  theme_classic(base_size = 15)
+ggsave("ASCA/figures/PC1-enrichmentRatio.svg", heigh = 8.5, width = 11)
+```
+
 ### Component 2
 
 This component highlights compounds in 5ºC that have similar abundance to 13ºC in day 4, but different in day 22.
@@ -4677,6 +4706,35 @@ head(loadingsPC4.annot) #Confirm changes
 
 ```{r}
 write.csv(loadingsPC4.annot, "ASCA/loadings-PC4-annotations.csv", quote = FALSE, row.names = FALSE)
+```
+
+#### Metaboanalyst enrichment results
+
+```{r}
+topPathwayResultsPC4 <- read.csv("ASCA/PC4_metaboanalyst-results/pathway_results.csv") %>%
+  dplyr::rename(metabolite = "X") %>%
+  mutate(., Observed = Hits/Total) %>%
+  mutate(., Significant = case_when(FDR < 0.05 ~ "Yes",
+                                    FDR >= 0.05 ~ "No")) %>%
+  mutate(., enrichmentRatio = Hits/Expected) %>%
+  mutate(., negLogFDR = -log(FDR)) %>%
+  arrange(desc(enrichmentRatio)) %>%
+  mutate(., order = rev(1:24)) #Import MetaboAnalyst results and modify for figure
+head(topPathwayResultsPC4) #Confirm dataframe creation
+```
+
+```{r}
+topPathwayResultsPC4 %>%
+  ggplot(., aes(x = enrichmentRatio, y = as.factor(order), fill = Significant)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Enrichment Ratio") +
+  scale_y_discrete(name = "",
+                   labels = rev(topPathwayResultsPC4$metabolite)) +
+  scale_fill_manual(name = "FDR",
+                    values = c("grey20", "springgreen4"),
+                    labels = c(expression("">=0.05), expression(""<0.05))) +
+  theme_classic(base_size = 15)
+ggsave("ASCA/figures/PC4-enrichmentRatio.svg", heigh = 8.5, width = 11)
 ```
 
 ### Component 5
