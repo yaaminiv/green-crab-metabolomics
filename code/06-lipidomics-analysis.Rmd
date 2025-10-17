@@ -2657,6 +2657,15 @@ head(significantVIP_13v5_annot) #Confirm dataframe creation
 ```
 
 ```{r}
+significantVIP_13v5_annot %>%
+  dplyr::select(lipid, class) %>%
+  unique(.) %>%
+  group_by(class) %>%
+  summarize(count = n())
+```
+
+
+```{r}
 rbind(significantVIP_13v30_annot, significantVIP_13v5_annot) %>%
   group_by(comparison, class) %>%
   summarize(., count = n()) %>%
