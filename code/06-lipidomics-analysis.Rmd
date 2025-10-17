@@ -268,6 +268,34 @@ head(knownTransLipidData)
 ```
 
 ```{r}
+scaled.known.pca <- prcomp(knownTransLipidData[,-c(1:4)] %>%
+                       log() %>%
+                       mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+                       replace(is.na(.), 0), 
+                     scale = FALSE, center = TRUE) #Use prcomp to perform a centered and scaled PCA calculation. Replace all -Inf with NA, and then with 0 in the dataframe and log transform prior to performing the PCA calculation
+summary(scaled.known.pca) #Standard deviations for each PC
+```
+
+```{r}
+pcaPlot4 <- autoplot(scaled.known.pca, data = transLipidData, x = 1, y = 2,
+                     size = 4, alpha = 0.8, colour = "treatment", shape = "day", 
+                     frame = TRUE, frame.colour = "treatment", loadings = FALSE) +
+  scale_color_manual(values = c(plotColors[2], plotColors[1], plotColors[3]),
+                     name = "Temperature (ºC)") +
+  scale_fill_manual(values = c(plotColors[2], plotColors[1], plotColors[3]),
+                    name = "Temperature (ºC)") +
+  scale_shape_manual(values = c(20, 18),
+                     name = "Day", 
+                     breaks = c("22", "3"),
+                     labels = c("22", "4")) +
+  scale_size(guide = "none") +
+  theme_classic(base_size = 15) + theme(legend.position = "right",
+                                        plot.background = element_blank()) #Use autoplot to plot the prcomp object. Color points and confidence ellipses by treatment, and have different shapes for each day. Do not include loadings. Manually define color, fill, and shapes.
+pcaPlot4
+ggsave("PCA/figures/known-lipids-PCA-day-treatment.pdf", height = 8.5, width = 11)
+```
+
+```{r}
 dissim.lipidid <- vegdist(scale((knownTransLipidData[-c(1:4)] %>%
                                  log() %>%
                                  mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
@@ -379,12 +407,6 @@ ggsave("PLSDA/figures/all-data-VIP.pdf", height = 8.5, width = 11)
 While I can use the PLSDA with all features to discuss larger patterns and maybe glean insight into functions of unknown lipid classes, running the model with only known features will allow me to more confidently assess differences in lipids due to temperature and time. I am defining "known features" as those with a PubMed.CID.
 
 I will run this PLSDA for temperature only, since that was the only factor significant in the perMANOVA.
-
-```{r}
-knownTransLipidData <- transLipidData %>%
-  dplyr::select(1:4, which(colnames(transLipidData) %in% lipidIdentifiers$lipid[1:418])) #Take transposed lipid data and select columns associated with known lipids.
-head(knownTransLipidData)
-```
 
 ```{r}
 X <- log(knownTransLipidData[-c(1:4)]) #Assign known metabolite data to the X dataframe after log transformation
