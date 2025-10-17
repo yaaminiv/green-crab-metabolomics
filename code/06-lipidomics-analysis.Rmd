@@ -259,6 +259,45 @@ broom::tidy(anova(disp.lipid.temp)) %>%
   write.csv("PCA/all-data-PERMDISP-results.csv", quote = FALSE, row.names = FALSE) #Clean output and save
 ```
 
+## PCA and perMANOVA for known lipids
+
+```{r}
+knownTransLipidData <- transLipidData %>%
+  dplyr::select(1:4, which(colnames(transLipidData) %in% lipidIdentifiers$lipid[1:418])) #Take transposed lipid data and select columns associated with known lipids.
+head(knownTransLipidData)
+```
+
+```{r}
+dissim.lipidid <- vegdist(scale((knownTransLipidData[-c(1:4)] %>%
+                                 log() %>%
+                                 mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+                                 replace(is.na(.), 0))), "euclidean") #Create euclidean dissimilarity matrix to use for perMANOVA and PERMDISP
+```
+
+```{r}
+permanova.lipidid <- adonis2(dissim.lipidid ~ treatment + day + treatment:day, data = knownTransLipidData, by = "term") #Conduct global PERMANOVA to assess significance of trends in PCA. Scale lipidomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
+permanova.lipidid #Significant influence temperature only
+```
+
+```{r}
+broom::tidy(permanova.lipidid) %>%
+  write.csv(., "PCA/known-lipids-PERMANOVA-results.csv", quote = FALSE) #Save PERMANOVA output
+```
+
+Day was not significant when considering all lipids, but is significant when considering known lipids. To be conservative, I will stick to only investigating temperature effects on lipids.
+
+```{r}
+disp.lipidid.temp <- betadisper(dissim.lipidid, group = as.factor(knownTransLipidData$treatment), type = 'centroid') #Run a beta dispersion model to assess if significant differences are due to differences in group centroid or variance
+plot(disp.lipidid.temp) #Dispersion differences exist
+boxplot(disp.lipidid.temp) #Show distance to group centroids, can clearly see dispersion differences between 30 and the other two
+anova(disp.lipidid.temp) #Variance is different between groups. Temperature significance is due to centroid and dispersion differences!
+```
+
+```{r}
+broom::tidy(anova(disp.lipidid.temp)) %>%
+  mutate(., var = "temperature") %>%
+  write.csv("PCA/known-lipids-PERMDISP-results.csv", quote = FALSE, row.names = FALSE) #Clean output and save
+```
 
 # PLSDA for all lipids
 
