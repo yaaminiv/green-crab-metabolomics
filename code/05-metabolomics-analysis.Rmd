@@ -203,7 +203,7 @@ pcaPlot4 <- autoplot(scaled.pca.id, data = transMetabData, x = 1, y = 2,
                      name = "Temperature (ºC)") +
   scale_fill_manual(values = c(plotColors[3], plotColors[2], plotColors[1]),
                     name = "Temperature (ºC)") +
-  scale_shape_manual(values = c(20, 18),
+  scale_shape_manual(values = c(18, 20),
                      name = "Day",
                      labels = c("4", "22")) +
   theme_classic(base_size = 15) + theme(legend.position = "right",
