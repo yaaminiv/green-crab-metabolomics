@@ -2313,6 +2313,7 @@ VIP_coldProtectionMetabolites <- rbind(t.test_13v30_day3 %>%
                                          filter(., metabolite %in% coldProtectionMetabolites))
 VIP_coldProtectionMetabolites
 ```
+
 ```{r}
 write.table(VIP_coldProtectionMetabolites, "metaboanalyst/cold-protection-pairwise-VIP.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 ```
