@@ -3370,11 +3370,11 @@ plotIndiv(diablo.ML.VIP, ind.names = FALSE, legend = TRUE,
 
 ```{r}
 pdf("DIABLO/figures/circos-metabolite-lipids-VIP.pdf")
-circosPlot(diablo.ML.VIP, cutoff = 0.70, line = TRUE, 
+circosPlot(diablo.ML.VIP, cutoff = 0.70, line = FALSE, 
            color.blocks = c('plum1', 'lightgreen'),
            color.cor = c("chocolate3","grey20"), 
-           size.labels = 1,
-           legend.title = "Temperature (ºC)", color.Y = rev(plotColors)) #Use circos plot to visualise correlations between individual metabolites and lipids
+           size.labels = 0.001, size.variables = 0.35,
+           legend.title = "Temperature (ºC)", color.Y = rev(plotColors)) #Use circos plot to visualise correlations between individual metabolites and lipids. Get rid of the temperature lines. Modify the size of the labels (metabolites vs. lipids) and the size of the variables (compound names)
 dev.off()
 ```
 
