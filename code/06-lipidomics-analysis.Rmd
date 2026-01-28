@@ -4197,3 +4197,37 @@ plot(lipid.ASCAmodel, effect = 1, component = c(1,2), type = 'effect',
      x_label = "Temperature (ºC)")
 ggsave("ASCA/figures/effect-plot-all-components.pdf", height = 11, width = 8.5)
 ```
+
+### Supplementary figure
+
+I want to create a multipanel figure with all of the prediction plots
+
+```{r}
+predictionPC1 <- plot(lipid.ASCAmodel, effect = 1, component = 1, type = 'prediction', 
+     n_limit = 10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "",
+     group_label = "Temperature (ºC)") +
+  ggtitle("A. PC 1") +
+  theme_classic() + theme(strip.text.x = element_text(size = 6, color = "black"))
+
+predictionPC2 <- plot(lipid.ASCAmodel, effect = 1, component = 2, type = 'prediction', 
+     n_limit = 10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "", 
+     group_label = "Temperature (ºC)") +
+  ggtitle("B. PC 2") +
+  theme_classic() + theme(strip.text.x = element_text(size = 6, color = "black"))
+
+predictionPC1 / predictionPC2 + plot_layout(guides = 'collect')
+ggsave("../../supplementary-material/lipid-ASCA-prediction-plot.pdf", width = 8.5, height = 11)
+```
+

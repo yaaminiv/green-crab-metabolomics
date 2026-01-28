@@ -261,3 +261,23 @@ WARN  [2025-10-03 13:56:18] Showing 10 of 410 variables. Adjust the number with 
 INFO  [2025-10-03 13:56:44] Effect plot. Selected effect (nr 1): `treatment`. Component: 1 and 2.
 WARN  [2025-10-03 13:56:44] Showing 10 of 410 variables. Adjust the number with `n_limit`
 WARN  [2025-10-03 13:56:45] Showing 10 of 410 variables. Adjust the number with `n_limit`
+INFO  [2026-01-28 11:32:16] Prediction plot. Selected effect (nr 1): `treatment`. Component: 1.
+INFO  [2026-01-28 11:32:16] Selecting the 5 variables with highest/lowest loading on `treatment` (PC1). Use `variable` to specify variables to plot
+INFO  [2026-01-28 11:32:16] Prediction plot. Selected effect (nr 1): `treatment`. Component: 2.
+INFO  [2026-01-28 11:32:16] Selecting the 5 variables with highest/lowest loading on `treatment` (PC2). Use `variable` to specify variables to plot
+INFO  [2026-01-28 11:32:23] Prediction plot. Selected effect (nr 1): `treatment`. Component: 1.
+INFO  [2026-01-28 11:32:23] Selecting the 5 variables with highest/lowest loading on `treatment` (PC1). Use `variable` to specify variables to plot
+INFO  [2026-01-28 11:32:24] Prediction plot. Selected effect (nr 1): `treatment`. Component: 2.
+INFO  [2026-01-28 11:32:24] Selecting the 5 variables with highest/lowest loading on `treatment` (PC2). Use `variable` to specify variables to plot
+INFO  [2026-01-28 11:33:02] Prediction plot. Selected effect (nr 1): `treatment`. Component: 1.
+INFO  [2026-01-28 11:33:02] Selecting the 5 variables with highest/lowest loading on `treatment` (PC1). Use `variable` to specify variables to plot
+INFO  [2026-01-28 11:33:02] Prediction plot. Selected effect (nr 1): `treatment`. Component: 2.
+INFO  [2026-01-28 11:33:02] Selecting the 5 variables with highest/lowest loading on `treatment` (PC2). Use `variable` to specify variables to plot
+INFO  [2026-01-28 11:33:45] Prediction plot. Selected effect (nr 1): `treatment`. Component: 1.
+INFO  [2026-01-28 11:33:45] Selecting the 5 variables with highest/lowest loading on `treatment` (PC1). Use `variable` to specify variables to plot
+INFO  [2026-01-28 11:33:46] Prediction plot. Selected effect (nr 1): `treatment`. Component: 2.
+INFO  [2026-01-28 11:33:46] Selecting the 5 variables with highest/lowest loading on `treatment` (PC2). Use `variable` to specify variables to plot
+INFO  [2026-01-28 11:34:08] Prediction plot. Selected effect (nr 1): `treatment`. Component: 1.
+INFO  [2026-01-28 11:34:08] Selecting the 5 variables with highest/lowest loading on `treatment` (PC1). Use `variable` to specify variables to plot
+INFO  [2026-01-28 11:34:08] Prediction plot. Selected effect (nr 1): `treatment`. Component: 2.
+INFO  [2026-01-28 11:34:08] Selecting the 5 variables with highest/lowest loading on `treatment` (PC2). Use `variable` to specify variables to plot
