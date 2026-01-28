@@ -2922,7 +2922,7 @@ t.test_30v5_day3 %>%
   left_join(., (rawMetabolomicsData %>% 
                   dplyr::rename(metabolite = BinBase.name)), 
             by = "metabolite") %>%
-  dplyr::select(., metabolite, PubChem, KEGG) %>%
+  dplyr::select(., metabolite:p.adj, PubChem, KEGG) %>%
   unique(.) %>%
   write.table("metaboanalyst/30v5-day3_VIP_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take significant pairwise VIP data and join with lipid identifiers. Retain unique entries and write table
 ```
@@ -2933,7 +2933,7 @@ t.test_13v30_day22 %>%
   left_join(., (rawMetabolomicsData %>% 
                   dplyr::rename(metabolite = BinBase.name)), 
             by = "metabolite") %>%
-  dplyr::select(., metabolite, PubChem, KEGG) %>%
+  dplyr::select(., metabolite:p.adj, PubChem, KEGG) %>%
   unique(.) %>%
   write.table("metaboanalyst/13v30-day22_VIP_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take significant pairwise VIP data and join with lipid identifiers. Retain unique entries and write table
 ```
@@ -2944,7 +2944,7 @@ t.test_13v5_day22 %>%
   left_join(., (rawMetabolomicsData %>% 
                   dplyr::rename(metabolite = BinBase.name)), 
             by = "metabolite") %>%
-  dplyr::select(., metabolite, PubChem, KEGG) %>%
+  dplyr::select(., metabolite:p.adj, PubChem, KEGG) %>%
   unique(.) %>%
   write.table("metaboanalyst/13v5-day22_VIP_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take significant pairwise VIP data and join with lipid identifiers. Retain unique entries and write table
 ```
@@ -2955,9 +2955,9 @@ t.test_30v5_day22 %>%
   left_join(., (rawMetabolomicsData %>% 
                   dplyr::rename(metabolite = BinBase.name)), 
             by = "metabolite") %>%
-  dplyr::select(., metabolite, PubChem, KEGG) %>%
+  dplyr::select(., metabolite:p.adj, PubChem, KEGG) %>%
   unique(.) %>%
-  write.table("../output/05-metabolomics-analysis/metaboanalyst/30v5-day22_VIP_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take significant pairwise VIP data and join with lipid identifiers. Retain unique entries and write table
+  write.table("metaboanalyst/30v5-day22_VIP_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take significant pairwise VIP data and join with lipid identifiers. Retain unique entries and write table
 ```
 
 ```{r}
@@ -2974,9 +2974,9 @@ t.test_30v5_day22 %>%
   left_join(., (rawMetabolomicsData %>% 
                   dplyr::rename(metabolite = BinBase.name)), 
             by = "metabolite") %>%
-  dplyr::select(., metabolite, PubChem, KEGG) %>%
+  dplyr::select(., metabolite:p.adj, PubChem, KEGG) %>%
   unique(.) %>%
-  write.table("../output/05-metabolomics-analysis/metaboanalyst/unique-30v5-day22_VIP_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take significant pairwise VIP data and join with lipid identifiers. Retain unique entries and write table
+  write.table("metaboanalyst/unique-30v5-day22_VIP_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take significant pairwise VIP data and join with lipid identifiers. Retain unique entries and write table
 ```
 
 ```{r}
@@ -2985,7 +2985,7 @@ t.test_5_day3v22 %>%
   left_join(., (rawMetabolomicsData %>% 
                   dplyr::rename(metabolite = BinBase.name)), 
             by = "metabolite") %>%
-  dplyr::select(., metabolite, PubChem, KEGG) %>%
+  dplyr::select(., metabolite:p.adj, PubChem, KEGG) %>%
   unique(.) %>%
   write.table("metaboanalyst/5-day3v22_VIP_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Take significant pairwise VIP data and join with lipid identifiers. Retain unique entries and write table
 ```
