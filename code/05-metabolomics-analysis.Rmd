@@ -39,6 +39,7 @@ getwd()
 # if (!requireNamespace("devtools", quietly = TRUE))
 #     install.packages("devtools")
 # devtools::install_github("andjar/ALASCA", ref = "main")
+# if ("patchwork" %in% rownames(installed.packages()) == 'FALSE') install.packages("patchwork")
 require(tidyverse)
 require(vegan)
 require(mixOmics)
@@ -54,6 +55,7 @@ require(svglite)
 require(ggfortify)
 require(devtools)
 require(ALASCA)
+require(patchwork)
 ```
 
 ```{r}
@@ -4378,6 +4380,7 @@ plot(metabolomics.ASCAmodel, effect = 1, component = 1, type = 'effect',
      group_label = "Temperature (ºC)")
 ggsave("ASCA/figures/effect-plot-PC1.pdf", height = 11, width = 8.5)
 ```
+
 ```{r}
 plot(metabolomics.ASCAmodel, effect = 1, component = 1, type = 'prediction', 
      n_limit = 10, 
@@ -4877,3 +4880,61 @@ plot(metabolomics.ASCAmodel, effect = 1, component = seq(1,4), type = 'effect',
      group_label = "Temperature (ºC)")
 ggsave("ASCA/figures/effect-plot-all-components.pdf", height = 11, width = 8.5)
 ```
+
+### Supplementary figure
+
+I want to create a multipanel figure with all of the prediction plots
+
+```{r}
+predictionPC1 <- plot(metabolomics.ASCAmodel, effect = 1, component = 1, type = 'prediction', 
+     n_limit = 10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "",
+     group_label = "Temperature (ºC)") +
+  ggtitle("A. PC 1") +
+  theme_classic() + theme(strip.text.x = element_text(size = 5, color = "black"))
+
+predictionPC2 <- plot(metabolomics.ASCAmodel, effect = 1, component = 2, type = 'prediction', 
+     n_limit = 10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "", 
+     group_label = "Temperature (ºC)") +
+  ggtitle("B. PC 2") +
+  theme_classic() + theme(strip.text.x = element_text(size = 5, color = "black"))
+
+predictionPC3 <- plot(metabolomics.ASCAmodel, effect = 1, component = 3, type = 'prediction', 
+     n_limit = 10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "Day",
+     group_label = "Temperature (ºC)") +
+  ggtitle("C. PC 3") +
+  theme_classic() + theme(strip.text.x = element_text(size = 5, color = "black"))
+
+predictionPC4 <- plot(metabolomics.ASCAmodel, effect = 1, component = 4, type = 'prediction', 
+     n_limit = 10, 
+     ribbon = TRUE,
+     x_angle = 0, x_h_just= 0.5,
+     flip_axis = TRUE,
+     palette = rev(plotColors),
+     my_theme = theme_classic(),
+     x_label = "Day",
+     group_label = "Temperature (ºC)") +
+  ggtitle("D. PC 4") +
+  theme_classic() + theme(strip.text.x = element_text(size = 4, color = "black"))
+
+predictionPC1 + predictionPC2 + predictionPC3 + predictionPC4 + plot_layout(guides = 'collect')
+ggsave("../../supplementary-material/metabolite-ASCA-prediction-plot.pdf", width = 11, height = 8.5)
+```
+
