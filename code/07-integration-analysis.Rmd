@@ -37,7 +37,6 @@ getwd()
 # if ("dendsort" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('dendsort')
 # if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap')
 # if ("svglite" %in% rownames(installed.packages()) == 'FALSE') install.packages("svglite")
-# if ("svglite" %in% rownames(installed.packages()) == 'FALSE') install.packages("svglite")
 # if ("patchwork" %in% rownames(installed.packages()) == 'FALSE') install.packages("patchwork")
 require(tidyverse)
 require(plotrix)
@@ -2358,7 +2357,8 @@ moduleTraitCorAppend <- moduleTraitCorTemp %>%
                       as.data.frame(.) %>% 
                       rownames_to_column(., var = "ME"))) %>%
   column_to_rownames(., var = "ME") %>%
-  as.matrix(.) #Take previous correlations and convert to a dataframe. Convert rownames to ME column. Join with phys correlations and reconvert column to rownames. Convert back to a matrix
+  dplyr::select("5ºC", "13ºC", "30ºC", "Average TTR", "Oxygen Consumption") %>%
+  as.matrix(.) #Take previous correlations and convert to a dataframe. Convert rownames to ME column. Join with phys correlations and reconvert column to rownames. Reorder columns to temperatures go from coldest to warmest. Convert back to a matrix
 moduleTraitCorAppend #Confirm matrix creation
 ```
 
@@ -2370,7 +2370,8 @@ moduleTraitPvalueAppend <- moduleTraitPvalueTemp %>%
                       as.data.frame(.) %>% 
                       rownames_to_column(., var = "ME"))) %>%
   column_to_rownames(., var = "ME") %>%
-  as.matrix(.) #Take previous correlations and convert to a dataframe. Convert rownames to ME column. Join with phys correlations and reconvert column to rownames. Convert back to a matrix
+  dplyr::select("5ºC", "13ºC", "30ºC", "Average TTR", "Oxygen Consumption") %>%
+  as.matrix(.) #Take previous correlations and convert to a dataframe. Convert rownames to ME column. Join with phys correlations and reconvert column to rownames. Reorder columns to temperatures go from coldest to warmest. Convert back to a matrix
 moduleTraitPvalueAppend #Confirm matrix creation
 ```
 
