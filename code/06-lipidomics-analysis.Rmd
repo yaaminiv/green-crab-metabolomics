@@ -2884,7 +2884,6 @@ To help answer the question of what lipids are associated with cold or warm temp
 ```{r}
 t.test_13v30 %>%
   filter(., p.adj < 0.05) %>%
-  dplyr::select(., lipid) %>%
   left_join(., lipidIdentifiers, by = "lipid") %>%
   dplyr::select(-identifier) %>%
   unique(.) %>%
@@ -2894,7 +2893,6 @@ t.test_13v30 %>%
 ```{r}
 t.test_13v5 %>%
   filter(., p.adj < 0.05) %>%
-  dplyr::select(., lipid) %>%
   left_join(., lipidIdentifiers, by = "lipid") %>%
   dplyr::select(-identifier) %>%
   unique(.) %>%
@@ -2904,7 +2902,6 @@ t.test_13v5 %>%
 ```{r}
 t.test_30v5 %>%
   filter(., p.adj < 0.05) %>%
-  dplyr::select(., lipid) %>%
   left_join(., lipidIdentifiers, by = "lipid") %>%
   dplyr::select(-identifier) %>%
   unique(.) %>%
@@ -2922,7 +2919,6 @@ t.test_30v5 %>%
                           ungroup(.) %>%
                           filter(., p.adj < 0.05)),
             by = "lipid") %>%
-  dplyr::select(., lipid) %>%
   left_join(., lipidIdentifiers, by = "lipid") %>%
   dplyr::select(-identifier) %>%
   unique(.) %>%
