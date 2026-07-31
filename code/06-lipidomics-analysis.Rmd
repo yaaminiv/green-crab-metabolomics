@@ -3920,6 +3920,14 @@ head(loadingsPC1.annot) #Confirm changes
 write.csv(loadingsPC1.annot, "ASCA/loadings-PC1-annotations.csv", quote = FALSE, row.names = FALSE)
 ```
 
+```{r}
+loadingsPC1.annot %>%
+  dplyr::select(lipid) %>%
+  distinct(.) %>%
+  nrow(.)
+```
+
+
 ### Component 2
 
 This component shows lipids with lower absolute abundance at 30ºC and much lower absolute abundance at 5ºC
