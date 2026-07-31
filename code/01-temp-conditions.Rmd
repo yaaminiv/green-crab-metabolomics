@@ -84,18 +84,62 @@ tank5b <- tank5b %>% mutate(tank = rep(5, times = length(tank5b[,1])), treatment
 tank6a <- tank6a %>% mutate(tank = rep(6, times = length(tank6a[,1])), treatment = rep("warm", times = length(tank6a[,1])))
 tank6b <- tank6b %>% mutate(tank = rep(6, times = length(tank6b[,1])), treatment = rep("warm", times = length(tank6b[,1])))
 ```
-# Treatment conditions
 
-## Calculate treatment mean and SE
+# Treatment conditions
 
 ```{r}
 hobos <- list(tank1a, tank2a, tank3a, tank4a, tank5a, tank6a,
               tank1b, tank2b, tank3b, tank4b, tank5b, tank6b) #Create a list of filenames to cycle through
 ```
 
-### For each tank
+## Calculate ramp
 
-Row 631 is when HOBO loggers are recording data on the first full day of the experiment after the temperatures have reached the treatment setpoints, so I'll use that as my cutoff.
+I need to know how long it took for temperature to go from 13ºC to 30ºC, and from 13ºC to 5ºC.
+
+Row 598 is when the ramping period starts for both treatments, so I'll use that to start the ramp. Row 631 is when HOBO loggers are recording data on the first full day of the experiment after the temperatures have reached the treatment setpoints, so I'll use that as my cutoff.
+
+```{r}
+rampTempStats <- data.frame("tank" = seq(1:3),
+                            "initialTemp" = rep(0, times = 3),
+                            "finalTemp" = rep(0, times = 3)) #Create an empty dataframe
+```
+
+```{r}
+for (i in 1:(length(hobos)/4)) {
+  rampTempStats[i,2] <- mean(rbind(hobos[[i]][,2][598], 
+                                   hobos[[i+3]][,2][598],
+                                   hobos[[i+6]][,2][598],
+                                   hobos[[i+9]][,2][598]), 
+                             na.rm = TRUE)
+  rampTempStats[i,3] <- mean(rbind(hobos[[i]][,2][631], 
+                                   hobos[[i+3]][,2][631],
+                                   hobos[[i+6]][,2][631],
+                                   hobos[[i+9]][,2][631]), 
+                             na.rm = TRUE)
+} #For each treatment, combine the  temperature data from all HOBO loggers for the start and end of the temperature ramp.
+head(rampTempStats) #Confirm calculations
+```
+
+```{r}
+hobos[[1]][,1][598] #Time the ramp started
+hobos[[1]][,1][631] #Time the ramp ended
+hobos[[1]][,1][631] - hobos[[1]][,1][598] #Time difference of 8.25 hours
+```
+
+```{r}
+rampTempStats <- rampTempStats %>%
+  mutate(., tempDiff = finalTemp - initialTemp, #Calculate the difference between the final and initial temperatures
+         rampRate = tempDiff/8.25) #Calculate the ramp rate (ºC change/hr)
+head(rampTempStats) #Confirm calculations
+```
+
+```{r}
+write.csv(rampTempStats, "ramp-temp-stats.csv", quote = FALSE) #Save output
+```
+
+## Calculate treatment mean and SE
+
+### For each tank
 
 ```{r}
 treatmentTempStats <- data.frame("tank" = seq(1:6),
@@ -105,8 +149,12 @@ treatmentTempStats <- data.frame("tank" = seq(1:6),
 
 ```{r}
 for (i in 1:(length(hobos)/2)) {
-  treatmentTempStats[i,2] <- mean(rbind(hobos[[i]][,2][631:length(hobos[[i]][,2])], hobos[[i+6]][,2][631:length(hobos[[i+6]][,2])]), na.rm = TRUE)
-  treatmentTempStats[i,3] <- sd(rbind(hobos[[i]][,2][631:length(hobos[[i]][,2])], hobos[[i+6]][,2][631:length(hobos[[i+6]][,2])]), na.rm = TRUE)
+  treatmentTempStats[i,2] <- mean(rbind(hobos[[i]][,2][631:length(hobos[[i]][,2])], 
+                                        hobos[[i+6]][,2][631:length(hobos[[i+6]][,2])]), 
+                                  na.rm = TRUE)
+  treatmentTempStats[i,3] <- sd(rbind(hobos[[i]][,2][631:length(hobos[[i]][,2])], 
+                                      hobos[[i+6]][,2][631:length(hobos[[i+6]][,2])]), 
+                                na.rm = TRUE)
 } #For each tank, combine the treatment temperature data from both HOBO loggers,  either find the average or SD, and save in treatmentTempStats
 head(treatmentTempStats) #Confirm calculations
 ```
