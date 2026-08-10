@@ -21,22 +21,26 @@ getwd()
 # Install packages
 
 ```{r packages, include=FALSE}
-# install.packages("tidyverse")
-# install.packages("plotrix")
-# install.packages("RColorBrewer")
-# install.packages("cowplot")
-# install.packages("emmeans")
-# install.packages("multcompView")
-# install.packages("multcomp")
-# install.packages("patchwork")
-require(tidyverse)
-require(plotrix)
-require(RColorBrewer)
-require(cowplot)
-require(emmeans)
-require(multcompView)
-require(multcomp)
-require(patchwork)
+install.packages("tidyverse")
+install.packages("plotrix")
+install.packages("RColorBrewer")
+install.packages("cowplot")
+install.packages("lme4")
+install.packages("DHARMa")
+install.packages("emmeans")
+install.packages("multcompView")
+install.packages("multcomp")
+install.packages("patchwork")
+library(tidyverse)
+library(plotrix)
+library(RColorBrewer)
+library(cowplot)
+library(lme4)
+library(DHARMa)
+library(emmeans)
+library(multcompView)
+library(multcomp)
+library(patchwork)
 ```
 
 ```{r}
@@ -50,17 +54,22 @@ rawTTR <- read.csv("../../data/time-to-right.csv", header = TRUE) #Import raw da
 head(rawTTR) #Confirm import. Trial data is in seconds.
 ```
 
+```{r}
+rawTTR[c(92, 118, 136, 158, 229, 248),] #Rows with crabs that were missing both swimmers
+```
+
 # Format data
 
 ```{r}
 modTTR <- rawTTR %>%
-  dplyr::select(., -c(sampling.ID, notes, probe.number)) %>%
-  mutate(., day = case_when(date == "7/8/2022" ~ 4,
-                            date == "7/12/2022" ~ 8,
-                            date == "7/15/2022" ~ 11,
-                            date == "7/19/2022" ~ 15,
-                            date == "7/22/2022" ~ 18,
-                            date == "7/26/2022" ~ 22)) %>%
+  dplyr::select(., -c(sampling.ID, notes, probe.number)) %>% 
+  dplyr::slice(-c(92, 118, 136, 158, 229, 248)) %>%
+  mutate(., day = case_when(date == "7/8/22" ~ 4,
+                            date == "7/12/22" ~ 8,
+                            date == "7/15/22" ~ 11,
+                            date == "7/19/22" ~ 15,
+                            date == "7/22/22" ~ 18,
+                            date == "7/26/22" ~ 22)) %>%
   mutate(., treatment = case_when(treatment.tank == "1" | treatment.tank == "4" ~ "13C",
                                   treatment.tank == "2" | treatment.tank == "5" ~ "5C",
                                   treatment.tank == "3" | treatment.tank == "6" ~ "30C")) %>%
@@ -88,7 +97,7 @@ modTTR <- rawTTR %>%
   mutate(., TTRSEFull = std.error(TTRavg)) %>%
   mutate(., TTRavgFullLow = TTRavgFull - TTRSEFull) %>%
   mutate(., TTRavgFullHigh = TTRavgFull + TTRSEFull) %>%
-  ungroup(.) #Remove sampling ID and notes columns. Add new column with day information. Add new column with treatment information. Create a a new column that with an index for width/length. Create new column as a binary for whether or not crabs are missing legs. Change all 91 to NA, calculate average and SE using data from the three TTR trials using rowwise operations, and remove rows where TTRavg | TTRSE = NA.  Calculate average and SE for all samples in a treatment for each day. Add/subtract TTRSEFull to/from TTRavgFull to get bounds. Ungroup.
+  ungroup(.) #Remove sampling ID and notes columns. Use slice to remove rows for crabs that were missing both swimmers. Add new column with day information. Add new column with treatment information. Create a a new column that with an index for width/length. Create new column as a binary for whether or not crabs are missing legs. Change all 91 to NA, calculate average and SE using data from the three TTR trials using rowwise operations, and remove rows where TTRavg | TTRSE = NA.  Calculate average and SE for all samples in a treatment for each day. Add/subtract TTRSEFull to/from TTRavgFull to get bounds. Ungroup.
 head(modTTR) #Confirm formatting
 ```
 
@@ -99,36 +108,36 @@ head(modTTR) #Confirm formatting
 ```{r}
 rawTTR %>%
   dplyr::select(., -c(sampling.ID, notes, probe.number)) %>%
-  mutate(., day = case_when(date == "7/8/2022" ~ 4,
-                            date == "7/12/2022" ~ 8,
-                            date == "7/15/2022" ~ 11,
-                            date == "7/19/2022" ~ 15,
-                            date == "7/22/2022" ~ 18,
-                            date == "7/26/2022" ~ 22)) %>%
+  mutate(., day = case_when(date == "7/8/22" ~ 4,
+                            date == "7/12/22" ~ 8,
+                            date == "7/15/22" ~ 11,
+                            date == "7/19/22" ~ 15,
+                            date == "7/22/22" ~ 18,
+                            date == "7/26/22" ~ 22)) %>%
   mutate(., treatment = case_when(treatment.tank == "1" | treatment.tank == "4" ~ "13C",
                                   treatment.tank == "2" | treatment.tank == "5" ~ "5C",
                                   treatment.tank == "3" | treatment.tank == "6" ~ "30C")) %>%
   mutate(., missing.legs = case_when(number.legs < 10 ~ "Y",
                                      number.legs == 10 ~ "N")) %>%
-  filter(., trial.1 == 91 | trial.2 == 91 | trial.3 == 91)
+  filter(., trial.1 == 91 | trial.2 == 91 | trial.3 == 91) #Take raw TTR data and select columns of interest. Create a day column and modify treatment column. Create a missing.legs column. Filter data where crabs did not right within 90 s for any trial
 ```
 
 ```{r}
 rawTTR %>%
   dplyr::select(., -c(sampling.ID, notes, probe.number)) %>%
-  mutate(., day = case_when(date == "7/8/2022" ~ 4,
-                            date == "7/12/2022" ~ 8,
-                            date == "7/15/2022" ~ 11,
-                            date == "7/19/2022" ~ 15,
-                            date == "7/22/2022" ~ 18,
-                            date == "7/26/2022" ~ 22)) %>%
+  mutate(., day = case_when(date == "7/8/22" ~ 4,
+                            date == "7/12/22" ~ 8,
+                            date == "7/15/22" ~ 11,
+                            date == "7/19/22" ~ 15,
+                            date == "7/22/22" ~ 18,
+                            date == "7/26/22" ~ 22)) %>%
   mutate(., treatment = case_when(treatment.tank == "1" | treatment.tank == "4" ~ "13C",
                                   treatment.tank == "2" | treatment.tank == "5" ~ "5C",
                                   treatment.tank == "3" | treatment.tank == "6" ~ "30C")) %>%
   mutate(., missing.legs = case_when(number.legs < 10 ~ "Y",
                                      number.legs == 10 ~ "N")) %>%
   filter(., trial.1 == 91 | trial.2 == 91 | trial.3 == 91) %>%
-  write.csv(., "TTR-no-flips.csv", quote = FALSE, row.names = FALSE)
+  write.csv(., "TTR-no-flips.csv", quote = FALSE, row.names = FALSE) #Take raw TTR data and select columns of interest. Create a day column and modify treatment column. Create a missing.legs column. Filter data where crabs did not right within 90 s for any trial. Save as a CSV
 ```
 
 ## TTR by various factors
@@ -144,6 +153,12 @@ plotColors <- c(brewer.pal(9, "Reds")[7],
 ```
 
 ### Treatment
+
+```{r}
+modTTR %>%
+  ggplot(., mapping(aes(x = day)))
+```
+
 
 ```{r}
 modTTR %>%
@@ -271,23 +286,38 @@ modTTR %>%
 ggsave("figures/time-to-right-size.pdf", height = 8.5, width = 11)
 ```
 
-# Assess differences by treatment using a GLM
+# Assess differences by treatment using a GLMM
+
+I have righting response data for crabs across time. I will use a gamma GLMM with a log-link to analyze how temperature, experimental day, and their interaction impact righting response. However, the crabs were unlabelled, meaning that there were likely some crabs that were assayed multiple times across the experiment. To account for this in the data analysis, I will use tank as a random effect.
+
+## GLMM
 
 ```{r}
-hist(modTTR$TTRavg)
-hist(x = log(modTTR$TTRavg)) #Log transformation helps normalize data
+#Scale continuous variables for the GLMM
+
+modTTR$carapace.width.sc <- scale(modTTR$carapace.width)
+modTTR$day.sc <- scale(modTTR$day)
+modTTR$integument.sc <- scale(modTTR$integument.cont)
 ```
 
-## GLM
-
 ```{r}
-TTRmodel <- glm(log(TTRavg) ~ as.factor(treatment) + day + as.factor(treatment)*day + 
-                  as.factor(sex) + integument.cont + carapace.width + weight + as.factor(missing.legs), data = modTTR) #GLM, with log(TTRavg) as the response variable, and treatment, day, the interaction between treatment and day, sex, integument color, carapace width, weight, and whether or not a crab is missing legs as explanatory variables.
-summary(TTRmodel) #5C different than control, 30C marg different than control
+TTRmodel <- glmer( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment)*day.sc + #Treatment, day, and their interaction
+    as.factor(sex) + integument.sc + carapace.width.sc + as.factor(missing.legs) + #Demographic variables: sex, integument color, carapace width, and missing legs
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  family = Gamma(link = "log") #Gamma model with a log link
+)
 ```
 
 ```{r}
-step(TTRmodel, direction = "backward") #Use a backwards deletion approach and AIC to identify best fit model
+summary(TTRmodel) #Get model summary output
+```
+
+```{r}
+drop1(TTRmodel) #Use a backwards deletion approach and AIC to identify best fit model. 
+
+#Dropping carapace width decreases AIC by ~2 units.
 ```
 
 ```{r}
@@ -308,19 +338,12 @@ AIC(TTRmodel2, TTRmodel3) #AIC is lower for the model that includes day and weig
 summary(TTRmodel2) #Final model for assessing TTR differences
 ```
 
+## Check assumptions
+
 ## Save model output
 
 ```{r}
 write.csv(broom::tidy(TTRmodel2), "TTR-glm-output.csv", quote = FALSE, row.names = FALSE) #Save table version of glm output
-```
-
-## Check assumptions
-
-```{r}
-hist(residuals(TTRmodel2)) #Residuals normally distributed
-
-plot(fitted(TTRmodel2), residuals(TTRmodel2)) #Borderline heteroskedastic but probably okay? Lack of dispersion across x-axis is likely related to discrete variables
-abline(h = 0, lty = 2, col = "grey")
 ```
 
 ## Posthoc tests for significant predictors
