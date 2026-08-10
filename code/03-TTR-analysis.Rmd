@@ -293,25 +293,27 @@ I have righting response data for crabs across time. I will use a gamma GLMM wit
 ## GLMM
 
 ```{r}
+head(modTTR)
+```
+
+
+```{r}
 #Scale continuous variables for the GLMM
 
 modTTR$carapace.width.sc <- scale(modTTR$carapace.width)
 modTTR$day.sc <- scale(modTTR$day)
 modTTR$integument.sc <- scale(modTTR$integument.cont)
+modTTR$number.legs.sc <- scale(modTTR$number.legs)
 ```
 
 ```{r}
 TTRmodel <- glmer( #Generalized linear mixed effect model
   TTRavg ~ as.factor(treatment)*day.sc + #Treatment, day, and their interaction
-    as.factor(sex) + integument.sc + carapace.width.sc + as.factor(missing.legs) + #Demographic variables: sex, integument color, carapace width, and missing legs
+    as.factor(sex) + integument.sc + carapace.width.sc + number.legs.sc + #Demographic variables: sex, integument color, carapace width, and missing legs
     (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
   data = modTTR,
   family = Gamma(link = "log") #Gamma model with a log link
 )
-```
-
-```{r}
-summary(TTRmodel) #Get model summary output
 ```
 
 ```{r}
@@ -321,8 +323,15 @@ drop1(TTRmodel) #Use a backwards deletion approach and AIC to identify best fit 
 ```
 
 ```{r}
-TTRmodel2 <- glm(log(TTRavg) ~ as.factor(treatment) + day + weight, data = modTTR) #Run the best fit model
-summary(TTRmodel2) #Both treatments are significantly different from the control. Day and weight are not significant
+#Rerun the model without carapace width
+
+TTRmodel2 <- glmer( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment)*day.sc + #Treatment, day, and their interaction
+    as.factor(sex) + integument.sc + as.factor(missing.legs) + #Demographic variables: sex, integument color, carapace width, and missing legs
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  family = Gamma(link = "log") #Gamma model with a log link
+)
 ```
 
 Since day and weight are not significant, I am going to run a model without these factors and compare AIC scores.
