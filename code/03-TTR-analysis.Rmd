@@ -27,6 +27,7 @@ getwd()
 # install.packages("cowplot")
 # install.packages("lme4")
 # install.packages("DHARMa")
+# install.packages("car")
 # install.packages("emmeans")
 # install.packages("multcompView")
 # install.packages("multcomp")
@@ -37,6 +38,7 @@ library(RColorBrewer)
 library(cowplot)
 library(lme4)
 library(DHARMa)
+library(car)
 library(emmeans)
 library(multcompView)
 library(multcomp)
@@ -341,7 +343,6 @@ drop1(TTRmodel2) #Use a backwards deletion approach and AIC to identify best fit
 #Dropping carapace.width.sc will reduce AIC the most
 ```
 
-
 ```{r}
 #Rerun the model without carapace width
 
@@ -383,6 +384,32 @@ summary(TTRmodel4) #Summary output of the final model
 ```
 
 ## Check assumptions
+
+```{r}
+vif(TTRmodel4) # Check multicollinearity assumption.
+
+#Values < 5 are ideal, assumption is met
+```
+
+```{r}
+sim_residuals <- simulateResiduals(fittedModel = TTRmodel4, plot = TRUE) #Simulate residuals for the final model
+```
+
+
+# 3. Simulate Residuals with DHARMa
+
+# The plot function output gives:
+# - Q-Q plot for residual uniformity & distribution fit
+# - Residuals vs. Fitted plot to test for heteroscedasticity and non-linearity
+
+# 4. Check for Overdispersion / Outliers explicitly
+testDispersion(sim_residuals)
+testOutliers(sim_residuals)
+
+# 5. Check Normality of Random Effects (Tank)
+ranef_tanks <- ranef(fit_gamma)$Tank$`(Intercept)`
+qqnorm(ranef_tanks)
+qqline(ranef_tanks)
 
 ## Save model output
 
