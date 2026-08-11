@@ -26,6 +26,7 @@ getwd()
 # install.packages("RColorBrewer")
 # install.packages("cowplot")
 # install.packages("lme4")
+install.packages("glmmTMB", type = "source")
 # install.packages("DHARMa")
 # install.packages("car")
 # install.packages("emmeans")
@@ -37,6 +38,7 @@ library(plotrix)
 library(RColorBrewer)
 library(cowplot)
 library(lme4)
+library(glmmTMB)
 library(DHARMa)
 library(car)
 library(emmeans)
@@ -73,7 +75,7 @@ modTTR <- rawTTR %>%
                                   treatment.tank == "3" | treatment.tank == "6" ~ "30C")) %>%
   mutate(., missing.legs = case_when(number.legs < 10 ~ "Y",
                                      number.legs == 10 ~ "N")) %>%
-  mutate(., integument.cont = recode(integument.color,
+  mutate(., integument.cont = dplyr::recode(integument.color,
                                      "B" = 0,
                                      "BG" = 0.5,
                                      "G" = 1, 
@@ -310,7 +312,7 @@ modTTR$number.swimmers.sc <- scale(modTTR$number.swimmers)
 ```
 
 ```{r}
-TTRmodel <- glmer( #Generalized linear mixed effect model
+TTRmodel <- glmmTMB( #Generalized linear mixed effect model
   TTRavg ~ as.factor(treatment)*day.sc + #Treatment, day, and their interaction
     as.factor(sex) + integument.sc + carapace.width.sc +number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
     (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
@@ -328,7 +330,7 @@ drop1(TTRmodel) #Use a backwards deletion approach and AIC to identify best fit 
 ```{r}
 #Rerun the model without number of swimmers
 
-TTRmodel2 <- glmer( #Generalized linear mixed effect model
+TTRmodel2 <- glmmTMB( #Generalized linear mixed effect model
   TTRavg ~ as.factor(treatment)*day.sc + #Treatment, day, and their interaction
     as.factor(sex) + integument.sc + carapace.width.sc + #Demographic variables: sex, integument color, carapace width
     (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
@@ -346,7 +348,7 @@ drop1(TTRmodel2) #Use a backwards deletion approach and AIC to identify best fit
 ```{r}
 #Rerun the model without carapace width
 
-TTRmodel3 <- glmer( #Generalized linear mixed effect model
+TTRmodel3 <- glmmTMB( #Generalized linear mixed effect model
   TTRavg ~ as.factor(treatment)*day.sc + #Treatment, day, and their interaction
     as.factor(sex) + integument.sc + #Demographic variables: sex, integument color
     (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
@@ -362,7 +364,7 @@ drop1(TTRmodel3) #Use a backwards deletion approach and AIC to identify best fit
 ```
 
 ```{r}
-TTRmodel4 <- glmer( #Generalized linear mixed effect model
+TTRmodel4 <- glmmTMB( #Generalized linear mixed effect model
   TTRavg ~ as.factor(treatment)*day.sc + #Treatment, day, and their interaction
     as.factor(sex) + #Demographic variables: sex, integument color
     (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
@@ -392,7 +394,18 @@ vif(TTRmodel4) # Check multicollinearity assumption.
 ```
 
 ```{r}
-sim_residuals <- simulateResiduals(fittedModel = TTRmodel4, plot = TRUE) #Simulate residuals for the final model
+sim_residuals <- simulateResiduals(fittedModel = TTRmodel4, n = 1000, plot = TRUE) #Simulate residuals for the final model
+
+#Residual plot is characteristic of underdispersion according to the DHARMa manual.
+```
+
+```{r}
+testUniformity(sim_residuals) #Kolmogorov-Smirnov test
+```
+```{r}
+testDispersion(sim_residuals) #Testing dispersion
+
+#Dispersion parameter is 0.36977, which is quite low. May not be a big issue?
 ```
 
 
