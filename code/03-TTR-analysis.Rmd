@@ -302,6 +302,8 @@ I have righting response data for crabs across time. I will use a gamma GLMM wit
 
 ## GLMM
 
+My first step is to try a few different model families with this dataset to understand which one leads to the lowest AIC.
+
 ```{r}
 #Scale continuous variables for the GLMM
 
@@ -311,7 +313,7 @@ modTTR$integument.sc <- scale(modTTR$integument.cont)
 modTTR$number.swimmers.sc <- scale(modTTR$number.swimmers)
 ```
 
-### Gamma distribution
+### Gamma model family
 
 ```{r}
 TTRmodelGamma <- glmmTMB( #Generalized linear mixed effect model
@@ -375,7 +377,75 @@ drop1(TTRmodelGamma4) #Use a backwards deletion approach and AIC to identify bes
 #No more terms to delete!
 ```
 
-### Log normal distribution
+### Gamma model family with polynomial term
+
+```{r}
+TTRmodelGammaPoly <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment)*(day.sc + I(day.sc^2)) + #Treatment, day (single and polynomial), and their interaction
+    as.factor(sex) + integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  family = Gamma(link = "log") #Gamma model with a log link
+)
+```
+
+```{r}
+drop1(TTRmodelGammaPoly) #Use a backwards deletion approach and AIC to identify best fit model. 
+
+#Dropping number.swimmers.sc term leads to the lowest AIC
+```
+
+```{r}
+TTRmodelGammaPoly2 <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment)*(day.sc + I(day.sc^2)) + #Treatment, day (single and polynomial), and their interaction
+    as.factor(sex) + integument.sc + carapace.width.sc + #Demographic variables: sex, integument color, carapace width
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  family = Gamma(link = "log") #Gamma model with a log link
+)
+```
+
+```{r}
+drop1(TTRmodelGammaPoly2) #Use a backwards deletion approach and AIC to identify best fit model. 
+
+#Dropping carapace.width.sc term leads to the lowest AIC
+```
+
+```{r}
+TTRmodelGammaPoly3 <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment)*(day.sc + I(day.sc^2)) + #Treatment, day (single and polynomial), and their interaction
+    as.factor(sex) + integument.sc + #Demographic variables: sex, integument color
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  family = Gamma(link = "log") #Gamma model with a log link
+)
+```
+
+```{r}
+drop1(TTRmodelGammaPoly3) #Use a backwards deletion approach and AIC to identify best fit model. 
+
+#Dropping integument.sc term leads to the lowest AIC
+```
+
+```{r}
+TTRmodelGammaPoly4 <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment)*(day.sc + I(day.sc^2)) + #Treatment, day (single and polynomial), and their interaction
+    as.factor(sex) + #Demographic variables: sex
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  family = Gamma(link = "log") #Gamma model with a log link
+)
+```
+
+```{r}
+drop1(TTRmodelGammaPoly4) #Use a backwards deletion approach and AIC to identify best fit model. 
+
+#Dropping polynomial term leads to the lowest AIC
+```
+
+Since dropping the polynomial term will lead to the lowest AIC, I will not go through the model selection process anymore, as this makes the model identical to the previous gamma family model without the polynomial term.
+
+### Log normal model family
 
 ```{r}
 TTRmodelLogNorm <- glmmTMB( #Generalized linear mixed effect model
@@ -461,37 +531,94 @@ drop1(TTRmodelLogNorm5) #Use a backwards deletion approach and AIC to identify b
 #No more terms to remove!
 ```
 
+### Inverse gaussian model family
 
+```{r}
+TTRmodelInvGaus <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
+    as.factor(sex) + integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  family = inverse.gaussian(link = "log") #Log normal model with a log link
+)
+```
 
+```{r}
+drop1(TTRmodelInvGaus) #Use a backwards deletion approach and AIC to identify best fit model. 
 
+#Removing the interaction term leads to the lowest AIC
+```
 
+```{r}
+TTRmodelInvGaus2 <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment) + day.sc +  #Treatment, day
+    as.factor(sex) + integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  family = inverse.gaussian(link = "log") #Log normal model with a log link
+)
+```
 
-- Test Inverse Gaussian and Tweedie families in glmmTMB.
-- Test adding a quadratic time term I(day.sc^2) to TTRmodelGamma.
-- If none of these alternatives significantly improve the AIC or residual plots, stick with TTRmodelGamma. Its QQ plot is nearly linear, its dispersion test is non-significant ($p = 0.052$), and minor residual curvature in DHARMa is widely accepted in GLMM ecology and physiology literature.
+```{r}
+drop1(TTRmodelInvGaus2) #Use a backwards deletion approach and AIC to identify best fit model. 
 
+#Removing sex leads to the lowest AIC
+```
 
+```{r}
+TTRmodelInvGaus3 <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment) + day.sc +  #Treatment, day
+    integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: integument color, carapace width, and number of swimmers
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  family = inverse.gaussian(link = "log") #Log normal model with a log link
+)
+```
+
+```{r}
+drop1(TTRmodelInvGaus3) #Use a backwards deletion approach and AIC to identify best fit model. 
+
+#Removing number.swimmers.sc leads to the lowest AIC
+```
+
+```{r}
+TTRmodelInvGaus4 <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment) + day.sc +  #Treatment, day
+    integument.sc + carapace.width.sc + #Demographic variables: integument color, carapace width
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  family = inverse.gaussian(link = "log") #Log normal model with a log link
+)
+```
+
+```{r}
+drop1(TTRmodelInvGaus4) #Use a backwards deletion approach and AIC to identify best fit model. 
+
+#No more terms to delete!
+```
 
 ## Final model
 
 ```{r}
-AIC(TTRmodelLogNorm5, TTRmodelGamma)
+AIC(TTRmodelGamma4, TTRmodelLogNorm5, TTRmodelInvGaus4) #Compare AIC amongst the most parsimonious models for different model families
 ```
 
+Since the gamma model has the lowest AIC, I will use that model as the final model.
+
 ```{r}
-summary(TTRmodel5) #Summary output of the final model
+summary(TTRmodelGamma4) #Summary output of the final model
 ```
 
 ## Check assumptions
 
 ```{r}
-vif(TTRmodel4) # Check multicollinearity assumption.
+vif(TTRmodelGamma4) # Check multicollinearity assumption.
 
 #Values < 5 are ideal, assumption is met
 ```
 
 ```{r}
-sim_residuals <- simulateResiduals(fittedModel = TTRmodel5, n = 1000, plot = TRUE) #Simulate residuals for the final model
+sim_residuals <- simulateResiduals(fittedModel = TTRmodelGamma4, n = 1000, plot = TRUE) #Simulate residuals for the final model
 
 #Residual plot is characteristic of underdispersion according to the DHARMa manual.
 ```
@@ -501,18 +628,23 @@ testUniformity(sim_residuals) #Kolmogorov-Smirnov test
 ```
 
 ```{r}
-testDispersion(sim_residuals)
+testDispersion(sim_residuals) #Test dispersion
+
+#Dispersion = 1.7266, but not significant overdispersion
 ```
+
+```{r}
+testOutliers(sim_residuals) #Test for outliers
+
+#No significant outliers
+```
+
 
 # 3. Simulate Residuals with DHARMa
 
 # The plot function output gives:
 # - Q-Q plot for residual uniformity & distribution fit
 # - Residuals vs. Fitted plot to test for heteroscedasticity and non-linearity
-
-# 4. Check for Overdispersion / Outliers explicitly
-testDispersion(sim_residuals)
-testOutliers(sim_residuals)
 
 # 5. Check Normality of Random Effects (Tank)
 ranef_tanks <- ranef(fit_gamma)$Tank$`(Intercept)`
