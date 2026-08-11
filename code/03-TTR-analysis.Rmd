@@ -21,16 +21,16 @@ getwd()
 # Install packages
 
 ```{r packages, include=FALSE}
-install.packages("tidyverse")
-install.packages("plotrix")
-install.packages("RColorBrewer")
-install.packages("cowplot")
-install.packages("lme4")
-install.packages("DHARMa")
-install.packages("emmeans")
-install.packages("multcompView")
-install.packages("multcomp")
-install.packages("patchwork")
+# install.packages("tidyverse")
+# install.packages("plotrix")
+# install.packages("RColorBrewer")
+# install.packages("cowplot")
+# install.packages("lme4")
+# install.packages("DHARMa")
+# install.packages("emmeans")
+# install.packages("multcompView")
+# install.packages("multcomp")
+# install.packages("patchwork")
 library(tidyverse)
 library(plotrix)
 library(RColorBrewer)
@@ -54,19 +54,12 @@ rawTTR <- read.csv("../../data/time-to-right.csv", header = TRUE) #Import raw da
 head(rawTTR) #Confirm import. Trial data is in seconds.
 ```
 
-```{r}
-rawTTR[c(92, 118, 136, 158, 229, 248),] #Rows with crabs that were missing both swimmers
-```
-
 # Format data
-
-- recode number of missing swimmers
-- recode. number of missing non-swimmers
 
 ```{r}
 modTTR <- rawTTR %>%
   dplyr::select(., -c(sampling.ID, notes, probe.number)) %>% 
-  dplyr::slice(-c(92, 118, 136, 158, 229, 248)) %>%
+  filter(., number.swimmers != 0) %>%
   mutate(., day = case_when(date == "7/8/22" ~ 4,
                             date == "7/12/22" ~ 8,
                             date == "7/15/22" ~ 11,
@@ -159,12 +152,6 @@ plotColors <- c(brewer.pal(9, "Reds")[7],
 
 ```{r}
 modTTR %>%
-  ggplot(., mapping(aes(x = day)))
-```
-
-
-```{r}
-modTTR %>%
   ggplot(., mapping = aes(x = day, y = TTRavg, color = treatment)) +
   geom_jitter(alpha = 0.75) +
   scale_x_continuous(name = "Day",
@@ -245,7 +232,7 @@ ggsave("figures/time-to-right-integument.pdf", height = 8.5, width = 11)
 
 ```{r}
 modTTR %>%
-  ggplot(., mapping = aes(x = day, y = TTRavg, color = as.factor(number.legs))) +
+  ggplot(., mapping = aes(x = day, y = TTRavg, color = as.factor(number.other.legs))) +
   geom_jitter(alpha = 0.8) +
   scale_x_continuous(name = "Day",
                      breaks = unique(modTTR$day),
@@ -255,6 +242,22 @@ modTTR %>%
                      limits = c(0, 50)) +
   theme_classic(base_size = 15)
 ggsave("figures/time-to-right-numlegs.pdf", height = 8.5, width = 11)
+```
+
+### Number of Swimmers
+
+```{r}
+modTTR %>%
+  ggplot(., mapping = aes(x = day, y = TTRavg, color = as.factor(number.swimmers))) +
+  geom_jitter(alpha = 0.8) +
+  scale_x_continuous(name = "Day",
+                     breaks = unique(modTTR$day),
+                     limits = c(4, 22)) +
+  scale_y_continuous(name = "Average Time-to-Right (s)",
+                     breaks = seq(0, 50, 10),
+                     limits = c(0, 50)) +
+  theme_classic(base_size = 15)
+ggsave("figures/time-to-right-numSwim.pdf", height = 8.5, width = 11)
 ```
 
 ### Weight
