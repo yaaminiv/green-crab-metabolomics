@@ -26,8 +26,10 @@ getwd()
 # install.packages("RColorBrewer")
 # install.packages("cowplot")
 # install.packages("lme4")
-install.packages("glmmTMB", type = "source")
+# install.packages("glmmTMB", type = "source")
 # install.packages("DHARMa")
+# install.packages("performance")
+# install.packages("see")
 # install.packages("car")
 # install.packages("emmeans")
 # install.packages("multcompView")
@@ -40,6 +42,8 @@ library(cowplot)
 library(lme4)
 library(glmmTMB)
 library(DHARMa)
+library(performance)
+library(see)
 library(car)
 library(emmeans)
 library(multcompView)
@@ -600,7 +604,7 @@ drop1(TTRmodelInvGaus4) #Use a backwards deletion approach and AIC to identify b
 ## Final model
 
 ```{r}
-AIC(TTRmodelGamma4, TTRmodelLogNorm5, TTRmodelInvGaus4) #Compare AIC amongst the most parsimonious models for different model families
+AIC(TTRmodelGamma4, TTRmodelGamma_disp4, TTRmodelLogNorm5, TTRmodelInvGaus4) #Compare AIC amongst the most parsimonious models for different model families
 ```
 
 Since the gamma model has the lowest AIC, I will use that model as the final model.
@@ -612,9 +616,9 @@ summary(TTRmodelGamma4) #Summary output of the final model
 ## Check assumptions
 
 ```{r}
-vif(TTRmodelGamma4) # Check multicollinearity assumption.
+check_collinearity(TTRmodelGamma4) # Check multicollinearity assumption.
 
-#Values < 5 are ideal, assumption is met
+#Adjusted VIF < 2, assumption is met, there is low correlation
 ```
 
 ```{r}
@@ -622,6 +626,8 @@ sim_residuals <- simulateResiduals(fittedModel = TTRmodelGamma4, n = 1000, plot 
 
 #Residual plot is characteristic of underdispersion according to the DHARMa manual.
 ```
+
+Based on the plot, there is slight non-uniformity in residual distribution. However, the distribution is almost linear, so that may be okay. There are no significant dispersion differences or any outliers. There is some curvature in the quantiles. 
 
 ```{r}
 testUniformity(sim_residuals) #Kolmogorov-Smirnov test
@@ -639,17 +645,20 @@ testOutliers(sim_residuals) #Test for outliers
 #No significant outliers
 ```
 
+```{r}
+testQuantiles(sim_residuals) #Test quantile distributions
+```
 
-# 3. Simulate Residuals with DHARMa
+```{r}
+testCategorical(sim_residuals, catPred = ~ as.factor(treatment)) #Test quantile distributions against a specific categorial predictor variable
+```
 
-# The plot function output gives:
-# - Q-Q plot for residual uniformity & distribution fit
-# - Residuals vs. Fitted plot to test for heteroscedasticity and non-linearity
+```{r}
+re_normality <- check_normality(TTRmodelGamma4, effects = "random") # Check random effect normality
+re_normality #Random effects are normally distributed (p = 0.762)
 
-# 5. Check Normality of Random Effects (Tank)
-ranef_tanks <- ranef(fit_gamma)$Tank$`(Intercept)`
-qqnorm(ranef_tanks)
-qqline(ranef_tanks)
+plot(re_normality) #QQ plot of random effects
+```
 
 ## Save model output
 
