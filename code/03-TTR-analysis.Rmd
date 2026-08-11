@@ -299,23 +299,18 @@ I have righting response data for crabs across time. I will use a gamma GLMM wit
 ## GLMM
 
 ```{r}
-head(modTTR)
-```
-
-
-```{r}
 #Scale continuous variables for the GLMM
 
 modTTR$carapace.width.sc <- scale(modTTR$carapace.width)
 modTTR$day.sc <- scale(modTTR$day)
 modTTR$integument.sc <- scale(modTTR$integument.cont)
-modTTR$number.legs.sc <- scale(modTTR$number.legs)
+modTTR$number.swimmers.sc <- scale(modTTR$number.swimmers)
 ```
 
 ```{r}
 TTRmodel <- glmer( #Generalized linear mixed effect model
   TTRavg ~ as.factor(treatment)*day.sc + #Treatment, day, and their interaction
-    as.factor(sex) + integument.sc + carapace.width.sc + number.legs.sc + #Demographic variables: sex, integument color, carapace width, and missing legs
+    as.factor(sex) + integument.sc + carapace.width.sc +number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
     (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
   data = modTTR,
   family = Gamma(link = "log") #Gamma model with a log link
@@ -325,32 +320,66 @@ TTRmodel <- glmer( #Generalized linear mixed effect model
 ```{r}
 drop1(TTRmodel) #Use a backwards deletion approach and AIC to identify best fit model. 
 
-#Dropping carapace width decreases AIC by ~2 units.
+#Dropping number.swimmers.sc decreases AIC the most
 ```
 
 ```{r}
-#Rerun the model without carapace width
+#Rerun the model without number of swimmers
 
 TTRmodel2 <- glmer( #Generalized linear mixed effect model
   TTRavg ~ as.factor(treatment)*day.sc + #Treatment, day, and their interaction
-    as.factor(sex) + integument.sc + as.factor(missing.legs) + #Demographic variables: sex, integument color, carapace width, and missing legs
+    as.factor(sex) + integument.sc + carapace.width.sc + #Demographic variables: sex, integument color, carapace width
     (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
   data = modTTR,
   family = Gamma(link = "log") #Gamma model with a log link
 )
 ```
 
-Since day and weight are not significant, I am going to run a model without these factors and compare AIC scores.
+```{r}
+drop1(TTRmodel2) #Use a backwards deletion approach and AIC to identify best fit model. 
+
+#Dropping carapace.width.sc will reduce AIC the most
+```
+
 
 ```{r}
-TTRmodel3 <- glm(log(TTRavg) ~ as.factor(treatment), data = modTTR) #Run model without insignificant variables
-AIC(TTRmodel2, TTRmodel3) #AIC is lower for the model that includes day and weight even though they are not significant.
+#Rerun the model without carapace width
+
+TTRmodel3 <- glmer( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment)*day.sc + #Treatment, day, and their interaction
+    as.factor(sex) + integument.sc + #Demographic variables: sex, integument color
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  family = Gamma(link = "log") #Gamma model with a log link
+)
+```
+
+```{r}
+drop1(TTRmodel3) #Use a backwards deletion approach and AIC to identify best fit model. 
+
+#Dropping integument.sc will reduce AIC the most
+```
+
+```{r}
+TTRmodel4 <- glmer( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment)*day.sc + #Treatment, day, and their interaction
+    as.factor(sex) + #Demographic variables: sex, integument color
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  family = Gamma(link = "log") #Gamma model with a log link
+)
+```
+
+```{r}
+drop1(TTRmodel4) #Use a backwards deletion approach and AIC to identify best fit model. 
+
+#No more terms to delete!
 ```
 
 ## Final model
 
 ```{r}
-summary(TTRmodel2) #Final model for assessing TTR differences
+summary(TTRmodel4) #Summary output of the final model
 ```
 
 ## Check assumptions
