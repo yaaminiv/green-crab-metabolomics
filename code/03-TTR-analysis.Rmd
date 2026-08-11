@@ -76,14 +76,14 @@ modTTR <- rawTTR %>%
   mutate(., missing.legs = case_when(number.legs < 10 ~ "Y",
                                      number.legs == 10 ~ "N")) %>%
   mutate(., integument.cont = dplyr::recode(integument.color,
-                                     "B" = 0,
-                                     "BG" = 0.5,
-                                     "G" = 1, 
-                                     "YG" = 1.5, 
-                                     "Y" = 2, 
-                                     "YO" = 2.5 , 
-                                     "O" = 3, 
-                                     "RO" = 3.5)) %>%
+                                            "B" = 0,
+                                            "BG" = 0.5,
+                                            "G" = 1, 
+                                            "YG" = 1.5, 
+                                            "Y" = 2, 
+                                            "YO" = 2.5 , 
+                                            "O" = 3, 
+                                            "RO" = 3.5)) %>%
   mutate(., trial.1 = na_if(trial.1, 91.00)) %>%
   mutate(., trial.2 = na_if(trial.2, 91.00)) %>%
   mutate(., trial.3 = na_if(trial.3, 91.00)) %>%
@@ -311,10 +311,12 @@ modTTR$integument.sc <- scale(modTTR$integument.cont)
 modTTR$number.swimmers.sc <- scale(modTTR$number.swimmers)
 ```
 
+### Gamma distribution
+
 ```{r}
-TTRmodel <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment)*day.sc + #Treatment, day, and their interaction
-    as.factor(sex) + integument.sc + carapace.width.sc +number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
+TTRmodelGamma <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
+    as.factor(sex) + integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
     (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
   data = modTTR,
   family = Gamma(link = "log") #Gamma model with a log link
@@ -322,16 +324,13 @@ TTRmodel <- glmmTMB( #Generalized linear mixed effect model
 ```
 
 ```{r}
-drop1(TTRmodel) #Use a backwards deletion approach and AIC to identify best fit model. 
+drop1(TTRmodelGamma) #Use a backwards deletion approach and AIC to identify best fit model. 
 
-#Dropping number.swimmers.sc decreases AIC the most
+#Removing number.swimmers.sc leads to the lowest AIC
 ```
-
 ```{r}
-#Rerun the model without number of swimmers
-
-TTRmodel2 <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment)*day.sc + #Treatment, day, and their interaction
+TTRmodelGamma2 <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
     as.factor(sex) + integument.sc + carapace.width.sc + #Demographic variables: sex, integument color, carapace width
     (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
   data = modTTR,
@@ -340,16 +339,13 @@ TTRmodel2 <- glmmTMB( #Generalized linear mixed effect model
 ```
 
 ```{r}
-drop1(TTRmodel2) #Use a backwards deletion approach and AIC to identify best fit model. 
+drop1(TTRmodelGamma2) #Use a backwards deletion approach and AIC to identify best fit model. 
 
-#Dropping carapace.width.sc will reduce AIC the most
+#Removing carapace.width.sc leads to the lowest AIC
 ```
-
 ```{r}
-#Rerun the model without carapace width
-
-TTRmodel3 <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment)*day.sc + #Treatment, day, and their interaction
+TTRmodelGamma3 <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
     as.factor(sex) + integument.sc + #Demographic variables: sex, integument color
     (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
   data = modTTR,
@@ -358,15 +354,15 @@ TTRmodel3 <- glmmTMB( #Generalized linear mixed effect model
 ```
 
 ```{r}
-drop1(TTRmodel3) #Use a backwards deletion approach and AIC to identify best fit model. 
+drop1(TTRmodelGamma3) #Use a backwards deletion approach and AIC to identify best fit model. 
 
-#Dropping integument.sc will reduce AIC the most
+#Removing integument.sc leads to the lowest AIC
 ```
 
 ```{r}
-TTRmodel4 <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment)*day.sc + #Treatment, day, and their interaction
-    as.factor(sex) + #Demographic variables: sex, integument color
+TTRmodelGamma4 <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
+    as.factor(sex) + #Demographic variables: sex
     (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
   data = modTTR,
   family = Gamma(link = "log") #Gamma model with a log link
@@ -374,15 +370,116 @@ TTRmodel4 <- glmmTMB( #Generalized linear mixed effect model
 ```
 
 ```{r}
-drop1(TTRmodel4) #Use a backwards deletion approach and AIC to identify best fit model. 
+drop1(TTRmodelGamma4) #Use a backwards deletion approach and AIC to identify best fit model. 
 
 #No more terms to delete!
 ```
 
+### Log normal distribution
+
+```{r}
+TTRmodelLogNorm <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
+    as.factor(sex) + integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  family = lognormal(link = "log") #Log normal model with a log link
+)
+```
+
+```{r}
+drop1(TTRmodelLogNorm) #Use a backwards deletion approach and AIC to identify best fit model. 
+
+#Dropping the interaction term leads to the lowest AIC
+```
+
+```{r}
+#Rerun the model without temperature:day interaction
+
+TTRmodelLogNorm2 <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment) + day.sc + #Treatment and day
+    as.factor(sex) + integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, number of swimmers
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  family = lognormal(link = "log") #Log normal model with a log link
+)
+```
+
+```{r}
+drop1(TTRmodelLogNorm2) #Use a backwards deletion approach and AIC to identify best fit model. 
+
+#Dropping integument.sc will reduce AIC the most
+```
+
+```{r}
+#Rerun the model without integument.sc
+
+TTRmodelLogNorm3 <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment) + day.sc + #Treatment and day
+    as.factor(sex) + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, carapace width, number of swimmers
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  family = lognormal(link = "log") #Log normal model with a log link
+)
+```
+
+```{r}
+drop1(TTRmodelLogNorm3) #Use a backwards deletion approach and AIC to identify best fit model. 
+
+#Dropping day.sc will reduce AIC the most
+```
+
+```{r}
+TTRmodelLogNorm4 <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment) + #Treatment
+    as.factor(sex) + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, carapace width, number of swimmers
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  family = lognormal(link = "log") #Log normal model with a log link
+)
+```
+
+```{r}
+drop1(TTRmodelLogNorm4) #Use a backwards deletion approach and AIC to identify best fit model. 
+
+#Removing sex will reduce AIC the most
+```
+
+```{r}
+TTRmodelLogNorm5 <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment) + #Treatment
+    carapace.width.sc + number.swimmers.sc + #Demographic variables: carapace width, number of swimmers
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  family = lognormal(link = "log") #Log normal model with a log link
+)
+```
+
+```{r}
+drop1(TTRmodelLogNorm5) #Use a backwards deletion approach and AIC to identify best fit model. 
+
+#No more terms to remove!
+```
+
+
+
+
+
+
+- Test Inverse Gaussian and Tweedie families in glmmTMB.
+- Test adding a quadratic time term I(day.sc^2) to TTRmodelGamma.
+- If none of these alternatives significantly improve the AIC or residual plots, stick with TTRmodelGamma. Its QQ plot is nearly linear, its dispersion test is non-significant ($p = 0.052$), and minor residual curvature in DHARMa is widely accepted in GLMM ecology and physiology literature.
+
+
+
 ## Final model
 
 ```{r}
-summary(TTRmodel4) #Summary output of the final model
+AIC(TTRmodelLogNorm5, TTRmodelGamma)
+```
+
+```{r}
+summary(TTRmodel5) #Summary output of the final model
 ```
 
 ## Check assumptions
@@ -394,7 +491,7 @@ vif(TTRmodel4) # Check multicollinearity assumption.
 ```
 
 ```{r}
-sim_residuals <- simulateResiduals(fittedModel = TTRmodel4, n = 1000, plot = TRUE) #Simulate residuals for the final model
+sim_residuals <- simulateResiduals(fittedModel = TTRmodel5, n = 1000, plot = TRUE) #Simulate residuals for the final model
 
 #Residual plot is characteristic of underdispersion according to the DHARMa manual.
 ```
@@ -402,12 +499,10 @@ sim_residuals <- simulateResiduals(fittedModel = TTRmodel4, n = 1000, plot = TRU
 ```{r}
 testUniformity(sim_residuals) #Kolmogorov-Smirnov test
 ```
+
 ```{r}
-testDispersion(sim_residuals) #Testing dispersion
-
-#Dispersion parameter is 0.36977, which is quite low. May not be a big issue?
+testDispersion(sim_residuals)
 ```
-
 
 # 3. Simulate Residuals with DHARMa
 
