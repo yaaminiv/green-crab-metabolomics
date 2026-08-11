@@ -651,6 +651,8 @@ testQuantiles(sim_residuals) #Test quantile distributions
 
 ```{r}
 testCategorical(sim_residuals, catPred = ~ as.factor(treatment)) #Test quantile distributions against a specific categorial predictor variable
+
+#Higher variance at 5ºC
 ```
 
 ```{r}
@@ -663,7 +665,9 @@ plot(re_normality) #QQ plot of random effects
 ## Save model output
 
 ```{r}
-write.csv(broom::tidy(TTRmodel2), "TTR-glm-output.csv", quote = FALSE, row.names = FALSE) #Save table version of glm output
+summary(TTRmodelGamma4)[[6]][[1]] %>%
+  as.data.frame(.) %>%
+  write.csv(., "TTRmodelGamma4-output.csv", quote = FALSE, row.names = FALSE) #Save table version of GLMM output
 ```
 
 ## Posthoc tests for significant predictors
