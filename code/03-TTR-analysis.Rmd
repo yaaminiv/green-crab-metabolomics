@@ -31,6 +31,7 @@ getwd()
 # install.packages("performance")
 # install.packages("see")
 # install.packages("car")
+# install.packages("parameters")
 # install.packages("emmeans")
 # install.packages("multcompView")
 # install.packages("multcomp")
@@ -45,6 +46,7 @@ library(DHARMa)
 library(performance)
 library(see)
 library(car)
+library(parameters)
 library(emmeans)
 library(multcompView)
 library(multcomp)
@@ -606,7 +608,6 @@ drop1(TTRmodelInvGaus4) #Use a backwards deletion approach and AIC to identify b
 ```{r}
 AIC(TTRmodelGamma4, TTRmodelGamma_disp4, TTRmodelLogNorm5, TTRmodelInvGaus4) #Compare AIC amongst the most parsimonious models for different model families
 ```
-
 Since the gamma model has the lowest AIC, I will use that model as the final model.
 
 ```{r}
@@ -662,12 +663,37 @@ re_normality #Random effects are normally distributed (p = 0.762)
 plot(re_normality) #QQ plot of random effects
 ```
 
+## Model bootstrapping
+
+Since the K-S test came out with a significant p-value and there are fluctuations in the quantile curves, I want to run a bootstrapping test on my model coefficients to confirm that my output is stable.
+
+```{r}
+boot_params <- bootstrap_parameters(TTRmodelGamma4, iterations = 1000) #Calculate bootstrapped p-values and 95% CI to on model coefficients
+print(boot_params) #See results of boostrapping
+```
+
+```{r}
+summary(TTRmodelGamma4)[[6]][[1]] #Original model output
+```
+
+Based on my comparison between the original model output and the bootstrapped p-values and confidence intervals, my original model inferences are stable!
+
+
+## CALCULATE PERCENT VARIATION EXPLAINED BY RANDOM EFFECT
+
+
+
 ## Save model output
 
 ```{r}
-summary(TTRmodelGamma4)[[6]][[1]] %>%
-  as.data.frame(.) %>%
-  write.csv(., "TTRmodelGamma4-output.csv", quote = FALSE, row.names = FALSE) #Save table version of GLMM output
+summary(TTRmodelGamma4)[[6]][[1]] %>% #Original model output
+  as.data.frame(.) %>% #Convert to a dataframe
+  rownames_to_column(., var = "Parameter") %>% #Convert rownames to Parameter column
+  left_join(x = .,
+            y = boot_params %>%
+              as.data.frame(.), #Join with bootstrap output converted to a dataframe
+            by = "Parameter") %>% #Join by the Parameter column
+  write.csv(., "TTRmodelGamma4-output.csv", quote = FALSE, row.names = FALSE) #Save table version of GLMM output with boostrapping results
 ```
 
 ## Posthoc tests for significant predictors
