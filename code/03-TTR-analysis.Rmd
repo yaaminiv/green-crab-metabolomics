@@ -614,13 +614,24 @@ Since the gamma model has the lowest AIC, I will use that model as the final mod
 summary(TTRmodelGamma4) #Summary output of the final model
 ```
 
+```{r}
+Anova(TTRmodelGamma4, type = "III") %>% #Run type III Wald tests on final model
+  broom::tidy(.) %>% #Tidy output
+  write.csv(., "TTRmodelGamma4-typeIII-Wald-output.csv", quote = FALSE, row.names = FALSE) #Save output as a CSV file
+```
+
 ## Check assumptions
+
+### Multicollinearity
+
+I want to ensure that my predictor variables are not correlated with eachother.
 
 ```{r}
 check_collinearity(TTRmodelGamma4) # Check multicollinearity assumption.
 
 #Adjusted VIF < 2, assumption is met, there is low correlation
 ```
+### Heteroskedasticity
 
 ```{r}
 sim_residuals <- simulateResiduals(fittedModel = TTRmodelGamma4, n = 1000, plot = TRUE) #Simulate residuals for the final model
@@ -634,17 +645,23 @@ Based on the plot, there is slight non-uniformity in residual distribution. Howe
 testUniformity(sim_residuals) #Kolmogorov-Smirnov test
 ```
 
+### Dispersion
+
 ```{r}
 testDispersion(sim_residuals) #Test dispersion
 
 #Dispersion = 1.7266, but not significant overdispersion
 ```
 
+### Outliers
+
 ```{r}
 testOutliers(sim_residuals) #Test for outliers
 
 #No significant outliers
 ```
+
+### Quantile distributions
 
 ```{r}
 testQuantiles(sim_residuals) #Test quantile distributions
@@ -655,6 +672,8 @@ testCategorical(sim_residuals, catPred = ~ as.factor(treatment)) #Test quantile 
 
 #Higher variance at 5ºC
 ```
+
+### Normality of random effects
 
 ```{r}
 re_normality <- check_normality(TTRmodelGamma4, effects = "random") # Check random effect normality
@@ -678,11 +697,6 @@ summary(TTRmodelGamma4)[[6]][[1]] #Original model output
 
 Based on my comparison between the original model output and the bootstrapped p-values and confidence intervals, my original model inferences are stable!
 
-
-## CALCULATE PERCENT VARIATION EXPLAINED BY RANDOM EFFECT
-
-
-
 ## Save model output
 
 ```{r}
@@ -698,14 +712,30 @@ summary(TTRmodelGamma4)[[6]][[1]] %>% #Original model output
 
 ## Posthoc tests for significant predictors
 
-There was a significant impacts of treatment! I will investigate these effects using post-hoc tests with `emmeans`.
+There was a significant impacts of treatment, day, their interaction, and sex! I will investigate these effects using post-hoc tests with `emmeans`.
+
+### Treatment
 
 ```{r}
-TTRmodel_treatment <- emmeans(TTRmodel2, pairwise ~ treatment, adjust = "tukey", data = modTTR) #Use emmeans to obtain pairwise treatment differences
+TTRmodel_treatment <- emmeans(TTRmodelGamma4, pairwise ~ treatment, adjust = "tukey", data = modTTR) #Use emmeans to obtain pairwise treatment differences
 TTRmodel_treatment$contrasts %>% broom::tidy(.) #Extract the contrast information to look at pairwise test output. Clean output using broom.
 TTRmodel_treatment$contrasts %>% 
   broom::tidy(.) %>%
   write.csv("tukey-test-treatment.csv", quote = FALSE, row.names = FALSE) #Save output as a csv.
+```
+
+### Day
+
+### Treatment x day interaction
+
+### Sex
+
+```{r}
+TTRmodel_sex <- emmeans(TTRmodelGamma4, pairwise ~ sex, adjust = "tukey", data = modTTR) #Use emmeans to obtain pairwise treatment differences
+TTRmodel_sex$contrasts %>% broom::tidy(.) #Extract the contrast information to look at pairwise test output. Clean output using broom.
+TTRmodel_sex$contrasts %>% 
+  broom::tidy(.) %>%
+  write.csv("tukey-test-sex.csv", quote = FALSE, row.names = FALSE) #Save output as a csv.
 ```
 
 # Threshold analysis
