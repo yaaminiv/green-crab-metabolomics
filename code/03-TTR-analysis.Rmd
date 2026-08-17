@@ -33,8 +33,6 @@ getwd()
 # install.packages("car")
 # install.packages("parameters")
 # install.packages("emmeans")
-# install.packages("multcompView")
-# install.packages("multcomp")
 # install.packages("patchwork")
 library(tidyverse)
 library(plotrix)
@@ -48,8 +46,6 @@ library(see)
 library(car)
 library(parameters)
 library(emmeans)
-library(multcompView)
-library(multcomp)
 library(patchwork)
 ```
 
@@ -743,7 +739,6 @@ pairs(TTRmodel_EMM_tempDay) %>% #Get pairwise comparisons for treatment x day
   dplyr::select(day, contrast:adj.p.value) %>% #Retain columns of interest
   write.csv(., "TTRmodelGamma4-emmeans-tempDay.csv", quote = FALSE, row.names = FALSE) #Save as a csv
 ```
-
 
 ### Sex
 
