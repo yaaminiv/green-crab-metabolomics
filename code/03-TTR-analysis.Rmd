@@ -712,7 +712,7 @@ summary(TTRmodelGamma4)[[6]][[1]] %>% #Original model output
 
 ## Posthoc tests for significant predictors
 
-There was a significant impacts of treatment, day, their interaction, and sex! I will investigate these effects using post-hoc tests with `emmeans`.
+There was a significant impacts of treatment, day, their interaction, and sex! I will investigate these effects by calculating estimated marginal means with `emmeans`.
 
 ### Treatment
 
@@ -731,11 +731,31 @@ TTRmodel_treatment$contrasts %>%
 ### Sex
 
 ```{r}
-TTRmodel_sex <- emmeans(TTRmodelGamma4, pairwise ~ sex, adjust = "tukey", data = modTTR) #Use emmeans to obtain pairwise treatment differences
-TTRmodel_sex$contrasts %>% broom::tidy(.) #Extract the contrast information to look at pairwise test output. Clean output using broom.
-TTRmodel_sex$contrasts %>% 
-  broom::tidy(.) %>%
+TTRmodel_EMM_sex <- emmeans(TTRmodelGamma4, #Model name
+                            ~ sex, #Significant predictor to investigate
+                            type = "response") #Convert back to the response scale since a log link was used
+pairs(TTRmodel_EMM_sex) #Get pairwise comparisons
+pairs(TTRmodel_EMM_sex) %>% #Take pairwise comparison output
+  broom::tidy(.) %>% #Tidy it using broom so it is cleaner to look at
   write.csv("tukey-test-sex.csv", quote = FALSE, row.names = FALSE) #Save output as a csv.
+```
+
+```{r}
+modTTR %>% #Formatted data
+  group_by(sex) %>% #Group by sex
+  summarize(.,avgTime = mean(TTRavg)) #Calculate average righting time for female and male crabs
+```
+
+```{r}
+modTTR %>% #Formatted data
+  ggplot(., mapping = aes(x = sex, y = TTRavg, color = sex)) + #Create a plot with sex on the x-axis, TTRavg on the y-axis, and colored by sex
+  geom_boxplot() + geom_jitter(alpha = 0.5) + #Boxplot with jittered points and lighter colored points to see overlaps
+  scale_x_discrete(name = "Sex") + #Relabel x-axis
+  scale_y_continuous(name = "Average Time-to-Right (s)",
+                     breaks = seq(0, 50, 10),
+                     limits = c(0, 50)) + #Create y-axis
+  theme_classic(base_size = 15) + theme(legend.position = "none") #Modify theme, include a base font size, and remove legend
+ggsave("figures/TTRmodelGamma4-sex.pdf", height = 8.5, width = 11) #Save plot
 ```
 
 # Threshold analysis
