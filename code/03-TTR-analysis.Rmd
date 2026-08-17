@@ -714,19 +714,36 @@ summary(TTRmodelGamma4)[[6]][[1]] %>% #Original model output
 
 There was a significant impacts of treatment, day, their interaction, and sex! I will investigate these effects by calculating estimated marginal means with `emmeans`.
 
-### Treatment
+### Treatment x day interaction
+
+Since the interaction between treatment and day was significant, I need to examine treatment differences at each day.
 
 ```{r}
-TTRmodel_treatment <- emmeans(TTRmodelGamma4, pairwise ~ treatment, adjust = "tukey", data = modTTR) #Use emmeans to obtain pairwise treatment differences
-TTRmodel_treatment$contrasts %>% broom::tidy(.) #Extract the contrast information to look at pairwise test output. Clean output using broom.
-TTRmodel_treatment$contrasts %>% 
-  broom::tidy(.) %>%
-  write.csv("tukey-test-treatment.csv", quote = FALSE, row.names = FALSE) #Save output as a csv.
+TTRmodel_EMM_tempDay <- emmeans(TTRmodelGamma4, #Model name
+                            ~ treatment | day.sc, #Significant predictor to investigate
+                            at = list(day.sc = scale(c(4, 8, 11, 15, 18, 22),
+                                                     center = mean(modTTR$day),
+                                                     scale = sd(modTTR$day))), #Days where TTR was measured. Include scale to automatically back-transform scaled predictor variable, and specify the center and scale variables used in the initial scaling for back-transformation.
+                            type = "response", #Convert back to the response scale since a log link was used
+                            adjust = "bonferroni") #Use Bonferroni correction for multiple comparisons
+TTRmodel_EMM_tempDay #Estimated marginal means
 ```
 
-### Day
 
-### Treatment x day interaction
+```{r}
+pairs(TTRmodel_EMM_tempDay) %>% #Get pairwise comparisons for treatment x day
+  broom::tidy(.) %>% #Tidy output
+  filter(., contrast != "30C / 5C") %>% #Remove comparisons between 30C and 5C
+  mutate(., day = c(rep(4, times = 2),
+                    rep(8, times = 2),
+                    rep(11, times = 2),
+                    rep(15, times = 2),
+                    rep(18, times = 2),
+                    rep(22, times = 2))) %>% #Create a column with actual date, not scaled date
+  dplyr::select(day, contrast:adj.p.value) %>% #Retain columns of interest
+  write.csv(., "TTRmodelGamma4-emmeans-tempDay.csv", quote = FALSE, row.names = FALSE) #Save as a csv
+```
+
 
 ### Sex
 
@@ -734,6 +751,10 @@ TTRmodel_treatment$contrasts %>%
 TTRmodel_EMM_sex <- emmeans(TTRmodelGamma4, #Model name
                             ~ sex, #Significant predictor to investigate
                             type = "response") #Convert back to the response scale since a log link was used
+TTRmodel_EMM_sex #Estimated marginal means
+```
+
+```{r}
 pairs(TTRmodel_EMM_sex) #Get pairwise comparisons
 pairs(TTRmodel_EMM_sex) %>% #Take pairwise comparison output
   broom::tidy(.) %>% #Tidy it using broom so it is cleaner to look at
