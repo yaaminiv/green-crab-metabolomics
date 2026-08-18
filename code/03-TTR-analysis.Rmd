@@ -447,6 +447,69 @@ drop1(TTRmodelGammaPoly4) #Use a backwards deletion approach and AIC to identify
 
 Since dropping the polynomial term will lead to the lowest AIC, I will not go through the model selection process anymore, as this makes the model identical to the previous gamma family model without the polynomial term.
 
+### Gamma model family with interaction effects between sex, treatment, and day
+
+Given that sex is a significant effect in the model, I want to see what would happen if I fit a model with interactions between sex and temperature and sex and day.
+
+```{r}
+TTRmodelSex <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
+    as.factor(sex) + as.factor(sex):as.factor(treatment) + #Sex, and interaction between sex and temperature
+    integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  family = Gamma(link = "log") #Gamma model with a log link
+)
+```
+
+```{r}
+drop1(TTRmodelSex)
+```
+```{r}
+TTRmodelSex2 <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
+    as.factor(sex) + as.factor(sex):as.factor(treatment) + #Sex, and interaction between sex and temperature
+    integument.sc + number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  family = Gamma(link = "log") #Gamma model with a log link
+)
+```
+
+```{r}
+drop1(TTRmodelSex2)
+```
+
+```{r}
+TTRmodelSex3 <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
+    as.factor(sex) + as.factor(sex):as.factor(treatment) + #Sex, and interaction between sex and temperature
+    integument.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  family = Gamma(link = "log") #Gamma model with a log link
+)
+```
+
+```{r}
+drop1(TTRmodelSex3)
+```
+
+```{r}
+TTRmodelSex4 <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
+    as.factor(sex) + as.factor(sex):as.factor(treatment) + #Sex, and interaction between sex and temperature
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  dispformula = ~ as.factor(treatment),
+  family = Gamma(link = "log") #Gamma model with a log link
+)
+```
+
+```{r}
+drop1(TTRmodelSex4)
+```
+
 ### Log normal model family
 
 ```{r}
@@ -602,7 +665,7 @@ drop1(TTRmodelInvGaus4) #Use a backwards deletion approach and AIC to identify b
 ## Final model
 
 ```{r}
-AIC(TTRmodelGamma4, TTRmodelGamma_disp4, TTRmodelLogNorm5, TTRmodelInvGaus4) #Compare AIC amongst the most parsimonious models for different model families
+AIC(TTRmodelGamma4, TTRmodelGamma_disp4, TTRmodelSex4, TTRmodelLogNorm5, TTRmodelInvGaus4) #Compare AIC amongst the most parsimonious models for different model families
 ```
 Since the gamma model has the lowest AIC, I will use that model as the final model.
 
@@ -623,14 +686,15 @@ Anova(TTRmodelGamma4, type = "III") %>% #Run type III Wald tests on final model
 I want to ensure that my predictor variables are not correlated with eachother.
 
 ```{r}
-check_collinearity(TTRmodelGamma4) # Check multicollinearity assumption.
+check_collinearity(TTRmodelSex4) # Check multicollinearity assumption.
 
 #Adjusted VIF < 2, assumption is met, there is low correlation
 ```
+
 ### Heteroskedasticity
 
 ```{r}
-sim_residuals <- simulateResiduals(fittedModel = TTRmodelGamma4, n = 1000, plot = TRUE) #Simulate residuals for the final model
+sim_residuals <- simulateResiduals(fittedModel = TTRmodelSex4, n = 1000, plot = TRUE) #Simulate residuals for the final model
 
 #Residual plot is characteristic of underdispersion according to the DHARMa manual.
 ```
@@ -683,12 +747,12 @@ plot(re_normality) #QQ plot of random effects
 Since the K-S test came out with a significant p-value and there are fluctuations in the quantile curves, I want to run a bootstrapping test on my model coefficients to confirm that my output is stable.
 
 ```{r}
-boot_params <- bootstrap_parameters(TTRmodelGamma4, iterations = 1000) #Calculate bootstrapped p-values and 95% CI to on model coefficients
+boot_params <- bootstrap_parameters(TTRmodelSex4, iterations = 1000) #Calculate bootstrapped p-values and 95% CI to on model coefficients
 print(boot_params) #See results of boostrapping
 ```
 
 ```{r}
-summary(TTRmodelGamma4)[[6]][[1]] #Original model output
+summary(TTRmodelSex4)[[6]][[1]] #Original model output
 ```
 
 Based on my comparison between the original model output and the bootstrapped p-values and confidence intervals, my original model inferences are stable!
@@ -850,7 +914,7 @@ modTTR %>%
 
 ```{r}
 modTTR %>%
-  dplyr::select(., c(day, treatment, TTRavg)) %>%
+  dplyr::select(., c(day, treatment, sex, TTRavg)) %>%
   distinct(.) %>%
   mutate(., treatment = gsub(x = treatment, pattern = "5C", replacement = "05C")) %>%
   mutate(., day = gsub(x = day, pattern = 4, replacement = "04")) %>%
@@ -861,7 +925,6 @@ modTTR %>%
   mutate(., day = gsub(x = day, pattern = 22, replacement = "22")) %>%
   ggplot(mapping = aes(x = day, y = TTRavg, color = treatment, shape = treatment)) +
   geom_boxplot(outlier.shape = NA) + geom_jitter(position = position_dodge(width = 0.75)) +
-  # geom_hline(aes(yintercept = boxplot.stats(modTTR$TTRavg)$stats[5]), lty = 2, color = "black") +
   ylab("Average Time-to-Right (s)") +
   scale_x_discrete(name = "Day",
                    breaks = c("04", "08", "11", "18", "15", "22"),
@@ -876,11 +939,6 @@ modTTR %>%
                      labels = c("5", "13", "30")) +
   theme_classic(base_size = 15) #Select unique day, treatment, and TTRavg data. Replace numbers with characters to facilitate better ordering. Plot average TTR for each crab in a boxplot. Do not show outliers with the OG boxplot, but add them in with geom_jitter. Add horizontal line for boxplot outlier threshold. Assign colors to each treatment. Increase base font size.
 ```
-
-```{r}
-TTRmodel_treatment$contrasts %>% broom::tidy(.) #Extract the contrast information to look at pairwise test output. Clean output using broom.
-```
-
 
 ```{r}
 mainPlot <- modTTR %>%
@@ -911,7 +969,7 @@ mainPlot <- modTTR %>%
            label = expression(paste(bolditalic("Temperature:  "), chi^2, " = 124.69, p < 0.0001")),
            hjust = 1) +
   annotate(geom = "text", x = 7.5, y = 30.5,
-           label = expression(paste(bolditalic("Day:  "), chi^2, " = 11.21, p = 0.0008")),
+           label = expression(paste(bolditalic("Day:  "), chi^2, " = 11.22, p = 0.0008")),
            hjust = 1) +
   annotate(geom = "text", x = 7.5, y = 29,
            label = expression(paste(bolditalic("Temperature x Day:  "), chi^2, " = 12.15, p = 0.002")),
