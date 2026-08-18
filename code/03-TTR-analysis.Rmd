@@ -453,63 +453,53 @@ Given that sex is a significant effect in the model, I want to see what would ha
 
 ```{r}
 TTRmodelSex <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
-    as.factor(sex) + as.factor(sex):as.factor(treatment) + #Sex, and interaction between sex and temperature
-    integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
+  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc +  #Treatment, day, and their interaction
+    as.factor(sex) + as.factor(sex):as.factor(treatment) + as.factor(sex):day.sc + #Sex, interaction between sex and temperature, and interaction between sex and day
+    integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: integument color, carapace width, and number of swimmers
     (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
   data = modTTR,
+  dispformula = ~ as.factor(sex) + as.factor(treatment),
   family = Gamma(link = "log") #Gamma model with a log link
 )
 ```
 
 ```{r}
-drop1(TTRmodelSex)
-```
-```{r}
-TTRmodelSex2 <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
-    as.factor(sex) + as.factor(sex):as.factor(treatment) + #Sex, and interaction between sex and temperature
-    integument.sc + number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
-    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
-  data = modTTR,
-  family = Gamma(link = "log") #Gamma model with a log link
-)
+drop1(TTRmodelSex) #Dropping carapace with and number of swimmers leads to the same AIC. I will remove carapace width since that is less central to the core hypothesis, and I want to ensure missing swimmers did not impact righting response.
 ```
 
 ```{r}
-drop1(TTRmodelSex2)
+TTRmodelSex2 <- update(TTRmodelSex, . ~ . - carapace.width.sc) #Drop carapace width
 ```
 
 ```{r}
-TTRmodelSex3 <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
-    as.factor(sex) + as.factor(sex):as.factor(treatment) + #Sex, and interaction between sex and temperature
-    integument.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
-    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
-  data = modTTR,
-  family = Gamma(link = "log") #Gamma model with a log link
-)
+drop1(TTRmodelSex2) #Dropping number of swimmers leads to lowest AIC
 ```
 
 ```{r}
-drop1(TTRmodelSex3)
+TTRmodelSex3 <- update(TTRmodelSex2, . ~ . - number.swimmers.sc ) #Drop number of swimmers
 ```
 
 ```{r}
-TTRmodelSex4 <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
-    as.factor(sex) + as.factor(sex):as.factor(treatment) + #Sex, and interaction between sex and temperature
-    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
-  data = modTTR,
-  dispformula = ~ as.factor(treatment),
-  family = Gamma(link = "log") #Gamma model with a log link
-)
+drop1(TTRmodelSex3) #Dropping integument color leads to the lowest AIC
 ```
 
 ```{r}
-drop1(TTRmodelSex4)
+TTRmodelSex4 <- update(TTRmodelSex3, . ~ . - integument.sc) #Drop number of swimmers
 ```
 
+```{r}
+drop1(TTRmodelSex4) #Dropping sex:day interaction leads to lowest AIC
+```
+
+```{r}
+TTRmodelSex5 <- update(TTRmodelSex4, . ~ . - day.sc:as.factor(sex)) #Drop sex:day interaction
+```
+
+```{r}
+drop1(TTRmodelSex5)
+
+#No more deletions necessary!
+```
 ### Log normal model family
 
 ```{r}
@@ -665,18 +655,18 @@ drop1(TTRmodelInvGaus4) #Use a backwards deletion approach and AIC to identify b
 ## Final model
 
 ```{r}
-AIC(TTRmodelGamma4, TTRmodelGamma_disp4, TTRmodelSex4, TTRmodelLogNorm5, TTRmodelInvGaus4) #Compare AIC amongst the most parsimonious models for different model families
+AIC(TTRmodelGamma4, TTRmodelGamma_disp4, TTRmodelSex5, TTRmodelLogNorm5, TTRmodelInvGaus4) #Compare AIC amongst the most parsimonious models for different model families
 ```
-Since the gamma model has the lowest AIC, I will use that model as the final model.
+Since the gamma model with a sex:temperature interaction has the lowest AIC, I will use that model as the final model.
 
 ```{r}
-summary(TTRmodelGamma4) #Summary output of the final model
+summary(TTRmodelSex5) #Summary output of the final model
 ```
 
 ```{r}
-Anova(TTRmodelGamma4, type = "III") %>% #Run type III Wald tests on final model
+Anova(TTRmodelSex5, type = "III") %>% #Run type III Wald tests on final model
   broom::tidy(.) %>% #Tidy output
-  write.csv(., "TTRmodelGamma4-typeIII-Wald-output.csv", quote = FALSE, row.names = FALSE) #Save output as a CSV file
+  write.csv(., "TTRmodelSex5-typeIII-Wald-output.csv", quote = FALSE, row.names = FALSE) #Save output as a CSV file
 ```
 
 ## Check assumptions
@@ -686,7 +676,7 @@ Anova(TTRmodelGamma4, type = "III") %>% #Run type III Wald tests on final model
 I want to ensure that my predictor variables are not correlated with eachother.
 
 ```{r}
-check_collinearity(TTRmodelSex4) # Check multicollinearity assumption.
+check_collinearity(TTRmodelSex5) # Check multicollinearity assumption.
 
 #Adjusted VIF < 2, assumption is met, there is low correlation
 ```
@@ -694,9 +684,7 @@ check_collinearity(TTRmodelSex4) # Check multicollinearity assumption.
 ### Heteroskedasticity
 
 ```{r}
-sim_residuals <- simulateResiduals(fittedModel = TTRmodelSex4, n = 1000, plot = TRUE) #Simulate residuals for the final model
-
-#Residual plot is characteristic of underdispersion according to the DHARMa manual.
+sim_residuals <- simulateResiduals(fittedModel = TTRmodelSex5, n = 1000, plot = TRUE) #Simulate residuals for the final model
 ```
 
 Based on the plot, there is slight non-uniformity in residual distribution. However, the distribution is almost linear, so that may be okay. There are no significant dispersion differences or any outliers. There is some curvature in the quantiles. 
@@ -710,7 +698,7 @@ testUniformity(sim_residuals) #Kolmogorov-Smirnov test
 ```{r}
 testDispersion(sim_residuals) #Test dispersion
 
-#Dispersion = 1.7266, but not significant overdispersion
+#Dispersion = 1.384, but not significant overdispersion
 ```
 
 ### Outliers
@@ -718,7 +706,7 @@ testDispersion(sim_residuals) #Test dispersion
 ```{r}
 testOutliers(sim_residuals) #Test for outliers
 
-#No significant outliers
+#No significant outliers (p = 0.09051)
 ```
 
 ### Quantile distributions
@@ -728,16 +716,22 @@ testQuantiles(sim_residuals) #Test quantile distributions
 ```
 
 ```{r}
+testCategorical(sim_residuals, catPred = ~ as.factor(sex)) #Test quantile distributions against a specific categorial predictor variable
+
+#Lower variance at M
+```
+
+```{r}
 testCategorical(sim_residuals, catPred = ~ as.factor(treatment)) #Test quantile distributions against a specific categorial predictor variable
 
-#Higher variance at 5ºC
+#Low variance at 13ºC and 30ºC
 ```
 
 ### Normality of random effects
 
 ```{r}
-re_normality <- check_normality(TTRmodelGamma4, effects = "random") # Check random effect normality
-re_normality #Random effects are normally distributed (p = 0.762)
+re_normality <- check_normality(TTRmodelSex5, effects = "random") # Check random effect normality
+re_normality #Random effects are normally distributed (p = 0.733)
 
 plot(re_normality) #QQ plot of random effects
 ```
@@ -747,12 +741,12 @@ plot(re_normality) #QQ plot of random effects
 Since the K-S test came out with a significant p-value and there are fluctuations in the quantile curves, I want to run a bootstrapping test on my model coefficients to confirm that my output is stable.
 
 ```{r}
-boot_params <- bootstrap_parameters(TTRmodelSex4, iterations = 1000) #Calculate bootstrapped p-values and 95% CI to on model coefficients
+boot_params <- bootstrap_parameters(TTRmodelSex5, iterations = 1000) #Calculate bootstrapped p-values and 95% CI to on model coefficients
 print(boot_params) #See results of boostrapping
 ```
 
 ```{r}
-summary(TTRmodelSex4)[[6]][[1]] #Original model output
+summary(TTRmodelSex5)[[6]][[1]] #Original model output
 ```
 
 Based on my comparison between the original model output and the bootstrapped p-values and confidence intervals, my original model inferences are stable!
@@ -760,14 +754,14 @@ Based on my comparison between the original model output and the bootstrapped p-
 ## Save model output
 
 ```{r}
-summary(TTRmodelGamma4)[[6]][[1]] %>% #Original model output
+summary(TTRmodelSex5)[[6]][[1]] %>% #Original model output
   as.data.frame(.) %>% #Convert to a dataframe
   rownames_to_column(., var = "Parameter") %>% #Convert rownames to Parameter column
   left_join(x = .,
             y = boot_params %>%
               as.data.frame(.), #Join with bootstrap output converted to a dataframe
             by = "Parameter") %>% #Join by the Parameter column
-  write.csv(., "TTRmodelGamma4-output.csv", quote = FALSE, row.names = FALSE) #Save table version of GLMM output with boostrapping results
+  write.csv(., "TTRmodelSex5-output.csv", quote = FALSE, row.names = FALSE) #Save table version of GLMM output with boostrapping results
 ```
 
 ## Posthoc tests for significant predictors
@@ -780,12 +774,12 @@ Since the interaction between treatment and day was significant, I need to exami
 
 ```{r}
 TTRmodel_EMM_tempDay <- emmeans(TTRmodelGamma4, #Model name
-                            ~ treatment | day.sc, #Significant predictor to investigate
-                            at = list(day.sc = scale(c(4, 8, 11, 15, 18, 22),
-                                                     center = mean(modTTR$day),
-                                                     scale = sd(modTTR$day))), #Days where TTR was measured. Include scale to automatically back-transform scaled predictor variable, and specify the center and scale variables used in the initial scaling for back-transformation.
-                            type = "response", #Convert back to the response scale since a log link was used
-                            adjust = "bonferroni") #Use Bonferroni correction for multiple comparisons
+                                ~ treatment | day.sc, #Significant predictor to investigate
+                                at = list(day.sc = scale(c(4, 8, 11, 15, 18, 22),
+                                                         center = mean(modTTR$day),
+                                                         scale = sd(modTTR$day))), #Days where TTR was measured. Include scale to automatically back-transform scaled predictor variable, and specify the center and scale variables used in the initial scaling for back-transformation.
+                                type = "response", #Convert back to the response scale since a log link was used
+                                adjust = "bonferroni") #Use Bonferroni correction for multiple comparisons
 TTRmodel_EMM_tempDay #Estimated marginal means
 ```
 
@@ -832,18 +826,41 @@ modTTR %>%
 
 ```{r}
 modTTR %>%
-  group_by(treatment, sex) %>% #Group dataset by day and sex
-  summarize(count = n()) %>% #Count the number of males and females each day
-  pivot_wider(., names_from = sex, values_from = count) %>% #Pivot table wider and add "sex" to the beginning of each column name to avoid a column named "F" (which can be confused with FALSE by R)
-  mutate(diff = `M` - `F`) #Count the difference in sample size between dates
+  group_by(sex) %>% #Group dataset by sex
+  summarize(count = n(),
+            avgWeight = mean(weight),
+            avgCW = mean(carapace.width)) %>% #Count the number of males and females and average weight and carapace wdith
+  pivot_wider(., names_from = sex, values_from = c(count, avgWeight, avgCW)) %>% #Pivot table wider
+  mutate(count_diff = count_M - count_F,
+         weight_diff = avgWeight_M - avgWeight_F,
+         avgCW_diff = avgCW_M - avgCW_F) #Quantify the difference between females and males for all variables
 ```
+
+On average, female crabs are smaller and weigh less than male crabs. Since carapace width was removed from the model during model selection, it is likely that sex not only explains physical differences that allow for faster righting, but potentially also biochemical differences in righting response. 
+
+```{r}
+modTTR %>%
+  group_by(treatment, sex) %>% #Group dataset by treatment and sex
+  summarize(count = n(),
+            avgWeight = mean(weight),
+            avgCW = mean(carapace.width)) %>% #Count the number of males and females and average weight and carapace wdith
+  pivot_wider(., names_from = sex, values_from = c(count, avgWeight, avgCW)) %>% #Pivot table wider
+  mutate(count_diff = count_M - count_F,
+         weight_diff = avgWeight_M - avgWeight_F,
+         avgCW_diff = avgCW_M - avgCW_F) #Quantify the difference between females and males for all variables
+```
+
 
 ```{r}
 modTTR %>%
   group_by(day, sex) %>% #Group dataset by day and sex
-  summarize(count = n()) %>% #Count the number of males and females each day
-  pivot_wider(., names_from = sex, values_from = count) %>% #Pivot table wider and add "sex" to the beginning of each column name to avoid a column named "F" (which can be confused with FALSE by R)
-  mutate(diff = `M` - `F`) #Count the difference in sample size between dates
+  summarize(count = n(),
+            avgWeight = mean(weight),
+            avgCW = mean(carapace.width)) %>% #Count the number of males and females and average weight and carapace wdith
+  pivot_wider(., names_from = sex, values_from = c(count, avgWeight, avgCW)) %>% #Pivot table wider
+  mutate(count_diff = count_M - count_F,
+         weight_diff = avgWeight_M - avgWeight_F,
+         avgCW_diff = avgCW_M - avgCW_F) #Quantify the difference between females and males for all variables
 ```
 
 ```{r}
