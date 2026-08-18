@@ -820,6 +820,32 @@ pairs(TTRmodel_EMM_sex) %>% #Take pairwise comparison output
   write.csv("TTRmodelGamma4-emmeans-sex.csv", quote = FALSE, row.names = FALSE) #Save output as a csv.
 ```
 
+I am interested in why sex is deemed a significant predictor in this model. My suspicion is that it is due to sample size differences between males and females over the course of the experiment.
+
+```{r}
+modTTR %>%
+  group_by(sex) %>% #Group dataset by day and sex
+  summarize(count = n()) %>% #Count the number of males and females each day
+  pivot_wider(., names_from = sex, values_from = count) %>% #Pivot table wider and add "sex" to the beginning of each column name to avoid a column named "F" (which can be confused with FALSE by R)
+  mutate(diff = `M` - `F`) #Count the difference in sample size between dates
+```
+
+```{r}
+modTTR %>%
+  group_by(treatment, sex) %>% #Group dataset by day and sex
+  summarize(count = n()) %>% #Count the number of males and females each day
+  pivot_wider(., names_from = sex, values_from = count) %>% #Pivot table wider and add "sex" to the beginning of each column name to avoid a column named "F" (which can be confused with FALSE by R)
+  mutate(diff = `M` - `F`) #Count the difference in sample size between dates
+```
+
+```{r}
+modTTR %>%
+  group_by(day, sex) %>% #Group dataset by day and sex
+  summarize(count = n()) %>% #Count the number of males and females each day
+  pivot_wider(., names_from = sex, values_from = count) %>% #Pivot table wider and add "sex" to the beginning of each column name to avoid a column named "F" (which can be confused with FALSE by R)
+  mutate(diff = `M` - `F`) #Count the difference in sample size between dates
+```
+
 ```{r}
 modTTR %>% #Formatted data
   group_by(sex) %>% #Group by sex
