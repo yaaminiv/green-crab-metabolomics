@@ -768,12 +768,18 @@ summary(TTRmodelSex5)[[6]][[1]] %>% #Original model output
 
 There was a significant impacts of treatment, day, their interaction, and sex! I will investigate these effects by calculating estimated marginal means with `emmeans`.
 
+```{r}
+Anova(TTRmodelSex5, type = "III") %>% #Run type III Wald tests on final model
+  broom::tidy(.)
+```
+
+
 ### Treatment x day interaction
 
 Since the interaction between treatment and day was significant, I need to examine treatment differences at each day.
 
 ```{r}
-TTRmodel_EMM_tempDay <- emmeans(TTRmodelGamma4, #Model name
+TTRmodel_EMM_tempDay <- emmeans(TTRmodelSex5, #Model name
                                 ~ treatment | day.sc, #Significant predictor to investigate
                                 at = list(day.sc = scale(c(4, 8, 11, 15, 18, 22),
                                                          center = mean(modTTR$day),
@@ -795,48 +801,29 @@ pairs(TTRmodel_EMM_tempDay) %>% #Get pairwise comparisons for treatment x day
                     rep(18, times = 2),
                     rep(22, times = 2))) %>% #Create a column with actual date, not scaled date
   dplyr::select(day, contrast:adj.p.value) %>% #Retain columns of interest
-  write.csv(., "TTRmodelGamma4-emmeans-tempDay.csv", quote = FALSE, row.names = FALSE) #Save as a csv
+  write.csv(., "TTRmodelSex5-emmeans-tempDay.csv", quote = FALSE, row.names = FALSE) #Save as a csv
 ```
 
-### Sex
+### Sex x temperature interaction
+
+Since the interaction between treatment and day was significant, I need to examine treatment differences at each day.
 
 ```{r}
-TTRmodel_EMM_sex <- emmeans(TTRmodelGamma4, #Model name
-                            ~ sex, #Significant predictor to investigate
-                            type = "response") #Convert back to the response scale since a log link was used
-TTRmodel_EMM_sex #Estimated marginal means
+TTRmodel_EMM_tempSex <- emmeans(TTRmodelSex5, #Model name
+                                ~ sex | treatment, #Significant predictor to investigate
+                                type = "response", #Convert back to the response scale since a log link was used
+                                adjust = "bonferroni") #Use Bonferroni correction for multiple comparisons
+TTRmodel_EMM_tempSex #Estimated marginal means
 ```
+
 
 ```{r}
-pairs(TTRmodel_EMM_sex) #Get pairwise comparisons
-pairs(TTRmodel_EMM_sex) %>% #Take pairwise comparison output
-  broom::tidy(.) %>% #Tidy it using broom so it is cleaner to look at
-  write.csv("TTRmodelGamma4-emmeans-sex.csv", quote = FALSE, row.names = FALSE) #Save output as a csv.
+pairs(TTRmodel_EMM_tempSex) %>% #Get pairwise comparisons for treatment x day
+  broom::tidy(.) %>% #Tidy output
+  write.csv(., "TTRmodelSex5-emmeans-tempSex.csv", quote = FALSE, row.names = FALSE) #Save as a csv
 ```
 
-I am interested in why sex is deemed a significant predictor in this model. My suspicion is that it is due to sample size differences between males and females over the course of the experiment.
-
-```{r}
-modTTR %>%
-  group_by(sex) %>% #Group dataset by day and sex
-  summarize(count = n()) %>% #Count the number of males and females each day
-  pivot_wider(., names_from = sex, values_from = count) %>% #Pivot table wider and add "sex" to the beginning of each column name to avoid a column named "F" (which can be confused with FALSE by R)
-  mutate(diff = `M` - `F`) #Count the difference in sample size between dates
-```
-
-```{r}
-modTTR %>%
-  group_by(sex) %>% #Group dataset by sex
-  summarize(count = n(),
-            avgWeight = mean(weight),
-            avgCW = mean(carapace.width)) %>% #Count the number of males and females and average weight and carapace wdith
-  pivot_wider(., names_from = sex, values_from = c(count, avgWeight, avgCW)) %>% #Pivot table wider
-  mutate(count_diff = count_M - count_F,
-         weight_diff = avgWeight_M - avgWeight_F,
-         avgCW_diff = avgCW_M - avgCW_F) #Quantify the difference between females and males for all variables
-```
-
-On average, female crabs are smaller and weigh less than male crabs. Since carapace width was removed from the model during model selection, it is likely that sex not only explains physical differences that allow for faster righting, but potentially also biochemical differences in righting response. 
+I am interested in why sex:temperature is deemed a significant predictor in this model.
 
 ```{r}
 modTTR %>%
@@ -850,24 +837,17 @@ modTTR %>%
          avgCW_diff = avgCW_M - avgCW_F) #Quantify the difference between females and males for all variables
 ```
 
-
-```{r}
-modTTR %>%
-  group_by(day, sex) %>% #Group dataset by day and sex
-  summarize(count = n(),
-            avgWeight = mean(weight),
-            avgCW = mean(carapace.width)) %>% #Count the number of males and females and average weight and carapace wdith
-  pivot_wider(., names_from = sex, values_from = c(count, avgWeight, avgCW)) %>% #Pivot table wider
-  mutate(count_diff = count_M - count_F,
-         weight_diff = avgWeight_M - avgWeight_F,
-         avgCW_diff = avgCW_M - avgCW_F) #Quantify the difference between females and males for all variables
-```
+On average, female crabs are smaller and weigh less than male crabs. Since carapace width was removed from the model during model selection, it is likely that sex not only explains physical differences that allow for faster righting, but potentially also biochemical differences in righting response. 
 
 ```{r}
 modTTR %>% #Formatted data
-  group_by(sex) %>% #Group by sex
-  summarize(.,avgTime = mean(TTRavg)) #Calculate average righting time for female and male crabs
+  group_by(treatment, sex) %>% #Group dataset by treatment and sex
+  summarize(.,avgTime = mean(TTRavg),
+            sdTime = sd(TTRavg)) %>% #Calculate average righting time for female and male crabs
+  pivot_wider(., names_from = sex, names_prefix = "TTRavg", values_from = c(avgTime, sdTime)) #Pivot table wider
 ```
+
+Females right faster than males at 13ºC and 30ºC, but interestingly are slower than males at 5ºC.
 
 ```{r}
 modTTR %>% #Formatted data
