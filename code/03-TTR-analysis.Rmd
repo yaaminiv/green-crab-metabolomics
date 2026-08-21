@@ -773,10 +773,9 @@ Anova(TTRmodelSex5, type = "III") %>% #Run type III Wald tests on final model
   broom::tidy(.)
 ```
 
-
 ### Treatment x day interaction
 
-Since the interaction between treatment and day was significant, I need to examine treatment differences at each day.
+I first will examine treatment differences at each day.
 
 ```{r}
 TTRmodel_EMM_tempDay <- emmeans(TTRmodelSex5, #Model name
@@ -802,6 +801,35 @@ pairs(TTRmodel_EMM_tempDay) %>% #Get pairwise comparisons for treatment x day
                     rep(22, times = 2))) %>% #Create a column with actual date, not scaled date
   dplyr::select(day, contrast:adj.p.value) %>% #Retain columns of interest
   write.csv(., "TTRmodelSex5-emmeans-tempDay.csv", quote = FALSE, row.names = FALSE) #Save as a csv
+```
+
+Now that I have this information, I want to understand how responses within a temperature changed over time. In order to get pairwise estimates, I will need to refactor day as a categorical variable, rerun the model, and then use `emmeans` on this revised model.
+
+```{r}
+modTTR$day_factor <- as.factor(modTTR$day) #Code day as a factor
+TTRmodelSex5_factor <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ as.factor(treatment) + day_factor + as.factor(treatment):day_factor + #Temperature, time, and their interaction
+    as.factor(sex) + as.factor(treatment):as.factor(sex) + #Sex and the interaction between temperature and sex
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  dispformula = ~ as.factor(sex) + as.factor(treatment), #Model dispersion by additive sex and temperature
+  family = Gamma(link = "log") #Gamma model with a log link
+) #Run the original model, but use day as a factor
+```
+
+```{r}
+TTRmodel_EMM_dayTemp <- emmeans(TTRmodelSex5_factor, #Model name
+                                ~ day_factor | treatment, #Significant predictor to investigate
+                                type = "response", #Convert back to the response scale since a log link was used
+                                adjust = "bonferroni") #Use Bonferroni correction for multiple comparisons
+TTRmodel_EMM_dayTemp #Estimated marginal means
+```
+
+```{r}
+pairs(TTRmodel_EMM_dayTemp) %>% #Get pairwise comparisons for day x treatment
+  broom::tidy(.) %>% #Tidy output
+  dplyr::select(treatment, contrast:adj.p.value) %>% #Retain columns of interest
+  write.csv(., "TTRmodelSex5_factor-emmeans-dayTemp.csv", quote = FALSE, row.names = FALSE) #Save as a csv
 ```
 
 ### Sex x temperature interaction
