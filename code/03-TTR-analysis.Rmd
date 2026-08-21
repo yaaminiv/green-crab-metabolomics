@@ -1017,16 +1017,13 @@ mainPlot <- modTTR %>%
                      breaks = c("05C", "13C", "30C"),
                      labels = c("5", "13", "30")) +
   annotate(geom = "text", x = 7.5, y = 32,
-           label = expression(paste(bolditalic("Temperature:  "), chi^2, " = 124.69, p < 0.0001")),
+           label = expression(paste(bolditalic("Temperature:  "), chi^2, " = 276.90, p < 0.0001")),
            hjust = 1) +
   annotate(geom = "text", x = 7.5, y = 30.5,
-           label = expression(paste(bolditalic("Day:  "), chi^2, " = 11.22, p = 0.0008")),
+           label = expression(paste(bolditalic("Day:  "), chi^2, " = 8.38, p = 0.003")),
            hjust = 1) +
   annotate(geom = "text", x = 7.5, y = 29,
-           label = expression(paste(bolditalic("Temperature x Day:  "), chi^2, " = 12.15, p = 0.002")),
-           hjust = 1) +
-  annotate(geom = "text", x = 7.5, y = 27.5,
-           label = expression(paste(bolditalic("Sex:  "), chi^2, " = 6.61, p = 0.01")),
+           label = expression(paste(bolditalic("Temperature x Day:  "), chi^2, " = 8.98, p = 0.01")),
            hjust = 1) +
   theme_classic(base_size = 15) #Select unique day, treatment, and TTRavg data. Replace numbers with characters to facilitate better ordering. Plot average TTR for each crab in a boxplot. Do not show outliers with the OG boxplot, but add them in with geom_jitter. Assign colors to each treatment. Add annotations with Wald test output for significant predictors. Increase base font size.
 
