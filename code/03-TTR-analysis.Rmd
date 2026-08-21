@@ -1016,16 +1016,17 @@ mainPlot <- modTTR %>%
                      name = "Temperature (ºC)",
                      breaks = c("05C", "13C", "30C"),
                      labels = c("5", "13", "30")) +
-  annotate(geom = "text", x = 7.5, y = 32,
-           label = expression(paste(bolditalic("Temperature:  "), chi^2, " = 276.90, p < 0.0001")),
-           hjust = 1) +
-  annotate(geom = "text", x = 7.5, y = 30.5,
-           label = expression(paste(bolditalic("Day:  "), chi^2, " = 8.38, p = 0.003")),
-           hjust = 1) +
-  annotate(geom = "text", x = 7.5, y = 29,
-           label = expression(paste(bolditalic("Temperature x Day:  "), chi^2, " = 8.98, p = 0.01")),
-           hjust = 1) +
-  theme_classic(base_size = 15) #Select unique day, treatment, and TTRavg data. Replace numbers with characters to facilitate better ordering. Plot average TTR for each crab in a boxplot. Do not show outliers with the OG boxplot, but add them in with geom_jitter. Assign colors to each treatment. Add annotations with Wald test output for significant predictors. Increase base font size.
+  # annotate(geom = "text", x = 6.5, y = 31.5,
+  #          label = expression(paste(bolditalic("Temperature:  "), chi^2, " = 276.90, p < 0.0001")),
+  #          hjust = 1) +
+  # annotate(geom = "text", x = 6.5, y = 30,
+  #          label = expression(paste(bolditalic("Day:  "), chi^2, " = 8.38, p = 0.003")),
+  #          hjust = 1) +
+  # annotate(geom = "text", x = 6.5, y = 28.5,
+  #          label = expression(paste(bolditalic("Temperature x Day:  "), chi^2, " = 8.98, p = 0.01")),
+  #          hjust = 1) +
+  ggtitle("A. Temperature x day") +
+  theme_classic(base_size = 15) + theme(legend.position = "bottom") #Select unique day, treatment, and TTRavg data. Replace numbers with characters to facilitate better ordering. Plot average TTR for each crab in a boxplot. Do not show outliers with the OG boxplot, but add them in with geom_jitter. Assign colors to each treatment. Add annotations with Wald test output for significant predictors. Increase base font size.
 
 insetPlot <-  modTTR %>%
   dplyr::select(., c(day, treatment, TTRavg)) %>%
@@ -1052,14 +1053,14 @@ insetPlot <-  modTTR %>%
                      breaks = c("13C", "30C"),
                      labels = c("13", "30")) +
   scale_y_continuous(limits = c(0,3)) +
+  guides(color = "none", shape = "none") +
   theme_classic() + theme(legend.position = "none",
                           axis.line.x.bottom = element_line(linewidth = 0),
                           axis.line.y.left = element_line(linewidth = 0),
                           panel.border = element_rect(colour = "black", fill = NA, size = 1))
 
-plotWithInset <- ggdraw() +
-  draw_plot(mainPlot) +
-  draw_plot(insetPlot, x = 0.3, y = 0.73, width = 0.52, height = 0.25)
+plotWithInset <- mainPlot + 
+  inset_element(insetPlot, left = 0.35, bottom = 0.655, right = 1, top = 0.95)
 
 plotWithInset
 
@@ -1076,6 +1077,7 @@ sexPlot <- modTTR %>%
   geom_boxplot(outlier.shape = NA) + geom_jitter(position = position_dodge(width = 0.75)) +
   ylab("Average Time-to-Right (s)") +
   scale_x_discrete(name = "Sex") +
+  scale_y_continuous(name = "") +
   scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
                      name = "Temperature (ºC)",
                      breaks = c("05C", "13C", "30C"),
@@ -1084,13 +1086,14 @@ sexPlot <- modTTR %>%
                      name = "Temperature (ºC)",
                      breaks = c("05C", "13C", "30C"),
                      labels = c("5", "13", "30")) +
-  annotate(geom = "text", x = 2.5, y = 32,
-           label = expression(paste(bolditalic("Sex:  "), chi^2, " = 26.08, p < 0.0001")),
-           hjust = 1) +
-  annotate(geom = "text", x = 2.5, y = 30.5,
-           label = expression(paste(bolditalic("Sex x Temperature:  "), chi^2, " = 16.80, p = 0.0002")),
-           hjust = 1) +
-  theme_classic(base_size = 15) #Select unique day, treatment, and TTRavg data. Replace numbers with characters to facilitate better ordering. Plot average TTR for each crab in a boxplot. Do not show outliers with the OG boxplot, but add them in with geom_jitter. Assign colors to each treatment. Add annotations with Wald test output for significant predictors. Increase base font size.
+  # annotate(geom = "text", x = 2.5, y = 28.5,
+  #          label = expression(paste(bolditalic("Sex:  "), chi^2, " = 26.08, p < 0.0001")),
+  #          hjust = 1) +
+  # annotate(geom = "text", x = 2.5, y = 27,
+  #          label = expression(paste(bolditalic("Sex x Temperature:  "), chi^2, " = 16.80, p = 0.0002")),
+  #          hjust = 1) +
+  ggtitle("B. Temperature x sex") +
+  theme_classic(base_size = 15) + theme(legend.position = "bottom") #Select unique day, treatment, and TTRavg data. Replace numbers with characters to facilitate better ordering. Plot average TTR for each crab in a boxplot. Do not show outliers with the OG boxplot, but add them in with geom_jitter. Assign colors to each treatment. Add annotations with Wald test output for significant predictors. Increase base font size.
 
 sexInsetPlot <-  modTTR %>%
   dplyr::select(., c(sex, treatment, TTRavg)) %>%
@@ -1108,17 +1111,24 @@ sexInsetPlot <-  modTTR %>%
                      breaks = c("13C", "30C"),
                      labels = c("13", "30")) +
   scale_y_continuous(limits = c(0,3)) +
+  guides(color = "none", shape = "none") +
   theme_classic() + theme(legend.position = "none",
                           axis.line.x.bottom = element_line(linewidth = 0),
                           axis.line.y.left = element_line(linewidth = 0),
                           panel.border = element_rect(colour = "black", fill = NA, size = 1))
 
-sexPlotWithInset <- ggdraw() +
-  draw_plot(sexPlot) +
-  draw_plot(sexInsetPlot, x = 0.3, y = 0.73, width = 0.52, height = 0.25)
+sexPlotWithInset <- sexPlot + 
+  inset_element(sexInsetPlot, left = 0.40, bottom = 0.655, right = 1, top = 0.95)
 
 sexPlotWithInset
 
 ggsave("figures/time-to-right-avg-boxplot-bySex.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+(plotWithInset + sexPlotWithInset) + 
+  plot_layout(guides = "collect") & 
+  theme(legend.position = "bottom")
+ggsave("figures/time-to-right-multipanel.pdf", width = 11, height = 8.5)
 ```
 
