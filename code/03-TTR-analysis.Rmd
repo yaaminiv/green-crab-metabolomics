@@ -1065,3 +1065,60 @@ plotWithInset
 
 ggsave("figures/time-to-right-avg-boxplot-noThresh.pdf", height = 8.5, width = 11)
 ```
+
+
+```{r}
+sexPlot <- modTTR %>%
+  dplyr::select(., c(sex, treatment, TTRavg)) %>%
+  distinct(.) %>%
+  mutate(., treatment = gsub(x = treatment, pattern = "5C", replacement = "05C")) %>%
+  ggplot(mapping = aes(x = sex, y = TTRavg, color = treatment, shape = treatment)) +
+  geom_boxplot(outlier.shape = NA) + geom_jitter(position = position_dodge(width = 0.75)) +
+  ylab("Average Time-to-Right (s)") +
+  scale_x_discrete(name = "Sex") +
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("05C", "13C", "30C"),
+                     labels = c("5", "13", "30")) +
+  scale_shape_manual(values = c(15, 19, 17),
+                     name = "Temperature (ºC)",
+                     breaks = c("05C", "13C", "30C"),
+                     labels = c("5", "13", "30")) +
+  annotate(geom = "text", x = 2.5, y = 32,
+           label = expression(paste(bolditalic("Sex:  "), chi^2, " = 26.08, p < 0.0001")),
+           hjust = 1) +
+  annotate(geom = "text", x = 2.5, y = 30.5,
+           label = expression(paste(bolditalic("Sex x Temperature:  "), chi^2, " = 16.80, p = 0.0002")),
+           hjust = 1) +
+  theme_classic(base_size = 15) #Select unique day, treatment, and TTRavg data. Replace numbers with characters to facilitate better ordering. Plot average TTR for each crab in a boxplot. Do not show outliers with the OG boxplot, but add them in with geom_jitter. Assign colors to each treatment. Add annotations with Wald test output for significant predictors. Increase base font size.
+
+sexInsetPlot <-  modTTR %>%
+  dplyr::select(., c(sex, treatment, TTRavg)) %>%
+  filter(., treatment != "5C") %>%
+  ggplot(mapping = aes(x = sex, y = TTRavg, color = treatment, shape = treatment)) +
+  geom_boxplot(outlier.shape = NA) + geom_jitter(position = position_dodge(width = 0.75)) +
+  ylab("") +
+  scale_x_discrete(name = "") +
+  scale_color_manual(values = c(plotColors[2], plotColors[1]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("13C", "30C"),
+                     labels = c("13", "30")) +
+  scale_shape_manual(values = c(19, 17),
+                     name = "Temperature (ºC)",
+                     breaks = c("13C", "30C"),
+                     labels = c("13", "30")) +
+  scale_y_continuous(limits = c(0,3)) +
+  theme_classic() + theme(legend.position = "none",
+                          axis.line.x.bottom = element_line(linewidth = 0),
+                          axis.line.y.left = element_line(linewidth = 0),
+                          panel.border = element_rect(colour = "black", fill = NA, size = 1))
+
+sexPlotWithInset <- ggdraw() +
+  draw_plot(sexPlot) +
+  draw_plot(sexInsetPlot, x = 0.3, y = 0.73, width = 0.52, height = 0.25)
+
+sexPlotWithInset
+
+ggsave("figures/time-to-right-avg-boxplot-bySex.pdf", height = 8.5, width = 11)
+```
+
