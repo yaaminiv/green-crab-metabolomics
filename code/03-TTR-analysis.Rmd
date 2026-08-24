@@ -736,6 +736,32 @@ re_normality #Random effects are normally distributed (p = 0.733)
 plot(re_normality) #QQ plot of random effects
 ```
 
+## Importance of random effect
+
+To understand how "important" the random effect is, I am going to fit a model without the random effect and compare the models using LRT and AIC comparisons.
+
+```{r}
+# Fit equivalent model with the random intercept
+TTRmodelSex5_noRE <- glmmTMB(
+  TTRavg ~ as.factor(treatment) * day.sc + as.factor(sex) * as.factor(treatment),
+  dispformula = ~ as.factor(sex) + as.factor(treatment),
+  data = modTTR,
+  family = Gamma(link = "log")
+)
+
+# Likelihood Ratio Test
+anova(TTRmodelSex5, TTRmodelSex5_noRE) #Non-significant LRT output (chisq = 0.7861, P = 0.3753)
+
+# Compare AICs
+AIC(TTRmodelSex5, TTRmodelSex5_noRE) #Lower AIC without random effect (904.6060 vs. 905.8199)
+```
+
+```{r}
+summary(TTRmodelSex5)$varcor #Random effect associated with 0.073579 SD
+0.073579^2 #Variance = 0.005413869
+```
+
+
 ## Model bootstrapping
 
 Since the K-S test came out with a significant p-value and there are fluctuations in the quantile curves, I want to run a bootstrapping test on my model coefficients to confirm that my output is stable.
@@ -960,6 +986,8 @@ write.csv(broom::tidy(TTRthreshModel2), "TTR-binomialModel.csv", quote = FALSE, 
 
 ### Average TTR
 
+Instead of plotting raw averages, I am going to plot averages and standard error output from `emmeans`, since that output takes into account variance explained by the random effect.
+
 ```{r}
 modTTR %>%
   left_join(., y = tempDay_EMM, by = c("treatment", "day")) %>% #Join with EMM 
@@ -1083,7 +1111,7 @@ avgInsetPlot <- modTTR %>%
                    breaks = c("04", "08", "11", "18", "15", "22"),
                    labels = c("4", "8", "11", "18", "15", "22")) + #Define x axis
   ylab("") +
-  scale_y_continuous(limits = c(0,4.5)) +
+  scale_y_continuous(limits = c(0,3.5)) +
   scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
                      name = "Temperature (ºC)",
                      breaks = c("05C", "13C", "30C"),
@@ -1213,7 +1241,7 @@ avgSexInsetPlot <-  modTTR %>%
                      name = "Temperature (ºC)",
                      breaks = c("05C", "13C", "30C"),
                      labels = c("5", "13", "30")) +
-  scale_y_continuous(limits = c(0,4.5)) +
+  scale_y_continuous(limits = c(0,3.5)) +
   guides(color = "none", shape = "none", pointrange = "none") +
   theme_classic() + theme(legend.position = "none",
                           axis.line.x.bottom = element_line(linewidth = 0),
