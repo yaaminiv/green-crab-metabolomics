@@ -788,6 +788,20 @@ TTRmodel_EMM_tempDay <- emmeans(TTRmodelSex5, #Model name
 TTRmodel_EMM_tempDay #Estimated marginal means
 ```
 
+```{r}
+tempDay_EMM <- TTRmodel_EMM_tempDay %>% #Take emmeans output
+  broom::tidy(.) %>% #Tidy it
+  mutate(day = c(rep(4, times = 3),
+                 rep(8, times = 3),
+                 rep(11, times = 3),
+                 rep(15, times = 3),
+                 rep(18, times = 3),
+                 rep(22, times = 3))) %>% #Add a column with real, not scaled dates
+  dplyr::select(treatment, day, response, std.error) %>% #Keep columns of interest
+  mutate(., LCL = response - std.error,
+         UCL = response + std.error) #Create columns for upper and lower confidence intervals
+head(tempDay_EMM) #Confirm formatting 
+```
 
 ```{r}
 pairs(TTRmodel_EMM_tempDay) %>% #Get pairwise comparisons for treatment x day
@@ -844,6 +858,14 @@ TTRmodel_EMM_tempSex <- emmeans(TTRmodelSex5, #Model name
 TTRmodel_EMM_tempSex #Estimated marginal means
 ```
 
+```{r}
+tempSex_EMM <- TTRmodel_EMM_tempSex %>% #Take emmeans output
+  broom::tidy(.) %>% #Tidy it
+  dplyr::select(treatment, sex, response, std.error) %>% #Keep columns of interest
+  mutate(., LCL = response - std.error,
+         UCL = response + std.error) #Create columns for upper and lower confidence intervals
+head(tempSex_EMM) #Confirm formatting 
+```
 
 ```{r}
 pairs(TTRmodel_EMM_tempSex) %>% #Get pairwise comparisons for treatment x day
@@ -940,7 +962,8 @@ write.csv(broom::tidy(TTRthreshModel2), "TTR-binomialModel.csv", quote = FALSE, 
 
 ```{r}
 modTTR %>%
-  dplyr::select(., c(day, treatment, TTRavg, TTRavgFull, TTRavgFullLow, TTRavgFullHigh)) %>% #Select columns of interest
+  left_join(., y = tempDay_EMM, by = c("treatment", "day")) %>% #Join with EMM 
+  dplyr::select(., c(day, treatment, TTRavg, response, LCL, UCL)) %>% #Select columns of interest
   distinct(.) %>% #Remove duplicate rows
   mutate(., treatment = gsub(x = treatment, pattern = "5C", replacement = "05C")) %>% #Replace 5 with 05 so that temperatures are presented in ascending order
   mutate(., day = gsub(x = day, pattern = 4, replacement = "04")) %>% #Add a 0 in front of days for proper ordering
@@ -950,17 +973,17 @@ modTTR %>%
   mutate(., day = gsub(x = day, pattern = 15, replacement = "15")) %>%
   mutate(., day = gsub(x = day, pattern = 22, replacement = "22")) %>%
   ggplot(., mapping = aes(x = day,
-                          y = TTRavgFull,
+                          y = response,
                           color = treatment, 
                           shape = treatment)) + #Define main plot aesthetics
-  geom_pointrange(data = . %>% dplyr::select(day, treatment, TTRavgFull, TTRavgFullLow, TTRavgFullHigh) %>% distinct(.),
-                  aes(ymin = TTRavgFullLow,
-                      ymax = TTRavgFullHigh), 
+  geom_pointrange(data = . %>% dplyr::select(day, treatment, response, LCL, UCL) %>% distinct(.),
+                  aes(ymin = LCL,
+                      ymax = UCL), 
                   size = 1,
                   width = 0.18,
                   linewidth = 0.8,
                   position = position_jitterdodge(jitter.width = 0.12),
-                  ) + #Add means and standard errors to the plot
+  ) + #Add means and standard errors to the plot
   geom_point(aes(x = day,
                  y = TTRavg,
                  color = treatment),
@@ -986,7 +1009,8 @@ ggsave("figures/time-to-right-avg.pdf", height = 8.5, width = 11)
 
 ```{r}
 avgPlot <- modTTR %>%
-  dplyr::select(., c(day, treatment, TTRavg, TTRavgFull, TTRavgFullLow, TTRavgFullHigh)) %>% #Select columns of interest
+  left_join(., y = tempDay_EMM, by = c("treatment", "day")) %>% #Join with EMM 
+  dplyr::select(., c(day, treatment, TTRavg, response, LCL, UCL)) %>% #Select columns of interest
   distinct(.) %>% #Remove duplicate rows
   mutate(., treatment = gsub(x = treatment, pattern = "5C", replacement = "05C")) %>% #Replace 5 with 05 so that temperatures are presented in ascending order
   mutate(., day = gsub(x = day, pattern = 4, replacement = "04")) %>% #Add a 0 in front of days for proper ordering
@@ -996,16 +1020,16 @@ avgPlot <- modTTR %>%
   mutate(., day = gsub(x = day, pattern = 15, replacement = "15")) %>%
   mutate(., day = gsub(x = day, pattern = 22, replacement = "22")) %>%
   ggplot(., mapping = aes(x = day,
-                          y = TTRavgFull,
+                          y = response,
                           color = treatment, 
                           shape = treatment)) + #Define main plot aesthetics
-  geom_pointrange(data = . %>% dplyr::select(day, treatment, TTRavgFull, TTRavgFullLow, TTRavgFullHigh) %>% distinct(.),
-                  aes(ymin = TTRavgFullLow,
-                      ymax = TTRavgFullHigh), 
+  geom_pointrange(data = . %>% dplyr::select(day, treatment, response, LCL, UCL) %>% distinct(.),
+                  aes(ymin = LCL,
+                      ymax = UCL),
                   size = 1,
                   linewidth = 0.8,
                   position = position_jitterdodge(jitter.width = 0.12),
-                  ) + #Add means and standard errors to the plot
+  ) + #Add means and standard errors to the plot
   geom_point(aes(x = day,
                  y = TTRavg,
                  color = treatment),
@@ -1028,8 +1052,9 @@ avgPlot <- modTTR %>%
   ggtitle("A. Temperature x day") +
   theme_classic(base_size = 15) + theme(legend.position = "bottom")  #Plot average TTR and add lm fits without SE bars. Add vertical line for boxplot outlier threshold. Modify x-axis to only show experimental days where TTR was measured. Scale y axis to include 91 = indication that crabs did not right within 90 s. Assign colors to each treatment. Increase base font size.
 
-avgInsetPlot <-  modTTR %>%
-  dplyr::select(., c(day, treatment, TTRavg, TTRavgFull, TTRavgFullLow, TTRavgFullHigh)) %>% #Select columns of interest
+avgInsetPlot <- modTTR %>%
+  left_join(., y = tempDay_EMM, by = c("treatment", "day")) %>% #Join with EMM 
+  dplyr::select(., c(day, treatment, TTRavg, response, LCL, UCL)) %>% #Select columns of interest
   distinct(.) %>% #Remove duplicate rows
   filter(., treatment != "5C") %>% #Remove 5C data
   mutate(., day = gsub(x = day, pattern = 4, replacement = "04")) %>% #Add a 0 in front of days for proper ordering
@@ -1039,16 +1064,16 @@ avgInsetPlot <-  modTTR %>%
   mutate(., day = gsub(x = day, pattern = 15, replacement = "15")) %>%
   mutate(., day = gsub(x = day, pattern = 22, replacement = "22")) %>%
   ggplot(., mapping = aes(x = day,
-                          y = TTRavgFull,
+                          y = response,
                           color = treatment, 
                           shape = treatment)) + #Define main plot aesthetics
-  geom_pointrange(data = . %>% dplyr::select(day, treatment, TTRavgFull, TTRavgFullLow, TTRavgFullHigh) %>% distinct(.),
-                  aes(ymin = TTRavgFullLow,
-                      ymax = TTRavgFullHigh), 
-                  size = 0.75,
+  geom_pointrange(data = . %>% dplyr::select(day, treatment, response, LCL, UCL) %>% distinct(.),
+                  aes(ymin = LCL,
+                      ymax = UCL),
+                  # size = 0.75,
                   linewidth = 0.8,
                   position = position_jitterdodge(jitter.width = 0.12),
-                  ) + #Add means and standard errors to the plot
+  ) + #Add means and standard errors to the plot
   geom_point(aes(x = day,
                  y = TTRavg,
                  color = treatment),
@@ -1073,6 +1098,7 @@ avgInsetPlot <-  modTTR %>%
                           axis.line.y.left = element_line(linewidth = 0),
                           panel.border = element_rect(colour = "black", fill = NA, size = 1))
 
+
 avgPlotWithInset <- avgPlot + 
   inset_element(avgInsetPlot, left = 0.40, bottom = 0.555, right = 1, top = 0.85)
 
@@ -1080,32 +1106,60 @@ avgPlotWithInset
 ```
 
 ```{r}
-modTTR <- modTTR %>%
-  group_by(sex, treatment) %>% #Group by sex and treatment
-  mutate(., sexTTRavgFull = mean(TTRavg)) %>% #Calculate average
-  mutate(., sexTTRSEFull = std.error(TTRavg)) %>% #Calculate SD
-  mutate(., sexTTRavgFullLow = sexTTRavgFull - sexTTRSEFull) %>% #Bounds for SE
-  mutate(., sexTTRavgFullHigh = sexTTRavgFull + sexTTRSEFull) %>% #Bounds for SE
-  ungroup(.) #Ungroup
-head(modTTR) #Confirm changes
-```
-
-```{r}
-avgSexPlot <- modTTR %>%
-  dplyr::select(., c(sex, treatment, TTRavg, sexTTRavgFull, sexTTRavgFullLow, sexTTRavgFullHigh)) %>% #Select columns of interest
+modTTR %>%
+  left_join(., y = tempSex_EMM, by = c("treatment", "sex")) %>% #Join with EMM 
+  dplyr::select(., c(sex, treatment, TTRavg, response, LCL, UCL)) %>% #Select columns of interest
   distinct(.) %>% #Remove duplicate rows
   mutate(., treatment = gsub(x = treatment, pattern = "5C", replacement = "05C")) %>% #Replace 5 with 05 so that temperatures are presented in ascending order
   ggplot(., mapping = aes(x = sex,
-                          y = sexTTRavgFull,
+                          y = response,
                           color = treatment, 
                           shape = treatment)) + #Define main plot aesthetics
-  geom_pointrange(data = . %>% dplyr::select(sex, treatment, sexTTRavgFull, sexTTRavgFullLow, sexTTRavgFullHigh) %>% distinct(.),
-                  aes(ymin = sexTTRavgFullLow,
-                      ymax = sexTTRavgFullHigh), 
+  geom_pointrange(data = . %>% dplyr::select(sex, treatment, response, LCL, UCL) %>% distinct(.),
+                  aes(ymin = LCL,
+                      ymax = UCL), 
                   size = 1,
                   linewidth = 0.8,
                   position = position_jitterdodge(jitter.width = 0.12),
-                  ) + #Add means and standard errors to the plot
+  ) + #Add means and standard errors to the plot
+  geom_point(aes(x = sex,
+                 y = TTRavg,
+                 color = treatment),
+             position = position_jitterdodge(jitter.width = 0.12),
+             size = 1.5,
+             alpha = 0.3) + #Add underlying data points behind
+  scale_x_discrete(name = "Sex") + #Define x axis
+  scale_y_continuous(name = "",
+                     limits = c(0, 50)) + #Define y axis
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("05C", "13C", "30C"),
+                     labels = c("5", "13", "30")) +
+  scale_shape_manual(values = c(15, 19, 17),
+                     name = "Temperature (ºC)",
+                     breaks = c("05C", "13C", "30C"),
+                     labels = c("5", "13", "30")) +
+  theme_classic()
+```
+
+
+```{r}
+avgSexPlot <- modTTR %>%
+ left_join(., y = tempSex_EMM, by = c("treatment", "sex")) %>% #Join with EMM 
+  dplyr::select(., c(sex, treatment, TTRavg, response, LCL, UCL)) %>% #Select columns of interest
+  distinct(.) %>% #Remove duplicate rows
+  mutate(., treatment = gsub(x = treatment, pattern = "5C", replacement = "05C")) %>% #Replace 5 with 05 so that temperatures are presented in ascending order
+  ggplot(., mapping = aes(x = sex,
+                          y = response,
+                          color = treatment, 
+                          shape = treatment)) + #Define main plot aesthetics
+  geom_pointrange(data = . %>% dplyr::select(sex, treatment, response, LCL, UCL) %>% distinct(.),
+                  aes(ymin = LCL,
+                      ymax = UCL), 
+                  size = 1,
+                  linewidth = 0.8,
+                  position = position_jitterdodge(jitter.width = 0.12),
+  ) + #Add means and standard errors to the plot
   geom_point(aes(x = sex,
                  y = TTRavg,
                  color = treatment),
@@ -1127,20 +1181,21 @@ avgSexPlot <- modTTR %>%
   theme_classic(base_size = 15) + theme(legend.position = "bottom") #Select unique day, treatment, and TTRavg data. Replace numbers with characters to facilitate better ordering. Plot average TTR for each crab in a boxplot. Do not show outliers with the OG boxplot, but add them in with geom_jitter. Assign colors to each treatment. Add annotations with Wald test output for significant predictors. Increase base font size.
 
 avgSexInsetPlot <-  modTTR %>%
-  dplyr::select(., c(sex, treatment, TTRavg, sexTTRavgFull, sexTTRavgFullLow, sexTTRavgFullHigh)) %>% #Select columns of interest
+ left_join(., y = tempSex_EMM, by = c("treatment", "sex")) %>% #Join with EMM 
+  dplyr::select(., c(sex, treatment, TTRavg, response, LCL, UCL)) %>% #Select columns of interest
   distinct(.) %>% #Remove duplicate rows
   filter(., treatment != "5C") %>% #Remove 5C data
   ggplot(., mapping = aes(x = sex,
-                          y = sexTTRavgFull,
+                          y = response,
                           color = treatment, 
                           shape = treatment)) + #Define main plot aesthetics
-  geom_pointrange(data = . %>% dplyr::select(sex, treatment, sexTTRavgFull, sexTTRavgFullLow, sexTTRavgFullHigh) %>% distinct(.),
-                  aes(ymin = sexTTRavgFullLow,
-                      ymax = sexTTRavgFullHigh), 
-                  size = 0.75,
+  geom_pointrange(data = . %>% dplyr::select(sex, treatment, response, LCL, UCL) %>% distinct(.),
+                  aes(ymin = LCL,
+                      ymax = UCL), 
+                  # size = 1,
                   linewidth = 0.8,
                   position = position_jitterdodge(jitter.width = 0.12),
-                  ) + #Add means and standard errors to the plot
+  ) + #Add means and standard errors to the plot
   geom_point(aes(x = sex,
                  y = TTRavg,
                  color = treatment),
