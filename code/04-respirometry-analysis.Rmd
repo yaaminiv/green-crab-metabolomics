@@ -2367,17 +2367,104 @@ pairs(OCmodel_EMM_day) %>% #Get pairwise comparisons for treatment x day
 
 ```{r}
 all_MO2_slope_results_reorder <- all_MO2_slope_results %>%
-  mutate(., treatment = gsub(x = treatment, pattern = "5C", replacement = "05C"))
-#Reorder temperature treatments for plotting by renaming 5C as 05C so it is the first alphanumerically
-tail(all_MO2_slope_results_reorder)
+  mutate(., treatment = gsub(x = treatment, pattern = "5C", replacement = "05C")) %>% #Reorder temperature treatments for plotting by renaming 5C as 05C so it is the first alphanumerically
+  group_by(., day, treatment) %>% #Group by day and treatment
+  mutate(., OCavgFull = -mean(slope_nmol_hr_corrected)) %>% #Average OC rates by day and treatment, then take the negative of that to get positive rates
+  mutate(., OCSEFull = std.error(slope_nmol_hr_corrected)) %>% #Calculate SE for avg OC
+  mutate(., OCavgFullLow = OCavgFull - OCSEFull) %>% #Lower bound
+  mutate(., OCavgFullHigh = OCavgFull + OCSEFull) %>% #Upper bound
+  ungroup(.) #Ungroup
+tail(all_MO2_slope_results_reorder) #Confirm changes
 ```
 
+### Average oxygen consumption
+
+I will plot average ± SE oxygen consumption with transparent points underneath. This will allow me to show average differences between treatments without having the specific marginal means from the model, since temperature x day was not a significant effect.
+
 ```{r}
-facet_labels <- c("04" = "Day 4",
-                  "08" = "Day 8",
-                  "15" = "Day 15",
-                  "22" = "Day 22") #Assign labels for facets
+mainOCPlot <- all_MO2_slope_results_reorder %>%
+  filter(., blank_ratio < 0.10) %>%
+  ggplot(., mapping = aes(x = day,
+                          y = OCavgFull,
+                          color = treatment, 
+                          shape = treatment)) + #Define main plot aesthetics
+  geom_pointrange(data = . %>% dplyr::select(day, treatment, OCavgFull, OCavgFullLow, OCavgFullHigh) %>% distinct(.),
+                  aes(ymin = OCavgFullLow,
+                      ymax = OCavgFullHigh), 
+                  size = 1,
+                  position = position_jitterdodge(jitter.width = 0.12),
+  ) + #Add group means and standard errors to the plot
+  geom_point(aes(x = day,
+                 y = -slope_nmol_hr_corrected, #Needs to be negative to get positive rates
+                 color = treatment),
+             position = position_jitterdodge(jitter.width = 0.12),
+             size = 1.5,
+             alpha = 0.3) + #Add underlying data points behind
+  scale_x_discrete(name = "Day",
+                   breaks = c("04", "08", "15", "22"),
+                   labels = c("4", "8", "15", "22")) + #Define x axis
+  ylab("Oxygen Consumption (nmol/hr)") + #Define y axis
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), #Add color scale
+                     name = "Temperature (ºC)",
+                     breaks = c("05C", "13C", "30C"),
+                     labels = c("5", "13", "30")) +
+  scale_shape_manual(values = c(15, 19, 17), #Add shape scale
+                     name = "Temperature (ºC)",
+                     breaks = c("05C", "13C", "30C"),
+                     labels = c("5", "13", "30")) +
+  theme_classic(base_size = 15) + theme(legend.position = "bottom") #Increase base font size and move the legend to the bottom
+
+mainOCPlot
+
+insetOCPlot <- all_MO2_slope_results_reorder %>%
+  filter(., blank_ratio < 0.10) %>%
+  filter(., treatment == "05C") %>% #Keep 5C data only
+  ggplot(., mapping = aes(x = day,
+                          y = OCavgFull,
+                          color = treatment, 
+                          shape = treatment)) + #Define main plot aesthetics
+  geom_pointrange(data = . %>% dplyr::select(day, treatment, OCavgFull, OCavgFullLow, OCavgFullHigh) %>% distinct(.),
+                  aes(ymin = OCavgFullLow,
+                      ymax = OCavgFullHigh), 
+                  # size = 1,
+                  linewidth = 0.8,
+                  position = position_jitterdodge(jitter.width = 0.12),
+  ) + #Add group means and standard errors to the plot
+  geom_point(aes(x = day,
+                 y = -slope_nmol_hr_corrected, #Needs to be negative to get positive rates
+                 color = treatment),
+             position = position_jitterdodge(jitter.width = 0.12),
+             # size = 1.5,
+             alpha = 0.3) + #Add underlying data points behind
+  scale_x_discrete(name = "Day",
+                   breaks = c("04", "08", "15", "22"),
+                   labels = c("4", "8", "15", "22")) + #Define x axis
+  ylab("") +
+  scale_y_continuous(limits = c(0,4200)) +
+  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
+                     name = "Temperature (ºC)",
+                     breaks = c("05C", "13C", "30C"),
+                     labels = c("5", "13", "30")) +
+  scale_shape_manual(values = c(15, 19, 17),
+                     name = "Temperature (ºC)",
+                     breaks = c("05C", "13C", "30C"),
+                     labels = c("5", "13", "30")) +
+  guides(color = "none", shape = "none", pointrange = "none") +
+  theme_classic() + theme(legend.position = "none",
+                          axis.line.x.bottom = element_line(linewidth = 0),
+                          axis.line.y.left = element_line(linewidth = 0),
+                          panel.border = element_rect(colour = "black", fill = NA, size = 1))
+
+insetOCPlot
+
+mainOCPlotWithInset <- mainOCPlot + 
+  inset_element(insetOCPlot, left = 0.02, right = 0.5, bottom = 0.555+0.12, top = 0.85+0.12)
+
+mainOCPlotWithInset
+ggsave("figures/multipanel-oxygen-consumption-corrected-averages.pdf", height = 8.5, width = 11)
 ```
+
+### Median oxygen consumption 
 
 ```{r}
 all_MO2_slope_results_reorder %>%
@@ -2400,17 +2487,8 @@ all_MO2_slope_results_reorder %>%
                      name = "Temperature (ºC)",
                      breaks = c("05C", "13C", "30C"),
                      labels = c("5", "13", "30")) +
-  annotate(geom = "text", x = 1, y = 30000, 
-           label = expression(paste(bolditalic("13ºC vs. 30ºC: "), "t = -2.38, p = 0.05")),
-           hjust = 0) +
-  annotate(geom = "text", x = 1, y = 29000, 
-           label = expression(paste(bolditalic("13ºC vs. 5ºC: "), "t = 8.09, p < 0.0001")),
-           hjust = 0) +
-  annotate(geom = "text", x = 1, y = 28000, 
-           label = expression(paste(bolditalic("Day: "), "t = 3.75, p < 0.0001")),
-           hjust = 0) +
   theme_classic(base_size = 15)
-ggsave("figures/multipanel-oxygen-consumption-corrected.pdf", height = 8.5, width = 11) #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. Add a line connecting each boxplot midpoint. Facet wrap and use the labeller to relabel facets. Add consistent color and shape scales.
+# ggsave("figures/multipanel-oxygen-consumption-corrected.pdf", height = 8.5, width = 11) #Create a boxplot for oxygen consumption (µmol/hr). Use -slope_nmol_hr so the larger the slope, the faster the oxygen consumption over the hour. Add a line connecting each boxplot midpoint. Facet wrap and use the labeller to relabel facets. Add consistent color and shape scales.
 ```
 
 # Within-group variability
