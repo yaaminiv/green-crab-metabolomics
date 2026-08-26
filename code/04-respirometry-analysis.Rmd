@@ -2042,91 +2042,27 @@ ggsave("figures/2022-07-26-oxygen-consumption-nmolhr-corrected.pdf", width = 11,
 
 # Compare blank-corrected oxygen consumption
 
-## Between treatments within a timepoint
-
-```{r}
-hist(-(dat20220708_MO2_all_slope_results$slope_nmol_hr_corrected)) #Check distribution
-hist(log(-(dat20220708_MO2_all_slope_results$slope_nmol_hr_corrected))) #Check log transformation
-hist(sqrt(-(dat20220708_MO2_all_slope_results$slope_nmol_hr_corrected))) #Check sqrt transformation
-```
-
-```{r}
-lm20220708 <- lm(log(-slope_nmol_hr_corrected) ~ treatment, data = dat20220708_MO2_all_slope_results)
-summary(lm20220708)
-```
-
-```{r}
-write.csv(broom::tidy(lm20220708), "20220708-model-output.csv", quote = FALSE, row.names = FALSE)
-```
-
-```{r}
-hist(-(dat20220712_MO2_all_slope_results$slope_nmol_hr_corrected)) #Check distribution
-hist(log(-(dat20220712_MO2_all_slope_results$slope_nmol_hr_corrected))) #Check log transformation
-hist(sqrt(-(dat20220712_MO2_all_slope_results$slope_nmol_hr_corrected))) #Check sqrt transformation
-```
-
-```{r}
-lm20220712 <- lm(log(-slope_nmol_hr_corrected) ~ treatment, data = dat20220712_MO2_all_slope_results)
-summary(lm20220712)
-```
-
-```{r}
-write.csv(broom::tidy(lm20220712), "20220712-model-output.csv", quote = FALSE, row.names = FALSE)
-```
-
-```{r}
-hist(-(dat20220719_MO2_all_slope_results$slope_nmol_hr_corrected)) #Check distribution
-hist(log(-(dat20220719_MO2_all_slope_results$slope_nmol_hr_corrected))) #Check log transformation
-hist(sqrt(-(dat20220719_MO2_all_slope_results$slope_nmol_hr_corrected))) #Check sqrt transformation
-```
-
-```{r}
-lm20220719 <- lm(log(-slope_nmol_hr_corrected) ~ treatment, data = dat20220719_MO2_all_slope_results)
-summary(lm20220719)
-```
-
-```{r}
-write.csv(broom::tidy(lm20220719), "20220719-model-output.csv", quote = FALSE, row.names = FALSE)
-```
-
-```{r}
-hist(-(dat20220726_MO2_all_slope_results$slope_nmol_hr_corrected)) #Check distribution
-hist(log(-(dat20220726_MO2_all_slope_results$slope_nmol_hr_corrected))) #Check log transformation
-hist(sqrt(-(dat20220726_MO2_all_slope_results$slope_nmol_hr_corrected))) #Check sqrt transformation
-```
-
-```{r}
-lm20220726 <- lm(log(-slope_nmol_hr_corrected) ~ treatment, data = dat20220726_MO2_all_slope_results)
-summary(lm20220726)
-```
-
-```{r}
-write.csv(broom::tidy(lm20220726), "20220726-model-output.csv", quote = FALSE, row.names = FALSE)
-```
-
-## Across time and treatment
-
-### Add demographic information
+## Add demographic information
 
 Sex and integument color can influence respiration rates. Even though all crabs were roughly the same size and weight for the chambers, there is still some variation that may explain differences in respiration rate. I will map this information to the slope results so I can incorporate it my statistical testing.
 
 ```{r}
-demTTRdata <- read.csv("../../data/time-to-right.csv", header = TRUE) %>%
-  dplyr::select(., -c(sampling.ID, notes)) %>%
-  filter(., is.na(probe.number) == FALSE) %>%
-  dplyr::rename(., probe_num = probe.number) %>%
-  mutate(., day = case_when(date == "7/8/2022" ~ "04",
-                            date == "7/12/2022" ~ "08",
-                            date == "7/15/2022" ~ "11",
-                            date == "7/19/2022" ~ "15",
-                            date == "7/22/2022" ~ "18",
-                            date == "7/26/2022" ~ "22")) %>%
-  filter(., day != "11" & day!= "18") %>%
+demTTRdata <- read.csv("../../data/time-to-right.csv", header = TRUE) %>% #Import righting response data
+  dplyr::select(., -c(sampling.ID, notes)) %>% #Remove extra columns
+  filter(., is.na(probe.number) == FALSE) %>% #Keep rows associated with OC crabs
+  dplyr::rename(., probe_num = probe.number) %>% #Rename column
+  mutate(., day = case_when(date == "7/8/22" ~ "04",
+                            date == "7/12/22" ~ "08",
+                            date == "7/15/22" ~ "11",
+                            date == "7/19/22" ~ "15",
+                            date == "7/22/22" ~ "18",
+                            date == "7/26/22" ~ "22")) %>% #Create a day column
+  filter(., day != "11" & day!= "18") %>% #Remove days without OC data
   mutate(., treatment = case_when(treatment.tank == "1" | treatment.tank == "4" ~ "13C",
                                   treatment.tank == "2" | treatment.tank == "5" ~ "5C",
-                                  treatment.tank == "3" | treatment.tank == "6" ~ "30C")) %>%
-  dplyr::rename(., tank = treatment.tank) %>%
-  mutate(., integument.cont = recode(integument.color,
+                                  treatment.tank == "3" | treatment.tank == "6" ~ "30C")) %>% #Create a treatment column
+  dplyr::rename(., tank = treatment.tank) %>% #Change column name
+  mutate(., integument.cont = dplyr::recode(integument.color,
                                      "B" = 0,
                                      "BG" = 0.5,
                                      "G" = 1, 
@@ -2134,10 +2070,8 @@ demTTRdata <- read.csv("../../data/time-to-right.csv", header = TRUE) %>%
                                      "Y" = 2, 
                                      "YO" = 2.5 , 
                                      "O" = 3, 
-                                     "RO" = 3.5)) %>%
-  mutate(., missing.legs = case_when(number.legs < 10 ~ "Y",
-                                     number.legs == 10 ~ "N")) %>%
-  dplyr::select(., c(day, treatment, tank, probe_num, sex, integument.cont, weight, carapace.width, missing.legs)) #Import TTR data and modify to include only the desired demographic data and average TTR data for crabs used during respiration trials
+                                     "RO" = 3.5)) %>% #Recode integument color
+  dplyr::select(., c(day, treatment, tank, probe_num, sex, integument.cont, carapace.width, number.swimmers)) #Keep columns of interest
 head(demTTRdata) #Confirm dataframe creation
 ```
 
@@ -2163,88 +2097,246 @@ all_MO2_slope_results_demTTRdata <- all_MO2_slope_results %>%
                           tank == "Tank_3" ~ 3,
                           tank == "Tank_4" ~ 4,
                           tank == "Tank_5" ~ 5,
-                          tank == "Tank_6" ~ 6)) %>%
-  mutate(probe_num = as.numeric(probe_num)) %>%
-  left_join(., demTTRdata, by = c("day", "treatment", "tank", "probe_num")) #Use case_when to include only the tank # in the tank column. Convert probe_num to a numeric column and left_join with demographic and TTR data using day, treatment, tank, and probe_num
+                          tank == "Tank_6" ~ 6)) %>% #Use case_when to include only the tank # in the tank column.
+  mutate(probe_num = as.numeric(probe_num)) %>% #Convert probe_num to a numeric column
+  left_join(., demTTRdata, by = c("day", "treatment", "tank", "probe_num")) %>%
+  mutate(day = case_when(day == "04" ~ 4,
+                         day == "08" ~ 8,
+                         day == "15" ~ 15,
+                         day == "22" ~ 22)) #Convert day back to a numeric variable
 head(all_MO2_slope_results_demTTRdata) #Confirm dataframe creation
 ```
 
-### GLM
+```{r}
+write.csv(all_MO2_slope_results_demTTRdata, "all-slopes-demTTRdata.csv", quote = FALSE, row.names = FALSE) #Save combined dataset
+```
+
+### GLMM
+
+I will use a generalized linear mixed effects model with tank as a random effect to account for the likelihood of repeated measurements over the course of the experiment.
 
 ```{r}
-hist(-(all_MO2_slope_results$slope_nmol_hr_corrected)) #Check distribution
-hist(log(-(all_MO2_slope_results$slope_nmol_hr_corrected))) #Check log transformation
-hist(sqrt(-(all_MO2_slope_results$slope_nmol_hr_corrected))) #Check log transformation
+#Scale continuous variables for the GLMM
+
+all_MO2_slope_results_demTTRdata$carapace.width.sc <- scale(all_MO2_slope_results_demTTRdata$carapace.width)
+all_MO2_slope_results_demTTRdata$day.sc <- scale(all_MO2_slope_results_demTTRdata$day)
+all_MO2_slope_results_demTTRdata$integument.sc <- scale(all_MO2_slope_results_demTTRdata$integument.cont)
+all_MO2_slope_results_demTTRdata$number.swimmers.sc <- scale(all_MO2_slope_results_demTTRdata$number.swimmers)
 ```
 
 ```{r}
-lmAllSlopeResults <- glm(log(-slope_nmol_hr_corrected) ~ as.factor(treatment)*as.numeric(day) + 
-                           sex + weight + carapace.width + integument.cont + missing.legs, data = (all_MO2_slope_results_demTTRdata %>% filter(., blank_ratio < 0.10))) #Examine the influence of treatment, day, and various demographic factors on respiration rate. Remove outliers based on blank ratios prior to analysis.
-summary(lmAllSlopeResults) #Significant impact of treatment and day on respiration
+OCmodel <- glmmTMB( #Generalized linear mixed effect model
+  -slope_nmol_hr_corrected ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
+    as.factor(sex) + integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
+    (1 | tank), #Use tank as a random effect to account for potential dependence between data
+  data = all_MO2_slope_results_demTTRdata,
+  family = Gamma(link = "log") #Gamma model with a log link
+)
 ```
 
 ```{r}
-lmAllSlopeResultsStep <- step(lmAllSlopeResults, direction = "backward") #Use backwards-deletion approach to identify the most significant model (lowest AIC)
-summary(lmAllSlopeResultsStep)
+drop1(OCmodel) #Use a backwards deletion approach and AIC to identify best fit model. 
+
+#Removing as.factor(treatment):day.sc leads to the lowest AIC
+```
+
+```{r}
+OCmodel2 <- update(OCmodel, . ~ . - as.factor(treatment):day.sc) #Drop as.factor(treatment):day.sc
+drop1(OCmodel2) #Sex and integument color lead to equally low AIC. Dropping integument color first
+```
+
+```{r}
+OCmodel3 <- update(OCmodel2, . ~ . - integument.sc) #Drop integument color
+drop1(OCmodel3) #Dropping sex leads to lowest AIC
+```
+
+```{r}
+OCmodel4 <- update(OCmodel3, . ~ . - as.factor(sex)) #Drop sex
+drop1(OCmodel4) #Dropping carapace width leads to lowest AIC
+```
+```{r}
+OCmodel5 <- update(OCmodel4, . ~ . - carapace.width.sc) #Drop sex
+drop1(OCmodel5) #Dropping number of swimmers leads to lowest AIC
+```
+
+```{r}
+OCmodel6 <- update(OCmodel5, . ~ . - number.swimmers.sc) #Drop number of swimmers
+drop1(OCmodel6) #No more factors to drop!
 ```
 
 ### Final model
 
 ```{r}
-lmAllSlopeResultsSig <- glm(log(-slope_nmol_hr_corrected) ~ treatment + as.numeric(day), data = all_MO2_slope_results_demTTRdata) #Run the most significant model identified by step
-summary(lmAllSlopeResultsSig) #Significant impact of treatment and day (not not day x treatment)
-```
-
-### Save model outpt
-
-```{r}
-write.csv(broom::tidy(lmAllSlopeResultsSig), "all-slope-results-model-output.csv", quote = FALSE, row.names = FALSE)
-```
-
-### Check assumptions
-
-```{r}
-hist(residuals(lmAllSlopeResultsSig)) #Residuals normally distributed
-
-plot(fitted(lmAllSlopeResultsSig), residuals(lmAllSlopeResultsSig)) #No heteroskedasticity 
-abline(h = 0, lty = 2, col = "grey")
-```
-
-### Postdoc tests for significant predictors
-
-Temperature and day were significant predictors for righting response, but their interaction was not significant. I will conduct posthoc tests for both of these factors separately.
-
-#### Treatment
-
-The first thing I will do is explore pairwise differences between treatment. Since there was not a significant interaction, I do not need to account for day when I examine pairwise differences.
-
-```{r}
-lmAllSlopeResultsSig_treatment <- emmeans(lmAllSlopeResultsSig, pairwise ~ treatment, adjust = "tukey", data = all_MO2_slope_results_demTTRdata) #Use emmeans to obtain pairwise treatment differences at the timepoints listed. 
-lmAllSlopeResultsSig_treatment$contrasts %>% broom::tidy(.) #Extract the contrast information to look at pairwise test output. Clean output using broom.
-lmAllSlopeResultsSig_treatment$contrasts %>% 
-  broom::tidy(.) %>%
-  write.csv("tukey-test-treatment.csv", quote = FALSE, row.names = FALSE) #Save output as a csv.
-```
-
-#### Day
-
-I want to understand how TTR varied by timepoint within different days There is no way to do this with my original model since day was (rightfully) coded as a continuous variable. In order to get pairwise estimates, I will need to refactor day as a categorical variable, rerun the model, and then use `emmeans` on this revised model.
-
-```{r}
-lmAllSlopeResultsSig <- glm(log(-slope_nmol_hr_corrected) ~ treatment + as.numeric(day), data = all_MO2_slope_results_demTTRdata) #Run the most significant model identified by step
-summary(lmAllSlopeResultsSig) #Significant impact of treatment and day (not not day x treatment)
+AIC(OCmodel6)
 ```
 
 ```{r}
-all_MO2_slope_results_demTTRdata$day_factor <- as.factor(all_MO2_slope_results_demTTRdata$day) #Code day as a factor
-lmAllSlopeResultsSig_factor <- glm(log(-slope_nmol_hr_corrected) ~ treatment + day_factor, 
-                                   data = all_MO2_slope_results_demTTRdata) #Run the original model, but use day as a factor
-lmAllSlopeResultsSig_day <- emmeans(lmAllSlopeResultsSig_factor, pairwise ~ day_factor, 
-                         data = all_MO2_slope_results_demTTRdata) #Rerun emmeans using day as a factor
-lmAllSlopeResultsSig_day$contrasts %>% broom::tidy(.) #Extract contrasts to look at pairwise output. Clean output using broom.
-lmAllSlopeResultsSig_day$contrasts %>%
-  broom::tidy(.) %>%
-  write.csv("tukey-test-day.csv", quote = FALSE, row.names = FALSE) #Save output as a csv.
+summary(OCmodel6) #Summary output of the final model
+```
+
+```{r}
+Anova(OCmodel6, type = "III") %>% #Run type III Wald tests on final model
+  broom::tidy(.) %>% #Tidy output
+  write.csv(., "OCmodel6-typeIII-Wald-output.csv", quote = FALSE, row.names = FALSE) #Save output as a CSV file
+```
+
+## Check assumptions
+
+### Multicollinearity
+
+I want to ensure that my predictor variables are not correlated with eachother.
+
+```{r}
+check_collinearity(OCmodel6) # Check multicollinearity assumption.
+
+#Adjusted VIF < 2, assumption is met, there is low correlation
+```
+
+### Heteroskedasticity
+
+```{r}
+sim_residuals <- simulateResiduals(fittedModel = OCmodel6, n = 1000, plot = TRUE) #Simulate residuals for the final model
+```
+
+Based on the plot, there are some significant quantile deviations, but no issues with uniformity or dispersion.
+
+```{r}
+testUniformity(sim_residuals) #Kolmogorov-Smirnov test (D = 0.14878, p-value = 0.08255)
+```
+
+### Dispersion
+
+```{r}
+testDispersion(sim_residuals) #Test dispersion
+
+#Dispersion = 1.2799, but not significant overdispersion (p-value = 0.334)
+```
+
+### Outliers
+
+```{r}
+testOutliers(sim_residuals) #Test for outliers
+
+#No significant outliers (p = 1)
+```
+
+### Quantile distributions
+
+```{r}
+testQuantiles(sim_residuals) #Test quantile distributions
+#Significant deviations (p-value = 0.04557), but that is not < 0.05 when rounded. This could be a minor fluctuation due to sample size, so I don't think it requires any significant changes to model structure.
+```
+
+```{r}
+testCategorical(sim_residuals, catPred = ~ as.factor(treatment)) #Test quantile distributions against a specific categorial predictor variable
+
+#No differences in variance by treatment
+```
+
+### Normality of random effects
+
+```{r}
+re_normality <- check_normality(OCmodel6, effects = "random") # Check random effect normality
+re_normality #Random effects are normally distributed (p = 0.991)
+
+plot(re_normality) #QQ plot of random effects
+```
+
+## Importance of random effect
+
+To understand how "important" the random effect is, I am going to fit a model without the random effect and compare the models using LRT and AIC comparisons.
+
+```{r}
+# Fit equivalent model with the random intercept
+OCmodel6_noRE <- glmmTMB(
+  -slope_nmol_hr_corrected ~ as.factor(treatment) + day.sc,
+  data = all_MO2_slope_results_demTTRdata,
+  family = Gamma(link = "log")
+)
+
+# Likelihood Ratio Test
+anova(OCmodel6, OCmodel6_noRE) #Non-significant LRT output (chisq = 0, P = 1)
+
+# Compare AICs
+AIC(OCmodel6, OCmodel6_noRE) #Lower AIC without random effect (1336.151 vs. 1334.151)
+```
+
+```{r}
+summary(OCmodel6)$varcor #Random effect associated with 3.1937e-05 SD
+(3.1937e-05)^2 #Variance = 1.019972e-09
+```
+## Model bootstrapping
+
+Since there are minor fluctuations in the quantile curves, I want to run a bootstrapping test on my model coefficients to confirm that my output is stable.
+
+```{r}
+boot_params <- bootstrap_parameters(OCmodel6, iterations = 1000) #Calculate bootstrapped p-values and 95% CI to on model coefficients
+print(boot_params) #See results of boostrapping
+```
+
+```{r}
+summary(OCmodel6)[[6]][[1]] #Original model output
+```
+
+Based on my comparison between the original model output and the bootstrapped p-values and confidence intervals, my original model inferences are stable!
+
+## Save model output
+
+```{r}
+summary(OCmodel6)[[6]][[1]] %>% #Original model output
+  as.data.frame(.) %>% #Convert to a dataframe
+  rownames_to_column(., var = "Parameter") %>% #Convert rownames to Parameter column
+  left_join(x = .,
+            y = boot_params %>%
+              as.data.frame(.), #Join with bootstrap output converted to a dataframe
+            by = "Parameter") %>% #Join by the Parameter column
+  write.csv(., "OCmodel6-output.csv", quote = FALSE, row.names = FALSE) #Save table version of GLMM output with boostrapping results
+```
+
+## Posthoc tests for significant predictors
+
+### Treatment
+
+I first will examine treatment differences at each day.
+
+```{r}
+TTRmodel_EMM_tempDay <- emmeans(TTRmodelSex5, #Model name
+                                ~ treatment | day.sc, #Significant predictor to investigate
+                                at = list(day.sc = scale(c(4, 8, 11, 15, 18, 22),
+                                                         center = mean(modTTR$day),
+                                                         scale = sd(modTTR$day))), #Days where TTR was measured. Include scale to automatically back-transform scaled predictor variable, and specify the center and scale variables used in the initial scaling for back-transformation.
+                                type = "response", #Convert back to the response scale since a log link was used
+                                adjust = "bonferroni") #Use Bonferroni correction for multiple comparisons
+TTRmodel_EMM_tempDay #Estimated marginal means
+```
+
+```{r}
+tempDay_EMM <- TTRmodel_EMM_tempDay %>% #Take emmeans output
+  broom::tidy(.) %>% #Tidy it
+  mutate(day = c(rep(4, times = 3),
+                 rep(8, times = 3),
+                 rep(11, times = 3),
+                 rep(15, times = 3),
+                 rep(18, times = 3),
+                 rep(22, times = 3))) %>% #Add a column with real, not scaled dates
+  dplyr::select(treatment, day, response, std.error) %>% #Keep columns of interest
+  mutate(., LCL = response - std.error,
+         UCL = response + std.error) #Create columns for upper and lower confidence intervals
+head(tempDay_EMM) #Confirm formatting 
+```
+
+```{r}
+pairs(TTRmodel_EMM_tempDay) %>% #Get pairwise comparisons for treatment x day
+  broom::tidy(.) %>% #Tidy output
+  filter(., contrast != "30C / 5C") %>% #Remove comparisons between 30C and 5C
+  mutate(., day = c(rep(4, times = 2),
+                    rep(8, times = 2),
+                    rep(11, times = 2),
+                    rep(15, times = 2),
+                    rep(18, times = 2),
+                    rep(22, times = 2))) %>% #Create a column with actual date, not scaled date
+  dplyr::select(day, contrast:adj.p.value) %>% #Retain columns of interest
+  write.csv(., "TTRmodelSex5-emmeans-tempDay.csv", quote = FALSE, row.names = FALSE) #Save as a csv
 ```
 
 ## Create multipanel figure for oxygen consumption
