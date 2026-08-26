@@ -221,8 +221,8 @@ dat20220708mod <- dat20220708 %>%
   mutate(., dt_s = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
                              is.na(dt_s_1) == TRUE ~ dt_s_3)) %>%
   dplyr::select(., -c(date_1, date_2, date_3, 
-               time_1, time_2, time_3, 
-               dt_s_1, dt_s_2, dt_s_3)) %>%
+                      time_1, time_2, time_3, 
+                      dt_s_1, dt_s_2, dt_s_3)) %>%
   mutate(., datetime = dmy_hms(paste(date, time))) %>%
   mutate(., salinity = case_when(tank == "tank1" ~ 34,
                                  tank == "tank2" ~ 37,
@@ -273,8 +273,8 @@ dat20220712mod <- dat20220712 %>%
   mutate(., dt_s = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
                              is.na(dt_s_1) == TRUE ~ dt_s_3)) %>%
   dplyr::select(., -c(date_1, date_2, date_3, 
-               time_1, time_2, time_3, 
-               dt_s_1, dt_s_2, dt_s_3)) %>%
+                      time_1, time_2, time_3, 
+                      dt_s_1, dt_s_2, dt_s_3)) %>%
   mutate(., datetime = dmy_hms(paste(date, time))) %>%
   mutate(., salinity = case_when(tank == "tank1" ~ 35,
                                  tank == "tank2" ~ 36,
@@ -325,8 +325,8 @@ dat20220719mod <- dat20220719 %>%
   mutate(., dt_s = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
                              is.na(dt_s_1) == TRUE ~ dt_s_3)) %>%
   dplyr::select(., -c(date_1, date_2, date_3, 
-               time_1, time_2, time_3, 
-               dt_s_1, dt_s_2, dt_s_3)) %>%
+                      time_1, time_2, time_3, 
+                      dt_s_1, dt_s_2, dt_s_3)) %>%
   mutate(., datetime = dmy_hms(paste(date, time))) %>%
   mutate(., salinity = case_when(tank == "Tank_1" ~ 35,
                                  tank == "Tank_2" ~ 36,
@@ -377,8 +377,8 @@ dat20220726mod <- dat20220726 %>%
   mutate(., dt_s = case_when(is.na(dt_s_1) == FALSE ~ dt_s_1,
                              is.na(dt_s_1) == TRUE ~ dt_s_3)) %>%
   dplyr::select(., -c(date_1, date_2, date_3, 
-               time_1, time_2, time_3, 
-               dt_s_1, dt_s_2, dt_s_3)) %>%
+                      time_1, time_2, time_3, 
+                      dt_s_1, dt_s_2, dt_s_3)) %>%
   mutate(., datetime = dmy_hms(paste(date, time))) %>%
   mutate(., salinity = case_when(tank == "Tank_1" ~ 35,
                                  tank == "Tank_2" ~ 34,
@@ -2063,14 +2063,14 @@ demTTRdata <- read.csv("../../data/time-to-right.csv", header = TRUE) %>% #Impor
                                   treatment.tank == "3" | treatment.tank == "6" ~ "30C")) %>% #Create a treatment column
   dplyr::rename(., tank = treatment.tank) %>% #Change column name
   mutate(., integument.cont = dplyr::recode(integument.color,
-                                     "B" = 0,
-                                     "BG" = 0.5,
-                                     "G" = 1, 
-                                     "YG" = 1.5, 
-                                     "Y" = 2, 
-                                     "YO" = 2.5 , 
-                                     "O" = 3, 
-                                     "RO" = 3.5)) %>% #Recode integument color
+                                            "B" = 0,
+                                            "BG" = 0.5,
+                                            "G" = 1, 
+                                            "YG" = 1.5, 
+                                            "Y" = 2, 
+                                            "YO" = 2.5 , 
+                                            "O" = 3, 
+                                            "RO" = 3.5)) %>% #Recode integument color
   dplyr::select(., c(day, treatment, tank, probe_num, sex, integument.cont, carapace.width, number.swimmers)) #Keep columns of interest
 head(demTTRdata) #Confirm dataframe creation
 ```
@@ -2295,48 +2295,72 @@ summary(OCmodel6)[[6]][[1]] %>% #Original model output
 
 ## Posthoc tests for significant predictors
 
+Since there were no significant interactions, I just need to understand temperature and day separately.
+
 ### Treatment
 
-I first will examine treatment differences at each day.
-
 ```{r}
-TTRmodel_EMM_tempDay <- emmeans(TTRmodelSex5, #Model name
-                                ~ treatment | day.sc, #Significant predictor to investigate
-                                at = list(day.sc = scale(c(4, 8, 11, 15, 18, 22),
-                                                         center = mean(modTTR$day),
-                                                         scale = sd(modTTR$day))), #Days where TTR was measured. Include scale to automatically back-transform scaled predictor variable, and specify the center and scale variables used in the initial scaling for back-transformation.
-                                type = "response", #Convert back to the response scale since a log link was used
-                                adjust = "bonferroni") #Use Bonferroni correction for multiple comparisons
-TTRmodel_EMM_tempDay #Estimated marginal means
+OCmodel_EMM_temp <- emmeans(OCmodel6, #Model name
+                            ~ treatment, #Significant predictor to investigate
+                            type = "response", #Convert back to the response scale since a log link was used
+                            adjust = "bonferroni") #Use Bonferroni correction for multiple comparisons
+OCmodel_EMM_temp #Estimated marginal means
 ```
 
 ```{r}
-tempDay_EMM <- TTRmodel_EMM_tempDay %>% #Take emmeans output
+temp_EMM <- OCmodel_EMM_temp %>% #Take emmeans output
   broom::tidy(.) %>% #Tidy it
-  mutate(day = c(rep(4, times = 3),
-                 rep(8, times = 3),
-                 rep(11, times = 3),
-                 rep(15, times = 3),
-                 rep(18, times = 3),
-                 rep(22, times = 3))) %>% #Add a column with real, not scaled dates
-  dplyr::select(treatment, day, response, std.error) %>% #Keep columns of interest
+  dplyr::select(treatment, response, std.error) %>% #Keep columns of interest
   mutate(., LCL = response - std.error,
          UCL = response + std.error) #Create columns for upper and lower confidence intervals
-head(tempDay_EMM) #Confirm formatting 
+head(temp_EMM) #Confirm formatting 
 ```
 
 ```{r}
-pairs(TTRmodel_EMM_tempDay) %>% #Get pairwise comparisons for treatment x day
+pairs(OCmodel_EMM_temp) %>% #Get pairwise comparisons for treatment x day
   broom::tidy(.) %>% #Tidy output
   filter(., contrast != "30C / 5C") %>% #Remove comparisons between 30C and 5C
-  mutate(., day = c(rep(4, times = 2),
-                    rep(8, times = 2),
-                    rep(11, times = 2),
-                    rep(15, times = 2),
-                    rep(18, times = 2),
-                    rep(22, times = 2))) %>% #Create a column with actual date, not scaled date
-  dplyr::select(day, contrast:adj.p.value) %>% #Retain columns of interest
-  write.csv(., "TTRmodelSex5-emmeans-tempDay.csv", quote = FALSE, row.names = FALSE) #Save as a csv
+  dplyr::select(contrast:adj.p.value) %>% #Retain columns of interest
+  write.csv(., "OCmodel6-emmeans-temp.csv", quote = FALSE, row.names = FALSE) #Save as a csv
+```
+
+### Day
+
+To understand the impact of day on oxygen consumption rates, I need to rerun the model with day as a factor.
+
+```{r}
+all_MO2_slope_results_demTTRdata$day_factor <- as.factor(all_MO2_slope_results_demTTRdata$day) #Code day as a factor
+OCmodel6_factor <- glmmTMB( #Generalized linear mixed effect model
+  -slope_nmol_hr_corrected  ~ as.factor(treatment) + day_factor + #Temperature, time
+    (1 | tank), #Use tank as a random effect to account for potential dependence between data
+  data = all_MO2_slope_results_demTTRdata,
+  family = Gamma(link = "log") #Gamma model with a log link
+) #Run the original model, but use day as a factor
+```
+
+```{r}
+OCmodel_EMM_day <- emmeans(OCmodel6_factor, #Model name
+                           ~ day_factor, #Significant predictor to investigate
+                           type = "response", #Convert back to the response scale since a log link was used
+                           adjust = "bonferroni") #Use Bonferroni correction for multiple comparisons
+OCmodel_EMM_day #Estimated marginal means
+```
+
+```{r}
+day_EMM <- OCmodel_EMM_day %>% #Take emmeans output
+  broom::tidy(.) %>% #Tidy it
+  mutate(day = c(4, 8, 15, 22)) %>% #Add a column with real, not scaled dates
+  dplyr::select(day, response, std.error) %>% #Keep columns of interest
+  mutate(., LCL = response - std.error,
+         UCL = response + std.error) #Create columns for upper and lower confidence intervals
+head(day_EMM) #Confirm formatting 
+```
+
+```{r}
+pairs(OCmodel_EMM_day) %>% #Get pairwise comparisons for treatment x day
+  broom::tidy(.) %>% #Tidy output
+  dplyr::select(contrast:adj.p.value) %>% #Retain columns of interest
+  write.csv(., "OCmodel6-emmeans-day.csv", quote = FALSE, row.names = FALSE) #Save as a csv
 ```
 
 ## Create multipanel figure for oxygen consumption
