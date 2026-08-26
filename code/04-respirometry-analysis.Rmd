@@ -25,6 +25,7 @@ getwd()
 # install.packages("RColorBrewer")
 # install.packages("lubridate")
 # install.packages("respirometry")
+# install.packages("plotrix")
 # install.packages("grid")
 # install.packages("gridExtra")
 # install.packages("cowplot")
@@ -41,6 +42,7 @@ library(tidyverse)
 library(RColorBrewer)
 library(lubridate)
 library(respirometry)
+library(plotrix)
 library(grid)
 library(gridExtra)
 library(cowplot)
@@ -1432,10 +1434,10 @@ dat20220708_uncorr_fig <- dat20220708_MO2_slope_results_reorder %>%
   geom_boxplot() + geom_point(size = 2) +
   xlab("") + ylab("") +
   labs(title = "Day 4") +
-  stat_summary(fun = median,
-               geom = "line",
-               aes(group = 1),
-               col = "black", lty = 2) +
+  # stat_summary(fun = median,
+  #              geom = "line",
+  #              aes(group = 1),
+  #              col = "black", lty = 2) +
   scale_x_discrete(breaks = c("05C", "13C", "30C"),
                    labels = c("5", "13", "30")) +
   scale_y_continuous(limits = c(0, 30000),
@@ -1460,10 +1462,10 @@ dat20220712_uncorr_fig <- dat20220712_MO2_slope_results_reorder %>%
   geom_boxplot() + geom_point(size = 2) +
   xlab("") + ylab("") +
   labs(title = "Day 8") +
-  stat_summary(fun = median,
-               geom = "line",
-               aes(group = 1),
-               col = "black", lty = 2) +
+  # stat_summary(fun = median,
+  #              geom = "line",
+  #              aes(group = 1),
+  #              col = "black", lty = 2) +
   scale_x_discrete(breaks = c("05C", "13C", "30C"),
                    labels = c("5", "13", "30")) +
   scale_y_continuous(limits = c(0, 30000),
@@ -1488,10 +1490,10 @@ dat20220719_uncorr_fig <- dat20220719_MO2_slope_results_reorder %>%
   geom_boxplot() + geom_point(size = 2) +
   xlab("") + ylab("") +
   labs(title = "Day 15") +
-  stat_summary(fun = median,
-               geom = "line",
-               aes(group = 1),
-               col = "black", lty = 2) +
+  # stat_summary(fun = median,
+  #              geom = "line",
+  #              aes(group = 1),
+  #              col = "black", lty = 2) +
   scale_x_discrete(breaks = c("05C", "13C", "30C"),
                    labels = c("5", "13", "30")) +
   scale_y_continuous(limits = c(0, 30000),
@@ -1516,10 +1518,10 @@ dat20220726_uncorr_fig <- dat20220726_MO2_slope_results_reorder %>%
   geom_boxplot() + geom_point(size = 2) +
   xlab("") + ylab("") +
   labs(title = "Day 22") +
-  stat_summary(fun = median,
-               geom = "line",
-               aes(group = 1),
-               col = "black", lty = 2) +
+  # stat_summary(fun = median,
+  #              geom = "line",
+  #              aes(group = 1),
+  #              col = "black", lty = 2) +
   scale_x_discrete(breaks = c("05C", "13C", "30C"),
                    labels = c("5", "13", "30")) +
   scale_y_continuous(limits = c(0, 30000),
@@ -1532,13 +1534,13 @@ dat20220726_uncorr_fig
 ```
 
 ```{r}
-#pdf("figures/multipanel-oxygen-consumption-uncorrected.pdf", height = 8.5, width = 11)
+# pdf("figures/multipanel-oxygen-consumption-uncorrected.pdf", height = 8.5, width = 11)
 
 dat20220708_uncorr_fig | dat20220712_uncorr_fig | dat20220719_uncorr_fig | dat20220726_uncorr_fig
-grid::grid.draw(grid::textGrob("Oxygen Consumption (nmol/hr)", x = 0.03, rot = 90, gp = gpar(fontsize = 17)))
-grid::grid.draw(grid::textGrob("Temperature (ºC)", y = 0.04, gp = gpar(fontsize = 17)))
+grid::grid.draw(grid::textGrob("Oxygen Consumption (nmol/hr)", x = 0.01, rot = 90, gp = gpar(fontsize = 17)))
+grid::grid.draw(grid::textGrob("Temperature (ºC)", y = 0.015, gp = gpar(fontsize = 17)))
 
-#dev.off()
+# dev.off()
 ```
 
 # Blank-correct regression slopes
