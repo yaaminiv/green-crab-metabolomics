@@ -21,30 +21,38 @@ getwd()
 # Install packages
 
 ```{r packages, include=FALSE}
-#if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages("tidyverse")
-#if ("RColorBrewer" %in% rownames(installed.packages()) == 'FALSE') install.packages("RColorBrewer")
-#if ("lubridate" %in% rownames(installed.packages()) == 'FALSE') install.packages("lubridate")
-#if ("respirometry" %in% rownames(installed.packages()) == 'FALSE') install.packages("respirometry")
-#if ("gridExtra" %in% rownames(installed.packages()) == 'FALSE') install.packages("gridExtra")
-#if ("broom" %in% rownames(installed.packages()) == 'FALSE') install.packages("broom")
-# if ("patchwork" %in% rownames(installed.packages()) == 'FALSE') install.packages("patchwork")
-# if ("grid" %in% rownames(installed.packages()) == 'FALSE') install.packages('grid')
-# if ("plotrix" %in% rownames(installed.packages()) == 'FALSE') install.packages('plotrix')
+# install.packages("tidyverse")
+# install.packages("RColorBrewer")
+# install.packages("lubridate")
+# install.packages("respirometry")
+# install.packages("grid")
+# install.packages("gridExtra")
+# install.packages("cowplot")
+# install.packages("lme4")
+# install.packages("glmmTMB", type = "source")
+# install.packages("DHARMa")
+# install.packages("performance")
+# install.packages("see")
+# install.packages("car")
+# install.packages("parameters")
 # install.packages("emmeans")
-# install.packages("multcompView")
-# install.packages("multcomp")
-require(tidyverse)
-require(RColorBrewer)
-require(lubridate)
-require(respirometry)
-require(gridExtra)
-require(broom)
-require(patchwork)
-require(grid)
-require(plotrix)
-require(emmeans)
-require(multcompView)
-require(multcomp)
+# install.packages("patchwork")
+library(tidyverse)
+library(RColorBrewer)
+library(lubridate)
+library(respirometry)
+library(grid)
+library(gridExtra)
+library(cowplot)
+library(lme4)
+library(glmmTMB)
+library(DHARMa)
+library(performance)
+library(see)
+library(car)
+library(parameters)
+library(emmeans)
+library(patchwork)
 ```
 
 ```{r}
@@ -1124,7 +1132,7 @@ head(dat20220708data) #Confirm object creation
 dat20220708_MO2_slopes <- dat20220708data %>%
   nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
-  mutate(tidied = map(fit, tidy)) %>%
+  mutate(tidied = map(fit, broom::tidy)) %>%
   unnest(tidied) #Create a list object that stores the regression results for each chamber. Nest data by treatment, tank, and probe number so the regression slopes are calculated appropriately. Use map to extract linear model fit information for DO_umol_L by time. Extract slopes using broom::tidy and unnest.
 dat20220708_MO2_slopes #Confirm dataframe creation
 ```
@@ -1133,7 +1141,7 @@ dat20220708_MO2_slopes #Confirm dataframe creation
 dat20220708_MO2_glance <- dat20220708data %>%
   nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
-  mutate(glanced = map(fit, glance)) %>%
+  mutate(glanced = map(fit, broom::glance)) %>%
   unnest(glanced) #Similar to above, but calculate the adjusted R-squared values by nesting treatment and probe information
 dat20220708_MO2_glance #Confirm dataframe creation
 ```
@@ -1209,7 +1217,7 @@ head(dat20220712data) #Confirm object creation
 dat20220712_MO2_slopes <- dat20220712data %>%
   nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
-  mutate(tidied = map(fit, tidy)) %>%
+  mutate(tidied = map(fit, broom::tidy)) %>%
   unnest(tidied) #Create a list object that stores the regression results for each chamber. Nest data by treatment, tank, and probe number so the regression slopes are calculated appropriately. Use map to extract linear model fit information for DO_umol_L by time. Extract slopes using broom::tidy and unnest.
 dat20220712_MO2_slopes #Confirm dataframe creation
 ```
@@ -1218,7 +1226,7 @@ dat20220712_MO2_slopes #Confirm dataframe creation
 dat20220712_MO2_glance <- dat20220712data %>%
   nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
-  mutate(glanced = map(fit, glance)) %>%
+  mutate(glanced = map(fit, broom::glance)) %>%
   unnest(glanced) #Similar to above, but calculate the adjusted R-squared values by nesting treatment and probe information
 dat20220712_MO2_glance #Confirm dataframe creation
 ```
@@ -1284,7 +1292,7 @@ head(dat20220719data) #Confirm object creation
 dat20220719_MO2_slopes <- dat20220719data %>%
   nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
-  mutate(tidied = map(fit, tidy)) %>%
+  mutate(tidied = map(fit, broom::tidy)) %>%
   unnest(tidied) #Create a list object that stores the regression results for each chamber. Nest data by treatment, tank, and probe number so the regression slopes are calculated appropriately. Use map to extract linear model fit information for DO_umol_L by time. Extract slopes using broom::tidy and unnest.
 dat20220719_MO2_slopes #Confirm dataframe creation
 ```
@@ -1293,7 +1301,7 @@ dat20220719_MO2_slopes #Confirm dataframe creation
 dat20220719_MO2_glance <- dat20220719data %>%
   nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
-  mutate(glanced = map(fit, glance)) %>%
+  mutate(glanced = map(fit, broom::glance)) %>%
   unnest(glanced) #Similar to above, but calculate the adjusted R-squared values by nesting treatment and probe information
 dat20220719_MO2_glance #Confirm dataframe creation
 ```
@@ -1371,7 +1379,7 @@ head(dat20220726data) #Confirm object creation
 dat20220726_MO2_slopes <- dat20220726data %>%
   nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
-  mutate(tidied = map(fit, tidy)) %>%
+  mutate(tidied = map(fit, broom::tidy)) %>%
   unnest(tidied) #Create a list object that stores the regression results for each chamber. Nest data by treatment, tank, and probe number so the regression slopes are calculated appropriately. Use map to extract linear model fit information for DO_umol_L by time. Extract slopes using broom::tidy and unnest.
 dat20220726_MO2_slopes #Confirm dataframe creation
 ```
@@ -1380,7 +1388,7 @@ dat20220726_MO2_slopes #Confirm dataframe creation
 dat20220726_MO2_glance <- dat20220726data %>%
   nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
-  mutate(glanced = map(fit, glance)) %>%
+  mutate(glanced = map(fit, broom::glance)) %>%
   unnest(glanced) #Similar to above, but calculate the adjusted R-squared values by nesting treatment and probe information
 dat20220726_MO2_glance #Confirm dataframe creation
 ```
@@ -1622,7 +1630,7 @@ head(dat20220708blanks) #Confirm dataframe creation
 dat20220708_MO2_slopes_blanks <- dat20220708blanks %>%
   nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
-  mutate(tidied = map(fit, tidy)) %>%
+  mutate(tidied = map(fit, broom::tidy)) %>%
   unnest(tidied) #Create a list object that stores the regression results for each chamber. Nest data by treatment, tank, and probe number so the regression slopes are calculated appropriately. Use map to extract linear model fit information for DO_umol_L by time. Extract slopes using broom::tidy and unnest.
 dat20220708_MO2_slopes_blanks #Confirm dataframe creation
 ```
@@ -1631,7 +1639,7 @@ dat20220708_MO2_slopes_blanks #Confirm dataframe creation
 dat20220708_MO2_glance_blanks <- dat20220708blanks %>%
   nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
-  mutate(glanced = map(fit, glance)) %>%
+  mutate(glanced = map(fit, broom::glance)) %>%
   unnest(glanced) #Similar to above, but calculate the adjusted R-squared values by nesting treatment and probe information
 dat20220708_MO2_glance_blanks #Confirm dataframe creation
 ```
@@ -1736,7 +1744,7 @@ head(dat20220712blanks) #Confirm dataframe creation
 dat20220712_MO2_slopes_blanks <- dat20220712blanks %>%
   nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
-  mutate(tidied = map(fit, tidy)) %>%
+  mutate(tidied = map(fit, broom::tidy)) %>%
   unnest(tidied) #Create a list object that stores the regression results for each chamber. Nest data by treatment, tank, and probe number so the regression slopes are calculated appropriately. Use map to extract linear model fit information for DO_umol_L by time. Extract slopes using broom::tidy and unnest.
 dat20220712_MO2_slopes_blanks #Confirm dataframe creation
 ```
@@ -1745,7 +1753,7 @@ dat20220712_MO2_slopes_blanks #Confirm dataframe creation
 dat20220712_MO2_glance_blanks <- dat20220712blanks %>%
   nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
-  mutate(glanced = map(fit, glance)) %>%
+  mutate(glanced = map(fit, broom::glance)) %>%
   unnest(glanced) #Similar to above, but calculate the adjusted R-squared values by nesting treatment and probe information
 dat20220712_MO2_glance_blanks #Confirm dataframe creation
 ```
@@ -1772,7 +1780,7 @@ write.csv(dat20220712_MO2_all_slope_results, "20220712-MO2-slope-results.csv", q
 ```
 
 ```{r}
-dat20220712_MO2_slope_results %>%
+dat20220712_MO2_all_slope_results %>%
   ggplot(., aes(x = treatment, y = -slope_nmol_hr_corrected, color = treatment)) + 
   geom_boxplot() + geom_point(size = 2) +
   xlab("Temperature (ºC)") + ylab("Oxygen Consumption (nmol/hr)") +
@@ -1849,7 +1857,7 @@ head(dat20220719blanks) #Confirm dataframe creation
 dat20220719_MO2_slopes_blanks <- dat20220719blanks %>%
   nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
-  mutate(tidied = map(fit, tidy)) %>%
+  mutate(tidied = map(fit, broom::tidy)) %>%
   unnest(tidied) #Create a list object that stores the regression results for each chamber. Nest data by treatment, tank, and probe number so the regression slopes are calculated appropriately. Use map to extract linear model fit information for DO_umol_L by time. Extract slopes using broom::tidy and unnest.
 dat20220719_MO2_slopes_blanks #Confirm dataframe creation
 ```
@@ -1858,7 +1866,7 @@ dat20220719_MO2_slopes_blanks #Confirm dataframe creation
 dat20220719_MO2_glance_blanks <- dat20220719blanks %>%
   nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
-  mutate(glanced = map(fit, glance)) %>%
+  mutate(glanced = map(fit, broom::glance)) %>%
   unnest(glanced) #Similar to above, but calculate the adjusted R-squared values by nesting treatment and probe information
 dat20220719_MO2_glance_blanks #Confirm dataframe creation
 ```
@@ -1885,7 +1893,7 @@ write.csv(dat20220719_MO2_all_slope_results, "20220719-MO2-slope-results.csv", q
 ```
 
 ```{r}
-dat20220719_MO2_slope_results %>%
+dat20220719_MO2_all_slope_results %>%
   ggplot(., aes(x = treatment, y = -slope_nmol_hr_corrected, color = treatment)) + 
   geom_boxplot() + geom_point(size = 2) +
   xlab("Temperature (ºC)") + ylab("Oxygen Consumption (nmol/hr)") +
@@ -1984,7 +1992,7 @@ head(dat20220726blanks) #Confirm dataframe creation
 dat20220726_MO2_slopes_blanks <- dat20220726blanks %>%
   nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
-  mutate(tidied = map(fit, tidy)) %>%
+  mutate(tidied = map(fit, broom::tidy)) %>%
   unnest(tidied) #Create a list object that stores the regression results for each chamber. Nest data by treatment, tank, and probe number so the regression slopes are calculated appropriately. Use map to extract linear model fit information for DO_umol_L by time. Extract slopes using broom::tidy and unnest.
 dat20220726_MO2_slopes_blanks #Confirm dataframe creation
 ```
@@ -1993,7 +2001,7 @@ dat20220726_MO2_slopes_blanks #Confirm dataframe creation
 dat20220726_MO2_glance_blanks <- dat20220726blanks %>%
   nest(data = -c(treatment, tank, probe_num)) %>%
   mutate(fit = map(data, ~lm(DO_umol_L ~ dt_s, data = .))) %>%
-  mutate(glanced = map(fit, glance)) %>%
+  mutate(glanced = map(fit, broom::glance)) %>%
   unnest(glanced) #Similar to above, but calculate the adjusted R-squared values by nesting treatment and probe information
 dat20220726_MO2_glance_blanks #Confirm dataframe creation
 ```
@@ -2020,7 +2028,7 @@ write.csv(dat20220726_MO2_all_slope_results, "20220726-MO2-slope-results.csv", q
 ```
 
 ```{r}
-dat20220726_MO2_slope_results %>%
+dat20220726_MO2_all_slope_results %>%
   ggplot(., aes(x = treatment, y = -slope_nmol_hr_corrected, color = treatment)) + 
   geom_boxplot() + geom_point(size = 2) +
   xlab("Temperature (ºC)") + ylab("Oxygen Consumption (nmol/hr)") +
