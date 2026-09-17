@@ -21,23 +21,23 @@ getwd()
 # Install packages
 
 ```{r packages, warning = FALSE, message = FALSE}
-install.packages('tidyverse')
-install.packages('vegan')
-install.packages("BiocManager")
-BiocManager::install("mixOmics")
-install.packages('RVAideMemoire')
-install.packages('broom')
-install.packages('RColorBrewer')
-install.packages('pheatmap')
-BiocManager::install("genefilter")
-BiocManager::install('WGCNA')
-BiocManager::install('dendsort')
-BiocManager::install('ComplexHeatmap')
-install.packages("svglite")
-install.packages("ggfortify")
-install.packages("devtools")
-devtools::install_github("andjar/ALASCA", ref = "main")
-install.packages("patchwork")
+# install.packages('tidyverse')
+# install.packages('vegan')
+# install.packages("BiocManager")
+# BiocManager::install("mixOmics")
+# install.packages('RVAideMemoire')
+# install.packages('broom')
+# install.packages('RColorBrewer')
+# install.packages('pheatmap')
+# BiocManager::install("genefilter")
+# BiocManager::install('WGCNA')
+# BiocManager::install('dendsort')
+# BiocManager::install('ComplexHeatmap')
+# install.packages("svglite")
+# install.packages("ggfortify")
+# install.packages("devtools")
+# devtools::install_github("andjar/ALASCA", ref = "main")
+# install.packages("patchwork")
 library(tidyverse)
 library(vegan)
 library(mixOmics)
@@ -5183,5 +5183,109 @@ predictionPC4 <- plot(metabolomics.ASCAmodel, effect = 1, component = 4, type = 
 
 predictionPC1 + predictionPC2 + predictionPC3 + predictionPC4 + plot_layout(guides = 'collect')
 ggsave("../../supplementary-material/metabolite-ASCA-prediction-plot.pdf", width = 11, height = 8.5)
+```
+
+# Enrichment figure
+
+I want to make a multipanel figure that depicts abundances of metabolites associated with significantly enriched pathways.
+
+```{r}
+#Create lists of metabolites involved in significant pathways. Some names have spaces afterwards to reflect naming conventions in original dataframe
+valineBiosynthesis <- c("threonine", "isoleucine ", "leucine", "valine ") #13 vs 30 VIP, ASCA PC 1. Valine is only present in the VIP contrast
+arginineBiosynthesis <- c("alpha-ketoglutarate", "glutamate ", "citrulline") #ASCA PC 4
+phenylalanineBiosynthesis <- c("phenylalanine", "tyrosine") #ASCA PC 4
+```
+
+```{r}
+valineBiosynthesisFigure <- transMetabData %>%
+  dplyr::select(., c(1:4, any_of(valineBiosynthesis))) %>%
+  pivot_longer(., cols = c(5:8), names_to = "metabolite", values_to = "value") %>%
+  mutate(., treatment_day = gsub(pattern = "_3", replacement = "_03", x = treatment_day)) %>%
+  mutate(., treatment_day = gsub(pattern = "5_", replacement = "05_", x = treatment_day)) %>%
+  ggplot(., mapping = aes(x = treatment_day, y = value, color = treatment_day, fill = treatment_day)) +
+  facet_wrap(~metabolite, scales = "free_y") +
+  ylab("Metabolite Abundance") +
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.1) +
+  geom_point(pch = 21, position = position_dodge(width = 0.5)) +
+  scale_fill_manual(name = "", 
+                    values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                    labels = c("5ºC at Day 3", "5ºC at Day 22", "13ºC at Day 3", "13ºC at Day 22", "30ºC at Day 3", "30ºC at Day 22")) +
+  scale_colour_manual(name = "", 
+                      values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                      labels = c("5ºC at Day 3", "5ºC at Day 22", "13ºC at Day 3", "13ºC at Day 22", "30ºC at Day 3", "30ºC at Day 22")) +
+  xlab("") + #Axis titles
+  ggtitle("A. Valine, leucine, and isoleucine biosynthesis") +
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.text = element_text(color = "black", size = 10), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"),
+                                        strip.background = element_rect(color = "white"))
+```
+
+```{r}
+arginineBiosynthesisFigure <- transMetabData %>%
+  dplyr::select(., c(1:4, any_of(arginineBiosynthesis))) %>%
+  pivot_longer(., cols = c(5:7), names_to = "metabolite", values_to = "value") %>%
+  mutate(., treatment_day = gsub(pattern = "_3", replacement = "_03", x = treatment_day)) %>%
+  mutate(., treatment_day = gsub(pattern = "5_", replacement = "05_", x = treatment_day)) %>%
+  ggplot(., mapping = aes(x = treatment_day, y = value, color = treatment_day, fill = treatment_day)) +
+  facet_wrap(~metabolite, scales = "free_y") +
+  ylab("Metabolite Abundance") +
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.1) +
+  geom_point(pch = 21, position = position_dodge(width = 0.5)) +
+  scale_fill_manual(name = "", 
+                    values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                    labels = c("5ºC at Day 3", "5ºC at Day 22", "13ºC at Day 3", "13ºC at Day 22", "30ºC at Day 3", "30ºC at Day 22")) +
+  scale_colour_manual(name = "", 
+                      values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                      labels = c("5ºC at Day 3", "5ºC at Day 22", "13ºC at Day 3", "13ºC at Day 22", "30ºC at Day 3", "30ºC at Day 22")) +
+  xlab("") + #Axis titles
+  ggtitle("B. Arginine biosynthesis") +
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.text = element_text(color = "black", size = 10), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"),
+                                        strip.background = element_rect(color = "white"))
+```
+
+```{r}
+phenylalanineBiosynthesisFigure <- transMetabData %>%
+  dplyr::select(., c(1:4, any_of(phenylalanineBiosynthesis))) %>%
+  pivot_longer(., cols = c(5:6), names_to = "metabolite", values_to = "value") %>%
+  mutate(., treatment_day = gsub(pattern = "_3", replacement = "_03", x = treatment_day)) %>%
+  mutate(., treatment_day = gsub(pattern = "5_", replacement = "05_", x = treatment_day)) %>%
+  ggplot(., mapping = aes(x = treatment_day, y = value, color = treatment_day, fill = treatment_day)) +
+  facet_wrap(~metabolite, scales = "free_y") +
+  ylab("Metabolite Abundance") +
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.1) +
+  geom_point(pch = 21, position = position_dodge(width = 0.5)) +
+  scale_fill_manual(name = "", 
+                    values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                    labels = c("5ºC at Day 3", "5ºC at Day 22", "13ºC at Day 3", "13ºC at Day 22", "30ºC at Day 3", "30ºC at Day 22")) +
+  scale_colour_manual(name = "", 
+                      values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                      labels = c("5ºC at Day 3", "5ºC at Day 22", "13ºC at Day 3", "13ºC at Day 22", "30ºC at Day 3", "30ºC at Day 22")) +
+  xlab("") + #Axis titles
+  ggtitle("C. Phenylalanine, tyrosine, and tryptophan biosynthesis") +
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.text = element_text(color = "black", size = 10), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"),
+                                        strip.background = element_rect(color = "white"))
+```
+
+```{r}
+(valineBiosynthesisFigure / arginineBiosynthesisFigure / phenylalanineBiosynthesisFigure) + #Combine figures vertically
+  plot_layout(guides = "collect") & #Collect identical legends
+  theme(legend.position = "bottom", #Have legend on the bottom
+        legend.key.width = unit(0.3, "cm")) & #Reduce legend spacing
+  guides(
+    fill = guide_legend(nrow = 1), #Force legend to be on one row
+    color = guide_legend(nrow = 1) #Force legend to be on one row
+  )
+ggsave("ASCA/figures/enriched-pathways-metabolite-abundance.pdf", width = 8.5, height = 11) #Save figure
 ```
 
