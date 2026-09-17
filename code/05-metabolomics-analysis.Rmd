@@ -21,41 +21,39 @@ getwd()
 # Install packages
 
 ```{r packages, warning = FALSE, message = FALSE}
-# if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse')
-# if ("vegan" %in% rownames(installed.packages()) == 'FALSE') install.packages('vegan')
-# if (!requireNamespace("BiocManager", quietly = TRUE))
-#   install.packages("BiocManager")
-# if ("mixOmics" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("mixOmics")
-# if ("RVAideMemoire" %in% rownames(installed.packages()) == 'FALSE') install.packages('RVAideMemoire')
-# if ("broom" %in% rownames(installed.packages()) == 'FALSE') install.packages('broom')
-# if ("RColorBrewer" %in% rownames(installed.packages()) == 'FALSE') install.packages('RColorBrewer')
-# if ("pheatmap" %in% rownames(installed.packages()) == 'FALSE') install.packages('pheatmap')
-# if ("genefilter" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("genefilter")
-# if ("WGCNA" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('WGCNA')
-# if ("dendsort" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('dendsort')
-# if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap')
-# if ("svglite" %in% rownames(installed.packages()) == 'FALSE') install.packages("svglite")
-# if ("ggfortify" %in% rownames(installed.packages()) == 'FALSE') install.packages("ggfortify")
-# if (!requireNamespace("devtools", quietly = TRUE))
-#     install.packages("devtools")
-# devtools::install_github("andjar/ALASCA", ref = "main")
-# if ("patchwork" %in% rownames(installed.packages()) == 'FALSE') install.packages("patchwork")
-require(tidyverse)
-require(vegan)
-require(mixOmics)
-require(RVAideMemoire)
-require(broom)
-require(RColorBrewer)
-require(pheatmap)
-require(genefilter)
-require(WGCNA)
-require(dendsort)
-require(ComplexHeatmap)
-require(svglite)
-require(ggfortify)
-require(devtools)
-require(ALASCA)
-require(patchwork)
+install.packages('tidyverse')
+install.packages('vegan')
+install.packages("BiocManager")
+BiocManager::install("mixOmics")
+install.packages('RVAideMemoire')
+install.packages('broom')
+install.packages('RColorBrewer')
+install.packages('pheatmap')
+BiocManager::install("genefilter")
+BiocManager::install('WGCNA')
+BiocManager::install('dendsort')
+BiocManager::install('ComplexHeatmap')
+install.packages("svglite")
+install.packages("ggfortify")
+install.packages("devtools")
+devtools::install_github("andjar/ALASCA", ref = "main")
+install.packages("patchwork")
+library(tidyverse)
+library(vegan)
+library(mixOmics)
+library(RVAideMemoire)
+library(broom)
+library(RColorBrewer)
+library(pheatmap)
+library(genefilter)
+library(WGCNA) #Error: no package called preprocessCore
+library(dendsort)
+library(ComplexHeatmap)
+library(svglite)
+library(ggfortify)
+library(devtools)
+library(ALASCA)
+library(patchwork)
 ```
 
 ```{r}
@@ -4395,7 +4393,7 @@ ggsave("ASCA/figures/prediction-plot-PC1.pdf", height = 11, width = 8.5)
 ```
 
 ```{r}
-loadingsPC1 <- get_loadings(metabolomics.ASCAmodel, component = 1, effect = 1, n_limit = 10) #Get loadings for the top 10 positively and negatively loaded compounds on the PC
+loadingsPC1 <- get_loadings(metabolomics.ASCAmodel, component = 1, effect = 1) #Get loadings for the top 10 positively and negatively loaded compounds on the PC
 head(loadingsPC1)
 ```
 
@@ -4453,7 +4451,43 @@ head(loadingsPC1.annot) #Confirm changes
 write.csv(loadingsPC1.annot, "ASCA/loadings-PC1-annotations.csv", quote = FALSE, row.names = FALSE)
 ```
 
-#### Metaboanalyst enrichment results
+#### Metaboanalyst enrichment
+
+```{r}
+loadingsPC1[[1]] %>%
+  dplyr::rename(metabolite = covars) %>%
+  mutate(abs_loading = abs(loading)) %>%
+  arrange(desc(abs_loading)) %>%
+  mutate(rank = 1:nrow(.),
+         cum_abs = cumsum(abs_loading),
+         var_contrib = loading^2,
+         cum_var = cumsum(var_contrib) / sum(var_contrib)) %>%
+  ggplot(., aes(x = rank, y = cum_var)) +
+  geom_point(size = 0.7) +
+  geom_hline(yintercept = 0.50, linetype = "dashed") + 
+  labs(x = "Rank (|Loading|)", y = "Cumulative Proportion of Variance") +
+  theme_classic() + theme(base_size = 15) #Take loading information and get statistics of interest (absolute value of loadings, rank, variance contributed, cumulative variance contributed). Plot graph showing where 50% cutoff is
+```
+
+```{r}
+loadingsPC1[[1]] %>%
+  dplyr::rename(metabolite = covars) %>%
+  mutate(abs_loading = abs(loading)) %>%
+  arrange(desc(abs_loading)) %>%
+  mutate(rank = 1:nrow(.),
+         cum_abs = cumsum(abs_loading),
+         var_contrib = loading^2,
+         cum_var = cumsum(var_contrib) / sum(var_contrib)) %>%
+  filter(., cum_var <= 0.50) %>%
+  left_join(., (rawMetabolomicsData %>% 
+                  dplyr::rename(metabolite = BinBase.name)), 
+            by = "metabolite") %>%
+  dplyr::select(., PC, metabolite, loading, cum_var, PubChem, KEGG) %>%
+  unique(.) %>%
+  write.table("ASCA/PC1_cumvar50_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Save list of metabolites to use with Metaboanalyst
+```
+
+The file created above was put into MetaboAnalyst.
 
 ```{r}
 topPathwayResultsPC1 <- read.csv("ASCA/PC1_metaboanalyst-results/pathway_results.csv") %>%
@@ -4513,7 +4547,7 @@ ggsave("ASCA/figures/prediction-plot-PC2.pdf", height = 11, width = 8.5)
 ```
 
 ```{r}
-loadingsPC2 <- get_loadings(metabolomics.ASCAmodel, component = 2, effect = 1, n_limit = 10) #Get loadings for the top 10 positively and negatively loaded compounds on the PC
+loadingsPC2 <- get_loadings(metabolomics.ASCAmodel, component = 2, effect = 1) #Get loadings for the top 10 positively and negatively loaded compounds on the PC
 head(loadingsPC2)
 ```
 
@@ -4571,6 +4605,44 @@ head(loadingsPC2.annot) #Confirm changes
 write.csv(loadingsPC2.annot, "ASCA/loadings-PC2-annotations.csv", quote = FALSE, row.names = FALSE)
 ```
 
+#### Metaboanalyst enrichment
+
+```{r}
+loadingsPC2[[1]] %>%
+  dplyr::rename(metabolite = covars) %>%
+  mutate(abs_loading = abs(loading)) %>%
+  arrange(desc(abs_loading)) %>%
+  mutate(rank = 1:nrow(.),
+         cum_abs = cumsum(abs_loading),
+         var_contrib = loading^2,
+         cum_var = cumsum(var_contrib) / sum(var_contrib)) %>%
+  ggplot(., aes(x = rank, y = cum_var)) +
+  geom_point(size = 0.7) +
+  geom_hline(yintercept = 0.50, linetype = "dashed") + 
+  labs(x = "Rank (|Loading|)", y = "Cumulative Proportion of Variance") +
+  theme_classic() + theme(base_size = 15) #Take loading information and get statistics of interest (absolute value of loadings, rank, variance contributed, cumulative variance contributed). Plot graph showing where 50% cutoff is
+```
+
+```{r}
+loadingsPC2[[1]] %>%
+  dplyr::rename(metabolite = covars) %>%
+  mutate(abs_loading = abs(loading)) %>%
+  arrange(desc(abs_loading)) %>%
+  mutate(rank = 1:nrow(.),
+         cum_abs = cumsum(abs_loading),
+         var_contrib = loading^2,
+         cum_var = cumsum(var_contrib) / sum(var_contrib)) %>%
+  filter(., cum_var <= 0.50) %>%
+  left_join(., (rawMetabolomicsData %>% 
+                  dplyr::rename(metabolite = BinBase.name)), 
+            by = "metabolite") %>%
+  dplyr::select(., PC, metabolite, loading, cum_var, PubChem, KEGG) %>%
+  unique(.) %>%
+  write.table("ASCA/PC2_cumvar50_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Save list of metabolites to use with Metaboanalyst
+```
+
+The file created above was put into MetaboAnalyst.
+
 ### Component 3
 
 Absolute abundance in 5ºC changes over time but 30ºC remains stable
@@ -4602,7 +4674,7 @@ ggsave("ASCA/figures/prediction-plot-PC3.pdf", height = 11, width = 8.5)
 ```
 
 ```{r}
-loadingsPC3 <- get_loadings(metabolomics.ASCAmodel, component = 3, effect = 1, n_limit = 10) #Get loadings for the top 10 positively and negatively loaded compounds on the PC
+loadingsPC3 <- get_loadings(metabolomics.ASCAmodel, component = 3, effect = 1) #Get loadings for the top 10 positively and negatively loaded compounds on the PC
 head(loadingsPC3)
 ```
 
@@ -4660,6 +4732,44 @@ head(loadingsPC3.annot) #Confirm changes
 write.csv(loadingsPC3.annot, "ASCA/loadings-PC3-annotations.csv", quote = FALSE, row.names = FALSE)
 ```
 
+#### Metaboanalyst enrichment
+
+```{r}
+loadingsPC3[[1]] %>%
+  dplyr::rename(metabolite = covars) %>%
+  mutate(abs_loading = abs(loading)) %>%
+  arrange(desc(abs_loading)) %>%
+  mutate(rank = 1:nrow(.),
+         cum_abs = cumsum(abs_loading),
+         var_contrib = loading^2,
+         cum_var = cumsum(var_contrib) / sum(var_contrib)) %>%
+  ggplot(., aes(x = rank, y = cum_var)) +
+  geom_point(size = 0.7) +
+  geom_hline(yintercept = 0.50, linetype = "dashed") + 
+  labs(x = "Rank (|Loading|)", y = "Cumulative Proportion of Variance") +
+  theme_classic() + theme(base_size = 15) #Take loading information and get statistics of interest (absolute value of loadings, rank, variance contributed, cumulative variance contributed). Plot graph showing where 50% cutoff is
+```
+
+```{r}
+loadingsPC3[[1]] %>%
+  dplyr::rename(metabolite = covars) %>%
+  mutate(abs_loading = abs(loading)) %>%
+  arrange(desc(abs_loading)) %>%
+  mutate(rank = 1:nrow(.),
+         cum_abs = cumsum(abs_loading),
+         var_contrib = loading^2,
+         cum_var = cumsum(var_contrib) / sum(var_contrib)) %>%
+  filter(., cum_var <= 0.50) %>%
+  left_join(., (rawMetabolomicsData %>% 
+                  dplyr::rename(metabolite = BinBase.name)), 
+            by = "metabolite") %>%
+  dplyr::select(., PC, metabolite, loading, cum_var, PubChem, KEGG) %>%
+  unique(.) %>%
+  write.table("ASCA/PC3_cumvar50_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Save list of metabolites to use with Metaboanalyst
+```
+
+The file created above was put into MetaboAnalyst.
+
 ### Component 4
 
 Absolute change in abundance over time in 30ºC is more extreme than at 5ºC.
@@ -4691,7 +4801,7 @@ ggsave("ASCA/figures/prediction-plot-PC4.pdf", height = 11, width = 8.5)
 ```
 
 ```{r}
-loadingsPC4 <- get_loadings(metabolomics.ASCAmodel, component = 4, effect = 1, n_limit = 10) #Get loadings for the top 10 positively and negatively loaded compounds on the PC
+loadingsPC4 <- get_loadings(metabolomics.ASCAmodel, component = 4, effect = 1) #Get loadings for the top 10 positively and negatively loaded compounds on the PC
 head(loadingsPC4)
 ```
 
@@ -4749,7 +4859,43 @@ head(loadingsPC4.annot) #Confirm changes
 write.csv(loadingsPC4.annot, "ASCA/loadings-PC4-annotations.csv", quote = FALSE, row.names = FALSE)
 ```
 
-#### Metaboanalyst enrichment results
+#### Metaboanalyst enrichment
+
+```{r}
+loadingsPC4[[1]] %>%
+  dplyr::rename(metabolite = covars) %>%
+  mutate(abs_loading = abs(loading)) %>%
+  arrange(desc(abs_loading)) %>%
+  mutate(rank = 1:nrow(.),
+         cum_abs = cumsum(abs_loading),
+         var_contrib = loading^2,
+         cum_var = cumsum(var_contrib) / sum(var_contrib)) %>%
+  ggplot(., aes(x = rank, y = cum_var)) +
+  geom_point(size = 0.7) +
+  geom_hline(yintercept = 0.50, linetype = "dashed") + 
+  labs(x = "Rank (|Loading|)", y = "Cumulative Proportion of Variance") +
+  theme_classic() + theme(base_size = 15) #Take loading information and get statistics of interest (absolute value of loadings, rank, variance contributed, cumulative variance contributed). Plot graph showing where 50% cutoff is
+```
+
+```{r}
+loadingsPC4[[1]] %>%
+  dplyr::rename(metabolite = covars) %>%
+  mutate(abs_loading = abs(loading)) %>%
+  arrange(desc(abs_loading)) %>%
+  mutate(rank = 1:nrow(.),
+         cum_abs = cumsum(abs_loading),
+         var_contrib = loading^2,
+         cum_var = cumsum(var_contrib) / sum(var_contrib)) %>%
+  filter(., cum_var <= 0.50) %>%
+  left_join(., (rawMetabolomicsData %>% 
+                  dplyr::rename(metabolite = BinBase.name)), 
+            by = "metabolite") %>%
+  dplyr::select(., PC, metabolite, loading, cum_var, PubChem, KEGG) %>%
+  unique(.) %>%
+  write.table("ASCA/PC4_cumvar50_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Save list of metabolites to use with Metaboanalyst
+```
+
+The file created above was put into MetaboAnalyst.
 
 ```{r}
 topPathwayResultsPC4 <- read.csv("ASCA/PC4_metaboanalyst-results/pathway_results.csv") %>%
