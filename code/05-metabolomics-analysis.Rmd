@@ -4643,6 +4643,8 @@ loadingsPC2[[1]] %>%
 
 The file created above was put into MetaboAnalyst.
 
+There were no significant pathways in this PC.
+
 ### Component 3
 
 Absolute abundance in 5ºC changes over time but 30ºC remains stable
@@ -4769,6 +4771,8 @@ loadingsPC3[[1]] %>%
 ```
 
 The file created above was put into MetaboAnalyst.
+
+There were no significant pathways in this PC.
 
 ### Component 4
 
@@ -4906,7 +4910,7 @@ topPathwayResultsPC4 <- read.csv("ASCA/PC4_metaboanalyst-results/pathway_results
   mutate(., enrichmentRatio = Hits/Expected) %>%
   mutate(., negLogFDR = -log(FDR)) %>%
   arrange(desc(enrichmentRatio)) %>%
-  mutate(., order = rev(1:24)) #Import MetaboAnalyst results and modify for figure
+  mutate(., order = rev(1:22)) #Import MetaboAnalyst results and modify for figure
 head(topPathwayResultsPC4) #Confirm dataframe creation
 ```
 
