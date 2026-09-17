@@ -4484,10 +4484,34 @@ loadingsPC1[[1]] %>%
             by = "metabolite") %>%
   dplyr::select(., PC, metabolite, loading, cum_var, PubChem, KEGG) %>%
   unique(.) %>%
+  nrow(.) #25 compounds explain 50% of the cumulative variance in this PC
+```
+
+```{r}
+loadingsPC1[[1]] %>%
+  dplyr::rename(metabolite = covars) %>%
+  mutate(abs_loading = abs(loading)) %>%
+  arrange(desc(abs_loading)) %>%
+  mutate(rank = 1:nrow(.),
+         cum_abs = cumsum(abs_loading),
+         var_contrib = loading^2,
+         cum_var = cumsum(var_contrib) / sum(var_contrib)) %>%
+  filter(., cum_var <= 0.50) %>%
+  left_join(., (rawMetabolomicsData %>% 
+                  dplyr::rename(metabolite = BinBase.name)), 
+            by = "metabolite") %>%
+  dplyr::select(., PC, metabolite, loading, cum_var, PubChem, KEGG) %>%
+  unique(.) %>%
   write.table("ASCA/PC1_cumvar50_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Save list of metabolites to use with Metaboanalyst
 ```
 
 The file created above was put into MetaboAnalyst.
+
+```{r}
+read.csv("ASCA/PC1_metaboanalyst-results/name_map.csv") %>%
+  filter(., Comment == 0) %>%
+  nrow(.) #2 compounds unmatched, 23 total compounds used for analysis
+```
 
 ```{r}
 topPathwayResultsPC1 <- read.csv("ASCA/PC1_metaboanalyst-results/pathway_results.csv") %>%
@@ -4638,10 +4662,34 @@ loadingsPC2[[1]] %>%
             by = "metabolite") %>%
   dplyr::select(., PC, metabolite, loading, cum_var, PubChem, KEGG) %>%
   unique(.) %>%
+  nrow(.) #20 compounds explained 50% of the cumulative variance in this PC
+```
+
+```{r}
+loadingsPC2[[1]] %>%
+  dplyr::rename(metabolite = covars) %>%
+  mutate(abs_loading = abs(loading)) %>%
+  arrange(desc(abs_loading)) %>%
+  mutate(rank = 1:nrow(.),
+         cum_abs = cumsum(abs_loading),
+         var_contrib = loading^2,
+         cum_var = cumsum(var_contrib) / sum(var_contrib)) %>%
+  filter(., cum_var <= 0.50) %>%
+  left_join(., (rawMetabolomicsData %>% 
+                  dplyr::rename(metabolite = BinBase.name)), 
+            by = "metabolite") %>%
+  dplyr::select(., PC, metabolite, loading, cum_var, PubChem, KEGG) %>%
+  unique(.) %>%
   write.table("ASCA/PC2_cumvar50_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Save list of metabolites to use with Metaboanalyst
 ```
 
 The file created above was put into MetaboAnalyst.
+
+```{r}
+read.csv("ASCA/PC2_metaboanalyst-results/name_map.csv") %>%
+  filter(., Comment == 0) %>%
+  nrow(.) #0 compounds unmatched, 23 total compounds used for analysis
+```
 
 There were no significant pathways in this PC.
 
@@ -4767,10 +4815,34 @@ loadingsPC3[[1]] %>%
             by = "metabolite") %>%
   dplyr::select(., PC, metabolite, loading, cum_var, PubChem, KEGG) %>%
   unique(.) %>%
+  nrow(.) #16 compounds explained 50% of the cumulative variance in this PC
+```
+
+```{r}
+loadingsPC3[[1]] %>%
+  dplyr::rename(metabolite = covars) %>%
+  mutate(abs_loading = abs(loading)) %>%
+  arrange(desc(abs_loading)) %>%
+  mutate(rank = 1:nrow(.),
+         cum_abs = cumsum(abs_loading),
+         var_contrib = loading^2,
+         cum_var = cumsum(var_contrib) / sum(var_contrib)) %>%
+  filter(., cum_var <= 0.50) %>%
+  left_join(., (rawMetabolomicsData %>% 
+                  dplyr::rename(metabolite = BinBase.name)), 
+            by = "metabolite") %>%
+  dplyr::select(., PC, metabolite, loading, cum_var, PubChem, KEGG) %>%
+  unique(.) %>%
   write.table("ASCA/PC3_cumvar50_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Save list of metabolites to use with Metaboanalyst
 ```
 
 The file created above was put into MetaboAnalyst.
+
+```{r}
+read.csv("ASCA/PC3_metaboanalyst-results/name_map.csv") %>%
+  filter(., Comment == 0) %>%
+  nrow(.) #1 compounds unmatched, 15 total compounds used for analysis
+```
 
 There were no significant pathways in this PC.
 
@@ -4896,10 +4968,35 @@ loadingsPC4[[1]] %>%
             by = "metabolite") %>%
   dplyr::select(., PC, metabolite, loading, cum_var, PubChem, KEGG) %>%
   unique(.) %>%
+  nrow(.) #17 compounds explained 50% of the cumulative variance in this PC
+```
+
+
+```{r}
+loadingsPC4[[1]] %>%
+  dplyr::rename(metabolite = covars) %>%
+  mutate(abs_loading = abs(loading)) %>%
+  arrange(desc(abs_loading)) %>%
+  mutate(rank = 1:nrow(.),
+         cum_abs = cumsum(abs_loading),
+         var_contrib = loading^2,
+         cum_var = cumsum(var_contrib) / sum(var_contrib)) %>%
+  filter(., cum_var <= 0.50) %>%
+  left_join(., (rawMetabolomicsData %>% 
+                  dplyr::rename(metabolite = BinBase.name)), 
+            by = "metabolite") %>%
+  dplyr::select(., PC, metabolite, loading, cum_var, PubChem, KEGG) %>%
+  unique(.) %>%
   write.table("ASCA/PC4_cumvar50_metabolites.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Save list of metabolites to use with Metaboanalyst
 ```
 
 The file created above was put into MetaboAnalyst.
+
+```{r}
+read.csv("ASCA/PC4_metaboanalyst-results/name_map.csv") %>%
+  filter(., Comment == 0) %>%
+  nrow(.) #1 compounds unmatched, 16 total compounds used for analysis
+```
 
 ```{r}
 topPathwayResultsPC4 <- read.csv("ASCA/PC4_metaboanalyst-results/pathway_results.csv") %>%
