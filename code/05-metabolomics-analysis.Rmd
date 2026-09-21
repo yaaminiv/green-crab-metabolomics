@@ -47,7 +47,7 @@ library(broom)
 library(RColorBrewer)
 library(pheatmap)
 library(genefilter)
-library(WGCNA) #Error: no package called preprocessCore
+# library(WGCNA) #Error: no package called preprocessCore
 library(dendsort)
 library(ComplexHeatmap)
 library(svglite)
@@ -85,10 +85,19 @@ metabolomicsMetadata <- read.csv("../../data/metabolomics_metadata.csv", header 
   mutate(., treatment_day = gsub(x = treatment_day, pattern = "_ 22", replacement = "_22")) %>%
   mutate(., treatment_day = gsub(x = treatment_day, pattern = " 13_", replacement = "13_")) %>%
   mutate(., treatment_day = gsub(x = treatment_day, pattern = " 30_", replacement = "30_")) %>%
-  mutate(., treatment_day = gsub(x = treatment_day, pattern = "  5_", replacement = "5_")) #Import metadata. Do not include any header information. Remove "V" from column names. Transform so crab.ID, treatment, and day are all columns. Set the first row in the dataframe as column names, then remove that row.
+  mutate(., treatment_day = gsub(x = treatment_day, pattern = "  5_", replacement = "5_")) %>% #Import metadata. Do not include any header information. Remove "V" from column names. Transform so crab.ID, treatment, and day are all columns. Set the first row in the dataframe as column names, then remove that row.
+  left_join(x = .,
+            y = (read.csv("../../data/time-to-right.csv", header = TRUE, strip.white = TRUE) %>%
+                   filter(., is.na(sampling.ID) == FALSE) %>%
+                   mutate(crab.ID = as.factor(sampling.ID)) %>%
+                   dplyr::select(crab.ID, sex)),
+            by = "crab.ID") #Add sex information from TTR dataset to metadata
 tail(metabolomicsMetadata) #Confirm import
 ```
 
+```{r}
+
+```
 # Format data
 
 Before analyzing the data, I will transform the data and match with treatment metadata. The West Coast Metabolomics Center has already normalized data using the average mTIC (sum of all peak heights for *identified* metabolites) of the samples. 
@@ -191,7 +200,6 @@ I'm going to make a very similar PCA to the one above, but only using metabolite
 transMetabData[c(5:156)] #All known metabolites
 ```
 
-
 ```{r}
 scaled.pca.id <- prcomp(transMetabData[c(5:156)], scale = TRUE, center = TRUE) #Use prcomp to perform a centered and scaled PCA calculation
 summary(scaled.pca.id) #Standard deviations for each PC
@@ -221,16 +229,18 @@ I'll use a global permutational multivariate analysis of variance (PERMANOVA) to
 ### All metabolites
 
 ```{r}
-dissim.metab <- vegdist(scale(transMetabData[c(5:601)]), "euclidean") #Create euclidean dissimilarity matrix to use for perMANOVA and PERMDISP
+dissim.metab <- vegdist(scale(transMetabData[c(6:602)]), "euclidean") #Create euclidean dissimilarity matrix to use for perMANOVA and PERMDISP
+```
+
+Since sex was a significant factor in explaining TTR differences, I want to see if sex also explains differences in metabolite abundance.
+
+```{r}
+permanova.metab.sex <- adonis2(dissim.metab ~ as.factor(treatment)*as.numeric(day) + as.factor(sex) + as.factor(treatment):as.factor(sex), data = transMetabData, method = 'eu', by = "terms") #Conduct global PERMANOVA to assess significance of trends in PCA. Scale metabolomics data and assess influence of treatment, day, and treatment x day on metabolite profiles. Include "by = "terms"" to ensure test assess significance for each term.
+permanova.metab.sex
 ```
 
 ```{r}
-permanova.metab <- adonis2(dissim.metab ~ as.factor(treatment)*as.numeric(day), data = transMetabData, method = 'eu', by = "terms") #Conduct global PERMANOVA to assess significance of trends in PCA. Scale metabolomics data and assess influence of treatment, day, and treatment x day on metabolite profiles. Include "by = "terms"" to ensure test assess significance for each term.
-permanova.metab #Significant influence of all factors
-```
-
-```{r}
-broom::tidy(permanova.metab) %>%
+broom::tidy(permanova.metab.sex) %>%
   write.csv(., "PCA/all-data-PERMANOVA-results.csv", quote = FALSE) #Save PERMANOVA output
 ```
 
@@ -247,7 +257,7 @@ anova(disp.metab.temp) #Variance is different between groups. Temperature signif
 disp.metab.day <- betadisper(dissim.metab, group = as.factor(transMetabData$day), type = 'centroid') #Run a beta dispersion model to assess if significant differences are due to differences in group centroid or variance
 plot(disp.metab.day) #Similar dispersion, but some clear outliers for day 22
 boxplot(disp.metab.day) #Similar dispersion differences, outliers seen more easily
-anova(disp.metab.day) #Variance is the same between groups. Day significance is due to centroiddifferences!
+anova(disp.metab.day) #Variance is the same between groups. Day significance is due to centroid differences!
 ```
 
 ```{r}
@@ -271,18 +281,17 @@ rbind(broom::tidy(anova(disp.metab.temp)) %>%
 
 I'm going to repeat the same analysis, but only look at trends for metabolites identified by the West Coast Metabolomics Center.
 
-
 ```{r}
-dissim.metabid <- vegdist(scale(transMetabData[c(5:156)]), "euclidean") #Create euclidean dissimilarity matrix to use for perMANOVA and PERMDISP
+dissim.metabid <- vegdist(scale(transMetabData[c(6:157)]), "euclidean") #Create euclidean dissimilarity matrix to use for perMANOVA and PERMDISP
 ```
 
 ```{r}
-permanova.metabid <- adonis2(dissim.metabid ~ treatment*day, data = transMetabData, method = 'eu', by = "terms") #Conduct global PERMANOVA to assess significance of trends in PCA. Scale metabolomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
-permanova.metabid #Significant influence of all factors
+permanova.metabid.sex <- adonis2(dissim.metabid ~ treatment*day + as.factor(sex) + as.factor(treatment):as.factor(sex), data = transMetabData, method = 'eu', by = "terms") #Conduct global PERMANOVA to assess significance of trends in PCA. Scale metabolomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
+permanova.metabid.sex #Significant influence of all factors
 ```
 
 ```{r}
-broom::tidy(permanova.metabid) %>%
+broom::tidy(permanova.metabid.sex) %>%
   write.csv(., "PCA/known-metabolites-PERMANOVA-results.csv", quote = FALSE) #Save PERMANOVA output
 ```
 
@@ -5339,9 +5348,9 @@ streamlinedTCAFigure <- transMetabData %>%
 
 ```{r}
 enrichmentFigure <-(valineBiosynthesisFigure /
-                    arginineBiosynthesisFigure /
-                    phenylalanineBiosynthesisFigure /
-                    streamlinedTCAFigure) + #Combine figures vertically
+                      arginineBiosynthesisFigure /
+                      phenylalanineBiosynthesisFigure /
+                      streamlinedTCAFigure) + #Combine figures vertically
   plot_layout(guides = "collect") & #Collect identical legends
   theme(legend.position = "bottom", #Have legend on the bottom
         legend.key.width = unit(0.05, "cm")) & #Reduce legend spacing
@@ -5356,4 +5365,3 @@ enrichmentFigureWithLabel <- wrap_elements(y_axis_label) + enrichmentFigure + pl
 ggsave("ASCA/figures/enriched-pathways-metabolite-abundance.pdf", width = 9, height = 11, device = cairo_pdf) #Save figure
 ```
 
-- collect y axis?
