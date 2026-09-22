@@ -25,6 +25,10 @@ getwd()
 # install.packages("cowplot")
 # install.packages("ggfortify")
 # install.packages("ggpubr")
+# install.packages("lme4")
+# install.packages("lmerTest")
+# install.packages("ordinal")
+# install.packages("sure")
 # install.packages("vegan")
 # install.packages("patchwork")
 # install.packages("survival")
@@ -32,16 +36,20 @@ getwd()
 ```
 
 ```{r, include=FALSE}
-require(tidyverse)
-require(RColorBrewer)
-require(patchwork)
-require(cowplot)
-require(ggfortify)
-require(ggpubr)
-require(vegan)
-require(patchwork)
-require(survival)
-require(ggsurvfit)
+library(tidyverse)
+library(RColorBrewer)
+library(patchwork)
+library(cowplot)
+library(ggfortify)
+library(ggpubr)
+library(lme4)
+library(lmerTest)
+library(ordinal)
+library(sure)
+library(vegan)
+library(patchwork)
+library(survival)
+library(ggsurvfit)
 ```
 
 ```{r}
@@ -63,29 +71,29 @@ all_crab <- read.csv("../../data/crab-metadata.csv") %>%
   select(., c(date, treatment.tank, carapace.width, carapace.length, weight, integument.color, sex)) %>%
   rbind(., (read.csv("../../data/time-to-right.csv") %>%
               select(., c(date, treatment.tank, carapace.width, carapace.length, weight, integument.color, sex)))) %>%
-  mutate(., integument.cont = recode(integument.color,
-                                     "B" = 0,
-                                     "BG" = 0.5,
-                                     "G" = 1, 
-                                     "YG" = 1.5, 
-                                     "Y" = 2, 
-                                     "YO" = 2.5 , 
-                                     "O" = 3, 
-                                     "RO" = 3.5)) %>%
+  mutate(., integument.cont = dplyr::recode(integument.color,
+                                            "B" = 0,
+                                            "BG" = 0.5,
+                                            "G" = 1, 
+                                            "YG" = 1.5, 
+                                            "Y" = 2, 
+                                            "YO" = 2.5 , 
+                                            "O" = 3, 
+                                            "RO" = 3.5)) %>%
   mutate(., treatment = case_when(treatment.tank == 1 ~ "13",
                                   treatment.tank == 2 ~ "05",
                                   treatment.tank == 3 ~ "30",
                                   treatment.tank == 4 ~ "13",
                                   treatment.tank == 5 ~ "05",
                                   treatment.tank == 6 ~ "30")) %>%
-  mutate(day = recode(date, 
-                      "7/5/2022" = 1, 
-                      "7/8/2022" = 4, 
-                      "7/12/2022" = 8, 
-                      "7/15/2022" = 11, 
-                      "7/19/2022" = 15, 
-                      "7/22/2022" = 18, 
-                      "7/26/2022" = 22))
+  mutate(day = dplyr::recode(date, 
+                             "7/5/2022" = 1, 
+                             "7/8/22" = 4, 
+                             "7/12/22" = 8, 
+                             "7/15/22" = 11, 
+                             "7/19/22" = 15, 
+                             "7/22/22" = 18, 
+                             "7/26/22" = 22))
 #Import original metadata. Add a date column and select the necessary columns. Combine by columns (rbind) with demographic information from the time-to-right datasheet. Recode integument color into numerical values since it is continuous. No quotes around numbers = will be recognized as numeric values. Use case_when to reassign tanks as treatment temperatures. Recode dates as experimental day
 head(all_crab)
 ```
@@ -408,7 +416,106 @@ facet_labels <- c("1" = "Day 1",
                   "22" = "Day 22") #Assign labels for facets
 ```
 
-### Carapace width
+### Statistical testing
+
+Before I make the figures, I want to determine if there are statistical differences for the variable of interest between temperatures at each timepoint (day 1 and day 22). Since crabs were measured on both days and do not have IDs, I need to account for repeated measures. 
+
+#### Format data
+
+```{r}
+#Convert certain variables to factors
+all_crab$treatment_factor <- as.factor(all_crab$treatment)
+all_crab$day_factor <- as.factor(all_crab$day)
+all_crab$treatment.tank_factor <- as.factor(all_crab$treatment.tank)
+all_crab$sex_factor <- as.factor(all_crab$sex)
+```
+
+```{r}
+crab_1_22 <- all_crab %>%
+  filter(., day == 1 | day == 22) #Reduced dataset with the first and last days only
+```
+
+#### Carapace width
+
+```{r}
+carapaceWidthLM <- lmer( #Linear model
+  carapace.width ~ (treatment_factor)*(day_factor) + #Carapace width differences assessed based on treatment*day
+                          (1 | treatment.tank_factor), #Tank as a random effect
+                        data = crab_1_22) #Dataset used
+anova(carapaceWidthLM) #No variable significantly impacts carapace width!
+```
+
+```{r}
+# Diagnostic plots: Check for constant variance and normal residuals
+plot(carapaceWidthLM) # Fitted vs Residuals
+qqnorm(residuals(carapaceWidthLM)); qqline(residuals(carapaceWidthLM))
+
+#Residuals are pretty normally distributed - no assumptions violated!
+```
+
+#### Weight
+
+```{r}
+weightLM <- lmer( #Linear model
+  log(weight) ~ (treatment_factor)*(day_factor) + #Weight differences assessed based on treatment*day
+                          (1 | treatment.tank_factor), #Tank as a random effect
+                        data = crab_1_22) #Dataset used
+anova(weightLM) #No variable significantly impacts weight!
+```
+
+```{r}
+# Diagnostic plots: Check for constant variance and normal residuals
+plot(weightLM) # Fitted vs Residuals
+qqnorm(residuals(weightLM)); qqline(residuals(weightLM))
+
+#Residuals are pretty normally distributed - no assumptions violated!
+```
+
+#### Integument color
+
+```{r}
+crab_1_22$integument_ord <- factor(crab_1_22$integument.color, 
+                                   levels = c("B", "BG", "G", "YG", "Y", "YO", "O", "RO"), 
+                                   ordered = TRUE) # Define integument color as an ordered factor (using original category names)
+```
+
+
+```{r}
+integumentColorLM <- clm( #Cumulative link mixed model for ordinal data
+  integument_ord ~ treatment_factor * day_factor, #Impact of temp and day
+                   data = crab_1_22) #Dataset used
+anova(integumentColorLM) #All predictors impact integument color
+```
+
+```{r}
+# Check the proportional odds assumption
+nominal_test(integumentColorLM) #Test nominal effects (tests if slopes differ across thresholds). P-value is not significant: assumption holds
+
+scale_test(integumentColorLM) # Test scale effects (tests if variance differs across predictor levels). P-values are not significant: assumption holds.
+```
+
+```{r}
+integumentRes <- resids(integumentColorLM) # Calculate surrogate residuals for integument color
+qqnorm(integumentRes); qqline(integumentRes) # Residuals are normally distributed!
+```
+
+#### Sex
+
+```{r}
+sexLM <- glmer(
+  sex_factor ~ treatment * day + #Impact of temp and day on sex
+                 (1 | treatment.tank), #Tank as a random effect
+                   family = binomial(link = "logit"), #Binomial model with logit link to deal with binary data
+                   data = crab_1_22) #Dataset used
+```
+
+```{r}
+car::Anova(sexLM, type = "III") #No impact of any variable on sex
+```
+
+### Multipanel figure
+
+#### Carapace width
 
 ```{r}
 all_crab %>%
@@ -417,7 +524,6 @@ all_crab %>%
   ggplot(., aes(x = treatment, y = carapace.width, color = treatment, shape = treatment)) +
   geom_boxplot() + geom_point() + 
   facet_wrap( ~ day, labeller = labeller(day = facet_labels)) +
-  stat_compare_means() +
   ylim(35, 60) +
   labs(x = "", y = "Carapace Width (mm)") +
   scale_x_discrete(labels = c("", "", "")) +
@@ -435,34 +541,7 @@ all_crab %>%
 ggsave("figures/carapace-width-comparison.pdf", height = 8.5, width = 11)
 ```
 
-### Carapace length
-
-```{r}
-all_crab %>%
-  select(., day, treatment, carapace.length) %>%
-  filter(., day == 1 | day == 22) %>%
-  ggplot(., aes(x = treatment, y = carapace.length, color = treatment, shape = treatment)) +
-  geom_boxplot() + geom_point() + 
-  facet_wrap( ~ day, labeller = labeller(day = facet_labels)) +
-  stat_compare_means() +
-  ylim(25, 50) +
-  labs(x = "", y = "Carapace Length (mm)") +
-  scale_x_discrete(labels = c("", "", "")) +
-  scale_color_manual(values = c(plotColors[3], plotColors[2], plotColors[1]), 
-                     name = "Temperature (ºC)",
-                     breaks = c("05", "13", "30"),
-                     labels = c("5", "13", "30")) +
-  scale_shape_manual(values = c(15, 19, 17),
-                     name = "Temperature (ºC)",
-                     breaks = c("05", "13", "30"),
-                     labels = c("5", "13", "30")) +
-  theme_classic(base_size = 15) + theme(axis.ticks.x = element_blank(),
-                                        axis.title.x = element_blank(),
-                                        strip.text.x = element_text(size = 15)) #Select day 1 and day 22 data for factor of interest. Plot boxplot and points with treatment on the x-axis and factor on the y-axis, with shape and color defined  by treatment. Facet wrap by day and add specific facet labels. Add stats for comparisons between means and modify y-axis limits to fit statistical testing output at the top. Relabel x and y axes. Remove x-axis labels. Manually add color and shape legend. Set theme and modify bckground colors and strip text size.
-ggsave("figures/carapace-length-comparison.pdf", height = 8.5, width = 11)
-```
-
-### Weight
+#### Weight
 
 ```{r}
 all_crab %>%
@@ -471,7 +550,6 @@ all_crab %>%
   ggplot(., aes(x = treatment, y = weight, color = treatment, shape = treatment)) +
   geom_boxplot(outlier.shape = NA) + geom_point() + 
   facet_wrap( ~ day, labeller = labeller(day = facet_labels)) +
-  stat_compare_means() +
   ylim(10, 55) +
   labs(x = "", y = "Weight (g)") +
   scale_x_discrete(labels = c("", "", "")) +
@@ -489,7 +567,7 @@ all_crab %>%
 ggsave("figures/weight-comparison.pdf", height = 8.5, width = 11)
 ```
 
-### Integument color
+#### Integument color
 
 ```{r}
 integumentColorDay1 <- all_crab %>%
@@ -516,19 +594,6 @@ integumentColorDay22
 ```
 
 ```{r}
-signif(integumentColorDay1$pvalDay1[1], 2)
-signif(integumentColorDay22$pvalDay22[1], 1)
-```
-
-```{r}
-integumentColor_text <- data.frame(label = c("Chi-squared, p = 0.74", "Chi-squared, p = 0.003"),
-                                   day = c(1, 22),
-                                   x = c(1.65, 1.7), 
-                                   y = c(1.07, 1.07))
-```
-
-
-```{r}
 all_crab %>%
   select(., day, treatment, integument.cont) %>%
   filter(., day == 1 | day == 22) %>%
@@ -544,15 +609,13 @@ all_crab %>%
   scale_fill_manual(name = "Integument Color",
                     values = c("darkturquoise", "#66C2A5", "#A6D96A", "#D9EF8B", "#FFFF99", "#FDAE61", "#F46D43", "#D53E4F"),
                     labels = c("B", "BG", "G", "YG", "Y", "YO", "O", "RO")) +
-  geom_text(data = integumentColor_text, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE) +
   theme_classic(base_size = 15) + theme(axis.ticks.x = element_blank(),
                                         axis.title.x = element_blank(),
                                         strip.text.x = element_text(size = 15)) #Select day, treatment, and integument color (continuous) for days 1 and 22. Arrange and group by selected variables. Summarize by grouped variables to get counts. Plot counts as a stacked barplot. Modify labels and specify a color scale.
 ggsave("figures/integument-color-comparison.pdf", height = 8.5, width = 11)
 ```
 
-
-### Sex
+#### Sex
 
 ```{r}
 sexDay1 <- all_crab %>%
@@ -579,19 +642,6 @@ sexDay22
 ```
 
 ```{r}
-signif(sexDay1$pvalDay1[1], 2)
-signif(sexDay22$pvalDay22[1], 2)
-```
-
-```{r}
-sex_text <- data.frame(label = c("Chi-squared, p = 0.96", "Chi-squared, p = 0.83"),
-                       day = c(1, 22),
-                       x = c(1.42, 1.42), 
-                       y = c(1.07, 1.07))
-```
-
-
-```{r}
 all_crab %>%
   select(., day, treatment, sex) %>%
   filter(., day == 1 | day == 22) %>%
@@ -605,14 +655,13 @@ all_crab %>%
   scale_x_discrete(breaks = c("05", "13", "30"),
                    labels = c("5ºC ", "13ºC ", "30ºC")) +
   labs(fill = "Sex") +
-  geom_text(data = sex_text, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE) +
   theme_classic(base_size = 15) + theme(axis.ticks.x = element_blank(),
                                         axis.title.x = element_blank(),
                                         strip.text.x = element_text(size = 15)) #Select day, treatment, and sex for days 1 and 22. Arrange and group by selected variables. Summarize by grouped variables to get counts. Plot counts as a stacked barplot. Modify labels and specify a color scale.
 ggsave("figures/sex-comparison.pdf", height = 8.5, width = 11)
 ```
 
-### Multipanel figure
+#### Stitch panels together
 
 I want to make a multipanel figure with carapace width, weight, integument color, and sex ratio. I'm excluding carapace length since carapace width is generally used for analyses.
 
@@ -623,7 +672,6 @@ carapaceWidthFig <- all_crab %>%
   ggplot(., aes(x = treatment, y = carapace.width, color = treatment, shape = treatment)) +
   geom_boxplot() + geom_point() + 
   facet_wrap( ~ day, labeller = labeller(day = facet_labels)) +
-  stat_compare_means() +
   ylim(35, 60) +
   labs(x = "", y = "Carapace Width (mm)", title = "A") +
   scale_x_discrete(labels = c("5ºC", "13ºC", "30ºC")) +
@@ -647,7 +695,6 @@ weightFig <- all_crab %>%
   ggplot(., aes(x = treatment, y = weight, color = treatment, shape = treatment)) +
   geom_boxplot(outlier.shape = NA) + geom_point() + 
   facet_wrap( ~ day, labeller = labeller(day = facet_labels)) +
-  stat_compare_means() +
   ylim(10, 55) +
   labs(x = "", y = "Weight (g)", title = "B") +
   scale_x_discrete(labels = c("5ºC", "13ºC", "30ºC")) +
@@ -662,13 +709,6 @@ weightFig <- all_crab %>%
                                                              unit = "pt"),
                                         plot.title.position = "plot") #Select day 1 and day 22 data for factor of interest. Plot boxplot and points with treatment on the x-axis and factor on the y-axis, with shape and color defined  by treatment. Facet wrap by day and add specific facet labels. Add stats for comparisons between means and modify y-axis limits to fit statistical testing output at the top. Relabel x and y axes and add a plot title. Specify x-axis labels. Specify colors and shapes but remove legend. Set theme and modify background colors and strip text size. Modify plot margins and alignment of the plot title.
 weightFig
-```
-
-```{r}
-integumentColor_textMultipanel <- data.frame(label = c("Chi-squared, p = 0.74", "Chi-squared, p = 0.003"),
-                                             day = c(1, 22),
-                                             x = c(1.65, 1.7), 
-                                             y = c(1.08, 1.08))
 ```
 
 ```{r, message = FALSE}
@@ -687,7 +727,6 @@ integumentColorFig <- all_crab %>%
   scale_fill_manual(name = "Integument Color",
                     values = c("darkturquoise", "#66C2A5", "#A6D96A", "#D9EF8B", "#FFFF99", "#FDAE61", "#F46D43", "#D53E4F"),
                     labels = c("B", "BG", "G", "YG", "Y", "YO", "O", "RO")) +
-  geom_text(data = integumentColor_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE) +
   theme_classic(base_size = 15) + theme(axis.ticks.x = element_blank(),
                                         axis.title.x = element_blank(),
                                         strip.text.x = element_text(size = 15),
@@ -696,13 +735,6 @@ integumentColorFig <- all_crab %>%
                                                              unit = "pt"),
                                         plot.title.position = "plot") #Select day, treatment, and integument color (continuous) for days 1 and 22. Arrange and group by selected variables. Summarize by grouped variables to get counts. Plot counts as a stacked barplot. Modify labels, add a title, and specify a color scale. Use geom_text to add specific text to each ggplot facet. Set theme and modify background colors and strip text size. Modify plot margins and alignment of the plot title.
 integumentColorFig
-```
-
-```{r}
-sex_textMultipanel <- data.frame(label = c("Chi-squared, p = 0.96", "Chi-squared, p = 0.83"),
-                                 day = c(1, 22),
-                                 x = c(1.65, 1.65), 
-                                 y = c(1.08, 1.08))
 ```
 
 ```{r, message = FALSE}
@@ -719,7 +751,6 @@ sexFig <- all_crab %>%
   scale_x_discrete(breaks = c("05", "13", "30"),
                    labels = c("5ºC ", "13ºC ", "30ºC")) +
   labs(fill = "Sex") +
-  geom_text(data = sex_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE) +
   theme_classic(base_size = 15) + theme(axis.ticks.x = element_blank(),
                                         axis.title.x = element_blank(),
                                         strip.text.x = element_text(size = 15),
