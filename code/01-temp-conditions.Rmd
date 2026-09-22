@@ -25,12 +25,14 @@ getwd()
 ```{r}
 #install.packages("tidyverse")
 #install.packages("qpcR")
+#install.packages("car")
 #install.packages("RColorBrewer")
 #install.packages("patchwork")
-require(qpcR)
-require(tidyverse)
-require(RColorBrewer)
-require(patchwork)
+library(tidyverse)
+library(qpcR)
+library(car)
+library(RColorBrewer)
+library(patchwork)
 ```
 
 ```{r}
@@ -217,20 +219,53 @@ warmSD
 
 I will conduct a one-way ANOVA to confirm there are significant differences between treatments.
 
+## Format data
+
 ```{r}
 tempDataLong <- rbind(tank1a, tank1b,
                       tank2a, tank2b,
                       tank3a, tank3b,
                       tank4a, tank4b,
                       tank5a, tank5b,
-                      tank6a, tank6b) %>% drop_na() #Create long dataframe for ANOVA and remove rows with NAs
+                      tank6a, tank6b) %>% #Create long dataframe for ANOVA
+  drop_na() %>% #Remove rows with NAs
+  mutate(logTemp = log(temp))
 tail(tempDataLong) #Confirm dataframe creation
 ```
 
+## Conduct the test
+
 ```{r}
-tempANOVA <- aov(temp ~ treatment, data = tempDataLong) #One-way ANOVA by treatment
+tempANOVA <- aov(logTemp ~ treatment, data = tempDataLong, var.equal = FALSE) #One-way ANOVA by treatment
 summary(tempANOVA)[[1]][4][[1]][1] # F = 42002.94
 summary(tempANOVA)[[1]][5][[1]][1] # P-value = 0
+```
+
+## Check assumptions
+
+### Homogeneity of variance
+
+```{r}
+leveneTest(tempANOVA) #P < 0.05, so there are different variances between temperature treatments (makes sense given experimental design)
+```
+
+### Normality
+
+```{r}
+tempANOVAResiduals <- residuals(tempANOVA) #Calculate residuals
+hist(tempANOVAResiduals) #Left-skewed distribution corrected with log transformation
+qqnorm(tempANOVAResiduals)
+qqline(tempANOVAResiduals) #Somewhat normally distributed
+```
+
+
+### Welch test
+
+Since the homogeneity of variance assumption was violated, I will repeat the analysis with a Welch test instead of the ANOVA.
+
+```{r}
+tempWelch <- oneway.test(logTemp ~ treatment, data = tempDataLong, var.equal = FALSE) #One-way ANOVA by treatment
+tempWelch # F = 30919 and P-value <  2.2e-16
 ```
 
 # Plot temperature
