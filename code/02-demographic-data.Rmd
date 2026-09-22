@@ -29,6 +29,7 @@ getwd()
 # install.packages("lmerTest")
 # install.packages("ordinal")
 # install.packages("sure")
+# install.packages("DHARMa")
 # install.packages("vegan")
 # install.packages("patchwork")
 # install.packages("survival")
@@ -46,6 +47,7 @@ library(lme4)
 library(lmerTest)
 library(ordinal)
 library(sure)
+library(DHARMa)
 library(vegan)
 library(patchwork)
 library(survival)
@@ -511,6 +513,12 @@ sexLM <- glmer(
 
 ```{r}
 car::Anova(sexLM, type = "III") #No impact of any variable on sex
+```
+
+```{r}
+sim_residuals <- simulateResiduals(fittedModel = sexLM, n = 1000, plot = TRUE) #Simulate residuals for the final model
+
+#All assumptions are satisfied!
 ```
 
 ### Multipanel figure
