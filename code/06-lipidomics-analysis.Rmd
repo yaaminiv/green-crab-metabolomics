@@ -39,21 +39,21 @@ getwd()
 # if (!requireNamespace("devtools", quietly = TRUE))
 #     install.packages("devtools")
 # devtools::install_github("andjar/ALASCA", ref = "main")
-require(tidyverse)
-require(vegan)
-require(mixOmics)
-require(RVAideMemoire)
-require(broom)
-require(RColorBrewer)
-require(pheatmap)
-require(genefilter)
-require(WGCNA)
-require(dendsort)
-require(ComplexHeatmap)
-require(svglite)
-require(ggfortify)
-require(devtools)
-require(ALASCA)
+library(tidyverse)
+library(vegan)
+library(mixOmics)
+library(RVAideMemoire)
+library(broom)
+library(RColorBrewer)
+library(pheatmap)
+library(genefilter)
+# library(WGCNA)
+library(dendsort)
+library(ComplexHeatmap)
+library(svglite)
+library(ggfortify)
+library(devtools)
+library(ALASCA)
 ```
 
 ```{r}
@@ -101,7 +101,13 @@ lipidomicsMetadata <- read.csv("../../data/metabolomics_metadata.csv", header = 
   mutate(., treatment = gsub(x = treatment, pattern = " 30_", replacement = "30_")) %>%
   mutate(., treatment = gsub(x = treatment, pattern = "  5_", replacement = "5_")) %>% 
   mutate(., treatment = gsub(x = treatment, pattern = " ", replacement = "")) %>%
-  mutate(., day = gsub(x = day, pattern = " ", replacement = "")) #Import metadata. Do not include any header information. Remove "V" from column names. Transform so crab.ID, treatment, and day are all columns. Rename treatment to temperature. Set the first row in the dataframe as column names, then remove that row. Transform characters in each column for correct formatting
+  mutate(., day = gsub(x = day, pattern = " ", replacement = ""))  %>% #Import metadata. Do not include any header information. Remove "V" from column names. Transform so crab.ID, treatment, and day are all columns. Set the first row in the dataframe as column names, then remove that row.
+  left_join(x = .,
+            y = (read.csv("../../data/time-to-right.csv", header = TRUE, strip.white = TRUE) %>%
+                   filter(., is.na(sampling.ID) == FALSE) %>%
+                   mutate(crab.ID = as.factor(sampling.ID)) %>%
+                   dplyr::select(crab.ID, sex)),
+            by = "crab.ID") #Add sex information from TTR dataset to metadata
 tail(lipidomicsMetadata) #Confirm import
 ```
 
@@ -123,7 +129,7 @@ transLipidData <- rawLipidomicsData %>%
   dplyr::slice(., -1) %>%
   rownames_to_column(., var = "crab.ID") %>%
   left_join(lipidomicsMetadata, ., by = "crab.ID") #Take raw data and modify lipid column such that if there is no lipid name, the identifier is used instead. Add lipid abundance across numeric columns to deal with any duplicate entries (same lipid detected in different adduct forms). Transpose data, convert the first row (lipid) to column names, and remove this row. Convert rownames to crab ID column. Join with lipidomics metadata. 
-transLipidData[, c(5:2407)] <- transLipidData[, c(5:2407)] %>% mutate_if(is.character, as.numeric) #Convert data columns to numeric
+transLipidData[, c(6:2408)] <- transLipidData[, c(6:2408)] %>% mutate_if(is.character, as.numeric) #Convert data columns to numeric
 head(transLipidData) #Confirm changes
 ```
 
@@ -229,18 +235,21 @@ Overall, it seems like lipid profiles are segregating by treatment, with the 30Â
 I'll use a global permutational multivariate analysis of variance (PERMANOVA) to determine if treatment and day had a significant influence on metabolite profiles. The significant effects from the PCA will be used in the downstream PLS-DA to interrogate trends.
 
 ```{r}
-dissim.lipid <- vegdist(scale((transLipidData[c(5:2407)] %>%
+dissim.lipid <- vegdist(scale((transLipidData[c(6:2408)] %>%
                                  log() %>%
                                  mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
                                  replace(is.na(.), 0))), "euclidean") #Create euclidean dissimilarity matrix to use for perMANOVA and PERMDISP
 ```
 
 ```{r}
-permanova.lipid <- adonis2(dissim.lipid ~ temperature + day + temperature:day, data = transLipidData, by = "term") #Conduct global PERMANOVA to assess significance of trends in PCA. Scale lipidomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
-permanova.lipid #Significant influence temperature only.
+permanova.lipid.sex <- adonis2(dissim.lipid ~ temperature + day + temperature:day +
+                           sex + sex:temperature, 
+                           data = transLipidData, by = "term") #Conduct global PERMANOVA to assess significance of trends in PCA. Scale lipidomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
+permanova.lipid.sex #Significant influence temperature only.
 ```
+
 ```{r}
-broom::tidy(permanova.lipid) %>%
+broom::tidy(permanova.lipid.sex) %>%
   write.csv(., "PCA/all-data-PERMANOVA-results.csv", quote = FALSE) #Save PERMANOVA output
 ```
 
@@ -263,12 +272,12 @@ broom::tidy(anova(disp.lipid.temp)) %>%
 
 ```{r}
 knownTransLipidData <- transLipidData %>%
-  dplyr::select(1:4, which(colnames(transLipidData) %in% lipidIdentifiers$lipid[1:418])) #Take transposed lipid data and select columns associated with known lipids.
+  dplyr::select(1:5, which(colnames(transLipidData) %in% lipidIdentifiers$lipid[1:418])) #Take transposed lipid data and select columns associated with known lipids.
 head(knownTransLipidData)
 ```
 
 ```{r}
-scaled.known.pca <- prcomp(knownTransLipidData[,-c(1:4)] %>%
+scaled.known.pca <- prcomp(knownTransLipidData[,-c(1:5)] %>%
                        log() %>%
                        mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
                        replace(is.na(.), 0), 
@@ -296,14 +305,20 @@ ggsave("PCA/figures/known-lipids-PCA-day-treatment.pdf", height = 8.5, width = 1
 ```
 
 ```{r}
-dissim.lipidid <- vegdist(scale((knownTransLipidData[-c(1:4)] %>%
+dissim.lipidid.sex <- vegdist(scale((knownTransLipidData[-c(1:5)] %>%
                                  log() %>%
                                  mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
                                  replace(is.na(.), 0))), "euclidean") #Create euclidean dissimilarity matrix to use for perMANOVA and PERMDISP
 ```
 
 ```{r}
-permanova.lipidid <- adonis2(dissim.lipidid ~ treatment + day + treatment:day, data = knownTransLipidData, by = "term") #Conduct global PERMANOVA to assess significance of trends in PCA. Scale lipidomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
+head(knownTransLipidData)
+```
+
+```{r}
+permanova.lipidid <- adonis2(dissim.lipidid.sex ~ temperature*day +
+                               sex + sex:temperature, 
+                             data = knownTransLipidData, by = "term") #Conduct global PERMANOVA to assess significance of trends in PCA. Scale lipidomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
 permanova.lipidid #Significant influence temperature only
 ```
 
