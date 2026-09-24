@@ -243,8 +243,8 @@ dissim.lipid <- vegdist(scale((transLipidData[c(6:2408)] %>%
 
 ```{r}
 permanova.lipid.sex <- adonis2(dissim.lipid ~ temperature + day + temperature:day +
-                           sex + sex:temperature, 
-                           data = transLipidData, by = "term") #Conduct global PERMANOVA to assess significance of trends in PCA. Scale lipidomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
+                                 sex + sex:temperature, 
+                               data = transLipidData, by = "term") #Conduct global PERMANOVA to assess significance of trends in PCA. Scale lipidomics data and assess influence of treatment, day, and treatment x day on metabolite profiles
 permanova.lipid.sex #Significant influence temperature only.
 ```
 
@@ -278,10 +278,10 @@ head(knownTransLipidData)
 
 ```{r}
 scaled.known.pca <- prcomp(knownTransLipidData[,-c(1:5)] %>%
-                       log() %>%
-                       mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
-                       replace(is.na(.), 0), 
-                     scale = FALSE, center = TRUE) #Use prcomp to perform a centered and scaled PCA calculation. Replace all -Inf with NA, and then with 0 in the dataframe and log transform prior to performing the PCA calculation
+                             log() %>%
+                             mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+                             replace(is.na(.), 0), 
+                           scale = FALSE, center = TRUE) #Use prcomp to perform a centered and scaled PCA calculation. Replace all -Inf with NA, and then with 0 in the dataframe and log transform prior to performing the PCA calculation
 summary(scaled.known.pca) #Standard deviations for each PC
 ```
 
@@ -306,9 +306,9 @@ ggsave("PCA/figures/known-lipids-PCA-day-treatment.pdf", height = 8.5, width = 1
 
 ```{r}
 dissim.lipidid.sex <- vegdist(scale((knownTransLipidData[-c(1:5)] %>%
-                                 log() %>%
-                                 mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
-                                 replace(is.na(.), 0))), "euclidean") #Create euclidean dissimilarity matrix to use for perMANOVA and PERMDISP
+                                       log() %>%
+                                       mutate_if(is.numeric, list(~na_if(., -Inf))) %>%
+                                       replace(is.na(.), 0))), "euclidean") #Create euclidean dissimilarity matrix to use for perMANOVA and PERMDISP
 ```
 
 ```{r}
@@ -2988,14 +2988,14 @@ pheatmap((knownTransLipidData %>%
 
 ```{r}
 knownTransLipidData %>%
-  filter(., treatment != "5") %>%
-  dplyr::select(treatment, any_of(significantVIP_13v30$lipid)) %>%
-  group_by(treatment) %>%
+  filter(., temperature != "5") %>%
+  dplyr::select(temperature, any_of(significantVIP_13v30$lipid)) %>%
+  group_by(temperature) %>%
   summarize_all(funs(mean(., na.rm = TRUE))) %>%
-  column_to_rownames(var = "treatment") %>%
+  column_to_rownames(var = "temperature") %>%
   t(.) %>% as.data.frame(.) %>%
   rownames_to_column(var = "lipid") %>%
-  mutate(., diff = `13` - `30`) %>%
+  mutate(., diff = ) %>%
   mutate(., logDiff = log(abs(diff))) %>%
   mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
                                 diff > 0 ~ logDiff)) %>%
@@ -3007,7 +3007,7 @@ knownTransLipidData %>%
   scale_fill_manual(values = c(plotColors[2], plotColors[1]), 
                     guide = "none") +
   theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
-ggsave("metaboanalyst/figures/pairwise-VIP-13v30-bargraph.pdf", height = 8.5, width = 11)
+# ggsave("metaboanalyst/figures/pairwise-VIP-13v30-bargraph.pdf", height = 8.5, width = 11)
 ```
 
 ```{r}
@@ -3032,17 +3032,6 @@ knownTransLipidData %>%
                     guide = "none") +
   theme_classic(base_size = 15) + theme(axis.text.y = element_text(size = 6)) #Average treatments of interest for data and transpose. Calculate log difference, negative if higher in the treatment. Create a barplot
 ggsave("metaboanalyst/figures/pairwise-VIP-13v30-bargraph.svg", height = 8.5, width = 11)
-```
-
-```{r}
-enrichmentResults13v30 <- read.csv("metaboanalyst/LION-enrichment-report-13v30/LION-enrichment-results-13v30.csv") %>%
-  dplyr::rename(Description = "Discription") %>%
-  dplyr::rename(Observed = "Significant") %>%
-  mutate(., Significant = case_when(FDR.q.value < 0.05 ~ "Yes",
-                                    FDR.q.value >= 0.05 ~ "No")) %>%
-  mutate(., "-log(FDR)" = -log(FDR.q.value)) #Import enrichment results. Rename description and observed column and create new column
-head(enrichmentResults13v30) #Look at results
-enrichmentResults13v30 %>% filter(., FDR.q.value < 0.05) %>% nrow() #There are 7 significantly enriched terms
 ```
 
 ```{r}
@@ -3082,6 +3071,261 @@ topEnrichmentResults13v30 %>%
   xlim(0,7) +
   theme_classic(base_size = 15)
 ggsave("metaboanalyst/figures/13v30_VIP-logFDR.svg", heigh = 8.5, width = 11)
+```
+
+###### Lipids in enriched terms
+
+```{r}
+enrichmentResults13v30 <- read.csv("metaboanalyst/LION-enrichment-report-13v30/LION-enrichment-results-13v30.csv") %>%
+  dplyr::rename(Description = "Discription") %>%
+  dplyr::rename(Observed = "Significant") %>%
+  mutate(., Significant = case_when(FDR.q.value < 0.05 ~ "Yes",
+                                    FDR.q.value >= 0.05 ~ "No")) %>%
+  mutate(., "-log(FDR)" = -log(FDR.q.value)) #Import enrichment results. Rename description and observed column and create new column
+head(enrichmentResults13v30) #Look at results
+enrichmentResults13v30 %>% filter(., FDR.q.value < 0.05) #There are 7 significantly enriched terms
+```
+
+```{r}
+LIONtoTerm13v30 <- read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v30/LION-term-associations-13v30.csv") %>%
+  dplyr::select(LION.term, LION.name) %>%
+  slice(-1) %>%
+  filter(LION.term == "LION:0012080" | LION.term == "LION:0000095" | LION.term == "LION:0000465" | LION.term == "LION:0000010" | LION.term == "LION:0012010" | LION.term == "LION:0000003" | LION.term == "LION:0000031") %>% 
+  mutate(LION.term = gsub(x = LION.term, pattern = ":", replacement = "."))
+#Import dataframe with lion terms and term names. Retain only significantly enriched terms
+head(LIONtoTerm13v30) #Confirm formatting
+```
+
+```{r}
+lipidsLIONtoTerm13v30 <- read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v30/LION-lipid-associations-13v30.csv", strip.white = TRUE, na.strings = "") %>% #Import file that associates individual lipids with LION terms. Remove any white text and convert blanks to NAs
+  slice(-1) %>% #Remove first row
+  mutate(LION.term = substr(x = LION.term, start = 9, stop = 1000000L)) %>% #Remove extra characters from the lion term
+  rename(lipid = LION.term) %>% #Rename LION.term to lipid
+  mutate(lipid = str_trim(lipid, side = "both")) %>% #Remove white space from lipid name
+  unique(.) %>% #Keep only unique entries
+  remove_rownames() %>% #Remove rownames
+  column_to_rownames(., var = "lipid") %>% #Convert lipid column to rownames
+  dplyr::select_if(colnames(.) %in% LIONtoTerm13v30$LION.term) %>% #Retain columns if they are enriched LION terms
+  rownames_to_column(., var = "lipid") %>% #Convert row names to lipid column
+  right_join(x = ., 
+             y = (t.test_13v30 %>%
+                    ungroup(.) %>%
+                    filter(., p.adj < 0.05) %>%
+                    dplyr::select(lipid)), 
+             by = "lipid") %>% #Use right_join to only retain rows with lipids that are VIP for the contrast of interest
+  column_to_rownames(var = "lipid") %>% #Convert column to rowname
+  filter(!if_all(everything(), is.na)) #Remove rows where all entries are NA
+head(lipidsLIONtoTerm13v30) #Confirm dataframe creation
+```
+
+```{r}
+#Make individual dataframes that list the lipids associated with each LION term
+VIPlist.LION.0000003 <- lipidsLIONtoTerm13v30 %>% #Take dataframe that matches lipid names with LION terms
+  dplyr::select(LION.0000003) %>% #Select LION term
+  filter(., is.na(LION.0000003) == FALSE) %>% #Remove rows with NAs
+  rownames_to_column("lipid") #Convert rowname to column
+
+VIPlist.LION.0000010 <- lipidsLIONtoTerm13v30 %>% #Take dataframe that matches lipid names with LION terms
+  dplyr::select(LION.0000010) %>% #Select LION term
+  filter(., is.na(LION.0000010) == FALSE) %>% #Remove rows with NAs
+  rownames_to_column("lipid") #Convert rowname to column
+
+VIPlist.LION.0000031 <- lipidsLIONtoTerm13v30 %>% #Take dataframe that matches lipid names with LION terms
+  dplyr::select(LION.0000031) %>% #Select LION term
+  filter(., is.na(LION.0000031) == FALSE) %>% #Remove rows with NAs
+  rownames_to_column("lipid") #Convert rowname to column
+
+VIPlist.LION.0000095 <- lipidsLIONtoTerm13v30 %>% #Take dataframe that matches lipid names with LION terms
+  dplyr::select(LION.0000095) %>% #Select LION term
+  filter(., is.na(LION.0000095) == FALSE) %>% #Remove rows with NAs
+  rownames_to_column("lipid") #Convert rowname to column
+
+VIPlist.LION.0000465 <- lipidsLIONtoTerm13v30 %>% #Take dataframe that matches lipid names with LION terms
+  dplyr::select(LION.0000465) %>% #Select LION term
+  filter(., is.na(LION.0000465) == FALSE) %>% #Remove rows with NAs
+  rownames_to_column("lipid") #Convert rowname to column
+
+VIPlist.LION.0012010 <- lipidsLIONtoTerm13v30 %>% #Take dataframe that matches lipid names with LION terms
+  dplyr::select(LION.0012010) %>% #Select LION term
+  filter(., is.na(LION.0012010) == FALSE) %>% #Remove rows with NAs
+  rownames_to_column("lipid") #Convert rowname to column
+
+VIPlist.LION.0012080 <- lipidsLIONtoTerm13v30 %>% #Take dataframe that matches lipid names with LION terms
+  dplyr::select(LION.0012080) %>% #Select LION term
+  filter(., is.na(LION.0012080) == FALSE) %>% #Remove rows with NAs
+  rownames_to_column("lipid") #Convert rowname to column
+```
+
+```{r}
+#Create dataframes for plotting for each LION term
+percDiff.LION.0000003 <- knownTransLipidData %>% #Take known lipid abundance data
+  dplyr::select(temperature, any_of(VIPlist.LION.0000003$lipid)) %>% #Retain columns with VIP lipids
+  mutate(., temperature = str_trim(temperature, side = "both"),
+         temperature = case_when(temperature == "5" ~ "05C",
+                                 temperature == "13" ~ "13C",
+                                 temperature == "30" ~ "30C")) %>% #Remove extra spaces on each side of temperature information, convert temperature information to characters
+  group_by(temperature) %>% #Group by temperature
+  summarize_all(funs(mean(., na.rm = TRUE))) %>% #Calculate averages for each lipid
+  column_to_rownames(., var = "temperature") %>% #Convert column to rownames
+  t(.) %>% as.data.frame(.) %>% #Transpose and covert to a dataframe
+  mutate(., percDiff05 = ((`05C` - `13C`)/(`13C`))*100,
+         percDiff30 = ((`30C` - `13C`)/(`13C`))*100) %>% #Calculate percent difference from 13
+  dplyr::select(percDiff05:percDiff30) %>% #Retain difference columns
+  rownames_to_column(., var = "lipid") %>% #Convert rownames to column
+  pivot_longer(., cols = 2:ncol(.), names_to = "treatment", values_to = "percDiff") %>% #Pivot longer, moving percDiff column names to treatment and values to percDiff
+  mutate(., LION.term = "LION.0000003") #Add column with LION term ID
+
+percDiff.LION.0000010 <- knownTransLipidData %>% #Take known lipid abundance data
+  dplyr::select(temperature, any_of(VIPlist.LION.0000010$lipid)) %>% #Retain columns with VIP lipids
+  mutate(., temperature = str_trim(temperature, side = "both"),
+         temperature = case_when(temperature == "5" ~ "05C",
+                                 temperature == "13" ~ "13C",
+                                 temperature == "30" ~ "30C")) %>% #Remove extra spaces on each side of temperature information, convert temperature information to characters
+  group_by(temperature) %>% #Group by temperature
+  summarize_all(funs(mean(., na.rm = TRUE))) %>% #Calculate averages for each lipid
+  column_to_rownames(., var = "temperature") %>% #Convert column to rownames
+  t(.) %>% as.data.frame(.) %>% #Transpose and covert to a dataframe
+  mutate(., percDiff05 = ((`05C` - `13C`)/(`13C`))*100,
+         percDiff30 = ((`30C` - `13C`)/(`13C`))*100) %>% #Calculate percent difference from 13
+  dplyr::select(percDiff05:percDiff30) %>% #Retain difference columns
+  rownames_to_column(., var = "lipid") %>% #Convert rownames to column
+  pivot_longer(., cols = 2:ncol(.), names_to = "treatment", values_to = "percDiff") %>% #Pivot longer, moving percDiff column names to treatment and values to percDiff
+  mutate(., LION.term = "LION.0000010") #Add column with LION term ID
+
+percDiff.LION.0000031 <- knownTransLipidData %>% #Take known lipid abundance data
+  dplyr::select(temperature, any_of(VIPlist.LION.0000031$lipid)) %>% #Retain columns with VIP lipids
+  mutate(., temperature = str_trim(temperature, side = "both"),
+         temperature = case_when(temperature == "5" ~ "05C",
+                                 temperature == "13" ~ "13C",
+                                 temperature == "30" ~ "30C")) %>% #Remove extra spaces on each side of temperature information, convert temperature information to characters
+  group_by(temperature) %>% #Group by temperature
+  summarize_all(funs(mean(., na.rm = TRUE))) %>% #Calculate averages for each lipid
+  column_to_rownames(., var = "temperature") %>% #Convert column to rownames
+  t(.) %>% as.data.frame(.) %>% #Transpose and covert to a dataframe
+  mutate(., percDiff05 = ((`05C` - `13C`)/(`13C`))*100,
+         percDiff30 = ((`30C` - `13C`)/(`13C`))*100) %>% #Calculate percent difference from 13
+  dplyr::select(percDiff05:percDiff30) %>% #Retain difference columns
+  rownames_to_column(., var = "lipid") %>% #Convert rownames to column
+  pivot_longer(., cols = 2:ncol(.), names_to = "treatment", values_to = "percDiff") %>% #Pivot longer, moving percDiff column names to treatment and values to percDiff
+  mutate(., LION.term = "LION.0000031") #Add column with LION term ID
+
+percDiff.LION.0000095 <- knownTransLipidData %>% #Take known lipid abundance data
+  dplyr::select(temperature, any_of(VIPlist.LION.0000095$lipid)) %>% #Retain columns with VIP lipids
+  mutate(., temperature = str_trim(temperature, side = "both"),
+         temperature = case_when(temperature == "5" ~ "05C",
+                                 temperature == "13" ~ "13C",
+                                 temperature == "30" ~ "30C")) %>% #Remove extra spaces on each side of temperature information, convert temperature information to characters
+  group_by(temperature) %>% #Group by temperature
+  summarize_all(funs(mean(., na.rm = TRUE))) %>% #Calculate averages for each lipid
+  column_to_rownames(., var = "temperature") %>% #Convert column to rownames
+  t(.) %>% as.data.frame(.) %>% #Transpose and covert to a dataframe
+  mutate(., percDiff05 = ((`05C` - `13C`)/(`13C`))*100,
+         percDiff30 = ((`30C` - `13C`)/(`13C`))*100) %>% #Calculate percent difference from 13
+  dplyr::select(percDiff05:percDiff30) %>% #Retain difference columns
+  rownames_to_column(., var = "lipid") %>% #Convert rownames to column
+  pivot_longer(., cols = 2:ncol(.), names_to = "treatment", values_to = "percDiff") %>% #Pivot longer, moving percDiff column names to treatment and values to percDiff
+  mutate(., LION.term = "LION.0000095") #Add column with LION term ID
+
+percDiff.LION.0000465 <- knownTransLipidData %>% #Take known lipid abundance data
+  dplyr::select(temperature, any_of(VIPlist.LION.0000465$lipid)) %>% #Retain columns with VIP lipids
+  mutate(., temperature = str_trim(temperature, side = "both"),
+         temperature = case_when(temperature == "5" ~ "05C",
+                                 temperature == "13" ~ "13C",
+                                 temperature == "30" ~ "30C")) %>% #Remove extra spaces on each side of temperature information, convert temperature information to characters
+  group_by(temperature) %>% #Group by temperature
+  summarize_all(funs(mean(., na.rm = TRUE))) %>% #Calculate averages for each lipid
+  column_to_rownames(., var = "temperature") %>% #Convert column to rownames
+  t(.) %>% as.data.frame(.) %>% #Transpose and covert to a dataframe
+  mutate(., percDiff05 = ((`05C` - `13C`)/(`13C`))*100,
+         percDiff30 = ((`30C` - `13C`)/(`13C`))*100) %>% #Calculate percent difference from 13
+  dplyr::select(percDiff05:percDiff30) %>% #Retain difference columns
+  rownames_to_column(., var = "lipid") %>% #Convert rownames to column
+  pivot_longer(., cols = 2:ncol(.), names_to = "treatment", values_to = "percDiff") %>% #Pivot longer, moving percDiff column names to treatment and values to percDiff
+  mutate(., LION.term = "LION.0000465") #Add column with LION term ID
+
+percDiff.LION.0012010 <- knownTransLipidData %>% #Take known lipid abundance data
+  dplyr::select(temperature, any_of(VIPlist.LION.0012010$lipid)) %>% #Retain columns with VIP lipids
+  mutate(., temperature = str_trim(temperature, side = "both"),
+         temperature = case_when(temperature == "5" ~ "05C",
+                                 temperature == "13" ~ "13C",
+                                 temperature == "30" ~ "30C")) %>% #Remove extra spaces on each side of temperature information, convert temperature information to characters
+  group_by(temperature) %>% #Group by temperature
+  summarize_all(funs(mean(., na.rm = TRUE))) %>% #Calculate averages for each lipid
+  column_to_rownames(., var = "temperature") %>% #Convert column to rownames
+  t(.) %>% as.data.frame(.) %>% #Transpose and covert to a dataframe
+  mutate(., percDiff05 = ((`05C` - `13C`)/(`13C`))*100,
+         percDiff30 = ((`30C` - `13C`)/(`13C`))*100) %>% #Calculate percent difference from 13
+  dplyr::select(percDiff05:percDiff30) %>% #Retain difference columns
+  rownames_to_column(., var = "lipid") %>% #Convert rownames to column
+  pivot_longer(., cols = 2:ncol(.), names_to = "treatment", values_to = "percDiff") %>% #Pivot longer, moving percDiff column names to treatment and values to percDiff
+  mutate(., LION.term = "LION.0012010") #Add column with LION term ID
+
+percDiff.LION.0012080 <- knownTransLipidData %>% #Take known lipid abundance data
+  dplyr::select(temperature, any_of(VIPlist.LION.0012080$lipid)) %>% #Retain columns with VIP lipids
+  mutate(., temperature = str_trim(temperature, side = "both"),
+         temperature = case_when(temperature == "5" ~ "05C",
+                                 temperature == "13" ~ "13C",
+                                 temperature == "30" ~ "30C")) %>% #Remove extra spaces on each side of temperature information, convert temperature information to characters
+  group_by(temperature) %>% #Group by temperature
+  summarize_all(funs(mean(., na.rm = TRUE))) %>% #Calculate averages for each lipid
+  column_to_rownames(., var = "temperature") %>% #Convert column to rownames
+  t(.) %>% as.data.frame(.) %>% #Transpose and covert to a dataframe
+  mutate(., percDiff05 = ((`05C` - `13C`)/(`13C`))*100,
+         percDiff30 = ((`30C` - `13C`)/(`13C`))*100) %>% #Calculate percent difference from 13
+  dplyr::select(percDiff05:percDiff30) %>% #Retain difference columns
+  rownames_to_column(., var = "lipid") %>% #Convert rownames to column
+  pivot_longer(., cols = 2:ncol(.), names_to = "treatment", values_to = "percDiff") %>% #Pivot longer, moving percDiff column names to treatment and values to percDiff
+  mutate(., LION.term = "LION.0012080") #Add column with LION term ID
+```
+
+```{r}
+percDiff.13v30.enriched <- rbind(percDiff.LION.0000003,
+                                 percDiff.LION.0000010,
+                                 percDiff.LION.0000031,
+                                 percDiff.LION.0000095,
+                                 percDiff.LION.0000465,
+                                 percDiff.LION.0012010,
+                                 percDiff.LION.0012080) #Use rbind to combine dataframes into one
+tail(percDiff.13v30.enriched) #Confirm dataframe creation
+```
+
+```{r}
+percDiff.13v30.enriched %>%
+  group_by(LION.term) %>%
+  summarize(count = n()) #Count the number of lipids in each LION term
+```
+
+```{r}
+percDiff.13v30.facetLabels <- c("LION.0000003" = "LION.0000003 (n = 64)", 
+                                "LION.0000010" = "LION.0000010 (n = 48)", 
+                                "LION.0000031" = "LION.0000031 (n = 10)", 
+                                "LION.0000095" = "LION.0000095 (n = 70)", 
+                                "LION.0000465" = "LION.0000465 (n = 48)", 
+                                "LION.0012010" = "LION.0012010 (n = 70)", 
+                                "LION.0012080" = "LION.0012080 (n = 66)") #Create facet labels
+```
+
+
+```{r}
+percDiff.13v30.enriched %>% #Dataframe with percent differences
+  ggplot(., aes(x = treatment, y = percDiff, color = treatment, fill = treatment)) +
+  geom_point(pch = 21, position = position_dodge(width = 0.5), alpha = 0.3) +
+  geom_hline(yintercept = 0, color = "grey70", linetype = 2) + #Add zero line
+  facet_wrap(~LION.term, labeller = labeller(LION.term = percDiff.13v30.facetLabels)) +
+  ylab("Difference from 13ºC (%)") + #y axis label
+  scale_fill_manual(name = "Temperature (ºC)", 
+                    values = c("#2171B5", "#CB181D"),
+                    labels = c("5ºC", "30ºC")) +
+  scale_colour_manual(name = "Temperature (ºC)", 
+                      values = c("#2171B5", "#CB181D"),
+                      labels = c("5ºC", "30ºC")) +
+  xlab("") + #x axis label
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.text = element_text(color = "black", size = 12), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"))
+ggsave("PLSDA/figures/percent-diff-enriched-pathways-13v30.pdf", height = 8.5, width = 11) #Save figure
 ```
 
 ##### 13 vs. 5
@@ -3245,6 +3489,176 @@ topEnrichmentResults13v5 %>%
   xlim(0,7) +
   theme_classic(base_size = 15)
 ggsave("metaboanalyst/figures/13v5_VIP-logFDR.svg", heigh = 8.5, width = 11)
+```
+
+###### Lipids in enriched terms
+
+```{r}
+LIONtoTerm13v5 <- read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v5/LION-term-associations-13v5.csv") %>%
+  dplyr::select(LION.term, LION.name) %>%
+  slice(-1) %>%
+  filter(LION.term == "LION:0012080" | LION.term == "LION:0012081" | LION.term == "LION:0000011" | LION.term == "LION:0000003") %>% 
+  mutate(LION.term = gsub(x = LION.term, pattern = ":", replacement = ".")) #Import dataframe with lion terms and term names. Retain only significantly enriched terms
+head(LIONtoTerm13v5) #Confirm formatting
+```
+
+```{r}
+lipidsLIONtoTerm13v5 <- read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v5/LION-lipid-associations-13v5.csv", strip.white = TRUE, na.strings = "") %>% #Import file that associates individual lipids with LION terms. Remove any white text and convert blanks to NAs
+  slice(-1) %>% #Remove first row
+  mutate(LION.term = substr(x = LION.term, start = 9, stop = 1000000L)) %>% #Remove extra characters from the lion term
+  rename(lipid = LION.term) %>% #Rename LION.term to lipid
+  mutate(lipid = str_trim(lipid, side = "both")) %>% #Remove white space from lipid name
+  unique(.) %>% #Keep only unique entries
+  remove_rownames() %>% #Remove rownames
+  column_to_rownames(., var = "lipid") %>% #Convert lipid column to rownames
+  dplyr::select_if(colnames(.) %in% LIONtoTerm13v5$LION.term) %>% #Retain columns if they are enriched LION terms
+  rownames_to_column(., var = "lipid") %>% #Convert row names to lipid column
+  right_join(x = ., 
+             y = (t.test_13v5 %>%
+                    ungroup(.) %>%
+                    filter(., p.adj < 0.05) %>%
+                    dplyr::select(lipid)), 
+             by = "lipid") %>% #Use right_join to only retain rows with lipids that are VIP for the contrast of interest
+  column_to_rownames(var = "lipid") %>% #Convert column to rowname
+  filter(!if_all(everything(), is.na)) #Remove rows where all entries are NA
+head(lipidsLIONtoTerm13v5) #Confirm dataframe creation
+```
+
+```{r}
+#Make individual dataframes that list the lipids associated with each LION term
+VIPlist.LION.0000003 <- lipidsLIONtoTerm13v5 %>% #Take dataframe that matches lipid names with LION terms
+  dplyr::select(LION.0000003) %>% #Select LION term
+  filter(., is.na(LION.0000003) == FALSE) %>% #Remove rows with NAs
+  rownames_to_column("lipid") #Convert rowname to column
+
+VIPlist.LION.0000011 <- lipidsLIONtoTerm13v5 %>% #Take dataframe that matches lipid names with LION terms
+  dplyr::select(LION.0000011) %>% #Select LION term
+  filter(., is.na(LION.0000011) == FALSE) %>% #Remove rows with NAs
+  rownames_to_column("lipid") #Convert rowname to column
+
+VIPlist.LION.0012080 <- lipidsLIONtoTerm13v5 %>% #Take dataframe that matches lipid names with LION terms
+  dplyr::select(LION.0012080) %>% #Select LION term
+  filter(., is.na(LION.0012080) == FALSE) %>% #Remove rows with NAs
+  rownames_to_column("lipid") #Convert rowname to column
+
+VIPlist.LION.0012081 <- lipidsLIONtoTerm13v5 %>% #Take dataframe that matches lipid names with LION terms
+  dplyr::select(LION.0012081) %>% #Select LION term
+  filter(., is.na(LION.0012081) == FALSE) %>% #Remove rows with NAs
+  rownames_to_column("lipid") #Convert rowname to column
+```
+
+```{r}
+#Create dataframes for plotting for each LION term
+percDiff.LION.0000003 <- knownTransLipidData %>% #Take known lipid abundance data
+  dplyr::select(temperature, any_of(VIPlist.LION.0000003$lipid)) %>% #Retain columns with VIP lipids
+  mutate(., temperature = str_trim(temperature, side = "both"),
+         temperature = case_when(temperature == "5" ~ "05C",
+                                 temperature == "13" ~ "13C",
+                                 temperature == "30" ~ "30C")) %>% #Remove extra spaces on each side of temperature information, convert temperature information to characters
+  group_by(temperature) %>% #Group by temperature
+  summarize_all(funs(mean(., na.rm = TRUE))) %>% #Calculate averages for each lipid
+  column_to_rownames(., var = "temperature") %>% #Convert column to rownames
+  t(.) %>% as.data.frame(.) %>% #Transpose and covert to a dataframe
+  mutate(., percDiff05 = ((`05C` - `13C`)/(`13C`))*100,
+         percDiff30 = ((`30C` - `13C`)/(`13C`))*100) %>% #Calculate percent difference from 13
+  dplyr::select(percDiff05:percDiff30) %>% #Retain difference columns
+  rownames_to_column(., var = "lipid") %>% #Convert rownames to column
+  pivot_longer(., cols = 2:ncol(.), names_to = "treatment", values_to = "percDiff") %>% #Pivot longer, moving percDiff column names to treatment and values to percDiff
+  mutate(., LION.term = "LION.0000003") #Add column with LION term ID
+
+percDiff.LION.0000011 <- knownTransLipidData %>% #Take known lipid abundance data
+  dplyr::select(temperature, any_of(VIPlist.LION.0000011$lipid)) %>% #Retain columns with VIP lipids
+  mutate(., temperature = str_trim(temperature, side = "both"),
+         temperature = case_when(temperature == "5" ~ "05C",
+                                 temperature == "13" ~ "13C",
+                                 temperature == "30" ~ "30C")) %>% #Remove extra spaces on each side of temperature information, convert temperature information to characters
+  group_by(temperature) %>% #Group by temperature
+  summarize_all(funs(mean(., na.rm = TRUE))) %>% #Calculate averages for each lipid
+  column_to_rownames(., var = "temperature") %>% #Convert column to rownames
+  t(.) %>% as.data.frame(.) %>% #Transpose and covert to a dataframe
+  mutate(., percDiff05 = ((`05C` - `13C`)/(`13C`))*100,
+         percDiff30 = ((`30C` - `13C`)/(`13C`))*100) %>% #Calculate percent difference from 13
+  dplyr::select(percDiff05:percDiff30) %>% #Retain difference columns
+  rownames_to_column(., var = "lipid") %>% #Convert rownames to column
+  pivot_longer(., cols = 2:ncol(.), names_to = "treatment", values_to = "percDiff") %>% #Pivot longer, moving percDiff column names to treatment and values to percDiff
+  mutate(., LION.term = "LION.0000011") #Add column with LION term ID
+
+percDiff.LION.0012080 <- knownTransLipidData %>% #Take known lipid abundance data
+  dplyr::select(temperature, any_of(VIPlist.LION.0012080$lipid)) %>% #Retain columns with VIP lipids
+  mutate(., temperature = str_trim(temperature, side = "both"),
+         temperature = case_when(temperature == "5" ~ "05C",
+                                 temperature == "13" ~ "13C",
+                                 temperature == "30" ~ "30C")) %>% #Remove extra spaces on each side of temperature information, convert temperature information to characters
+  group_by(temperature) %>% #Group by temperature
+  summarize_all(funs(mean(., na.rm = TRUE))) %>% #Calculate averages for each lipid
+  column_to_rownames(., var = "temperature") %>% #Convert column to rownames
+  t(.) %>% as.data.frame(.) %>% #Transpose and covert to a dataframe
+  mutate(., percDiff05 = ((`05C` - `13C`)/(`13C`))*100,
+         percDiff30 = ((`30C` - `13C`)/(`13C`))*100) %>% #Calculate percent difference from 13
+  dplyr::select(percDiff05:percDiff30) %>% #Retain difference columns
+  rownames_to_column(., var = "lipid") %>% #Convert rownames to column
+  pivot_longer(., cols = 2:ncol(.), names_to = "treatment", values_to = "percDiff") %>% #Pivot longer, moving percDiff column names to treatment and values to percDiff
+  mutate(., LION.term = "LION.0012080") #Add column with LION term ID
+
+percDiff.LION.0012081 <- knownTransLipidData %>% #Take known lipid abundance data
+  dplyr::select(temperature, any_of(VIPlist.LION.0012081$lipid)) %>% #Retain columns with VIP lipids
+  mutate(., temperature = str_trim(temperature, side = "both"),
+         temperature = case_when(temperature == "5" ~ "05C",
+                                 temperature == "13" ~ "13C",
+                                 temperature == "30" ~ "30C")) %>% #Remove extra spaces on each side of temperature information, convert temperature information to characters
+  group_by(temperature) %>% #Group by temperature
+  summarize_all(funs(mean(., na.rm = TRUE))) %>% #Calculate averages for each lipid
+  column_to_rownames(., var = "temperature") %>% #Convert column to rownames
+  t(.) %>% as.data.frame(.) %>% #Transpose and covert to a dataframe
+  mutate(., percDiff05 = ((`05C` - `13C`)/(`13C`))*100,
+         percDiff30 = ((`30C` - `13C`)/(`13C`))*100) %>% #Calculate percent difference from 13
+  dplyr::select(percDiff05:percDiff30) %>% #Retain difference columns
+  rownames_to_column(., var = "lipid") %>% #Convert rownames to column
+  pivot_longer(., cols = 2:ncol(.), names_to = "treatment", values_to = "percDiff") %>% #Pivot longer, moving percDiff column names to treatment and values to percDiff
+  mutate(., LION.term = "LION.0012081") #Add column with LION term ID
+```
+
+```{r}
+percDiff.13v5.enriched <- rbind(percDiff.LION.0000003,
+                                percDiff.LION.0000011,
+                                percDiff.LION.0012080,
+                                percDiff.LION.0012081) #Use rbind to combine dataframes into one
+tail(percDiff.13v5.enriched) #Confirm dataframe creation
+```
+
+```{r}
+percDiff.13v5.enriched %>%
+  group_by(LION.term) %>%
+  summarize(count = n()) #Count the number of lipids in each LION term
+```
+
+```{r}
+percDiff.13v5.facetLabels <- c("LION.0000003" = "LION.0000003 (n = 38)", 
+                               "LION.0000011" = "LION.0000011 (n = 12)", 
+                               "LION.0012080" = "LION.0012080 (n = 40)", 
+                               "LION.0012081" = "LION.0012081 (n = 12)") #Create facet labels
+```
+
+```{r}
+percDiff.13v5.enriched %>% #Dataframe with percent differences
+  ggplot(., aes(x = treatment, y = percDiff, color = treatment, fill = treatment)) +
+  geom_point(pch = 21, position = position_dodge(width = 0.5), alpha = 0.3) +
+  geom_hline(yintercept = 0, color = "grey70", linetype = 2) + #Add zero line
+  facet_wrap(~LION.term, labeller = labeller(LION.term = percDiff.13v5.facetLabels)) +
+  ylab("Difference from 13ºC (%)") + #y axis label
+  scale_fill_manual(name = "Temperature (ºC)", 
+                    values = c("#2171B5", "#CB181D"),
+                    labels = c("5ºC", "30ºC")) +
+  scale_colour_manual(name = "Temperature (ºC)", 
+                      values = c("#2171B5", "#CB181D"),
+                      labels = c("5ºC", "30ºC")) +
+  xlab("") + #x axis label
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.text = element_text(color = "black", size = 12), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"))
+ggsave("PLSDA/figures/percent-diff-enriched-pathways-13v5.pdf", height = 8.5, width = 11) #Save figure
 ```
 
 #### Identify pairwise VIP in each module
@@ -3853,6 +4267,7 @@ LIONtoTerm13v5 <- read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichm
   mutate(LION.term = gsub(x = LION.term, pattern = ":", replacement = ".")) #Import dataframe with lion terms and term names. Retain only significantly enriched terms
 head(LIONtoTerm13v5) #Confirm formatting
 ```
+
 ```{r}
 loadingsPC1.annot <- loadingsPC1[[1]] %>%
   rename(lipid = "covars") %>%
@@ -4223,26 +4638,26 @@ I want to create a multipanel figure with all of the prediction plots
 
 ```{r}
 predictionPC1 <- plot(lipid.ASCAmodel, effect = 1, component = 1, type = 'prediction', 
-     n_limit = 10, 
-     ribbon = TRUE,
-     x_angle = 0, x_h_just= 0.5,
-     flip_axis = TRUE,
-     palette = rev(plotColors),
-     my_theme = theme_classic(),
-     x_label = "",
-     group_label = "Temperature (ºC)") +
+                      n_limit = 10, 
+                      ribbon = TRUE,
+                      x_angle = 0, x_h_just= 0.5,
+                      flip_axis = TRUE,
+                      palette = rev(plotColors),
+                      my_theme = theme_classic(),
+                      x_label = "",
+                      group_label = "Temperature (ºC)") +
   ggtitle("A. PC 1") +
   theme_classic() + theme(strip.text.x = element_text(size = 6, color = "black"))
 
 predictionPC2 <- plot(lipid.ASCAmodel, effect = 1, component = 2, type = 'prediction', 
-     n_limit = 10, 
-     ribbon = TRUE,
-     x_angle = 0, x_h_just= 0.5,
-     flip_axis = TRUE,
-     palette = rev(plotColors),
-     my_theme = theme_classic(),
-     x_label = "", 
-     group_label = "Temperature (ºC)") +
+                      n_limit = 10, 
+                      ribbon = TRUE,
+                      x_angle = 0, x_h_just= 0.5,
+                      flip_axis = TRUE,
+                      palette = rev(plotColors),
+                      my_theme = theme_classic(),
+                      x_label = "", 
+                      group_label = "Temperature (ºC)") +
   ggtitle("B. PC 2") +
   theme_classic() + theme(strip.text.x = element_text(size = 6, color = "black"))
 
