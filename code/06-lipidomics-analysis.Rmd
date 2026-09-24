@@ -3102,7 +3102,7 @@ enrichmentResults13v30 %>% filter(., FDR.q.value < 0.05) #There are 7 significan
 LIONtoTerm13v30 <- read.csv("../06-lipidomics-analysis/metaboanalyst/LION-enrichment-report-13v30/LION-term-associations-13v30.csv") %>%
   dplyr::select(LION.term, LION.name) %>%
   slice(-1) %>%
-  filter(LION.term == "LION:0012080" | LION.term == "LION:0000095" | LION.term == "LION:0000465" | LION.term == "LION:0000010" | LION.term == "LION:0012010" | LION.term == "LION:0000003" | LION.term == "LION:0000031") %>% 
+  filter(LION.term == "LION:0012080" | LION.term == "LION:0000095" | LION.term == "LION:0000465" | LION.term == "LION:0000010" | LION.term == "LION:0012010" | LION.term == "LION:0000003") %>% 
   mutate(LION.term = gsub(x = LION.term, pattern = ":", replacement = "."))
 #Import dataframe with lion terms and term names. Retain only significantly enriched terms
 head(LIONtoTerm13v30) #Confirm formatting
@@ -3140,11 +3140,6 @@ VIPlist.LION.0000003 <- lipidsLIONtoTerm13v30 %>% #Take dataframe that matches l
 VIPlist.LION.0000010 <- lipidsLIONtoTerm13v30 %>% #Take dataframe that matches lipid names with LION terms
   dplyr::select(LION.0000010) %>% #Select LION term
   filter(., is.na(LION.0000010) == FALSE) %>% #Remove rows with NAs
-  rownames_to_column("lipid") #Convert rowname to column
-
-VIPlist.LION.0000031 <- lipidsLIONtoTerm13v30 %>% #Take dataframe that matches lipid names with LION terms
-  dplyr::select(LION.0000031) %>% #Select LION term
-  filter(., is.na(LION.0000031) == FALSE) %>% #Remove rows with NAs
   rownames_to_column("lipid") #Convert rowname to column
 
 VIPlist.LION.0000095 <- lipidsLIONtoTerm13v30 %>% #Take dataframe that matches lipid names with LION terms
@@ -3203,23 +3198,6 @@ percDiff.LION.0000010 <- knownTransLipidData %>% #Take known lipid abundance dat
   rownames_to_column(., var = "lipid") %>% #Convert rownames to column
   pivot_longer(., cols = 2:ncol(.), names_to = "treatment", values_to = "percDiff") %>% #Pivot longer, moving percDiff column names to treatment and values to percDiff
   mutate(., LION.term = "LION.0000010") #Add column with LION term ID
-
-percDiff.LION.0000031 <- knownTransLipidData %>% #Take known lipid abundance data
-  dplyr::select(temperature, any_of(VIPlist.LION.0000031$lipid)) %>% #Retain columns with VIP lipids
-  mutate(., temperature = str_trim(temperature, side = "both"),
-         temperature = case_when(temperature == "5" ~ "05C",
-                                 temperature == "13" ~ "13C",
-                                 temperature == "30" ~ "30C")) %>% #Remove extra spaces on each side of temperature information, convert temperature information to characters
-  group_by(temperature) %>% #Group by temperature
-  summarize_all(funs(mean(., na.rm = TRUE))) %>% #Calculate averages for each lipid
-  column_to_rownames(., var = "temperature") %>% #Convert column to rownames
-  t(.) %>% as.data.frame(.) %>% #Transpose and covert to a dataframe
-  mutate(., percDiff05 = ((`05C` - `13C`)/(`13C`))*100,
-         percDiff30 = ((`30C` - `13C`)/(`13C`))*100) %>% #Calculate percent difference from 13
-  dplyr::select(percDiff05:percDiff30) %>% #Retain difference columns
-  rownames_to_column(., var = "lipid") %>% #Convert rownames to column
-  pivot_longer(., cols = 2:ncol(.), names_to = "treatment", values_to = "percDiff") %>% #Pivot longer, moving percDiff column names to treatment and values to percDiff
-  mutate(., LION.term = "LION.0000031") #Add column with LION term ID
 
 percDiff.LION.0000095 <- knownTransLipidData %>% #Take known lipid abundance data
   dplyr::select(temperature, any_of(VIPlist.LION.0000095$lipid)) %>% #Retain columns with VIP lipids
@@ -3293,7 +3271,6 @@ percDiff.LION.0012080 <- knownTransLipidData %>% #Take known lipid abundance dat
 ```{r}
 percDiff.13v30.enriched <- rbind(percDiff.LION.0000003,
                                  percDiff.LION.0000010,
-                                 percDiff.LION.0000031,
                                  percDiff.LION.0000095,
                                  percDiff.LION.0000465,
                                  percDiff.LION.0012010,
@@ -3310,7 +3287,6 @@ percDiff.13v30.enriched %>%
 ```{r}
 percDiff.13v30.facetLabels <- c("LION.0000003" = "LION.0000003 (n = 64)", 
                                 "LION.0000010" = "LION.0000010 (n = 48)", 
-                                "LION.0000031" = "LION.0000031 (n = 10)", 
                                 "LION.0000095" = "LION.0000095 (n = 70)", 
                                 "LION.0000465" = "LION.0000465 (n = 48)", 
                                 "LION.0012010" = "LION.0012010 (n = 70)", 
