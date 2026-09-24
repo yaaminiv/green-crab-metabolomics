@@ -21,24 +21,24 @@ getwd()
 # Install packages
 
 ```{r packages, warning = FALSE, message = FALSE}
-# if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse')
-# if ("vegan" %in% rownames(installed.packages()) == 'FALSE') install.packages('vegan')
-# if (!requireNamespace("BiocManager", quietly = TRUE))
-#   install.packages("BiocManager")
-# if ("mixOmics" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("mixOmics")
-# if ("RVAideMemoire" %in% rownames(installed.packages()) == 'FALSE') install.packages('RVAideMemoire')
-# if ("broom" %in% rownames(installed.packages()) == 'FALSE') install.packages('broom')
-# if ("RColorBrewer" %in% rownames(installed.packages()) == 'FALSE') install.packages('RColorBrewer')
-# if ("pheatmap" %in% rownames(installed.packages()) == 'FALSE') install.packages('pheatmap')
-# if ("genefilter" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("genefilter")
-# if ("WGCNA" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('WGCNA')
-# if ("dendsort" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('dendsort')
-# if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap')
-# if ("svglite" %in% rownames(installed.packages()) == 'FALSE') install.packages("svglite")
-# if ("ggfortify" %in% rownames(installed.packages()) == 'FALSE') install.packages("ggfortify")
-# if (!requireNamespace("devtools", quietly = TRUE))
-#     install.packages("devtools")
+# install.packages('tidyverse')
+# install.packages('vegan')
+# install.packages("BiocManager")
+# BiocManager::install("mixOmics")
+# install.packages('RVAideMemoire')
+# install.packages('broom')
+# install.packages('RColorBrewer')
+# install.packages('pheatmap')
+# BiocManager::install("genefilter")
+# BiocManager::install('WGCNA')
+# BiocManager::install('dendsort')
+# BiocManager::install('ComplexHeatmap')
+# install.packages("svglite")
+# install.packages("ggfortify")
+# install.packages("devtools")
 # devtools::install_github("andjar/ALASCA", ref = "main")
+# install.packages(patchwork)
+# install.packages(grid)
 library(tidyverse)
 library(vegan)
 library(mixOmics)
@@ -54,6 +54,8 @@ library(svglite)
 library(ggfortify)
 library(devtools)
 library(ALASCA)
+library(patchwork)
+library(grid)
 ```
 
 ```{r}
@@ -3669,6 +3671,69 @@ percDiff.13v5.enriched %>% #Dataframe with percent differences
                                         legend.text = element_text(color = "black", size = 12), 
                                         strip.text.x = element_text(size = 10, color = "black", face="bold"))
 ggsave("PLSDA/figures/percent-diff-enriched-pathways-13v5.pdf", height = 8.5, width = 11) #Save figure
+```
+
+##### Multipanel figure
+
+```{r}
+percDiff.13v30.figure <- percDiff.13v30.enriched %>% #Dataframe with percent differences
+  ggplot(., aes(x = treatment, y = percDiff, color = treatment, fill = treatment)) +
+  geom_point(pch = 21, position = position_dodge(width = 0.5), alpha = 0.3) +
+  geom_hline(yintercept = 0, color = "grey70", linetype = 2) + #Add zero line
+  facet_wrap(~LION.term, labeller = labeller(LION.term = percDiff.13v30.facetLabels)) +
+  ylab("") + #y axis label
+  scale_fill_manual(name = "Temperature (ºC)", 
+                    values = c("#2171B5", "#CB181D"),
+                    labels = c("5ºC", "30ºC")) +
+  scale_colour_manual(name = "Temperature (ºC)", 
+                      values = c("#2171B5", "#CB181D"),
+                      labels = c("5ºC", "30ºC")) +
+  xlab("") + #x axis label
+  ggtitle("A. Pairiwise VIP lipids for 13ºC vs. 30ºC") +
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.text = element_text(color = "black", size = 12), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"))
+```
+
+```{r}
+percDiff.13v5.figure <- percDiff.13v5.enriched %>% #Dataframe with percent differences
+  ggplot(., aes(x = treatment, y = percDiff, color = treatment, fill = treatment)) +
+  geom_point(pch = 21, position = position_dodge(width = 0.5), alpha = 0.3) +
+  geom_hline(yintercept = 0, color = "grey70", linetype = 2) + #Add zero line
+  facet_wrap(~LION.term, labeller = labeller(LION.term = percDiff.13v5.facetLabels)) +
+  ylab("") + #y axis label
+  scale_fill_manual(name = "Temperature (ºC)", 
+                    values = c("#2171B5", "#CB181D"),
+                    labels = c("5ºC", "30ºC")) +
+  scale_colour_manual(name = "Temperature (ºC)", 
+                      values = c("#2171B5", "#CB181D"),
+                      labels = c("5ºC", "30ºC")) +
+  xlab("") + #x axis label
+  ggtitle("B. Pairiwise VIP lipids for 13ºC vs. 5ºC") +
+  theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.text = element_text(color = "black", size = 12), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"))
+```
+
+```{r}
+enrichmentFigure <-(percDiff.13v30.figure /
+                      percDiff.13v5.figure) + #Combine figures vertically
+  plot_layout(guides = "collect") & #Collect identical legends
+  theme(legend.position = "bottom", #Have legend on the bottom
+        legend.key.width = unit(0.05, "cm")) & #Reduce legend spacing
+  guides(
+    fill = guide_legend(nrow = 1), #Force legend to be on one row
+    color = guide_legend(nrow = 1) #Force legend to be on one row
+  )
+
+y_axis_label <- textGrob("Difference from 13ºC (%)", rot = 90, gp = gpar(fontsize = 15))
+enrichmentFigureWithLabel <- wrap_elements(y_axis_label) + enrichmentFigure + plot_layout(widths = c(1, 40))
+
+ggsave("PLSDA/figures/percent-diff-enriched-pathways-multipanel.pdf", width = 8.5, height = 11, device = cairo_pdf) #Save figure
 ```
 
 #### Identify pairwise VIP in each module
