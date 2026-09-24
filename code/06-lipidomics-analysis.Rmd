@@ -3651,48 +3651,121 @@ ggsave("PLSDA/figures/percent-diff-enriched-pathways-13v5.pdf", height = 8.5, wi
 
 ##### Multipanel figure
 
+- make a new dataframe to add a label
+- use geom_text to add label
+
+```{r}
+percDiff.13v30.enriched %>% #Percent difference dataframe
+  filter(., treatment == "percDiff30") %>% #Filter for 13 v 30 information
+  group_by(LION.term) %>% #Group by LION term
+  summarize(., high30 = sum(percDiff > 0), #Number of lipids with higher abundance at 30
+            high13 = sum(percDiff < 0)) #Number of lipids with lower abundance at 13
+```
+
+```{r}
+percDiff.13v30.high_textMultipanel <- data.frame(label = c("9 higher at 30ºC",
+                                                      "8 higher at 30ºC",
+                                                      "12 higher at 30ºC",
+                                                      "8 higher at 30ºC",
+                                                      "12 higher at 30ºC",
+                                                      "9 higher at 30ºC"), #Label for each facet
+                                            LION.term = LIONtoTerm13v30$LION.term, #Assign label to specific facet
+                                            x = rep(0.45, times = 6), #x location
+                                            y = rep(220, times = 6)) #y location
+```
+
+```{r}
+percDiff.13v30.low_textMultipanel <- data.frame(label = c("23 higher at 13ºC",
+                                                      "16 higher at 13ºC",
+                                                      "23 higher at 13ºC",
+                                                      "16 higher at 13ºC",
+                                                      "23 higher at 13ºC",
+                                                      "24 higher at 13ºC"), #Label for each facet
+                                            LION.term = LIONtoTerm13v30$LION.term, #Assign label to specific facet
+                                            x = rep(0.45, times = 6), #x location
+                                            y = rep(-70, times = 6)) #y location
+```
+
 ```{r}
 percDiff.13v30.figure <- percDiff.13v30.enriched %>% #Dataframe with percent differences
   ggplot(., aes(x = treatment, y = percDiff, color = treatment, fill = treatment)) +
-  geom_point(pch = 21, position = position_dodge(width = 0.5), alpha = 0.3) +
+  geom_point(pch = 21, position = position_dodge(width = 0.5), size = 2.5, alpha = 0.3) +
   geom_hline(yintercept = 0, color = "grey70", linetype = 2) + #Add zero line
+  # annotate("text", label = "higher at 30ºC", x = 0.45, y = 220, size = 4, color = plotColors[1], hjust = 0) +
+  geom_text(data = percDiff.13v30.high_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE, size = 4, color = plotColors[1], hjust = 0) + #Add labels to each individual facet
+  # annotate("text", label = "higher at 13ºC", x = 0.45, y = -70, size = 4, color = plotColors[2], hjust = 0) +
+    geom_text(data = percDiff.13v30.low_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE, size = 4, color = plotColors[2], hjust = 0) + #Add labels to each individual facet
   facet_wrap(~LION.term, labeller = labeller(LION.term = percDiff.13v30.facetLabels)) +
   ylab("") + #y axis label
   scale_fill_manual(name = "Temperature (ºC)", 
-                    values = c("#2171B5", "#CB181D"),
+                    values = c(plotColors[3], plotColors[1]),
                     labels = c("5ºC", "30ºC")) +
   scale_colour_manual(name = "Temperature (ºC)", 
-                      values = c("#2171B5", "#CB181D"),
+                      values = c(plotColors[3], plotColors[1]),
                       labels = c("5ºC", "30ºC")) +
   xlab("") + #x axis label
-  ggtitle("A. Pairiwise VIP lipids for 13ºC vs. 30ºC") +
+  ggtitle("A. Pairwise VIP lipids for 13ºC vs. 30ºC") +
   theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
                                         axis.ticks.x = element_blank(),
                                         legend.position = "bottom", 
                                         legend.text = element_text(color = "black", size = 12), 
                                         strip.text.x = element_text(size = 10, color = "black", face="bold"))
+percDiff.13v30.figure
+```
+
+```{r}
+percDiff.13v5.enriched %>% #Percent difference dataframe
+  filter(., treatment == "percDiff05") %>% #Filter for 13 v 5 information
+  group_by(LION.term) %>% #Group by LION term
+  summarize(., high05 = sum(percDiff > 0), #Number of lipids with higher abundance at 5
+            high13 = sum(percDiff < 0)) #Number of lipids with lower abundance at 13
+```
+
+```{r}
+percDiff.13v5.high_textMultipanel <- data.frame(label = c("1 higher at 5ºC",
+                                                      "1 higher at 5ºC",
+                                                      "1 higher at 5ºC",
+                                                      "1 higher at 5ºC"), #Label for each facet
+                                            LION.term = LIONtoTerm13v5$LION.term, #Assign label to specific facet
+                                            x = rep(0.45, times = 4), #x location
+                                            y = rep(220, times = 4)) #y location
+```
+
+```{r}
+percDiff.13v5.low_textMultipanel <- data.frame(label = c("18 higher at 13ºC",
+                                                      "5 higher at 13ºC",
+                                                      "19 higher at 13ºC",
+                                                      "5 higher at 13ºC"), #Label for each facet
+                                            LION.term = LIONtoTerm13v5$LION.term, #Assign label to specific facet
+                                            x = rep(0.45, times = 4), #x location
+                                            y = rep(-70, times = 4)) #y location
 ```
 
 ```{r}
 percDiff.13v5.figure <- percDiff.13v5.enriched %>% #Dataframe with percent differences
   ggplot(., aes(x = treatment, y = percDiff, color = treatment, fill = treatment)) +
-  geom_point(pch = 21, position = position_dodge(width = 0.5), alpha = 0.3) +
-  geom_hline(yintercept = 0, color = "grey70", linetype = 2) + #Add zero line
+  geom_point(pch = 21, position = position_dodge(width = 0.5), size = 2.5, alpha = 0.3) +
+  geom_hline(yintercept = 0, color = plotColors[2], linetype = 2) + #Add zero line
+  # annotate("text", label = "higher at 30ºC", x = 0.45, y = 220, size = 4, color = plotColors[1], hjust = 0) +
+  geom_text(data = percDiff.13v5.high_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE, size = 4, color = plotColors[3], hjust = 0) + #Add labels to each individual facet
+  # annotate("text", label = "higher at 13ºC", x = 0.45, y = -70, size = 4, color = plotColors[2], hjust = 0) +
+    geom_text(data = percDiff.13v5.low_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE, size = 4, color = plotColors[2], hjust = 0) + #Add labels to each individual facet
   facet_wrap(~LION.term, labeller = labeller(LION.term = percDiff.13v5.facetLabels)) +
   ylab("") + #y axis label
   scale_fill_manual(name = "Temperature (ºC)", 
-                    values = c("#2171B5", "#CB181D"),
+                    values = c(plotColors[3], plotColors[1]),
                     labels = c("5ºC", "30ºC")) +
   scale_colour_manual(name = "Temperature (ºC)", 
-                      values = c("#2171B5", "#CB181D"),
+                      values = c(plotColors[3], plotColors[1]),
                       labels = c("5ºC", "30ºC")) +
   xlab("") + #x axis label
-  ggtitle("B. Pairiwise VIP lipids for 13ºC vs. 5ºC") +
+  ggtitle("B. Pairwise VIP lipids for 13ºC vs. 5ºC") +
   theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
                                         axis.ticks.x = element_blank(),
                                         legend.position = "bottom", 
                                         legend.text = element_text(color = "black", size = 12), 
                                         strip.text.x = element_text(size = 10, color = "black", face="bold"))
+percDiff.13v5.figure
 ```
 
 ```{r}
