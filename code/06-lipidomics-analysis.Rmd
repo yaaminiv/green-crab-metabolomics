@@ -138,7 +138,7 @@ lipidIdentifiers <- rawLipidomicsData %>%
   right_join(inChiKeyNamePubmed, ., by = "INCHIKEY") %>%
   arrange(., "PubChem.ID") %>% 
   dplyr::select(4:5, 3:1) #Save dataframe with all possible identifiers for downstream analysis
-head(lipidIdentifiers)
+head(lipidIdentifiers) #Confirm dataframe changes
 ```
 
 # Initial data investigation with PCA
@@ -275,6 +275,16 @@ knownTransLipidData <- transLipidData %>%
   dplyr::select(1:5, which(colnames(transLipidData) %in% lipidIdentifiers$lipid[1:418])) #Take transposed lipid data and select columns associated with known lipids.
 head(knownTransLipidData)
 ```
+
+```{r}
+knownTransLipidData %>% #Take list of known lipids
+  dplyr::select(-c(temperature:sex)) %>% #Remove metadata columns
+  column_to_rownames(., var = "crab.ID") %>% #Convert crab ID to rownames
+  t(.) %>% as.data.frame(.) %>% #Transpose and convert to dataframe
+  rownames_to_column(., var = "lipid") %>% #Convert rownames to column
+  write.table(., "known-lipid-list.txt", sep = "\t", quote = FALSE) #Save as a txt file
+```
+
 
 ```{r}
 scaled.known.pca <- prcomp(knownTransLipidData[,-c(1:5)] %>%
@@ -4245,7 +4255,7 @@ ggsave("ASCA/figures/prediction-plot-PC1.pdf", height = 11, width = 8.5)
 ```
 
 ```{r}
-loadingsPC1 <- get_loadings(lipid.ASCAmodel, component = 1, effect = 1, n_limit = 10) #Get loadings for the top 10 positively and negatively loaded compounds on the PC
+loadingsPC1 <- get_loadings(lipid.ASCAmodel, component = 1, effect = 1) #Get loadings for the top 10 positively and negatively loaded compounds on the PC
 head(loadingsPC1)
 ```
 
@@ -4350,13 +4360,76 @@ head(loadingsPC1.annot) #Confirm changes
 write.csv(loadingsPC1.annot, "ASCA/loadings-PC1-annotations.csv", quote = FALSE, row.names = FALSE)
 ```
 
+#### LION/web enrichment
+
 ```{r}
-loadingsPC1.annot %>%
-  dplyr::select(lipid) %>%
-  distinct(.) %>%
-  nrow(.)
+loadingsPC1[[1]] %>%
+  dplyr::rename(lipid = covars) %>%
+  mutate(lipid = str_trim(lipid, side = "both")) %>%
+  mutate(abs_loading = abs(loading)) %>%
+  arrange(desc(abs_loading)) %>%
+  mutate(rank = 1:nrow(.),
+         cum_abs = cumsum(abs_loading),
+         var_contrib = loading^2,
+         cum_var = cumsum(var_contrib) / sum(var_contrib)) %>%
+  ggplot(., aes(x = rank, y = cum_var)) +
+  geom_point(size = 0.7) +
+  geom_hline(yintercept = 0.50, linetype = "dashed") + 
+  labs(x = "Rank (|Loading|)", y = "Cumulative Proportion of Variance") +
+  theme_classic() + theme(base_size = 15) #Take loading information and get statistics of interest (absolute value of loadings, rank, variance contributed, cumulative variance contributed). Plot graph showing where 50% cutoff is
 ```
 
+```{r}
+loadingsPC1[[1]] %>%
+  dplyr::rename(lipid = covars) %>%
+  mutate(lipid = str_trim(lipid, side = "both")) %>%
+  mutate(abs_loading = abs(loading)) %>%
+  arrange(desc(abs_loading)) %>%
+  mutate(rank = 1:nrow(.),
+         cum_abs = cumsum(abs_loading),
+         var_contrib = loading^2,
+         cum_var = cumsum(var_contrib) / sum(var_contrib)) %>%
+  filter(., cum_var <= 0.50) %>%
+  left_join(x = .,
+            y = (rawLipidomicsData %>%
+                   mutate(lipid = str_trim(lipid, side = "both"))),
+            by = "lipid") %>%
+  dplyr::select(., PC, lipid, loading, cum_var, INCHIKEY) %>%
+  unique(.) %>%
+  nrow(.) #84 compounds explain 50% of the cumulative variance in this PC
+```
+
+```{r}
+loadingsPC1[[1]] %>%
+  dplyr::rename(lipid = covars) %>%
+  mutate(lipid = str_trim(lipid, side = "both")) %>%
+  mutate(abs_loading = abs(loading)) %>%
+  arrange(desc(abs_loading)) %>%
+  mutate(rank = 1:nrow(.),
+         cum_abs = cumsum(abs_loading),
+         var_contrib = loading^2,
+         cum_var = cumsum(var_contrib) / sum(var_contrib)) %>%
+  filter(., cum_var <= 0.50) %>%
+  left_join(x = .,
+            y = (rawLipidomicsData %>%
+                   mutate(lipid = str_trim(lipid, side = "both"))),
+            by = "lipid") %>%
+  dplyr::select(., PC, lipid, loading, cum_var, INCHIKEY) %>%
+  unique(.) %>%
+  write.table("ASCA/PC1_cumvar50_lipids.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Save list of metabolites to use with LION/web
+```
+
+```{r}
+enrichmentResultsPC1 <- read.csv("ASCA/LION-enrichment-report-PC1/LION-enrichment-results-PC1.csv") %>%
+  dplyr::rename(Description = "Discription") %>%
+  dplyr::rename(Observed = "Significant") %>%
+  mutate(., Significant = case_when(FDR.q.value < 0.05 ~ "Yes",
+                                    FDR.q.value >= 0.05 ~ "No")) %>%
+  mutate(., "-log(FDR)" = -log(FDR.q.value)) %>%
+  arrange(desc("-log(FDR)")) #Import enrichment results. Rename description and observed column and create new column
+head(enrichmentResultsPC1) #Look at results
+enrichmentResultsPC1 %>% filter(., FDR.q.value < 0.05) %>% nrow() #There are no significantly enriched terms
+```
 
 ### Component 2
 
@@ -4387,7 +4460,7 @@ ggsave("ASCA/figures/prediction-plot-PC2.pdf", height = 11, width = 8.5)
 ```
 
 ```{r}
-loadingsPC2 <- get_loadings(lipid.ASCAmodel, component = 2, effect = 1, n_limit = 10) #Get loadings for the top 10 positively and negatively loaded compounds on the PC
+loadingsPC2 <- get_loadings(lipid.ASCAmodel, component = 2, effect = 1) #Get loadings for the top 10 positively and negatively loaded compounds on the PC
 head(loadingsPC2)
 ```
 
@@ -4473,7 +4546,64 @@ head(loadingsPC2.annot) #Confirm changes
 write.csv(loadingsPC2.annot, "ASCA/loadings-PC2-annotations.csv", quote = FALSE, row.names = FALSE)
 ```
 
-#### LION/web figure
+#### LION/web enrichment
+
+```{r}
+loadingsPC2[[1]] %>%
+  dplyr::rename(lipid = covars) %>%
+  mutate(lipid = str_trim(lipid, side = "both")) %>%
+  mutate(abs_loading = abs(loading)) %>%
+  arrange(desc(abs_loading)) %>%
+  mutate(rank = 1:nrow(.),
+         cum_abs = cumsum(abs_loading),
+         var_contrib = loading^2,
+         cum_var = cumsum(var_contrib) / sum(var_contrib)) %>%
+  ggplot(., aes(x = rank, y = cum_var)) +
+  geom_point(size = 0.7) +
+  geom_hline(yintercept = 0.50, linetype = "dashed") + 
+  labs(x = "Rank (|Loading|)", y = "Cumulative Proportion of Variance") +
+  theme_classic() + theme(base_size = 15) #Take loading information and get statistics of interest (absolute value of loadings, rank, variance contributed, cumulative variance contributed). Plot graph showing where 50% cutoff is
+```
+
+```{r}
+loadingsPC2[[1]] %>%
+  dplyr::rename(lipid = covars) %>%
+  mutate(lipid = str_trim(lipid, side = "both")) %>%
+  mutate(abs_loading = abs(loading)) %>%
+  arrange(desc(abs_loading)) %>%
+  mutate(rank = 1:nrow(.),
+         cum_abs = cumsum(abs_loading),
+         var_contrib = loading^2,
+         cum_var = cumsum(var_contrib) / sum(var_contrib)) %>%
+  filter(., cum_var <= 0.50) %>%
+  left_join(x = .,
+            y = (rawLipidomicsData %>%
+                   mutate(lipid = str_trim(lipid, side = "both"))),
+            by = "lipid") %>%
+  dplyr::select(., PC, lipid, loading, cum_var, INCHIKEY) %>%
+  unique(.) %>%
+  nrow(.) #63 compounds explain 50% of the cumulative variance in this PC
+```
+
+```{r}
+loadingsPC2[[1]] %>%
+  dplyr::rename(lipid = covars) %>%
+  mutate(lipid = str_trim(lipid, side = "both")) %>%
+  mutate(abs_loading = abs(loading)) %>%
+  arrange(desc(abs_loading)) %>%
+  mutate(rank = 1:nrow(.),
+         cum_abs = cumsum(abs_loading),
+         var_contrib = loading^2,
+         cum_var = cumsum(var_contrib) / sum(var_contrib)) %>%
+  filter(., cum_var <= 0.50) %>%
+  left_join(x = .,
+            y = (rawLipidomicsData %>%
+                   mutate(lipid = str_trim(lipid, side = "both"))),
+            by = "lipid") %>%
+  dplyr::select(., PC, lipid, loading, cum_var, INCHIKEY) %>%
+  unique(.) %>%
+  write.table("ASCA/PC2_cumvar50_lipids.txt", sep = "\t", quote = FALSE, row.names = FALSE) #Save list of metabolites to use with LION/web
+```
 
 ```{r}
 enrichmentResultsPC2 <- read.csv("ASCA/LION-enrichment-report-PC2/LION-enrichment-results-PC2.csv") %>%
@@ -4482,25 +4612,9 @@ enrichmentResultsPC2 <- read.csv("ASCA/LION-enrichment-report-PC2/LION-enrichmen
   mutate(., Significant = case_when(FDR.q.value < 0.05 ~ "Yes",
                                     FDR.q.value >= 0.05 ~ "No")) %>%
   mutate(., "-log(FDR)" = -log(FDR.q.value)) %>%
-  arrange(desc("-log(FDR)")) %>%
-  slice(., 1:25) #Import enrichment results. Rename description and observed column and create new column
+  arrange(desc("-log(FDR)")) #Import enrichment results. Rename description and observed column and create new column
 head(enrichmentResultsPC2) #Look at results
-enrichmentResultsPC2 %>% filter(., FDR.q.value < 0.05) %>% nrow() #There are 7 significantly enriched terms
-```
-
-```{r}
-enrichmentResultsPC2 %>%
-  mutate(., order = rev(1:25)) %>%
-  ggplot(., aes(x = `-log(FDR)`, y = as.factor(order), fill = Significant)) +
-  geom_bar(stat = "identity") +
-  labs(x = "-log(FDR)") +
-  scale_y_discrete(name = "LION Term",
-                   labels = rev(enrichmentResultsPC2$Description)) +
-  scale_fill_manual(name = "FDR",
-                    values = c("grey20", "springgreen4"),
-                    labels = c(expression("">=0.05), expression(""<0.05))) +
-  theme_classic(base_size = 15)
-ggsave("ASCA/figures/PC2-logFDR.svg", heigh = 8.5, width = 11)
+enrichmentResultsPC2 %>% filter(., FDR.q.value < 0.05) %>% nrow() #There are no significantly enriched terms
 ```
 
 ### Component 3

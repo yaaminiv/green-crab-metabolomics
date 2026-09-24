@@ -1,0 +1,222 @@
+INFO  [2026-09-24 12:35:10] Initializing ALASCA (v1.0.20, 2026-03-14)
+WARN  [2026-09-24 12:35:10] Guessing effects: `treatment`
+INFO  [2026-09-24 12:35:10] Will use linear mixed models!
+INFO  [2026-09-24 12:35:10] Will use Rfast!
+WARN  [2026-09-24 12:35:10] Converting IDs to integer values
+WARN  [2026-09-24 12:35:10] The `treatment` column is used for stratification
+INFO  [2026-09-24 12:35:10] Scaling data with sdall ...
+INFO  [2026-09-24 12:35:10] Calculating LMM coefficients
+INFO  [2026-09-24 12:35:10] Reducing the number of dimensions with PCA
+INFO  [2026-09-24 12:35:10] Keeping 35 components from initial PCA, explaining 95.06 % of variation. The limit can be changed with `reduce_dimensions.limit`
+INFO  [2026-09-24 12:35:10] -> Finished the reduction of dimensions!
+WARN  [2026-09-24 12:35:10] Keeping 20 of 35 components. Change `max_PC` if necessary.
+INFO  [2026-09-24 12:35:10] Starting validation: bootstrap
+INFO  [2026-09-24 12:35:10] - Run 1 of 100
+INFO  [2026-09-24 12:35:11] --- Used 0.72 seconds. Est. time remaining: 72.81 seconds
+INFO  [2026-09-24 12:35:11] - Run 2 of 100
+INFO  [2026-09-24 12:35:11] --- Used 0.26 seconds. Est. time remaining: 49.02 seconds
+INFO  [2026-09-24 12:35:11] - Run 3 of 100
+INFO  [2026-09-24 12:35:11] --- Used 0.2 seconds. Est. time remaining: 38.89 seconds
+INFO  [2026-09-24 12:35:11] - Run 4 of 100
+INFO  [2026-09-24 12:35:12] --- Used 0.16 seconds. Est. time remaining: 32.66 seconds
+INFO  [2026-09-24 12:35:12] - Run 5 of 100
+INFO  [2026-09-24 12:35:12] --- Used 0.16 seconds. Est. time remaining: 28.85 seconds
+INFO  [2026-09-24 12:35:12] - Run 6 of 100
+INFO  [2026-09-24 12:35:12] --- Used 0.18 seconds. Est. time remaining: 26.54 seconds
+INFO  [2026-09-24 12:35:12] - Run 7 of 100
+INFO  [2026-09-24 12:35:13] --- Used 0.64 seconds. Est. time remaining: 31.05 seconds
+INFO  [2026-09-24 12:35:13] - Run 8 of 100
+INFO  [2026-09-24 12:35:13] --- Used 0.17 seconds. Est. time remaining: 28.81 seconds
+INFO  [2026-09-24 12:35:13] - Run 9 of 100
+INFO  [2026-09-24 12:35:13] --- Used 0.19 seconds. Est. time remaining: 27.24 seconds
+INFO  [2026-09-24 12:35:13] - Run 10 of 100
+INFO  [2026-09-24 12:35:13] --- Used 0.16 seconds. Est. time remaining: 25.69 seconds
+INFO  [2026-09-24 12:35:13] - Run 11 of 100
+INFO  [2026-09-24 12:35:13] --- Used 0.16 seconds. Est. time remaining: 24.42 seconds
+INFO  [2026-09-24 12:35:13] - Run 12 of 100
+INFO  [2026-09-24 12:35:13] --- Used 0.18 seconds. Est. time remaining: 23.44 seconds
+INFO  [2026-09-24 12:35:13] - Run 13 of 100
+INFO  [2026-09-24 12:35:14] --- Used 0.16 seconds. Est. time remaining: 22.49 seconds
+INFO  [2026-09-24 12:35:14] - Run 14 of 100
+INFO  [2026-09-24 12:35:14] --- Used 0.23 seconds. Est. time remaining: 22.09 seconds
+INFO  [2026-09-24 12:35:14] - Run 15 of 100
+INFO  [2026-09-24 12:35:14] --- Used 0.5 seconds. Est. time remaining: 23.24 seconds
+INFO  [2026-09-24 12:35:14] - Run 16 of 100
+INFO  [2026-09-24 12:35:15] --- Used 0.16 seconds. Est. time remaining: 22.39 seconds
+INFO  [2026-09-24 12:35:15] - Run 17 of 100
+INFO  [2026-09-24 12:35:16] --- Used 1.77 seconds. Est. time remaining: 29.48 seconds
+INFO  [2026-09-24 12:35:16] - Run 18 of 100
+INFO  [2026-09-24 12:35:17] --- Used 0.53 seconds. Est. time remaining: 29.93 seconds
+INFO  [2026-09-24 12:35:17] - Run 19 of 100
+INFO  [2026-09-24 12:35:17] --- Used 0.2 seconds. Est. time remaining: 28.89 seconds
+INFO  [2026-09-24 12:35:17] - Run 20 of 100
+INFO  [2026-09-24 12:35:17] --- Used 0.2 seconds. Est. time remaining: 27.9 seconds
+INFO  [2026-09-24 12:35:17] - Run 21 of 100
+INFO  [2026-09-24 12:35:17] --- Used 0.22 seconds. Est. time remaining: 27.07 seconds
+INFO  [2026-09-24 12:35:17] - Run 22 of 100
+INFO  [2026-09-24 12:35:18] --- Used 0.51 seconds. Est. time remaining: 27.31 seconds
+INFO  [2026-09-24 12:35:18] - Run 23 of 100
+INFO  [2026-09-24 12:35:18] --- Used 0.52 seconds. Est. time remaining: 27.54 seconds
+INFO  [2026-09-24 12:35:18] - Run 24 of 100
+INFO  [2026-09-24 12:35:19] --- Used 0.2 seconds. Est. time remaining: 26.7 seconds
+INFO  [2026-09-24 12:35:19] - Run 25 of 100
+INFO  [2026-09-24 12:35:19] --- Used 0.18 seconds. Est. time remaining: 25.83 seconds
+INFO  [2026-09-24 12:35:19] - Run 26 of 100
+INFO  [2026-09-24 12:35:19] --- Used 0.19 seconds. Est. time remaining: 25.04 seconds
+INFO  [2026-09-24 12:35:19] - Run 27 of 100
+INFO  [2026-09-24 12:35:19] --- Used 0.17 seconds. Est. time remaining: 24.26 seconds
+INFO  [2026-09-24 12:35:19] - Run 28 of 100
+INFO  [2026-09-24 12:35:19] --- Used 0.15 seconds. Est. time remaining: 23.46 seconds
+INFO  [2026-09-24 12:35:19] - Run 29 of 100
+INFO  [2026-09-24 12:35:20] --- Used 0.16 seconds. Est. time remaining: 22.73 seconds
+INFO  [2026-09-24 12:35:20] - Run 30 of 100
+INFO  [2026-09-24 12:35:20] --- Used 0.16 seconds. Est. time remaining: 22.04 seconds
+INFO  [2026-09-24 12:35:20] - Run 31 of 100
+INFO  [2026-09-24 12:35:20] --- Used 0.24 seconds. Est. time remaining: 21.56 seconds
+INFO  [2026-09-24 12:35:20] - Run 32 of 100
+INFO  [2026-09-24 12:35:21] --- Used 0.57 seconds. Est. time remaining: 21.8 seconds
+INFO  [2026-09-24 12:35:21] - Run 33 of 100
+INFO  [2026-09-24 12:35:21] --- Used 0.18 seconds. Est. time remaining: 21.21 seconds
+INFO  [2026-09-24 12:35:21] - Run 34 of 100
+INFO  [2026-09-24 12:35:21] --- Used 0.16 seconds. Est. time remaining: 20.58 seconds
+INFO  [2026-09-24 12:35:21] - Run 35 of 100
+INFO  [2026-09-24 12:35:21] --- Used 0.16 seconds. Est. time remaining: 19.98 seconds
+INFO  [2026-09-24 12:35:21] - Run 36 of 100
+INFO  [2026-09-24 12:35:21] --- Used 0.19 seconds. Est. time remaining: 19.46 seconds
+INFO  [2026-09-24 12:35:21] - Run 37 of 100
+INFO  [2026-09-24 12:35:21] --- Used 0.14 seconds. Est. time remaining: 18.88 seconds
+INFO  [2026-09-24 12:35:21] - Run 38 of 100
+INFO  [2026-09-24 12:35:21] --- Used 0.14 seconds. Est. time remaining: 18.33 seconds
+INFO  [2026-09-24 12:35:21] - Run 39 of 100
+INFO  [2026-09-24 12:35:22] --- Used 0.15 seconds. Est. time remaining: 17.8 seconds
+INFO  [2026-09-24 12:35:22] - Run 40 of 100
+INFO  [2026-09-24 12:35:22] --- Used 0.15 seconds. Est. time remaining: 17.3 seconds
+INFO  [2026-09-24 12:35:22] - Run 41 of 100
+INFO  [2026-09-24 12:35:22] --- Used 0.59 seconds. Est. time remaining: 17.44 seconds
+INFO  [2026-09-24 12:35:22] - Run 42 of 100
+INFO  [2026-09-24 12:35:23] --- Used 0.17 seconds. Est. time remaining: 16.97 seconds
+INFO  [2026-09-24 12:35:23] - Run 43 of 100
+INFO  [2026-09-24 12:35:23] --- Used 0.25 seconds. Est. time remaining: 16.63 seconds
+INFO  [2026-09-24 12:35:23] - Run 44 of 100
+INFO  [2026-09-24 12:35:23] --- Used 0.16 seconds. Est. time remaining: 16.17 seconds
+INFO  [2026-09-24 12:35:23] - Run 45 of 100
+INFO  [2026-09-24 12:35:23] --- Used 0.19 seconds. Est. time remaining: 15.76 seconds
+INFO  [2026-09-24 12:35:23] - Run 46 of 100
+INFO  [2026-09-24 12:35:23] --- Used 0.15 seconds. Est. time remaining: 15.31 seconds
+INFO  [2026-09-24 12:35:23] - Run 47 of 100
+INFO  [2026-09-24 12:35:23] --- Used 0.15 seconds. Est. time remaining: 14.88 seconds
+INFO  [2026-09-24 12:35:23] - Run 48 of 100
+INFO  [2026-09-24 12:35:24] --- Used 0.17 seconds. Est. time remaining: 14.48 seconds
+INFO  [2026-09-24 12:35:24] - Run 49 of 100
+INFO  [2026-09-24 12:35:24] --- Used 0.15 seconds. Est. time remaining: 14.06 seconds
+INFO  [2026-09-24 12:35:24] - Run 50 of 100
+INFO  [2026-09-24 12:35:24] --- Used 0.25 seconds. Est. time remaining: 13.76 seconds
+INFO  [2026-09-24 12:35:24] - Run 51 of 100
+INFO  [2026-09-24 12:35:25] --- Used 0.51 seconds. Est. time remaining: 13.71 seconds
+INFO  [2026-09-24 12:35:25] - Run 52 of 100
+INFO  [2026-09-24 12:35:25] --- Used 0.15 seconds. Est. time remaining: 13.32 seconds
+INFO  [2026-09-24 12:35:25] - Run 53 of 100
+INFO  [2026-09-24 12:35:25] --- Used 0.17 seconds. Est. time remaining: 12.95 seconds
+INFO  [2026-09-24 12:35:25] - Run 54 of 100
+INFO  [2026-09-24 12:35:25] --- Used 0.17 seconds. Est. time remaining: 12.59 seconds
+INFO  [2026-09-24 12:35:25] - Run 55 of 100
+INFO  [2026-09-24 12:35:25] --- Used 0.16 seconds. Est. time remaining: 12.22 seconds
+INFO  [2026-09-24 12:35:25] - Run 56 of 100
+INFO  [2026-09-24 12:35:25] --- Used 0.16 seconds. Est. time remaining: 11.86 seconds
+INFO  [2026-09-24 12:35:25] - Run 57 of 100
+INFO  [2026-09-24 12:35:25] --- Used 0.15 seconds. Est. time remaining: 11.51 seconds
+INFO  [2026-09-24 12:35:25] - Run 58 of 100
+INFO  [2026-09-24 12:35:26] --- Used 0.17 seconds. Est. time remaining: 11.17 seconds
+INFO  [2026-09-24 12:35:26] - Run 59 of 100
+INFO  [2026-09-24 12:35:26] --- Used 0.15 seconds. Est. time remaining: 10.82 seconds
+INFO  [2026-09-24 12:35:26] - Run 60 of 100
+INFO  [2026-09-24 12:35:26] --- Used 0.53 seconds. Est. time remaining: 10.73 seconds
+INFO  [2026-09-24 12:35:26] - Run 61 of 100
+INFO  [2026-09-24 12:35:27] --- Used 0.2 seconds. Est. time remaining: 10.43 seconds
+INFO  [2026-09-24 12:35:27] - Run 62 of 100
+INFO  [2026-09-24 12:35:27] --- Used 0.21 seconds. Est. time remaining: 10.13 seconds
+INFO  [2026-09-24 12:35:27] - Run 63 of 100
+INFO  [2026-09-24 12:35:27] --- Used 0.16 seconds. Est. time remaining: 9.8 seconds
+INFO  [2026-09-24 12:35:27] - Run 64 of 100
+INFO  [2026-09-24 12:35:27] --- Used 0.15 seconds. Est. time remaining: 9.47 seconds
+INFO  [2026-09-24 12:35:27] - Run 65 of 100
+INFO  [2026-09-24 12:35:27] --- Used 0.14 seconds. Est. time remaining: 9.14 seconds
+INFO  [2026-09-24 12:35:27] - Run 66 of 100
+INFO  [2026-09-24 12:35:27] --- Used 0.17 seconds. Est. time remaining: 8.83 seconds
+INFO  [2026-09-24 12:35:27] - Run 67 of 100
+INFO  [2026-09-24 12:35:28] --- Used 0.17 seconds. Est. time remaining: 8.53 seconds
+INFO  [2026-09-24 12:35:28] - Run 68 of 100
+INFO  [2026-09-24 12:35:28] --- Used 0.16 seconds. Est. time remaining: 8.23 seconds
+INFO  [2026-09-24 12:35:28] - Run 69 of 100
+INFO  [2026-09-24 12:35:28] --- Used 0.51 seconds. Est. time remaining: 8.08 seconds
+INFO  [2026-09-24 12:35:28] - Run 70 of 100
+INFO  [2026-09-24 12:35:28] --- Used 0.19 seconds. Est. time remaining: 7.79 seconds
+INFO  [2026-09-24 12:35:28] - Run 71 of 100
+INFO  [2026-09-24 12:35:29] --- Used 0.16 seconds. Est. time remaining: 7.49 seconds
+INFO  [2026-09-24 12:35:29] - Run 72 of 100
+INFO  [2026-09-24 12:35:29] --- Used 0.24 seconds. Est. time remaining: 7.23 seconds
+INFO  [2026-09-24 12:35:29] - Run 73 of 100
+INFO  [2026-09-24 12:35:29] --- Used 0.17 seconds. Est. time remaining: 6.94 seconds
+INFO  [2026-09-24 12:35:29] - Run 74 of 100
+INFO  [2026-09-24 12:35:29] --- Used 0.19 seconds. Est. time remaining: 6.66 seconds
+INFO  [2026-09-24 12:35:29] - Run 75 of 100
+INFO  [2026-09-24 12:35:29] --- Used 0.16 seconds. Est. time remaining: 6.37 seconds
+INFO  [2026-09-24 12:35:29] - Run 76 of 100
+INFO  [2026-09-24 12:35:30] --- Used 0.17 seconds. Est. time remaining: 6.09 seconds
+INFO  [2026-09-24 12:35:30] - Run 77 of 100
+INFO  [2026-09-24 12:35:30] --- Used 0.17 seconds. Est. time remaining: 5.81 seconds
+INFO  [2026-09-24 12:35:30] - Run 78 of 100
+INFO  [2026-09-24 12:35:30] --- Used 0.61 seconds. Est. time remaining: 5.66 seconds
+INFO  [2026-09-24 12:35:30] - Run 79 of 100
+INFO  [2026-09-24 12:35:31] --- Used 0.2 seconds. Est. time remaining: 5.39 seconds
+INFO  [2026-09-24 12:35:31] - Run 80 of 100
+INFO  [2026-09-24 12:35:31] --- Used 0.46 seconds. Est. time remaining: 5.18 seconds
+INFO  [2026-09-24 12:35:31] - Run 81 of 100
+INFO  [2026-09-24 12:35:31] --- Used 0.19 seconds. Est. time remaining: 4.91 seconds
+INFO  [2026-09-24 12:35:31] - Run 82 of 100
+INFO  [2026-09-24 12:35:31] --- Used 0.2 seconds. Est. time remaining: 4.64 seconds
+INFO  [2026-09-24 12:35:31] - Run 83 of 100
+INFO  [2026-09-24 12:35:32] --- Used 0.17 seconds. Est. time remaining: 4.36 seconds
+INFO  [2026-09-24 12:35:32] - Run 84 of 100
+INFO  [2026-09-24 12:35:32] --- Used 0.15 seconds. Est. time remaining: 4.09 seconds
+INFO  [2026-09-24 12:35:32] - Run 85 of 100
+INFO  [2026-09-24 12:35:32] --- Used 0.52 seconds. Est. time remaining: 3.88 seconds
+INFO  [2026-09-24 12:35:32] - Run 86 of 100
+INFO  [2026-09-24 12:35:32] --- Used 0.21 seconds. Est. time remaining: 3.61 seconds
+INFO  [2026-09-24 12:35:32] - Run 87 of 100
+INFO  [2026-09-24 12:35:33] --- Used 0.17 seconds. Est. time remaining: 3.34 seconds
+INFO  [2026-09-24 12:35:33] - Run 88 of 100
+INFO  [2026-09-24 12:35:33] --- Used 0.18 seconds. Est. time remaining: 3.07 seconds
+INFO  [2026-09-24 12:35:33] - Run 89 of 100
+INFO  [2026-09-24 12:35:33] --- Used 0.15 seconds. Est. time remaining: 2.8 seconds
+INFO  [2026-09-24 12:35:33] - Run 90 of 100
+INFO  [2026-09-24 12:35:33] --- Used 0.22 seconds. Est. time remaining: 2.55 seconds
+INFO  [2026-09-24 12:35:33] - Run 91 of 100
+INFO  [2026-09-24 12:35:33] --- Used 0.17 seconds. Est. time remaining: 2.28 seconds
+INFO  [2026-09-24 12:35:33] - Run 92 of 100
+INFO  [2026-09-24 12:35:34] --- Used 0.18 seconds. Est. time remaining: 2.02 seconds
+INFO  [2026-09-24 12:35:34] - Run 93 of 100
+INFO  [2026-09-24 12:35:34] --- Used 0.21 seconds. Est. time remaining: 1.77 seconds
+INFO  [2026-09-24 12:35:34] - Run 94 of 100
+INFO  [2026-09-24 12:35:34] --- Used 0.52 seconds. Est. time remaining: 1.53 seconds
+INFO  [2026-09-24 12:35:34] - Run 95 of 100
+INFO  [2026-09-24 12:35:34] --- Used 0.17 seconds. Est. time remaining: 1.27 seconds
+INFO  [2026-09-24 12:35:34] - Run 96 of 100
+INFO  [2026-09-24 12:35:35] --- Used 0.18 seconds. Est. time remaining: 1.01 seconds
+INFO  [2026-09-24 12:35:35] - Run 97 of 100
+INFO  [2026-09-24 12:35:35] --- Used 0.18 seconds. Est. time remaining: 0.76 seconds
+INFO  [2026-09-24 12:35:35] - Run 98 of 100
+INFO  [2026-09-24 12:35:35] --- Used 0.15 seconds. Est. time remaining: 0.5 seconds
+INFO  [2026-09-24 12:35:35] - Run 99 of 100
+INFO  [2026-09-24 12:35:35] --- Used 0.16 seconds. Est. time remaining: 0.25 seconds
+INFO  [2026-09-24 12:35:35] - Run 100 of 100
+INFO  [2026-09-24 12:35:35] --- Used 0.15 seconds. Est. time remaining: 0 seconds
+INFO  [2026-09-24 12:35:35] Calculating percentiles for score and loading
+INFO  [2026-09-24 12:35:36] ==== ALASCA has finished ====
+INFO  [2026-09-24 12:35:36] To visualize the model, try `plot(<object>, effect = 1, component = 1, type = 'effect')`
+INFO  [2026-09-24 12:35:41] Scree plot. Selected effect (nr 1): `treatment`. Component: 1 and 2 and 3.
+INFO  [2026-09-24 12:35:52] Loadings for effect number 1 and principal component(s) 1
+INFO  [2026-09-24 12:35:58] Effect plot. Selected effect (nr 1): `treatment`. Component: 2.
+WARN  [2026-09-24 12:35:58] Showing 10 of 410 variables. Adjust the number with `n_limit`
+INFO  [2026-09-24 12:36:06] Loadings for effect number 1 and principal component(s) 2
+INFO  [2026-09-24 12:44:38] Loadings for effect number 1 and principal component(s) 2
