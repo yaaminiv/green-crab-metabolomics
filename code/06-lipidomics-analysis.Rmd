@@ -3741,7 +3741,7 @@ percDiff.13v30.figure <- percDiff.13v30.enriched %>% #Dataframe with percent dif
                       values = c(plotColors[3], plotColors[1]),
                       labels = c("5ºC", "30ºC")) +
   xlab("") + #x axis label
-  ggtitle("A. Pairwise VIP lipids for 13ºC vs. 30ºC") +
+  ggtitle("B. Enrichment for 13ºC vs. 30ºC") +
   theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
                                         axis.ticks.x = element_blank(),
                                         legend.position = "bottom", 
@@ -3831,9 +3831,10 @@ targetClass.13v30.figure <- knownTransLipidData %>% #Take lipid abundance data
                     values = c("grey50", "darkgreen", "green4", "green2"),
                     labels = c("SM", "PC", "PE", "PI")) + #Fill scale
   labs(x = "log(30ºC - 13ºC)", y = "Pairwise VIP Lipid") + #Label x and y axes
-  ggtitle("B. 30ºC vs. 13ºC Abundance by Saturation") +
+  ggtitle("A. 30ºC vs. 13ºC VIP abundance") +
   theme_classic(base_size = 15) + theme(axis.ticks.y = element_blank(),
                                         axis.text.y = element_blank(),
+                                        axis.title.x = element_text(size = 12),
                                         legend.position = "bottom", 
                                         legend.text = element_text(color = "black", size = 12), 
                                         strip.text.x = element_text(size = 10, color = "black", face="bold")) #Base size 15, remove axis ticks and text on the y axis
@@ -3886,7 +3887,7 @@ percDiff.13v5.figure <- percDiff.13v5.enriched %>% #Dataframe with percent diffe
                       values = c(plotColors[3], plotColors[1]),
                       labels = c("5ºC", "30ºC")) +
   xlab("") + #x axis label
-  ggtitle("C. Pairwise VIP lipids for 13ºC vs. 5ºC") +
+  ggtitle("D. Enrichment for 13ºC vs. 5ºC") +
   theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
                                         axis.ticks.x = element_blank(),
                                         legend.position = "bottom", 
@@ -3921,24 +3922,24 @@ knownTransLipidData %>% #Take lipid abundance data
 
 ```{r}
 targetClass.13v5.high_textMultipanel <- data.frame(label = c("5ºC: 0",
-                                                              "1",
-                                                              "0"), #Label for each facet
-                                                    saturationOrder = c("1Polyunsaturated",
-                                                                        "2Monounsaturated",
-                                                                        "3Saturated"), #Assign label to specific facet
-                                                    x = rep(1, times = 3), #x location
-                                                    y = rep("PC 40:8 Isomer A", times = 3)) #y location
-```
-
-```{r}
-targetClass.13v5.low_textMultipanel <- data.frame(label = c("13ºC: 23",
-                                                             "14",
-                                                             "3"), #Label for each facet
+                                                             "1",
+                                                             "0"), #Label for each facet
                                                    saturationOrder = c("1Polyunsaturated",
                                                                        "2Monounsaturated",
                                                                        "3Saturated"), #Assign label to specific facet
                                                    x = rep(1, times = 3), #x location
-                                                   y = rep("PC 34:2 Isomer A", times = 3)) #y location
+                                                   y = rep("PC 40:8 Isomer A", times = 3)) #y location
+```
+
+```{r}
+targetClass.13v5.low_textMultipanel <- data.frame(label = c("13ºC: 23",
+                                                            "14",
+                                                            "3"), #Label for each facet
+                                                  saturationOrder = c("1Polyunsaturated",
+                                                                      "2Monounsaturated",
+                                                                      "3Saturated"), #Assign label to specific facet
+                                                  x = rep(1, times = 3), #x location
+                                                  y = rep("PC 34:2 Isomer A", times = 3)) #y location
 ```
 
 ```{r}
@@ -3975,9 +3976,10 @@ targetClass.13v5.figure <- knownTransLipidData %>% #Take lipid abundance data
   scale_fill_manual(guide = "none",
                     values = c("grey50", "darkgreen", "green4", "green2")) + #Fill scale
   labs(x = "log(5ºC - 13ºC)", y = "") + #Label x and y axes
-  ggtitle("D. 5ºC vs. 13ºC Abundance by Saturation") +
+  ggtitle("C. 5ºC vs. 13ºC VIP abundance") +
   theme_classic(base_size = 15) + theme(axis.ticks.y = element_blank(),
                                         axis.text.y = element_blank(),
+                                        axis.title.x = element_text(size = 12),
                                         legend.position = "bottom", 
                                         legend.text = element_text(color = "black", size = 12), 
                                         strip.text.x = element_text(size = 10, color = "black", face="bold")) #Base size 15, remove axis ticks and text on the y axis
@@ -3985,9 +3987,9 @@ targetClass.13v5.figure
 ```
 
 ```{r}
-enrichmentFigure <-((percDiff.13v30.figure + percDiff.13v5.figure) /
-                      (targetClass.13v30.figure + targetClass.13v5.figure)) + #Combine figures vertically
-  plot_layout(guides = "collect", heights = c(1.25, 1)) & #Collect identical legends
+enrichmentFigure <-((targetClass.13v30.figure + targetClass.13v5.figure) /
+                      (percDiff.13v30.figure + percDiff.13v5.figure)) + #Combine figures vertically
+  plot_layout(guides = "collect", heights = c(1, 1.25)) & #Collect identical legends
   theme(legend.position = "bottom",
         legend.title = element_text(size = 12),
         legend.text = element_text(color = "black", size = 12)) #Reduce legend spacing
