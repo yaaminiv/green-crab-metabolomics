@@ -2792,8 +2792,8 @@ knownTransLipidData %>% #Take lipid abundance data
   mutate(., targetClass = case_when(targetClass != "SM" ~ targetClass,
                                     targetClass == "SM" ~ "1SM")) %>% #Add number in front of SM to make it show up first
   mutate(., saturationOrder = case_when(saturation == "Polyunsaturated" ~ "1Polyunsaturated",
-                                         saturation == "Monounsaturated" ~ "2Monounsaturated",
-                                         saturation == "Saturated" ~ "3Saturated")) %>% #Create a new column to order categories by increasing saturation
+                                        saturation == "Monounsaturated" ~ "2Monounsaturated",
+                                        saturation == "Saturated" ~ "3Saturated")) %>% #Create a new column to order categories by increasing saturation
   dplyr::select(-c(estimate:comparison)) %>% #Remove extraneous columns
   ggplot(., aes(x = logDiff, y = reorder(lipid, logDiff))) + #Createa a new plot with logDiff on the x axis and lipid on the y axis, ordered by logDiff
   facet_grid(~ saturationOrder, scales = "free_y", labeller = labeller(saturationOrder = saturationLabels)) + #Facet by saturation state and label correctly
@@ -2895,8 +2895,8 @@ knownTransLipidData %>% #Take lipid abundance data
   mutate(., targetClass = case_when(targetClass != "SM" ~ targetClass,
                                     targetClass == "SM" ~ "1SM")) %>% #Add number in front of SM to make it show up first
   mutate(., saturationOrder = case_when(saturation == "Polyunsaturated" ~ "1Polyunsaturated",
-                                         saturation == "Monounsaturated" ~ "2Monounsaturated",
-                                         saturation == "Saturated" ~ "3Saturated")) %>% #Create a new column to order categories by increasing saturation
+                                        saturation == "Monounsaturated" ~ "2Monounsaturated",
+                                        saturation == "Saturated" ~ "3Saturated")) %>% #Create a new column to order categories by increasing saturation
   dplyr::select(-c(estimate:comparison)) %>% #Remove extraneous columns
   ggplot(., aes(x = logDiff, y = reorder(lipid, logDiff))) + #Createa a new plot with logDiff on the x axis and lipid on the y axis, ordered by logDiff
   facet_grid(~ saturationOrder, scales = "free_y", labeller = labeller(saturationOrder = saturationLabels)) + #Facet by saturation state and label correctly
@@ -3700,27 +3700,27 @@ percDiff.13v30.enriched %>% #Percent difference dataframe
 ```
 
 ```{r}
-percDiff.13v30.high_textMultipanel <- data.frame(label = c("9 higher at 30ºC",
-                                                      "8 higher at 30ºC",
-                                                      "12 higher at 30ºC",
-                                                      "8 higher at 30ºC",
-                                                      "12 higher at 30ºC",
-                                                      "9 higher at 30ºC"), #Label for each facet
-                                            LION.term = LIONtoTerm13v30$LION.term, #Assign label to specific facet
-                                            x = rep(0.45, times = 6), #x location
-                                            y = rep(220, times = 6)) #y location
+percDiff.13v30.high_textMultipanel <- data.frame(label = c("30ºC: 9",
+                                                           "8",
+                                                           "12",
+                                                           "8",
+                                                           "12",
+                                                           "9"), #Label for each facet
+                                                 LION.term = LIONtoTerm13v30$LION.term, #Assign label to specific facet
+                                                 x = rep(0.45, times = 6), #x location
+                                                 y = rep(220, times = 6)) #y location
 ```
 
 ```{r}
-percDiff.13v30.low_textMultipanel <- data.frame(label = c("23 higher at 13ºC",
-                                                      "16 higher at 13ºC",
-                                                      "23 higher at 13ºC",
-                                                      "16 higher at 13ºC",
-                                                      "23 higher at 13ºC",
-                                                      "24 higher at 13ºC"), #Label for each facet
-                                            LION.term = LIONtoTerm13v30$LION.term, #Assign label to specific facet
-                                            x = rep(0.45, times = 6), #x location
-                                            y = rep(-70, times = 6)) #y location
+percDiff.13v30.low_textMultipanel <- data.frame(label = c("13ºC: 23",
+                                                          "16",
+                                                          "23",
+                                                          "16",
+                                                          "23",
+                                                          "24"), #Label for each facet
+                                                LION.term = LIONtoTerm13v30$LION.term, #Assign label to specific facet
+                                                x = rep(0.45, times = 6), #x location
+                                                y = rep(-70, times = 6)) #y location
 ```
 
 ```{r}
@@ -3731,9 +3731,9 @@ percDiff.13v30.figure <- percDiff.13v30.enriched %>% #Dataframe with percent dif
   # annotate("text", label = "higher at 30ºC", x = 0.45, y = 220, size = 4, color = plotColors[1], hjust = 0) +
   geom_text(data = percDiff.13v30.high_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE, size = 4, color = plotColors[1], hjust = 0) + #Add labels to each individual facet
   # annotate("text", label = "higher at 13ºC", x = 0.45, y = -70, size = 4, color = plotColors[2], hjust = 0) +
-    geom_text(data = percDiff.13v30.low_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE, size = 4, color = plotColors[2], hjust = 0) + #Add labels to each individual facet
-  facet_wrap(~LION.term, labeller = labeller(LION.term = percDiff.13v30.facetLabels)) +
-  ylab("") + #y axis label
+  geom_text(data = percDiff.13v30.low_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE, size = 4, color = plotColors[2], hjust = 0) + #Add labels to each individual facet
+  facet_wrap(~LION.term) +
+  ylab("Difference from 13ºC (%)") + #y axis label
   scale_fill_manual(name = "Temperature (ºC)", 
                     values = c(plotColors[3], plotColors[1]),
                     labels = c("5ºC", "30ºC")) +
@@ -3749,8 +3749,96 @@ percDiff.13v30.figure <- percDiff.13v30.enriched %>% #Dataframe with percent dif
                                         strip.text.x = element_text(size = 10, color = "black", face="bold"))
 percDiff.13v30.figure
 ```
-- add error bars to each dot!
 
+```{r}
+knownTransLipidData %>% #Take lipid abundance data
+  mutate(temperature = str_trim(temperature, side = "both")) %>% #Remove white space from lipid name
+  filter(., temperature != "5") %>% #remove data from 5ºC treatment
+  mutate(., temperature = case_when(temperature == "13" ~ "13C",
+                                    temperature == "30" ~ "30C")) %>% #Rename temperature columns
+  dplyr::select(temperature, any_of(significantVIP_13v30$lipid)) %>% #Select VIP of interest
+  group_by(temperature) %>% #Group by temperature
+  summarize_all(funs(mean(., na.rm = TRUE))) %>% #Calculate average abundance for each lipid by temperature
+  column_to_rownames(var = "temperature") %>% #Convert column to rownames
+  t(.) %>% as.data.frame(.) %>% #Transpose and convert to a dataframe
+  rownames_to_column(var = "lipid") %>% #Convert rownames to a column
+  mutate(., diff = `30C` - `13C`) %>% #Subtract differences in lipid abundance
+  mutate(., logDiff = log(abs(diff))) %>% #Take the log of the difference
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>% #Add + or - depending on whether or not lipid abundance is higher at 30
+  mutate(., status = case_when(logDiff > 0 ~ "30",
+                               logDiff < 0 ~ "13")) %>% #Create a column indicating which temperature had higher lipid abundance
+  left_join(x = ., y = significantVIP_13v30_annot) %>% #Join with annotated lipid class information
+  filter(., targetClass != "Other") %>% #Remove "Other" lipid class
+  group_by(saturation, status) %>%
+  summarize(count = n()) #Count the number of lipids with higher or lower abundance at 30ºC by saturation state
+```
+
+```{r}
+targetClass.13v30.high_textMultipanel <- data.frame(label = c("30ºC: 3",
+                                                              "14",
+                                                              "13"), #Label for each facet
+                                                    saturationOrder = c("1Polyunsaturated",
+                                                                        "2Monounsaturated",
+                                                                        "3Saturated"), #Assign label to specific facet
+                                                    x = rep(1, times = 3), #x location
+                                                    y = rep("PC 40:8 Isomer A", times = 3)) #y location
+```
+
+```{r}
+targetClass.13v30.low_textMultipanel <- data.frame(label = c("13ºC: 59",
+                                                             "4",
+                                                             "0"), #Label for each facet
+                                                   saturationOrder = c("1Polyunsaturated",
+                                                                       "2Monounsaturated",
+                                                                       "3Saturated"), #Assign label to specific facet
+                                                   x = rep(1, times = 3), #x location
+                                                   y = rep("PC 34:2 Isomer A", times = 3)) #y location
+```
+
+```{r}
+targetClass.13v30.figure <- knownTransLipidData %>% #Take lipid abundance data
+  mutate(temperature = str_trim(temperature, side = "both")) %>% #Remove white space from lipid name
+  filter(., temperature != "5") %>% #remove data from 5ºC treatment
+  mutate(., temperature = case_when(temperature == "13" ~ "13C",
+                                    temperature == "30" ~ "30C")) %>% #Rename temperature columns
+  dplyr::select(temperature, any_of(significantVIP_13v30$lipid)) %>% #Select VIP of interest
+  group_by(temperature) %>% #Group by temperature
+  summarize_all(funs(mean(., na.rm = TRUE))) %>% #Calculate average abundance for each lipid by temperature
+  column_to_rownames(var = "temperature") %>% #Convert column to rownames
+  t(.) %>% as.data.frame(.) %>% #Transpose and convert to a dataframe
+  rownames_to_column(var = "lipid") %>% #Convert rownames to a column
+  mutate(., diff = `30C` - `13C`) %>% #Subtract differences in lipid abundance
+  mutate(., logDiff = log(abs(diff))) %>% #Take the log of the difference
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>% #Add + or - depending on whether or not lipid abundance is higher at 30
+  mutate(., status = case_when(logDiff > 0 ~ "30",
+                               logDiff < 0 ~ "13")) %>% #Create a column indicating which temperature had higher lipid abundance
+  left_join(x = ., y = significantVIP_13v30_annot) %>% #Join with annotated lipid class information
+  filter(., targetClass != "Other") %>% #Remove "Other" lipid class
+  mutate(., targetClass = case_when(targetClass != "SM" ~ targetClass,
+                                    targetClass == "SM" ~ "1SM")) %>% #Add number in front of SM to make it show up first
+  mutate(., saturationOrder = case_when(saturation == "Polyunsaturated" ~ "1Polyunsaturated",
+                                        saturation == "Monounsaturated" ~ "2Monounsaturated",
+                                        saturation == "Saturated" ~ "3Saturated")) %>% #Create a new column to order categories by increasing saturation
+  dplyr::select(-c(estimate:comparison)) %>% #Remove extraneous columns
+  ggplot(., aes(x = logDiff, y = reorder(lipid, logDiff))) + #Createa a new plot with logDiff on the x axis and lipid on the y axis, ordered by logDiff
+  geom_text(data = targetClass.13v30.high_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE, size = 4, color = plotColors[1], hjust = 0) + #Add labels to each individual facet
+  geom_text(data = targetClass.13v30.low_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE, size = 4, color = plotColors[2], hjust = 0) + #Add labels to each individual facet
+  facet_grid(~ saturationOrder, scales = "free_y", labeller = labeller(saturationOrder = saturationLabels)) + #Facet by saturation state and label correctly
+  geom_bar(aes(fill = targetClass), stat = 'identity') + #Add bars filled by lipid class
+  scale_fill_manual(name = "Lipid Class",
+                    values = c("grey50", "darkgreen", "green4", "green2"),
+                    labels = c("SM", "PC", "PE", "PI")) + #Fill scale
+  labs(x = "log(30ºC - 13ºC)", y = "Pairwise VIP Lipid") + #Label x and y axes
+  ggtitle("B. 30ºC vs. 13ºC Abundance by Saturation") +
+  theme_classic(base_size = 15) + theme(axis.ticks.y = element_blank(),
+                                        axis.text.y = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.text = element_text(color = "black", size = 12), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold")) #Base size 15, remove axis ticks and text on the y axis
+targetClass.13v30.figure
+```
 
 ```{r}
 percDiff.13v5.enriched %>% #Percent difference dataframe
@@ -3761,23 +3849,23 @@ percDiff.13v5.enriched %>% #Percent difference dataframe
 ```
 
 ```{r}
-percDiff.13v5.high_textMultipanel <- data.frame(label = c("1 higher at 5ºC",
-                                                      "1 higher at 5ºC",
-                                                      "1 higher at 5ºC",
-                                                      "1 higher at 5ºC"), #Label for each facet
-                                            LION.term = LIONtoTerm13v5$LION.term, #Assign label to specific facet
-                                            x = rep(0.45, times = 4), #x location
-                                            y = rep(220, times = 4)) #y location
+percDiff.13v5.high_textMultipanel <- data.frame(label = c("5ºC: 1",
+                                                          "1",
+                                                          "1",
+                                                          "1"), #Label for each facet
+                                                LION.term = LIONtoTerm13v5$LION.term, #Assign label to specific facet
+                                                x = rep(0.45, times = 4), #x location
+                                                y = rep(220, times = 4)) #y location
 ```
 
 ```{r}
-percDiff.13v5.low_textMultipanel <- data.frame(label = c("18 higher at 13ºC",
-                                                      "5 higher at 13ºC",
-                                                      "19 higher at 13ºC",
-                                                      "5 higher at 13ºC"), #Label for each facet
-                                            LION.term = LIONtoTerm13v5$LION.term, #Assign label to specific facet
-                                            x = rep(0.45, times = 4), #x location
-                                            y = rep(-70, times = 4)) #y location
+percDiff.13v5.low_textMultipanel <- data.frame(label = c("13ºC: 18",
+                                                         "5",
+                                                         "19",
+                                                         "5"), #Label for each facet
+                                               LION.term = LIONtoTerm13v5$LION.term, #Assign label to specific facet
+                                               x = rep(0.45, times = 4), #x location
+                                               y = rep(-70, times = 4)) #y location
 ```
 
 ```{r}
@@ -3788,8 +3876,8 @@ percDiff.13v5.figure <- percDiff.13v5.enriched %>% #Dataframe with percent diffe
   # annotate("text", label = "higher at 30ºC", x = 0.45, y = 220, size = 4, color = plotColors[1], hjust = 0) +
   geom_text(data = percDiff.13v5.high_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE, size = 4, color = plotColors[3], hjust = 0) + #Add labels to each individual facet
   # annotate("text", label = "higher at 13ºC", x = 0.45, y = -70, size = 4, color = plotColors[2], hjust = 0) +
-    geom_text(data = percDiff.13v5.low_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE, size = 4, color = plotColors[2], hjust = 0) + #Add labels to each individual facet
-  facet_wrap(~LION.term, labeller = labeller(LION.term = percDiff.13v5.facetLabels)) +
+  geom_text(data = percDiff.13v5.low_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE, size = 4, color = plotColors[2], hjust = 0) + #Add labels to each individual facet
+  facet_wrap(~LION.term) +
   ylab("") + #y axis label
   scale_fill_manual(name = "Temperature (ºC)", 
                     values = c(plotColors[3], plotColors[1]),
@@ -3798,7 +3886,7 @@ percDiff.13v5.figure <- percDiff.13v5.enriched %>% #Dataframe with percent diffe
                       values = c(plotColors[3], plotColors[1]),
                       labels = c("5ºC", "30ºC")) +
   xlab("") + #x axis label
-  ggtitle("B. Pairwise VIP lipids for 13ºC vs. 5ºC") +
+  ggtitle("C. Pairwise VIP lipids for 13ºC vs. 5ºC") +
   theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
                                         axis.ticks.x = element_blank(),
                                         legend.position = "bottom", 
@@ -3808,21 +3896,112 @@ percDiff.13v5.figure
 ```
 
 ```{r}
-enrichmentFigure <-(percDiff.13v30.figure /
-                      percDiff.13v5.figure) + #Combine figures vertically
-  plot_layout(guides = "collect") & #Collect identical legends
-  theme(legend.position = "bottom", #Have legend on the bottom
-        legend.key.width = unit(0.05, "cm")) & #Reduce legend spacing
-  guides(
-    fill = guide_legend(nrow = 1), #Force legend to be on one row
-    color = guide_legend(nrow = 1) #Force legend to be on one row
-  )
-
-y_axis_label <- textGrob("Difference from 13ºC (%)", rot = 90, gp = gpar(fontsize = 15))
-enrichmentFigureWithLabel <- wrap_elements(y_axis_label) + enrichmentFigure + plot_layout(widths = c(1, 40))
-
-ggsave("PLSDA/figures/percent-diff-enriched-pathways-multipanel.pdf", width = 8.5, height = 11, device = cairo_pdf) #Save figure
+knownTransLipidData %>% #Take lipid abundance data
+  mutate(temperature = str_trim(temperature, side = "both")) %>% #Remove white space from lipid name
+  filter(., temperature != "30") %>% #remove data from 30ºC treatment
+  mutate(., temperature = case_when(temperature == "13" ~ "13C",
+                                    temperature == "5" ~ "05C")) %>% #Rename temperature columns
+  dplyr::select(temperature, any_of(significantVIP_13v5$lipid)) %>% #Select VIP of interest
+  group_by(temperature) %>% #Group by temperature
+  summarize_all(funs(mean(., na.rm = TRUE))) %>% #Calculate average abundance for each lipid by temperature
+  column_to_rownames(var = "temperature") %>% #Convert column to rownames
+  t(.) %>% as.data.frame(.) %>% #Transpose and convert to a dataframe
+  rownames_to_column(var = "lipid") %>% #Convert rownames to a column
+  mutate(., diff = `05C` - `13C`) %>% #Subtract differences in lipid abundance
+  mutate(., logDiff = log(abs(diff))) %>% #Take the log of the difference
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>% #Add + or - depending on whether or not lipid abundance is higher at 5
+  mutate(., status = case_when(logDiff > 0 ~ "05",
+                               logDiff < 0 ~ "13")) %>% #Create a column indicating which temperature had higher lipid abundance
+  left_join(x = ., y = significantVIP_13v5_annot) %>% #Join with annotated lipid class information
+  filter(., targetClass != "Other") %>% #Remove "Other" lipid class
+  group_by(saturation, status) %>%
+  summarize(count = n()) #Count the number of lipids with higher or lower abundance at 5ºC by saturation state
 ```
+
+```{r}
+targetClass.13v5.high_textMultipanel <- data.frame(label = c("5ºC: 0",
+                                                              "1",
+                                                              "0"), #Label for each facet
+                                                    saturationOrder = c("1Polyunsaturated",
+                                                                        "2Monounsaturated",
+                                                                        "3Saturated"), #Assign label to specific facet
+                                                    x = rep(1, times = 3), #x location
+                                                    y = rep("PC 40:8 Isomer A", times = 3)) #y location
+```
+
+```{r}
+targetClass.13v5.low_textMultipanel <- data.frame(label = c("13ºC: 23",
+                                                             "14",
+                                                             "3"), #Label for each facet
+                                                   saturationOrder = c("1Polyunsaturated",
+                                                                       "2Monounsaturated",
+                                                                       "3Saturated"), #Assign label to specific facet
+                                                   x = rep(1, times = 3), #x location
+                                                   y = rep("PC 34:2 Isomer A", times = 3)) #y location
+```
+
+```{r}
+targetClass.13v5.figure <- knownTransLipidData %>% #Take lipid abundance data
+  mutate(temperature = str_trim(temperature, side = "both")) %>% #Remove white space from lipid name
+  filter(., temperature != "30") %>% #remove data from 30ºC treatment
+  mutate(., temperature = case_when(temperature == "13" ~ "13C",
+                                    temperature == "5" ~ "05C")) %>% #Rename temperature columns
+  dplyr::select(temperature, any_of(significantVIP_13v5$lipid)) %>% #Select VIP of interest
+  group_by(temperature) %>% #Group by temperature
+  summarize_all(funs(mean(., na.rm = TRUE))) %>% #Calculate average abundance for each lipid by temperature
+  column_to_rownames(var = "temperature") %>% #Convert column to rownames
+  t(.) %>% as.data.frame(.) %>% #Transpose and convert to a dataframe
+  rownames_to_column(var = "lipid") %>% #Convert rownames to a column
+  mutate(., diff = `05C` - `13C`) %>% #Subtract differences in lipid abundance
+  mutate(., logDiff = log(abs(diff))) %>% #Take the log of the difference
+  mutate(., logDiff = case_when(diff < 0 ~ -logDiff,
+                                diff > 0 ~ logDiff)) %>% #Add + or - depending on whether or not lipid abundance is higher at 5
+  mutate(., status = case_when(logDiff > 0 ~ "05",
+                               logDiff < 0 ~ "13")) %>% #Create a column indicating which temperature had higher lipid abundance
+  left_join(x = ., y = significantVIP_13v5_annot) %>% #Join with annotated lipid class information
+  filter(., targetClass != "Other") %>% #Remove "Other" lipid class
+  mutate(., targetClass = case_when(targetClass != "SM" ~ targetClass,
+                                    targetClass == "SM" ~ "1SM")) %>% #Add number in front of SM to make it show up first
+  mutate(., saturationOrder = case_when(saturation == "Polyunsaturated" ~ "1Polyunsaturated",
+                                        saturation == "Monounsaturated" ~ "2Monounsaturated",
+                                        saturation == "Saturated" ~ "3Saturated")) %>% #Create a new column to order categories by increasing saturation
+  dplyr::select(-c(estimate:comparison)) %>% #Remove extraneous columns
+  ggplot(., aes(x = logDiff, y = reorder(lipid, logDiff))) + #Createa a new plot with logDiff on the x axis and lipid on the y axis, ordered by logDiff
+  geom_text(data = targetClass.13v5.high_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE, size = 4, color = plotColors[3], hjust = 0) + #Add labels to each individual facet
+  geom_text(data = targetClass.13v5.low_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE, size = 4, color = plotColors[2], hjust = 0) + #Add labels to each individual facet
+  facet_grid(~ saturationOrder, scales = "free_y", labeller = labeller(saturationOrder = saturationLabels)) + #Facet by saturation state and label correctly
+  geom_bar(aes(fill = targetClass), stat = 'identity') + #Add bars filled by lipid class
+  scale_fill_manual(guide = "none",
+                    values = c("grey50", "darkgreen", "green4", "green2")) + #Fill scale
+  labs(x = "log(5ºC - 13ºC)", y = "") + #Label x and y axes
+  ggtitle("D. 5ºC vs. 13ºC Abundance by Saturation") +
+  theme_classic(base_size = 15) + theme(axis.ticks.y = element_blank(),
+                                        axis.text.y = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.text = element_text(color = "black", size = 12), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold")) #Base size 15, remove axis ticks and text on the y axis
+targetClass.13v5.figure
+```
+
+```{r}
+enrichmentFigure <-((percDiff.13v30.figure + percDiff.13v5.figure) /
+                      (targetClass.13v30.figure + targetClass.13v5.figure)) + #Combine figures vertically
+  plot_layout(guides = "collect", heights = c(1.25, 1)) & #Collect identical legends
+  theme(legend.position = "bottom",
+        legend.title = element_text(size = 12),
+        legend.text = element_text(color = "black", size = 12)) #Reduce legend spacing
+guides(
+  fill = guide_legend(nrow = 1), #Force legend to be on one row
+  color = guide_legend(nrow = 1) #Force legend to be on one row
+)
+enrichmentFigure
+
+ggsave("PLSDA/figures/percent-diff-enriched-pathways-multipanel.pdf", width = 11, height = 9, device = cairo_pdf) #Save figure
+```
+
+
+- add # lipids higher and lower in each satuation state
 
 #### Identify pairwise VIP in each module
 
