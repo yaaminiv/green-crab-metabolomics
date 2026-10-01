@@ -20,39 +20,38 @@ getwd()
 
 # Install packages
 
-```{r packages, warning = FALSE, message = FALSE}
-# if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse')
-# if ("plotrix" %in% rownames(installed.packages()) == 'FALSE') install.packages('plotrix')
-# if ("vegan" %in% rownames(installed.packages()) == 'FALSE') install.packages('vegan')
-# if ("ggfortify" %in% rownames(installed.packages()) == 'FALSE') install.packages('ggfortify')
-# if (!requireNamespace("BiocManager", quietly = TRUE))
-#   install.packages("BiocManager")
-# if ("mixOmics" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("mixOmics")
-# if ("RVAideMemoire" %in% rownames(installed.packages()) == 'FALSE') install.packages('RVAideMemoire')
-# if ("broom" %in% rownames(installed.packages()) == 'FALSE') install.packages('broom')
-# if ("RColorBrewer" %in% rownames(installed.packages()) == 'FALSE') install.packages('RColorBrewer')
-# if ("pheatmap" %in% rownames(installed.packages()) == 'FALSE') install.packages('pheatmap')
-# if ("genefilter" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("genefilter")
-# if ("WGCNA" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('WGCNA')
+```{r packages, message = FALSE}
+# install.packages('tidyverse')
+# install.packages('plotrix')
+# install.packages('vegan')
+# install.packages('ggfortify')
+# install.packages("BiocManager")
+# BiocManager::install("mixOmics")
+# install.packages('RVAideMemoire')
+# install.packages('broom')
+# install.packages('RColorBrewer')
+# install.packages('pheatmap')
+# BiocManager::install("genefilter")
+# BiocManager::install('WGCNA')
 # if ("dendsort" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('dendsort')
-# if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap')
-# if ("svglite" %in% rownames(installed.packages()) == 'FALSE') install.packages("svglite")
-# if ("patchwork" %in% rownames(installed.packages()) == 'FALSE') install.packages("patchwork")
-require(tidyverse)
-require(plotrix)
-require(vegan)
-require(ggfortify)
-require(mixOmics)
-require(RVAideMemoire)
-require(broom)
-require(RColorBrewer)
-require(pheatmap)
-require(genefilter)
-require(WGCNA)
-require(dendsort)
-require(ComplexHeatmap)
-require(svglite)
-require(patchwork)
+# BiocManager::install('ComplexHeatmap')
+# install.packages("svglite")
+# install.packages("patchwork")
+library(tidyverse)
+library(plotrix)
+library(vegan)
+library(ggfortify)
+library(mixOmics)
+library(RVAideMemoire)
+library(broom)
+library(RColorBrewer)
+library(pheatmap)
+library(genefilter)
+library(WGCNA)
+library(dendsort)
+library(ComplexHeatmap)
+library(svglite)
+library(patchwork)
 ```
 
 ```{r}
@@ -2170,7 +2169,7 @@ plot(sft$fitIndices[,1], sft$fitIndices[,5],
 text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1,col="red")
 ```
 
-When choosing a soft thresholding power, want to choose the lowest number that reaches the R<sup>2</sup> cutoff. From this data, it appears that the **soft thresholding power is 8**.  
+When choosing a soft thresholding power, want to choose the lowest number that reaches the R<sup>2</sup> cutoff. From this data, it appears that the **soft thresholding power is 8**.
 
 ##### Identify modules using `blockwiseModules`  
 
@@ -2421,32 +2420,32 @@ draw(htAppend) #Draw heatmap
 ```{r}
 # svg(file = "combined-WCNA/figures/module-trait-relationship-heatmap-append.svg", height = 8.5, width = 8.5)
 htAppend2 <- Heatmap(moduleTraitCorAppend, name = "Correlation", column_title = "Module-Group Eigengene Correlation",
-                    # col = blueWhiteRed(50), 
-                    row_names_side = "left", 
-                    row_dend_side = "left",
-                    width = unit(5, "in"), 
-                    height = unit(4.5, "in"), 
-                    column_dend_reorder = FALSE, 
-                    cluster_columns = FALSE,
-                    row_dend_reorder = FALSE,  
-                    column_split = c(rep("A", times = 3), rep("B", times = 2)), 
-                    column_gap = unit(3, "mm"),
-                    #row_split = 3, 
-                    #column_dend_height = unit(.5, "in"),
-                    cluster_rows = row_dendAppend, 
-                    #row_gap = unit(2.5, "mm"), 
-                    border = TRUE,
-                    cell_fun = function(j, i, x, y, w, h, col) {
-                      if(heatmappvalAppend[i, j] < 0.05) {
-                        grid.text(sprintf("%s", heatmappvalAppend[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
-                      }
-                      else {
-                        grid.text(sprintf("%s", heatmappvalAppend[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
-                      }},
-                    column_names_rot = 45,
-                    column_names_gp =  gpar(fontsize = 12, border = FALSE),
-                    column_title_gp = gpar(fontsize = 20),
-                    row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE))
+                     # col = blueWhiteRed(50), 
+                     row_names_side = "left", 
+                     row_dend_side = "left",
+                     width = unit(5, "in"), 
+                     height = unit(4.5, "in"), 
+                     column_dend_reorder = FALSE, 
+                     cluster_columns = FALSE,
+                     row_dend_reorder = FALSE,  
+                     column_split = c(rep("A", times = 3), rep("B", times = 2)), 
+                     column_gap = unit(3, "mm"),
+                     #row_split = 3, 
+                     #column_dend_height = unit(.5, "in"),
+                     cluster_rows = row_dendAppend, 
+                     #row_gap = unit(2.5, "mm"), 
+                     border = TRUE,
+                     cell_fun = function(j, i, x, y, w, h, col) {
+                       if(heatmappvalAppend[i, j] < 0.05) {
+                         grid.text(sprintf("%s", heatmappvalAppend[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+                       }
+                       else {
+                         grid.text(sprintf("%s", heatmappvalAppend[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+                       }},
+                     column_names_rot = 45,
+                     column_names_gp =  gpar(fontsize = 12, border = FALSE),
+                     column_title_gp = gpar(fontsize = 20),
+                     row_names_gp = gpar(fontsize = 12, alpha = 0.75, border = FALSE))
 draw(htAppend2) #Draw heatmap
 # dev.off()
 ```
@@ -2950,7 +2949,7 @@ mME_all %>%
   xlab("") + #Axis titles
   theme_classic(base_size = 15) + theme(axis.text.x = element_text(color = "white"),
                                         axis.ticks.x = element_blank()) #Create a boxplot with data points for module expression on the y-axis and values for each treatment combination. Facet by module eigengene. Add a horizontal line at y = 0.
-ggsave("combined-WCNA/figures/eigengene-expression-boxplot.pdf", height = 8.5, width = 11)
+# ggsave("combined-WCNA/figures/eigengene-expression-boxplot.pdf", height = 8.5, width = 11)
 ```
 
 ```{r}
@@ -2965,9 +2964,9 @@ module_facets <- c("1" = "ME 3",
 mME_all %>%
   filter(., Module == "3" | Module == "6" | Module == "11" | Module == "13") %>%
   mutate(order = case_when(Module == "3" ~ "1",
-                            Module == "6" ~ "2",
-                            Module == "11" ~ "3",
-                            Module == "13" ~ "4")) %>%
+                           Module == "6" ~ "2",
+                           Module == "11" ~ "3",
+                           Module == "13" ~ "4")) %>%
   ggplot(aes(x = treatment, y = value, colour = treatment)) +
   facet_wrap(~ order, labeller = labeller(order = module_facets)) +
   ylab("Module Expression") +
@@ -2984,7 +2983,128 @@ mME_all %>%
   xlab("") + #Axis titles
   theme_classic(base_size = 15) + theme(axis.text.x = element_text(color = "white"),
                                         axis.ticks.x = element_blank()) #Create a boxplot with data points for module expression on the y-axis and values for each treatment combination. Facet by module eigengene. Add a horizontal line at y = 0.
-ggsave("combined-WCNA/figures/sig-modules-expression-boxplot.pdf", height = 8.5, width = 11)
+# ggsave("combined-WCNA/figures/sig-modules-expression-boxplot.pdf", height = 8.5, width = 11)
+```
+
+```{r}
+mME_all %>% #Take module eigengene information
+  filter(., Module == "3" | Module == "6" | Module == "11" | Module == "13") %>% #Filter significant modules
+  mutate(order = case_when(Module == "3" ~ "1",
+                           Module == "6" ~ "2",
+                           Module == "11" ~ "3",
+                           Module == "13" ~ "4")) %>% #Mutate modules in order
+  left_join(x = .,
+            y = datTraitsPhysOnly %>%
+              rownames_to_column(var = "crab.ID") %>%
+              dplyr::rename(avgTTR = `Average TTR`,
+                            avgOC = `Oxygen Consumption`),
+            by = "crab.ID") %>% #Jon with physiology data. Modify physiology data to include a crab.ID column and rename columns
+  group_by(treatment, Module) %>% #Group by treatment and module
+  summarize(moduleAvgValue = mean(value), #Average module eigengene expression
+            moduleSEValue = std.error(value), #SE for module eigengene expression
+            moduleAvgTTR = mean(avgTTR, na.rm = TRUE), #Avg TTR
+            moduleSETTR = std.error(avgTTR, na.rm = TRUE), #TTR SE
+            moduleAvgOC = mean(avgOC, na.rm = TRUE), #Avg OC
+            moduleSEOC = std.error(avgOC, na.rm =)) #OC SE
+```
+
+
+```{r, warning = FALSE, message = FALSE}
+mME_all %>% #Take module eigengene information
+  filter(., Module == "3" | Module == "6" | Module == "13") %>% #Filter significant modules
+  mutate(order = case_when(Module == "3" ~ "1",
+                           Module == "6" ~ "2",
+                           Module == "13" ~ "4")) %>% #Mutate modules in order
+  left_join(x = .,
+            y = datTraitsPhysOnly %>%
+              rownames_to_column(var = "crab.ID") %>%
+              dplyr::select(-`Oxygen Consumption`) %>%
+              dplyr::rename(avgTTR = `Average TTR`),
+            by = "crab.ID") %>% #Jon with physiology data. Modify physiology data to include a crab.ID column and rename columns
+  group_by(treatment, order) %>% #Group by treatment and module
+  summarize(moduleAvgValue = mean(value), #Average module eigengene expression
+            moduleSEValue = std.error(value), #SE for module eigengene expression
+            moduleAvgTTR = mean(avgTTR, na.rm = TRUE), #Avg TTR
+            moduleSETTR = std.error(avgTTR, na.rm = TRUE) #TTR SE
+  ) %>%
+  ggplot(aes(x = moduleAvgTTR, y = moduleAvgValue, colour = treatment, fill = treatment)) + #Create a new plot with TTR on the x and ME values on the y. Color and fill by treatment
+  geom_point(pch = 21) + #Add points
+  geom_pointrange(aes(ymin = moduleAvgValue - moduleSEValue,
+                    ymax = moduleAvgValue + moduleSEValue), #Add ME value limits
+                size = 1,
+                width = 0.2,
+                linewidth = 0.8,
+  ) + #Add standard errors to the plot
+  geom_linerange(aes(xmin = moduleAvgTTR - moduleSETTR,
+                    xmax = moduleAvgTTR + moduleSETTR), #Add TTR value limits
+                size = 1,
+                width = 0.2,
+                linewidth = 0.8,
+  ) + #Add means and standard errors to the plot
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey")+ #Add zero line
+  facet_wrap(~ order, labeller = labeller(order = module_facets)) + #Facet by module and add facet labels
+  scale_x_continuous(name = "Average TTR (s)",
+                    breaks = seq(0, 8, by = 1)) + #Modify x-axis
+  ylab("Module Expression") + #y axis label
+  scale_fill_manual(name = "Temperature (ºC)", 
+                    values = c(plotColors[3], plotColors[2], plotColors[1]),
+                    labels = c("5", "13", "30")) + #Modify scale
+  scale_colour_manual(name = "Temperature (ºC)", 
+                      values = c(plotColors[3], plotColors[2], plotColors[1]),
+                    labels = c("5", "13", "30")) + #Modify scale
+  theme_classic(base_size = 15) + theme(legend.position = "bottom", #Legend on the bottom
+                                        legend.text = element_text(color = "black", size = 12), #Modify legend text size
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold")) #Modify facet labels
+ggsave("combined-WCNA/figures/sig-modules-expression-boxplot-TTR.pdf", height = 8.5, width = 11) #Save figure
+```
+
+```{r, warning = FALSE, message = FALSE}
+mME_all %>% #Take module eigengene information
+  filter(., Module == "3" | Module == "11") %>% #Filter significant modules
+  mutate(order = case_when(Module == "3" ~ "1",
+                           Module == "11" ~ "3")) %>% #Mutate modules in order
+  left_join(x = .,
+            y = datTraitsPhysOnly %>%
+              rownames_to_column(var = "crab.ID") %>%
+              dplyr::select(-`Average TTR`) %>%
+              dplyr::rename(avgOC = `Oxygen Consumption`),
+            by = "crab.ID") %>% #Jon with physiology data. Modify physiology data to include a crab.ID column and rename columns
+  group_by(treatment, order) %>% #Group by treatment and module
+  summarize(moduleAvgValue = mean(value), #Average module eigengene expression
+            moduleSEValue = std.error(value), #SE for module eigengene expression
+            moduleAvgOC = mean(avgOC, na.rm = TRUE), #Avg TTR
+            moduleSEOC = std.error(avgOC, na.rm = TRUE) #TTR SE
+  ) %>%
+  ggplot(aes(x = moduleAvgOC, y = moduleAvgValue, colour = treatment, fill = treatment)) + #Create a new plot with TTR on the x and ME values on the y. Color and fill by treatment
+  geom_point(pch = 21) + #Add points
+  geom_pointrange(aes(ymin = moduleAvgValue - moduleSEValue,
+                    ymax = moduleAvgValue + moduleSEValue), #Add ME value limits
+                size = 1,
+                width = 0.2,
+                linewidth = 0.8,
+  ) + #Add standard errors to the plot
+  geom_linerange(aes(xmin = moduleAvgOC - moduleSEOC,
+                    xmax = moduleAvgOC + moduleSEOC), #Add TTR value limits
+                size = 1,
+                width = 0.2,
+                linewidth = 0.8,
+  ) + #Add means and standard errors to the plot
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey")+ #Add zero line
+  facet_wrap(~ order, labeller = labeller(order = module_facets)) + #Facet by module and add facet labels
+  scale_x_continuous(name = "Average Oxygen Consumption (1,000 nmol/hr)",
+                    breaks = seq(0, 12500, by = 2500),
+                    labels = seq(0, 12.5, by = 2.5)) + #Modify x-axis
+  ylab("Module Expression") + #y axis label
+  scale_fill_manual(name = "Temperature (ºC)", 
+                    values = c(plotColors[3], plotColors[2], plotColors[1]),
+                    labels = c("5", "13", "30")) + #Modify scale
+  scale_colour_manual(name = "Temperature (ºC)", 
+                      values = c(plotColors[3], plotColors[2], plotColors[1]),
+                    labels = c("5", "13", "30")) + #Modify scale
+  theme_classic(base_size = 15) + theme(legend.position = "bottom", #Legend on the bottom
+                                        legend.text = element_text(color = "black", size = 12), #Modify legend text size
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold")) #Modify facet labels
+ggsave("combined-WCNA/figures/sig-modules-expression-boxplot-OC.pdf", height = 8.5, width = 11) #Save figure
 ```
 
 ###### Plot abundance for compounds in each module
@@ -3011,8 +3131,8 @@ rowwiseAllData %>%
                     values = rev(plotColors),
                     labels = c("5", "13", "30")) +
   scale_colour_manual(name = "Temperature (ºC) ", 
-                    values = rev(plotColors),
-                    labels = c("5", "13", "30")) +
+                      values = rev(plotColors),
+                      labels = c("5", "13", "30")) +
   xlab("") +
   theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
                                         axis.ticks.x = element_blank(),
@@ -3045,8 +3165,8 @@ rowwiseAllData %>%
                     values = rev(plotColors),
                     labels = c("5", "13", "30")) +
   scale_colour_manual(name = "Temperature (ºC) ", 
-                    values = rev(plotColors),
-                    labels = c("5", "13", "30")) +
+                      values = rev(plotColors),
+                      labels = c("5", "13", "30")) +
   xlab("") +
   theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
                                         axis.ticks.x = element_blank(),
@@ -3079,8 +3199,8 @@ rowwiseAllData %>%
                     values = rev(plotColors),
                     labels = c("5", "13", "30")) +
   scale_colour_manual(name = "Temperature (ºC) ", 
-                    values = rev(plotColors),
-                    labels = c("5", "13", "30")) +
+                      values = rev(plotColors),
+                      labels = c("5", "13", "30")) +
   xlab("") +
   theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
                                         axis.ticks.x = element_blank(),
@@ -3113,8 +3233,8 @@ rowwiseAllData %>%
                     values = rev(plotColors),
                     labels = c("5", "13", "30")) +
   scale_colour_manual(name = "Temperature (ºC) ", 
-                    values = rev(plotColors),
-                    labels = c("5", "13", "30")) +
+                      values = rev(plotColors),
+                      labels = c("5", "13", "30")) +
   xlab("") +
   theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
                                         axis.ticks.x = element_blank(),
@@ -3420,8 +3540,8 @@ diablo.metPlot <- rowwiseAllData %>%
                     values = rev(plotColors),
                     labels = c("5", "13", "30")) +
   scale_colour_manual(name = "Temperature (ºC) ", 
-                    values = rev(plotColors),
-                    labels = c("5", "13", "30")) +
+                      values = rev(plotColors),
+                      labels = c("5", "13", "30")) +
   xlab("") +
   theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
                                         axis.ticks.x = element_blank(),
@@ -3450,8 +3570,8 @@ diabloLipid1 <- rowwiseAllData %>%
                     values = rev(plotColors),
                     labels = c("5", "13", "30")) +
   scale_colour_manual(guide = "none",
-                    values = rev(plotColors),
-                    labels = c("5", "13", "30")) +
+                      values = rev(plotColors),
+                      labels = c("5", "13", "30")) +
   xlab("") +
   ggtitle("Lipids Negatively Correlated with Myo-Inositol") +
   theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
@@ -3478,8 +3598,8 @@ diabloLipid2 <- rowwiseAllData %>%
                     values = rev(plotColors),
                     labels = c("5", "13", "30")) +
   scale_colour_manual(guide = "none",
-                    values = rev(plotColors),
-                    labels = c("5", "13", "30")) +
+                      values = rev(plotColors),
+                      labels = c("5", "13", "30")) +
   xlab("") +
   ggtitle("Lipids Negatively Correlated with Hydroquinone") +
   theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
@@ -3506,8 +3626,8 @@ diabloLipid3 <- rowwiseAllData %>%
                     values = rev(plotColors),
                     labels = c("5", "13", "30")) +
   scale_colour_manual(guide = "none",
-                    values = rev(plotColors),
-                    labels = c("5", "13", "30")) +
+                      values = rev(plotColors),
+                      labels = c("5", "13", "30")) +
   xlab("") +
   ggtitle("Lipids Positively Correlated with Threonine") +
   theme_classic(base_size = 15) + theme(axis.text.x = element_blank(), 
