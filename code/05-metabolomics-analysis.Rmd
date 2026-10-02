@@ -99,9 +99,6 @@ metabolomicsMetadata <- read.csv("../../data/metabolomics_metadata.csv", header 
 tail(metabolomicsMetadata) #Confirm import
 ```
 
-```{r}
-
-```
 # Format data
 
 Before analyzing the data, I will transform the data and match with treatment metadata. The West Coast Metabolomics Center has already normalized data using the average mTIC (sum of all peak heights for *identified* metabolites) of the samples. 
