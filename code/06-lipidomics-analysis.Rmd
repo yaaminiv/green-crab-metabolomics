@@ -21,7 +21,7 @@ getwd()
 # Install packages
 
 ```{r packages, warning = FALSE, message = FALSE}
-install.packages('tidyverse')
+# install.packages('tidyverse')
 # install.packages('vegan')
 # install.packages("BiocManager")
 # BiocManager::install("mixOmics")
@@ -3894,7 +3894,8 @@ percDiff.13v5.figure <- percDiff.13v5.enriched %>% #Dataframe with percent diffe
                                         axis.ticks.x = element_blank(),
                                         legend.position = "bottom", 
                                         legend.text = element_text(color = "black", size = 12), 
-                                        strip.text.x = element_text(size = 10, color = "black", face="bold"))
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"), 
+                                        strip.background = element_rect(color = "white"))
 percDiff.13v5.figure
 ```
 
