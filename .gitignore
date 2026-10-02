@@ -8,3 +8,4 @@
 output/05-metabolomics-analysis/05-metabolomics-analysis.RData
 *.RData
 *.RData
+*.Rapp.history
