@@ -3028,16 +3028,15 @@ mME_all %>% #Take module eigengene information
             moduleSETTR = std.error(avgTTR, na.rm = TRUE) #TTR SE
   ) %>%
   ggplot(aes(x = moduleAvgTTR, y = moduleAvgValue, colour = treatment, fill = treatment)) + #Create a new plot with TTR on the x and ME values on the y. Color and fill by treatment
-  geom_point(pch = 21) + #Add points
   geom_pointrange(aes(ymin = moduleAvgValue - moduleSEValue,
                     ymax = moduleAvgValue + moduleSEValue), #Add ME value limits
-                size = 1,
+                size = 2,
                 width = 0.2,
                 linewidth = 0.8,
   ) + #Add standard errors to the plot
   geom_linerange(aes(xmin = moduleAvgTTR - moduleSETTR,
                     xmax = moduleAvgTTR + moduleSETTR), #Add TTR value limits
-                size = 1,
+                size = 2,
                 width = 0.2,
                 linewidth = 0.8,
   ) + #Add means and standard errors to the plot
@@ -3054,8 +3053,8 @@ mME_all %>% #Take module eigengene information
                     labels = c("5", "13", "30")) + #Modify scale
   theme_classic(base_size = 15) + theme(legend.position = "bottom", #Legend on the bottom
                                         legend.text = element_text(color = "black", size = 12), #Modify legend text size
-                                        strip.text.x = element_text(size = 10, color = "black", face="bold")) #Modify facet labels
-ggsave("combined-WCNA/figures/sig-modules-expression-boxplot-TTR.pdf", height = 8.5, width = 11) #Save figure
+                                        strip.text.x = element_text(size = 15, color = "black", face="bold")) #Modify facet labels
+ggsave("combined-WCNA/figures/sig-modules-expression-boxplot-TTR.svg", height = 8.5, width = 11) #Save figure
 ```
 
 ```{r, warning = FALSE, message = FALSE}
@@ -3076,16 +3075,15 @@ mME_all %>% #Take module eigengene information
             moduleSEOC = std.error(avgOC, na.rm = TRUE) #TTR SE
   ) %>%
   ggplot(aes(x = moduleAvgOC, y = moduleAvgValue, colour = treatment, fill = treatment)) + #Create a new plot with TTR on the x and ME values on the y. Color and fill by treatment
-  geom_point(pch = 21) + #Add points
   geom_pointrange(aes(ymin = moduleAvgValue - moduleSEValue,
                     ymax = moduleAvgValue + moduleSEValue), #Add ME value limits
-                size = 1,
+                size = 2,
                 width = 0.2,
                 linewidth = 0.8,
   ) + #Add standard errors to the plot
   geom_linerange(aes(xmin = moduleAvgOC - moduleSEOC,
                     xmax = moduleAvgOC + moduleSEOC), #Add TTR value limits
-                size = 1,
+                size = 2,
                 width = 0.2,
                 linewidth = 0.8,
   ) + #Add means and standard errors to the plot
@@ -3103,8 +3101,8 @@ mME_all %>% #Take module eigengene information
                     labels = c("5", "13", "30")) + #Modify scale
   theme_classic(base_size = 15) + theme(legend.position = "bottom", #Legend on the bottom
                                         legend.text = element_text(color = "black", size = 12), #Modify legend text size
-                                        strip.text.x = element_text(size = 10, color = "black", face="bold")) #Modify facet labels
-ggsave("combined-WCNA/figures/sig-modules-expression-boxplot-OC.pdf", height = 8.5, width = 11) #Save figure
+                                        strip.text.x = element_text(size = 15, color = "black", face="bold")) #Modify facet labels
+ggsave("combined-WCNA/figures/sig-modules-expression-boxplot-OC.svg", height = 8.5, width = 11) #Save figure
 ```
 
 ###### Plot abundance for compounds in each module
