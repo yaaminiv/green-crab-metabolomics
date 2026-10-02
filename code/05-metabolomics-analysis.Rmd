@@ -5,7 +5,7 @@ date: '2023-12-18'
 output: html_document
 ---
 
-In this script, I will analyze metabolomics data from the West Coast Metabolomics Center (UC Davis). I will conduct an initial assessment of the data (PLS-DA), understand important metabolites and pathways (VIP analysis and WGCNA), and prepare for additional network analysis through MetaboAnalyst. This workflow and script is modified from [Huffmyer et al. (2023)](https://www.biorxiv.org/content/10.1101/2023.03.20.533475v2.full) and [Trigg et al. (2019)](http://dx.doi.org/10.1038/s41598-019-46947-6).
+In this script, I will analyze metabolomics data from the West Coast Metabolomics Center (UC Davis). I will conduct an initial assessment of the data (PLS-DA), understand important metabolites and pathways (VIP analysis and WGCNA), and prepare for additional network analysis through MetaboAnalyst. This workflow and script is modified from [Huffmyer et al. (2023)](https://www.biorxiv.org/content/10.1101/2023.03.20.533475v2.full) and [Wanamaker et al. (2019)](http://dx.doi.org/10.1038/s41598-019-46947-6).
 
 # Set up R Markdown document
 
@@ -24,6 +24,10 @@ getwd()
 # install.packages('tidyverse')
 # install.packages('vegan')
 # install.packages("BiocManager")
+# install.packages('tidyverse')
+# install.packages('vegan')
+# install.packages("BiocManager")
+# library(BiocManager)
 # BiocManager::install("mixOmics")
 # install.packages('RVAideMemoire')
 # install.packages('broom')
