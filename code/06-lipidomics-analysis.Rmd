@@ -21,7 +21,7 @@ getwd()
 # Install packages
 
 ```{r packages, warning = FALSE, message = FALSE}
-# install.packages('tidyverse')
+install.packages('tidyverse')
 # install.packages('vegan')
 # install.packages("BiocManager")
 # BiocManager::install("mixOmics")
@@ -42,13 +42,13 @@ getwd()
 # install.packages(grid)
 library(tidyverse)
 library(vegan)
-library(mixOmics)
+# library(mixOmics)
 library(RVAideMemoire)
 library(broom)
 library(RColorBrewer)
 library(pheatmap)
 library(genefilter)
-# library(WGCNA)
+library(WGCNA)
 library(dendsort)
 library(ComplexHeatmap)
 library(svglite)
@@ -2689,16 +2689,16 @@ head(significantVIP_13v5_annot) #Confirm dataframe creation
 #Count the number of lipids per lipid class in each set of VIPs
 
 significantVIP_13v30_annot %>%
-  dplyr::select(lipid, class) %>%
-  unique(.) %>%
-  group_by(class) %>%
-  summarize(count = n())
+  dplyr::select(lipid, targetClass) %>%
+  group_by(targetClass) %>%
+  summarize(count = n(),
+            percTotal = n()/nrow(significantVIP_13v30_annot))
 
 significantVIP_13v5_annot %>%
-  dplyr::select(lipid, class) %>%
-  unique(.) %>%
-  group_by(class) %>%
-  summarize(count = n())
+  dplyr::select(lipid, targetClass) %>%
+  group_by(targetClass) %>%
+  summarize(count = n(),
+            percTotal = n()/nrow(significantVIP_13v5_annot))
 ```
 
 ```{r}
@@ -3746,7 +3746,8 @@ percDiff.13v30.figure <- percDiff.13v30.enriched %>% #Dataframe with percent dif
                                         axis.ticks.x = element_blank(),
                                         legend.position = "bottom", 
                                         legend.text = element_text(color = "black", size = 12), 
-                                        strip.text.x = element_text(size = 10, color = "black", face="bold"))
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"), 
+                                        strip.background = element_rect(color = "white"))
 percDiff.13v30.figure
 ```
 
@@ -3837,7 +3838,8 @@ targetClass.13v30.figure <- knownTransLipidData %>% #Take lipid abundance data
                                         axis.title.x = element_text(size = 12),
                                         legend.position = "bottom", 
                                         legend.text = element_text(color = "black", size = 12), 
-                                        strip.text.x = element_text(size = 10, color = "black", face="bold")) #Base size 15, remove axis ticks and text on the y axis
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"), 
+                                        strip.background = element_rect(color = "white")) #Base size 15, remove axis ticks and text on the y axis
 targetClass.13v30.figure
 ```
 
@@ -3982,7 +3984,8 @@ targetClass.13v5.figure <- knownTransLipidData %>% #Take lipid abundance data
                                         axis.title.x = element_text(size = 12),
                                         legend.position = "bottom", 
                                         legend.text = element_text(color = "black", size = 12), 
-                                        strip.text.x = element_text(size = 10, color = "black", face="bold")) #Base size 15, remove axis ticks and text on the y axis
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"), 
+                                        strip.background = element_rect(color = "white")) #Base size 15, remove axis ticks and text on the y axis
 targetClass.13v5.figure
 ```
 
@@ -4002,8 +4005,7 @@ enrichmentFigure
 ggsave("PLSDA/figures/percent-diff-enriched-pathways-multipanel.pdf", width = 11, height = 9, device = cairo_pdf) #Save figure
 ```
 
-
-- add # lipids higher and lower in each satuation state
+- remove boxes around each facet label 
 
 #### Identify pairwise VIP in each module
 
