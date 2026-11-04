@@ -3053,8 +3053,9 @@ mME_all %>% #Take module eigengene information
                       labels = c("5", "13", "30")) + #Modify scale
   theme_classic(base_size = 15) + theme(legend.position = "bottom", #Legend on the bottom
                                         legend.text = element_text(color = "black", size = 12), #Modify legend text size
-                                        strip.text.x = element_text(size = 15, color = "black", face="bold"), 
-                                        strip.background = element_rect(color = "white")) #Modify facet labels
+                                        strip.text.x = element_text(size = 16, color = "black", face="bold"), 
+                                        strip.background = element_rect(color = "white"), #Modify facet labels
+                                        panel.spacing = unit(2, "cm", data = NULL)) #Add additional spacing between panels
 ggsave("combined-WCNA/figures/sig-modules-expression-boxplot-TTR.svg", height = 8.5, width = 11) #Save figure
 ```
 
@@ -3102,8 +3103,9 @@ mME_all %>% #Take module eigengene information
                       labels = c("5", "13", "30")) + #Modify scale
   theme_classic(base_size = 15) + theme(legend.position = "bottom", #Legend on the bottom
                                         legend.text = element_text(color = "black", size = 12), #Modify legend text size
-                                        strip.text.x = element_text(size = 15, color = "black", face="bold"), 
-                                        strip.background = element_rect(color = "white")) #Modify facet labels
+                                        strip.text.x = element_text(size = 16, color = "black", face="bold"), 
+                                        strip.background = element_rect(color = "white"), #Modify facet labels
+                                        panel.spacing = unit(2, "cm", data = NULL)) #Add additional spacing between panels
 ggsave("combined-WCNA/figures/sig-modules-expression-boxplot-OC.svg", height = 8.5, width = 11) #Save figure
 ```
 
@@ -3379,8 +3381,6 @@ circosPlot(diablo.tcga.ML, cutoff = 0.70, line = FALSE,
            legend.title = "Temperature (ºC)", color.Y = rev(plotColors)) #Use circos plot to visualise correlations between individual metabolites and lipids
 # dev.off()
 ```
-- remove temperature lines
-- increase font size (if possible)
 
 The plot shows that there are very few correlations between compounds. When I messed around with the correlations, I could only get this plot when corr < 0.75, so these aren't very strong correlations to begin with. The current functionality (`cor_matML <- circosPlot(diablo.tcga.ML, cutoff = 0.70)`) pulls out correlations projected onto the components, which isn't helpful for understanding individual compounds that are correlated with eachother (see [this link](https://mixomics-users.discourse.group/t/diablo-circosplot-export-correlation-matrix/22).
 
