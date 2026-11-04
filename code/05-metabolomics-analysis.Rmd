@@ -21,28 +21,28 @@ getwd()
 # Install packages
 
 ```{r packages, message = FALSE}
-install.packages('tidyverse')
-install.packages('vegan')
-install.packages("BiocManager")
-install.packages('tidyverse')
-install.packages('vegan')
-install.packages("BiocManager")
-library(BiocManager)
-BiocManager::install("mixOmics")
-install.packages('RVAideMemoire')
-install.packages('broom')
-install.packages('RColorBrewer')
-install.packages('pheatmap')
-BiocManager::install("genefilter")
-BiocManager::install('WGCNA')
-BiocManager::install('dendsort')
-BiocManager::install('ComplexHeatmap')
-install.packages("svglite")
-install.packages("ggfortify")
-install.packages("devtools")
-devtools::install_github("andjar/ALASCA", ref = "main")
-install.packages("patchwork")
-install.packages("grid")
+# install.packages('tidyverse')
+# install.packages('vegan')
+# install.packages("BiocManager")
+# install.packages('tidyverse')
+# install.packages('vegan')
+# install.packages("BiocManager")
+# library(BiocManager)
+# BiocManager::install("mixOmics")
+# install.packages('RVAideMemoire')
+# install.packages('broom')
+# install.packages('RColorBrewer')
+# install.packages('pheatmap')
+# BiocManager::install("genefilter")
+# BiocManager::install('WGCNA')
+# BiocManager::install('dendsort')
+# BiocManager::install('ComplexHeatmap')
+# install.packages("svglite")
+# install.packages("ggfortify")
+# install.packages("devtools")
+# devtools::install_github("andjar/ALASCA", ref = "main")
+# install.packages("patchwork")
+# install.packages("grid")
 library(tidyverse)
 library(vegan)
 library(mixOmics)
@@ -5203,9 +5203,53 @@ I want to make a multipanel figure that depicts abundances of metabolites associ
 
 ```{r}
 #Create lists of metabolites involved in significant pathways. Some names have spaces afterwards to reflect naming conventions in original dataframe
-valineBiosynthesis <- c("threonine", "isoleucine ", "leucine", "valine ") #13 vs 30 VIP, ASCA PC 1. Valine is only present in the VIP contrast
+valineBiosynthesis <- c("threonine", "isoleucine ", "leucine", "valine ") #13 vs 30 Day 22 VIP, ASCA PC 1. Valine is only present in the VIP contrast
 arginineBiosynthesis <- c("alpha-ketoglutarate", "glutamate ", "citrulline") #ASCA PC 4
 phenylalanineBiosynthesis <- c("phenylalanine", "tyrosine") #ASCA PC 4
+```
+
+```{r}
+t.test_13v30_day22 %>%dplyr::select(., c(1,12)) %>%
+  filter(., metabolite %in% valineBiosynthesis) #Obtain p-values for facet labels
+```
+
+```{r}
+valineBiosynthesis_textMultipanel <- data.frame(label = c("p = 0.01",
+                                                         "p = 0.007",
+                                                         "p = 0.007",
+                                                         "p = 0.008"), #13 vs. 30 day 22 p-values for isoleucine, leucine, threonine, and valine
+                                               metabolite = c("isoleucine ", "leucine", "threonine", "valine "), #Assign label to specific facet
+                                               x = rep(2, times = 4), #x location
+                                               y = c(2000000, 2300000, 300000, 1000000)) #y location
+```
+
+```{r}
+transMetabData %>%
+  dplyr::select(., c(1:4, any_of(valineBiosynthesis))) %>%
+  pivot_longer(., cols = c(5:8), names_to = "metabolite", values_to = "value") %>%
+  mutate(., treatment_day = gsub(pattern = "_3", replacement = "_03", x = treatment_day)) %>%
+  mutate(., treatment_day = gsub(pattern = "5_", replacement = "05_", x = treatment_day)) %>%
+  ggplot(., mapping = aes(x = treatment_day, y = value, color = treatment_day, fill = treatment_day)) +
+  facet_wrap(~metabolite, scales = "free_y", nrow = 1) +
+  ylab(NULL) +
+  geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.1) +
+  geom_point(pch = 21, position = position_dodge(width = 0.5)) +
+  geom_text(data = valineBiosynthesis_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE, size = 4, color = "black", hjust = 0) + #Add labels to each individual facet
+  scale_fill_manual(name = "", 
+                    values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                    labels = c("5ºC at Day 4", "5ºC at Day 22", "13ºC at Day 4", "13ºC at Day 22", "30ºC at Day 4", "30ºC at Day 22")) +
+  scale_colour_manual(name = "", 
+                      values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
+                      labels = c("5ºC at Day 4", "5ºC at Day 22", "13ºC at Day 4", "13ºC at Day 22", "30ºC at Day 4", "30ºC at Day 22")) +
+  xlab("") + #Axis titles
+  ggtitle("A. Valine, Leucine, and Isoleucine Biosynthesis") +
+  theme_classic(base_size = 15) + theme(plot.title = element_text(size = 15), 
+                                        axis.text.x = element_blank(), 
+                                        axis.ticks.x = element_blank(),
+                                        legend.position = "bottom", 
+                                        legend.text = element_text(color = "black", size = 10), 
+                                        strip.text.x = element_text(size = 10, color = "black", face="bold"),
+                                        strip.background = element_rect(color = "white"))
 ```
 
 ```{r}
@@ -5219,6 +5263,7 @@ valineBiosynthesisFigure <- transMetabData %>%
   ylab(NULL) +
   geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.1) +
   geom_point(pch = 21, position = position_dodge(width = 0.5)) +
+  geom_text(data = valineBiosynthesis_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE, size = 4, color = "black", hjust = 0) + #Add labels to each individual facet
   scale_fill_manual(name = "", 
                     values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
                     labels = c("5ºC at Day 4", "5ºC at Day 22", "13ºC at Day 4", "13ºC at Day 22", "30ºC at Day 4", "30ºC at Day 22")) +
@@ -5316,6 +5361,30 @@ streamlinedTCA_facets
 ```
 
 ```{r}
+t.test_13v5_day22 %>%
+  dplyr::select(., c(1,12)) %>%
+  filter(., metabolite %in% streamlinedTCA) #Obtain p-values for facet labels
+
+t.test_5_day3v22 %>%
+  dplyr::select(., c(1,12)) %>%
+  filter(., metabolite %in% streamlinedTCA) #Obtain p-values for facet labels
+
+t.test_13v30_day22 %>%
+  dplyr::select(., c(1,12)) %>%
+  filter(., metabolite %in% streamlinedTCA) #Obtain p-values for facet labels
+```
+
+```{r}
+streamlinedTCAFigure_textMultipanel <- data.frame(label = c("",
+                                                         "p = 0.03",
+                                                         "p = 0.02",
+                                                         "p = 0.006"), #13 vs. 30 day 22 p-values for isoleucine, leucine, threonine, and valine
+                                               metabolite = c("lactic acid", "alpha-ketoglutarate", "fumaric acid", "malic acid"), #Assign label to specific facet
+                                               x = rep(1, times = 4), #x location
+                                               y = c(600000, 2300000, 40000, 90000)) #y location
+```
+
+```{r}
 streamlinedTCAFigure <- transMetabData %>%
   dplyr::select(., c(1:4, any_of(streamlinedTCA))) %>%
   pivot_longer(., cols = c(5:8), names_to = "metabolite", values_to = "value") %>%
@@ -5330,6 +5399,7 @@ streamlinedTCAFigure <- transMetabData %>%
   ylab(NULL) +
   geom_boxplot(width = 0.5, position = position_dodge(width = 0.5), alpha = 0.1) +
   geom_point(pch = 21, position = position_dodge(width = 0.5)) +
+  geom_text(data = streamlinedTCAFigure_textMultipanel, mapping = aes(x = x, y = y, label = label), inherit.aes = FALSE, size = 4, color = "black", hjust = 0) + #Add labels to each individual facet
   scale_fill_manual(name = "", 
                     values = c("lightblue", "#2171B5", "grey80", "#525252", "salmon", "#CB181D"),
                     labels = c("5ºC at Day 4", "5ºC at Day 22", "13ºC at Day 4", "13ºC at Day 22", "30ºC at Day 4", "30ºC at Day 22")) +
