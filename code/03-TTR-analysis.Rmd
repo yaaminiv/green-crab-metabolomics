@@ -573,7 +573,7 @@ Based on my comparison between the original model output and the bootstrapped p-
 ## Save model output
 
 ```{r}
-summary(TTRmodelSex5)[[6]][[1]] %>% #Original model output
+summary(TTRmodelSex4)[[6]][[1]] %>% #Original model output
   as.data.frame(.) %>% #Convert to a dataframe
   rownames_to_column(., var = "Parameter") %>% #Convert rownames to Parameter column
   left_join(x = .,
@@ -588,9 +588,11 @@ summary(TTRmodelSex5)[[6]][[1]] %>% #Original model output
 There was a significant impacts of treatment, day, their interaction, and sex! I will investigate these effects by calculating estimated marginal means with `emmeans`.
 
 ```{r}
-Anova(TTRmodelSex5, type = "III") %>% #Run type III Wald tests on final model
+Anova(TTRmodelSex4, type = "III") %>% #Run type III Wald tests on final model
   broom::tidy(.)
 ```
+
+The significant effects are for treatment, day, carapace width, treatment x day, and treatment x sex.
 
 ### Treatment x day interaction
 
