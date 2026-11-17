@@ -769,51 +769,6 @@ modTTR %>% #Formatted data
 ggsave("figures/TTRmodelSex4-sex.pdf", height = 8.5, width = 11) #Save plot
 ```
 
-# Threshold analysis
-
-Another way to analyze this data is to count how many crabs within each treatment righted within a certain threshold. I can identify this threshold by taking the upper bound of a boxplot, then using a binomial model similar to [Coyle et al. (2019)](https://doi.org/10.1242/jeb.203521).
-
-## Define threshold
-
-```{r}
-boxplot.stats(modTTR$TTRavg)$stats[5] #Use Tukey's method to identify upper bound of outliers
-```
-
-```{r}
-modTTR <- modTTR %>%
-  mutate(., TTRthresh = case_when(TTRavg > boxplot.stats(modTTR$TTRavg)$stats[5] ~ 0,
-                                  TTRavg <= boxplot.stats(modTTR$TTRavg)$stats[5] ~ 1)) #Create a new column where 1 = righted within the upper bound of the boxplot, 0 = failure to right within that threshold
-head(modTTR) #Confirm changes
-```
-
-## Binomial model
-
-```{r}
-TTRthreshModel <- glm(I(TTRthresh == 1) ~ treatment + day + treatment*day + as.factor(sex) + as.factor(integument.color) + carapace.width + weight + as.factor(missing.legs), 
-                      family = binomial(), 
-                      data = modTTR) #Create a binomial model, where 1 = success of righting wihtin the defined threshold
-summary(TTRthreshModel) #Only the contrast bewteen 5C and 13C control is significant
-```
-
-```{r}
-step(TTRthreshModel, test = "LRT") #Use likelihood ratio tests and backwards deletion approaches to identify the best model
-```
-
-## Final model
-
-```{r}
-TTRthreshModel2 <- glm(I(TTRthresh == 1) ~ treatment + day,
-                       family = binomial(),
-                       data = modTTR) #Run model selected by step with only significant terms
-summary(TTRthreshModel2) #control vs. 5C significantly different, significant impact of day
-```
-
-## Save model output
-
-```{r}
-write.csv(broom::tidy(TTRthreshModel2), "TTR-binomialModel.csv", quote = FALSE, row.names = FALSE) #Save binomal GLM output
-```
-
 # Final plot
 
 ### Average TTR
