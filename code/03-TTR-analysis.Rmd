@@ -60,6 +60,11 @@ rawTTR <- read.csv("../../data/time-to-right.csv", header = TRUE) #Import raw da
 head(rawTTR) #Confirm import. Trial data is in seconds.
 ```
 
+```{r}
+rawTTR %>%
+  filter(., number.swimmers == 0) #3 crabs with missing swimmers
+```
+
 # Format data
 
 ```{r}
@@ -86,9 +91,9 @@ modTTR <- rawTTR %>%
                                             "YO" = 2.5 , 
                                             "O" = 3, 
                                             "RO" = 3.5)) %>%
-  mutate(., trial.1 = na_if(trial.1, 91.00)) %>%
-  mutate(., trial.2 = na_if(trial.2, 91.00)) %>%
-  mutate(., trial.3 = na_if(trial.3, 91.00)) %>%
+  # mutate(., trial.1 = na_if(trial.1, 91.00)) %>%
+  # mutate(., trial.2 = na_if(trial.2, 91.00)) %>%
+  # mutate(., trial.3 = na_if(trial.3, 91.00)) %>%
   rowwise(.) %>% 
   mutate(., TTRavg = mean(c(trial.1, trial.2, trial.3), na.rm = TRUE)) %>%
   filter(., is.na(TTRavg) == FALSE) %>%
@@ -304,7 +309,7 @@ I have righting response data for crabs across time. I will use a gamma GLMM wit
 
 ## GLMM
 
-My first step is to try a few different model families with this dataset to understand which one leads to the lowest AIC.
+My first step is to try a few different model structures with this dataset to understand which one leads to the lowest AIC. For all models, I will use a heavy-tailed student t model approach as there are right-censored values that the underlying model structure needs to accommodate. 
 
 ```{r}
 #Scale continuous variables for the GLMM
@@ -313,361 +318,142 @@ modTTR$carapace.width.sc <- scale(modTTR$carapace.width)
 modTTR$day.sc <- scale(modTTR$day)
 modTTR$integument.sc <- scale(modTTR$integument.cont)
 modTTR$number.swimmers.sc <- scale(modTTR$number.swimmers)
+
+#Convert categorical predictors to factors directly
+modTTR$treatment <- factor(modTTR$treatment)
+modTTR$sex <- factor(modTTR$sex)
+
+#Assign sum-to-zero contrasts to center categorical predictors around their grand mean (needed for getting accurate VIF information)
+contrasts(modTTR$treatment) <- contr.sum(3) # 3 temperature levels
+contrasts(modTTR$sex) <- contr.sum(2) # 2 sex levels
 ```
 
-### Gamma model family
+### Temperature x day
 
 ```{r}
-TTRmodelGamma <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
-    as.factor(sex) + integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
+TTRmodelTempDay <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ treatment + day.sc + treatment:day.sc + #Treatment, day, and their interaction
+    sex + integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
     (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
   data = modTTR,
-  family = Gamma(link = "log") #Gamma model with a log link
+  dispformula = ~ treatment,
+  family = t_family() #Gamma model with a log link
 )
-```
-
-```{r}
-drop1(TTRmodelGamma) #Use a backwards deletion approach and AIC to identify best fit model. 
+drop1(TTRmodelTempDay) #Use a backwards deletion approach and AIC to identify best fit model. 
 
 #Removing number.swimmers.sc leads to the lowest AIC
 ```
-```{r}
-TTRmodelGamma2 <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
-    as.factor(sex) + integument.sc + carapace.width.sc + #Demographic variables: sex, integument color, carapace width
-    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
-  data = modTTR,
-  family = Gamma(link = "log") #Gamma model with a log link
-)
-```
 
 ```{r}
-drop1(TTRmodelGamma2) #Use a backwards deletion approach and AIC to identify best fit model. 
-
-#Removing carapace.width.sc leads to the lowest AIC
-```
-```{r}
-TTRmodelGamma3 <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
-    as.factor(sex) + integument.sc + #Demographic variables: sex, integument color
-    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
-  data = modTTR,
-  family = Gamma(link = "log") #Gamma model with a log link
-)
-```
-
-```{r}
-drop1(TTRmodelGamma3) #Use a backwards deletion approach and AIC to identify best fit model. 
+TTRmodelTempDay2 <- update(TTRmodelTempDay, . ~ . - number.swimmers.sc) #Drop number of swimmers
+drop1(TTRmodelTempDay2) #Use a backwards deletion approach and AIC to identify best fit model. 
 
 #Removing integument.sc leads to the lowest AIC
 ```
 
 ```{r}
-TTRmodelGamma4 <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
-    as.factor(sex) + #Demographic variables: sex
+TTRmodelTempDay3 <- update(TTRmodelTempDay2, . ~ . - integument.sc) #Drop integument color
+drop1(TTRmodelTempDay3) #Use a backwards deletion approach and AIC to identify best fit model. 
+
+#Dropping sex leads to the lowest AIC
+```
+
+```{r}
+TTRmodelTempDay4 <- update(TTRmodelTempDay3, . ~ . - sex) #Drop integument color
+drop1(TTRmodelTempDay4) #Use a backwards deletion approach and AIC to identify best fit model. 
+
+#No more deletions!
+```
+
+### Polynomial term for day
+
+```{r}
+TTRmodelDayPoly <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ treatment*(day.sc + I(day.sc^2)) + #Treatment, day (single and polynomial), and their interaction
+    sex + integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
     (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
   data = modTTR,
-  family = Gamma(link = "log") #Gamma model with a log link
+  dispformula = ~ treatment,
+  family = t_family() #Gamma model with a log link
 )
-```
-
-```{r}
-drop1(TTRmodelGamma4) #Use a backwards deletion approach and AIC to identify best fit model. 
-
-#No more terms to delete!
-```
-
-### Gamma model family with polynomial term
-
-```{r}
-TTRmodelGammaPoly <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment)*(day.sc + I(day.sc^2)) + #Treatment, day (single and polynomial), and their interaction
-    as.factor(sex) + integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
-    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
-  data = modTTR,
-  family = Gamma(link = "log") #Gamma model with a log link
-)
-```
-
-```{r}
-drop1(TTRmodelGammaPoly) #Use a backwards deletion approach and AIC to identify best fit model. 
+drop1(TTRmodelDayPoly) #Use a backwards deletion approach and AIC to identify best fit model. 
 
 #Dropping number.swimmers.sc term leads to the lowest AIC
 ```
 
 ```{r}
-TTRmodelGammaPoly2 <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment)*(day.sc + I(day.sc^2)) + #Treatment, day (single and polynomial), and their interaction
-    as.factor(sex) + integument.sc + carapace.width.sc + #Demographic variables: sex, integument color, carapace width
-    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
-  data = modTTR,
-  family = Gamma(link = "log") #Gamma model with a log link
-)
+TTRmodelDayPoly2 <- update(TTRmodelDayPoly, . ~ . - number.swimmers.sc) #Number of swimmers
+drop1(TTRmodelDayPoly2) #Use a backwards deletion approach and AIC to identify best fit model. 
+
+#Dropping interaction between temerpature and polynomial day leads to the lowest AIC
 ```
 
 ```{r}
-drop1(TTRmodelGammaPoly2) #Use a backwards deletion approach and AIC to identify best fit model. 
+TTRmodelDayPoly3 <- update(TTRmodelDayPoly2, . ~ . - treatment:I(day.sc^2)) #Drop polynomial day x temperature
+drop1(TTRmodelDayPoly3) #Use a backwards deletion approach and AIC to identify best fit model. 
 
-#Dropping carapace.width.sc term leads to the lowest AIC
+#Dropping integument.sc leads to the lowest AIC
 ```
 
 ```{r}
-TTRmodelGammaPoly3 <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment)*(day.sc + I(day.sc^2)) + #Treatment, day (single and polynomial), and their interaction
-    as.factor(sex) + integument.sc + #Demographic variables: sex, integument color
-    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
-  data = modTTR,
-  family = Gamma(link = "log") #Gamma model with a log link
-)
+TTRmodelDayPoly4 <- update(TTRmodelDayPoly3, . ~ . - integument.sc) #Drop polynomial day x temperature
+drop1(TTRmodelDayPoly4) #Use a backwards deletion approach and AIC to identify best fit model. 
+
+#No more deletions!
 ```
 
-```{r}
-drop1(TTRmodelGammaPoly3) #Use a backwards deletion approach and AIC to identify best fit model. 
+### Interaction effects between sex, treatment, and day
 
-#Dropping integument.sc term leads to the lowest AIC
-```
-
-```{r}
-TTRmodelGammaPoly4 <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment)*(day.sc + I(day.sc^2)) + #Treatment, day (single and polynomial), and their interaction
-    as.factor(sex) + #Demographic variables: sex
-    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
-  data = modTTR,
-  family = Gamma(link = "log") #Gamma model with a log link
-)
-```
-
-```{r}
-drop1(TTRmodelGammaPoly4) #Use a backwards deletion approach and AIC to identify best fit model. 
-
-#Dropping polynomial term leads to the lowest AIC
-```
-
-Since dropping the polynomial term will lead to the lowest AIC, I will not go through the model selection process anymore, as this makes the model identical to the previous gamma family model without the polynomial term.
-
-### Gamma model family with interaction effects between sex, treatment, and day
-
-Given that sex is a significant effect in the model, I want to see what would happen if I fit a model with interactions between sex and temperature and sex and day.
+Given that sex is a significant effect in the model above, I want to see what would happen if I fit a model with interactions between sex and temperature and sex and day. There's also some literature to suggest sex-specific responses to temperature in *C. maenas*. 
 
 ```{r}
 TTRmodelSex <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc +  #Treatment, day, and their interaction
-    as.factor(sex) + as.factor(sex):as.factor(treatment) + as.factor(sex):day.sc + #Sex, interaction between sex and temperature, and interaction between sex and day
+  TTRavg ~ treatment + day.sc + treatment:day.sc +  #Treatment, day, and their interaction
+    sex + sex:treatment + sex:day.sc + #Sex, interaction between sex and temperature, and interaction between sex and day
     integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: integument color, carapace width, and number of swimmers
     (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
   data = modTTR,
-  dispformula = ~ as.factor(sex) + as.factor(treatment),
-  family = Gamma(link = "log") #Gamma model with a log link
+  dispformula = ~ treatment,
+  family = t_family() #Gamma model with a log link
 )
+drop1(TTRmodelSex) #Dropping number.swimmers.sc leads to the lowest AIC
 ```
 
 ```{r}
-drop1(TTRmodelSex) #Dropping carapace with and number of swimmers leads to the same AIC. I will remove carapace width since that is less central to the core hypothesis, and I want to ensure missing swimmers did not impact righting response.
+TTRmodelSex2 <- update(TTRmodelSex, . ~ . - number.swimmers.sc) #Drop number.swimmers.sc
+drop1(TTRmodelSex2) #Dropping integument.sc leads to lowest AIC
 ```
 
 ```{r}
-TTRmodelSex2 <- update(TTRmodelSex, . ~ . - carapace.width.sc) #Drop carapace width
+TTRmodelSex3 <- update(TTRmodelSex2, . ~ . - integument.sc) #Drop integument.sc
+drop1(TTRmodelSex3) #Dropping day.sc:sex leads to the lowest AIC
 ```
 
 ```{r}
-drop1(TTRmodelSex2) #Dropping number of swimmers leads to lowest AIC
-```
-
-```{r}
-TTRmodelSex3 <- update(TTRmodelSex2, . ~ . - number.swimmers.sc ) #Drop number of swimmers
-```
-
-```{r}
-drop1(TTRmodelSex3) #Dropping integument color leads to the lowest AIC
-```
-
-```{r}
-TTRmodelSex4 <- update(TTRmodelSex3, . ~ . - integument.sc) #Drop number of swimmers
-```
-
-```{r}
+TTRmodelSex4 <- update(TTRmodelSex3, . ~ . - day.sc:sex) #Drop day.sc:sex
 drop1(TTRmodelSex4) #Dropping sex:day interaction leads to lowest AIC
-```
-
-```{r}
-TTRmodelSex5 <- update(TTRmodelSex4, . ~ . - day.sc:as.factor(sex)) #Drop sex:day interaction
-```
-
-```{r}
-drop1(TTRmodelSex5)
-
 #No more deletions necessary!
-```
-### Log normal model family
-
-```{r}
-TTRmodelLogNorm <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
-    as.factor(sex) + integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
-    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
-  data = modTTR,
-  family = lognormal(link = "log") #Log normal model with a log link
-)
-```
-
-```{r}
-drop1(TTRmodelLogNorm) #Use a backwards deletion approach and AIC to identify best fit model. 
-
-#Dropping the interaction term leads to the lowest AIC
-```
-
-```{r}
-#Rerun the model without temperature:day interaction
-
-TTRmodelLogNorm2 <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment) + day.sc + #Treatment and day
-    as.factor(sex) + integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, number of swimmers
-    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
-  data = modTTR,
-  family = lognormal(link = "log") #Log normal model with a log link
-)
-```
-
-```{r}
-drop1(TTRmodelLogNorm2) #Use a backwards deletion approach and AIC to identify best fit model. 
-
-#Dropping integument.sc will reduce AIC the most
-```
-
-```{r}
-#Rerun the model without integument.sc
-
-TTRmodelLogNorm3 <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment) + day.sc + #Treatment and day
-    as.factor(sex) + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, carapace width, number of swimmers
-    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
-  data = modTTR,
-  family = lognormal(link = "log") #Log normal model with a log link
-)
-```
-
-```{r}
-drop1(TTRmodelLogNorm3) #Use a backwards deletion approach and AIC to identify best fit model. 
-
-#Dropping day.sc will reduce AIC the most
-```
-
-```{r}
-TTRmodelLogNorm4 <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment) + #Treatment
-    as.factor(sex) + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, carapace width, number of swimmers
-    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
-  data = modTTR,
-  family = lognormal(link = "log") #Log normal model with a log link
-)
-```
-
-```{r}
-drop1(TTRmodelLogNorm4) #Use a backwards deletion approach and AIC to identify best fit model. 
-
-#Removing sex will reduce AIC the most
-```
-
-```{r}
-TTRmodelLogNorm5 <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment) + #Treatment
-    carapace.width.sc + number.swimmers.sc + #Demographic variables: carapace width, number of swimmers
-    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
-  data = modTTR,
-  family = lognormal(link = "log") #Log normal model with a log link
-)
-```
-
-```{r}
-drop1(TTRmodelLogNorm5) #Use a backwards deletion approach and AIC to identify best fit model. 
-
-#No more terms to remove!
-```
-
-### Inverse gaussian model family
-
-```{r}
-TTRmodelInvGaus <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment) + day.sc + as.factor(treatment):day.sc + #Treatment, day, and their interaction
-    as.factor(sex) + integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
-    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
-  data = modTTR,
-  family = inverse.gaussian(link = "log") #Log normal model with a log link
-)
-```
-
-```{r}
-drop1(TTRmodelInvGaus) #Use a backwards deletion approach and AIC to identify best fit model. 
-
-#Removing the interaction term leads to the lowest AIC
-```
-
-```{r}
-TTRmodelInvGaus2 <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment) + day.sc +  #Treatment, day
-    as.factor(sex) + integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: sex, integument color, carapace width, and number of swimmers
-    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
-  data = modTTR,
-  family = inverse.gaussian(link = "log") #Log normal model with a log link
-)
-```
-
-```{r}
-drop1(TTRmodelInvGaus2) #Use a backwards deletion approach and AIC to identify best fit model. 
-
-#Removing sex leads to the lowest AIC
-```
-
-```{r}
-TTRmodelInvGaus3 <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment) + day.sc +  #Treatment, day
-    integument.sc + carapace.width.sc + number.swimmers.sc + #Demographic variables: integument color, carapace width, and number of swimmers
-    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
-  data = modTTR,
-  family = inverse.gaussian(link = "log") #Log normal model with a log link
-)
-```
-
-```{r}
-drop1(TTRmodelInvGaus3) #Use a backwards deletion approach and AIC to identify best fit model. 
-
-#Removing number.swimmers.sc leads to the lowest AIC
-```
-
-```{r}
-TTRmodelInvGaus4 <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment) + day.sc +  #Treatment, day
-    integument.sc + carapace.width.sc + #Demographic variables: integument color, carapace width
-    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
-  data = modTTR,
-  family = inverse.gaussian(link = "log") #Log normal model with a log link
-)
-```
-
-```{r}
-drop1(TTRmodelInvGaus4) #Use a backwards deletion approach and AIC to identify best fit model. 
-
-#No more terms to delete!
 ```
 
 ## Final model
 
 ```{r}
-AIC(TTRmodelGamma4, TTRmodelGamma_disp4, TTRmodelSex5, TTRmodelLogNorm5, TTRmodelInvGaus4) #Compare AIC amongst the most parsimonious models for different model families
-```
-Since the gamma model with a sex:temperature interaction has the lowest AIC, I will use that model as the final model.
-
-```{r}
-summary(TTRmodelSex5) #Summary output of the final model
+AIC(TTRmodelTempDay4, TTRmodelDayPoly4, TTRmodelSex4) #Compare AIC amongst the most parsimonious models for different model families
 ```
 
+The model using polynomial day has the lowest AIC, however when I check the simulated residuals, the model has issues with heteroskedasticity, dispersion, and outliers. Therefore, I will proceed with the model that included an interaction between sex and temperature, since that has the second-lowest AIC.
+
 ```{r}
-Anova(TTRmodelSex5, type = "III") %>% #Run type III Wald tests on final model
+summary(TTRmodelSex4) #Summary output of the final model
+```
+
+```{r}
+Anova(TTRmodelSex4, type = "III") %>% #Run type III Wald tests on final model
   broom::tidy(.) %>% #Tidy output
   write.csv(., "TTRmodelSex5-typeIII-Wald-output.csv", quote = FALSE, row.names = FALSE) #Save output as a CSV file
 ```
+
+Looks like sex as a main effect was not statistically significant, but the treatment:sex interaction is significant.
 
 ## Check assumptions
 
@@ -676,62 +462,70 @@ Anova(TTRmodelSex5, type = "III") %>% #Run type III Wald tests on final model
 I want to ensure that my predictor variables are not correlated with eachother.
 
 ```{r}
-check_collinearity(TTRmodelSex5) # Check multicollinearity assumption.
-
-#Adjusted VIF < 2, assumption is met, there is low correlation
+check_collinearity(TTRmodelSex4) # Check multicollinearity assumption.
+#Terms that are flagged are involved in interactions, so probably okay.
 ```
 
 ### Heteroskedasticity
 
 ```{r}
-sim_residuals <- simulateResiduals(fittedModel = TTRmodelSex5, n = 1000, plot = TRUE) #Simulate residuals for the final model
+# Extract simulations (as a matrix), observed values, and fitted predictions
+sims <- getSimulations(TTRmodelSex4, nsim = 1000)
+obs  <- getObservedResponse(TTRmodelSex4)
+pred <- getFitted(TTRmodelSex4)
+
+# 2. Apply the 91s experimental ceiling
+sims[sims > 91] <- log(91)
+
+# 3. Create and plot DHARMa residuals
+res_cens <- createDHARMa(
+  simulatedResponse = sims,
+  observedResponse = obs,
+  fittedPredictedResponse = pred
+)
+
+plot(res_cens)
 ```
 
-Based on the plot, there is slight non-uniformity in residual distribution. However, the distribution is almost linear, so that may be okay. There are no significant dispersion differences or any outliers. There is some curvature in the quantiles. 
+Based on the plot, there is no non-uniformity in residual distribution! There are no significant dispersion differences or any outliers. There is some curvature in the quantiles. 
 
 ```{r}
-testUniformity(sim_residuals) #Kolmogorov-Smirnov test
+testUniformity(res_cens) #Kolmogorov-Smirnov test
+#No heteroskedasticity: p = 0.05432
 ```
 
 ### Dispersion
 
 ```{r}
-testDispersion(sim_residuals) #Test dispersion
+testDispersion(res_cens) #Test dispersion
 
-#Dispersion = 1.384, but not significant overdispersion
+#Dispersion = 0.017777, p = 0.456
 ```
 
 ### Outliers
 
 ```{r}
-testOutliers(sim_residuals) #Test for outliers
+testOutliers(res_cens) #Test for outliers
 
-#No significant outliers (p = 0.09051)
+#Significant outliers (p = 0.0001785) likely due to the inclusion of the right-censored data
 ```
 
 ### Quantile distributions
 
 ```{r}
-testQuantiles(sim_residuals) #Test quantile distributions
+testQuantiles(res_cens) #Test quantile distributions (p = 0.005789)
 ```
 
 ```{r}
-testCategorical(sim_residuals, catPred = ~ as.factor(sex)) #Test quantile distributions against a specific categorial predictor variable
-
-#Lower variance at M
-```
-
-```{r}
-testCategorical(sim_residuals, catPred = ~ as.factor(treatment)) #Test quantile distributions against a specific categorial predictor variable
-
-#Low variance at 13ºC and 30ºC
+testCategorical(res_cens, catPred = model.frame(TTRmodelSex4)$treatment) #Test quantile distributions against a specific categorial predictor variable
+#No difference in quantile distribution by temperature. Dispersion factor is controlling for this adequately.
 ```
 
 ### Normality of random effects
 
 ```{r}
-re_normality <- check_normality(TTRmodelSex5, effects = "random") # Check random effect normality
-re_normality #Random effects are normally distributed (p = 0.733)
+re_normality <- check_normality(TTRmodelSex4, effects = "random") # Check random effect normality
+re_normality #Random effects are normally distributed (p = 0.726)
 
 plot(re_normality) #QQ plot of random effects
 ```
@@ -741,38 +535,37 @@ plot(re_normality) #QQ plot of random effects
 To understand how "important" the random effect is, I am going to fit a model without the random effect and compare the models using LRT and AIC comparisons.
 
 ```{r}
-# Fit equivalent model with the random intercept
-TTRmodelSex5_noRE <- glmmTMB(
-  TTRavg ~ as.factor(treatment) * day.sc + as.factor(sex) * as.factor(treatment),
-  dispformula = ~ as.factor(sex) + as.factor(treatment),
+# Fit equivalent model witout the random effect of tank
+TTRmodelSex4_noRE <- glmmTMB(
+  TTRavg ~ treatment * day.sc + sex * treatment + carapace.width.sc,
+  dispformula = ~ treatment,
   data = modTTR,
-  family = Gamma(link = "log")
+  family = t_family()
 )
 
 # Likelihood Ratio Test
-anova(TTRmodelSex5, TTRmodelSex5_noRE) #Non-significant LRT output (chisq = 0.7861, P = 0.3753)
+anova(TTRmodelSex4, TTRmodelSex4_noRE) #Non-significant LRT output (chisq = 0, P = 1)
 
 # Compare AICs
-AIC(TTRmodelSex5, TTRmodelSex5_noRE) #Lower AIC without random effect (904.6060 vs. 905.8199)
+AIC(TTRmodelSex4, TTRmodelSex4_noRE) #Lower AIC with random effect (805.263 vs. 803.263)
 ```
 
 ```{r}
-summary(TTRmodelSex5)$varcor #Random effect associated with 0.073579 SD
-0.073579^2 #Variance = 0.005413869
+summary(TTRmodelSex4)$varcor #Random effect associated with 6.6521e-06 SD
+(6.6521e-06)^2 #Variance = 4.425043e-11
 ```
-
 
 ## Model bootstrapping
 
 Since the K-S test came out with a significant p-value and there are fluctuations in the quantile curves, I want to run a bootstrapping test on my model coefficients to confirm that my output is stable.
 
 ```{r}
-boot_params <- bootstrap_parameters(TTRmodelSex5, iterations = 1000) #Calculate bootstrapped p-values and 95% CI to on model coefficients
+boot_params <- bootstrap_parameters(TTRmodelSex4, iterations = 1000) #Calculate bootstrapped p-values and 95% CI to on model coefficients
 print(boot_params) #See results of boostrapping
 ```
 
 ```{r}
-summary(TTRmodelSex5)[[6]][[1]] #Original model output
+summary(TTRmodelSex4)[[6]][[1]] #Original model output
 ```
 
 Based on my comparison between the original model output and the bootstrapped p-values and confidence intervals, my original model inferences are stable!
@@ -787,7 +580,7 @@ summary(TTRmodelSex5)[[6]][[1]] %>% #Original model output
             y = boot_params %>%
               as.data.frame(.), #Join with bootstrap output converted to a dataframe
             by = "Parameter") %>% #Join by the Parameter column
-  write.csv(., "TTRmodelSex5-output.csv", quote = FALSE, row.names = FALSE) #Save table version of GLMM output with boostrapping results
+  write.csv(., "TTRmodelSex4-output.csv", quote = FALSE, row.names = FALSE) #Save table version of GLMM output with boostrapping results
 ```
 
 ## Posthoc tests for significant predictors
