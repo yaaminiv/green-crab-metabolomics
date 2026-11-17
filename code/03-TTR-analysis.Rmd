@@ -435,13 +435,48 @@ drop1(TTRmodelSex4) #Dropping sex:day interaction leads to lowest AIC
 #No more deletions necessary!
 ```
 
+### Interaction effects between carapace width and treatment
+
+Carapace width is significant in the model above, but the main effect of sex is not. Given that male crabs are usually larger than their female counterparts, I wanted to see if a carapace width:treatment interaction would be useful to understand the underlying data.
+
+```{r}
+TTRmodelCW <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ treatment + day.sc + treatment:day.sc +  #Treatment, day, and their interaction
+    carapace.width.sc + carapace.width.sc:treatment + #Carapace width, interaction between carapace width and temperature
+    integument.sc + sex + number.swimmers.sc + #Demographic variables: integument color, carapace width, and number of swimmers
+    (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
+  data = modTTR,
+  dispformula = ~ treatment,
+  family = t_family() #Gamma model with a log link
+)
+drop1(TTRmodelCW) #Dropping number.swimmers.sc leads to the lowest AIC
+```
+
+```{r}
+TTRmodelCW2 <- update(TTRmodelCW, . ~ . - number.swimmers.sc) #Drop number.swimmers.sc
+drop1(TTRmodelCW2) #Dropping sex leads to lowest AIC
+```
+
+```{r}
+TTRmodelCW3 <- update(TTRmodelCW2, . ~ . - sex) #Drop number.swimmers.sc
+drop1(TTRmodelCW3) #Dropping integument.sc leads to lowest AIC
+```
+
+```{r}
+TTRmodelCW4 <- update(TTRmodelCW3, . ~ . - integument.sc) #Drop number.swimmers.sc
+drop1(TTRmodelCW4) #Dropping integument.sc leads to lowest AIC
+#No more deletions!
+```
+
 ## Final model
 
 ```{r}
-AIC(TTRmodelTempDay4, TTRmodelDayPoly4, TTRmodelSex4) #Compare AIC amongst the most parsimonious models for different model families
+AIC(TTRmodelTempDay4, TTRmodelDayPoly4, TTRmodelSex4, TTRmodelCW4) #Compare AIC amongst the most parsimonious models for different model families
 ```
 
 The model using polynomial day has the lowest AIC, however when I check the simulated residuals, the model has issues with heteroskedasticity, dispersion, and outliers. Therefore, I will proceed with the model that included an interaction between sex and temperature, since that has the second-lowest AIC.
+
+It's also interesting that the model with the sex:temperature interaction (significant carapace width main effect but not sex) has a lower AIC than the model with a significant carapace width:temperature interaction (sex not included in the model).
 
 ```{r}
 summary(TTRmodelSex4) #Summary output of the final model
@@ -450,10 +485,14 @@ summary(TTRmodelSex4) #Summary output of the final model
 ```{r}
 Anova(TTRmodelSex4, type = "III") %>% #Run type III Wald tests on final model
   broom::tidy(.) %>% #Tidy output
-  write.csv(., "TTRmodelSex5-typeIII-Wald-output.csv", quote = FALSE, row.names = FALSE) #Save output as a CSV file
+  write.csv(., "TTRmodelSex4-typeIII-Wald-output.csv", quote = FALSE, row.names = FALSE) #Save output as a CSV file
 ```
 
-Looks like sex as a main effect was not statistically significant, but the treatment:sex interaction is significant.
+```{r}
+Anova(TTRmodelSex4, type = "III")
+```
+
+Looks like sex as a main effect was not statistically significant, but the treatment:sex interaction is significant. Carapace width is also significant.
 
 ## Check assumptions
 
@@ -599,12 +638,11 @@ The significant effects are for treatment, day, carapace width, treatment x day,
 I first will examine treatment differences at each day.
 
 ```{r}
-TTRmodel_EMM_tempDay <- emmeans(TTRmodelSex5, #Model name
+TTRmodel_EMM_tempDay <- emmeans(TTRmodelSex4, #Model name
                                 ~ treatment | day.sc, #Significant predictor to investigate
                                 at = list(day.sc = scale(c(4, 8, 11, 15, 18, 22),
                                                          center = mean(modTTR$day),
                                                          scale = sd(modTTR$day))), #Days where TTR was measured. Include scale to automatically back-transform scaled predictor variable, and specify the center and scale variables used in the initial scaling for back-transformation.
-                                type = "response", #Convert back to the response scale since a log link was used
                                 adjust = "bonferroni") #Use Bonferroni correction for multiple comparisons
 TTRmodel_EMM_tempDay #Estimated marginal means
 ```
@@ -618,16 +656,16 @@ tempDay_EMM <- TTRmodel_EMM_tempDay %>% #Take emmeans output
                  rep(15, times = 3),
                  rep(18, times = 3),
                  rep(22, times = 3))) %>% #Add a column with real, not scaled dates
-  dplyr::select(treatment, day, response, std.error) %>% #Keep columns of interest
-  mutate(., LCL = response - std.error,
-         UCL = response + std.error) #Create columns for upper and lower confidence intervals
+  dplyr::select(treatment, day, estimate, std.error) %>% #Keep columns of interest
+  mutate(., LCL = estimate - std.error,
+         UCL = estimate + std.error) #Create columns for upper and lower confidence intervals
 head(tempDay_EMM) #Confirm formatting 
 ```
 
 ```{r}
 pairs(TTRmodel_EMM_tempDay) %>% #Get pairwise comparisons for treatment x day
   broom::tidy(.) %>% #Tidy output
-  filter(., contrast != "30C / 5C") %>% #Remove comparisons between 30C and 5C
+  filter(., contrast != "30C - 5C") %>% #Remove comparisons between 30C and 5C
   mutate(., day = c(rep(4, times = 2),
                     rep(8, times = 2),
                     rep(11, times = 2),
@@ -635,27 +673,27 @@ pairs(TTRmodel_EMM_tempDay) %>% #Get pairwise comparisons for treatment x day
                     rep(18, times = 2),
                     rep(22, times = 2))) %>% #Create a column with actual date, not scaled date
   dplyr::select(day, contrast:adj.p.value) %>% #Retain columns of interest
-  write.csv(., "TTRmodelSex5-emmeans-tempDay.csv", quote = FALSE, row.names = FALSE) #Save as a csv
+  write.csv(., "TTRmodelSex4-emmeans-tempDay.csv", quote = FALSE, row.names = FALSE) #Save as a csv
 ```
 
 Now that I have this information, I want to understand how responses within a temperature changed over time. In order to get pairwise estimates, I will need to refactor day as a categorical variable, rerun the model, and then use `emmeans` on this revised model.
 
 ```{r}
 modTTR$day_factor <- as.factor(modTTR$day) #Code day as a factor
-TTRmodelSex5_factor <- glmmTMB( #Generalized linear mixed effect model
-  TTRavg ~ as.factor(treatment) + day_factor + as.factor(treatment):day_factor + #Temperature, time, and their interaction
-    as.factor(sex) + as.factor(treatment):as.factor(sex) + #Sex and the interaction between temperature and sex
+TTRmodelSex4_factor <- glmmTMB( #Generalized linear mixed effect model
+  TTRavg ~ treatment + day_factor + treatment:day_factor + #Temperature, time, and their interaction
+    sex + treatment:sex + #Sex and the interaction between temperature and sex
+    carapace.width.sc + #Carapace width
     (1 | treatment.tank), #Use tank as a random effect to account for potential dependence between data
   data = modTTR,
-  dispformula = ~ as.factor(sex) + as.factor(treatment), #Model dispersion by additive sex and temperature
-  family = Gamma(link = "log") #Gamma model with a log link
+  dispformula = ~ treatment, #Model dispersion by  temperature
+  family = t_family() #Gamma model with a log link
 ) #Run the original model, but use day as a factor
 ```
 
 ```{r}
-TTRmodel_EMM_dayTemp <- emmeans(TTRmodelSex5_factor, #Model name
+TTRmodel_EMM_dayTemp <- emmeans(TTRmodelSex4_factor, #Model name
                                 ~ day_factor | treatment, #Significant predictor to investigate
-                                type = "response", #Convert back to the response scale since a log link was used
                                 adjust = "bonferroni") #Use Bonferroni correction for multiple comparisons
 TTRmodel_EMM_dayTemp #Estimated marginal means
 ```
@@ -664,7 +702,7 @@ TTRmodel_EMM_dayTemp #Estimated marginal means
 pairs(TTRmodel_EMM_dayTemp) %>% #Get pairwise comparisons for day x treatment
   broom::tidy(.) %>% #Tidy output
   dplyr::select(treatment, contrast:adj.p.value) %>% #Retain columns of interest
-  write.csv(., "TTRmodelSex5_factor-emmeans-dayTemp.csv", quote = FALSE, row.names = FALSE) #Save as a csv
+  write.csv(., "TTRmodelSex4_factor-emmeans-dayTemp.csv", quote = FALSE, row.names = FALSE) #Save as a csv
 ```
 
 ### Sex x temperature interaction
@@ -672,9 +710,8 @@ pairs(TTRmodel_EMM_dayTemp) %>% #Get pairwise comparisons for day x treatment
 Since the interaction between treatment and day was significant, I need to examine treatment differences at each day.
 
 ```{r}
-TTRmodel_EMM_tempSex <- emmeans(TTRmodelSex5, #Model name
+TTRmodel_EMM_tempSex <- emmeans(TTRmodelSex4, #Model name
                                 ~ sex | treatment, #Significant predictor to investigate
-                                type = "response", #Convert back to the response scale since a log link was used
                                 adjust = "bonferroni") #Use Bonferroni correction for multiple comparisons
 TTRmodel_EMM_tempSex #Estimated marginal means
 ```
@@ -682,16 +719,16 @@ TTRmodel_EMM_tempSex #Estimated marginal means
 ```{r}
 tempSex_EMM <- TTRmodel_EMM_tempSex %>% #Take emmeans output
   broom::tidy(.) %>% #Tidy it
-  dplyr::select(treatment, sex, response, std.error) %>% #Keep columns of interest
-  mutate(., LCL = response - std.error,
-         UCL = response + std.error) #Create columns for upper and lower confidence intervals
+  dplyr::select(treatment, sex, estimate, std.error) %>% #Keep columns of interest
+  mutate(., LCL = estimate - std.error,
+         UCL = estimate + std.error) #Create columns for upper and lower confidence intervals
 head(tempSex_EMM) #Confirm formatting 
 ```
 
 ```{r}
 pairs(TTRmodel_EMM_tempSex) %>% #Get pairwise comparisons for treatment x day
   broom::tidy(.) %>% #Tidy output
-  write.csv(., "TTRmodelSex5-emmeans-tempSex.csv", quote = FALSE, row.names = FALSE) #Save as a csv
+  write.csv(., "TTRmodelSex4-emmeans-tempSex.csv", quote = FALSE, row.names = FALSE) #Save as a csv
 ```
 
 I am interested in why sex:temperature is deemed a significant predictor in this model.
@@ -708,7 +745,7 @@ modTTR %>%
          avgCW_diff = avgCW_M - avgCW_F) #Quantify the difference between females and males for all variables
 ```
 
-On average, female crabs are smaller and weigh less than male crabs. Since carapace width was removed from the model during model selection, it is likely that sex not only explains physical differences that allow for faster righting, but potentially also biochemical differences in righting response. 
+On average, female crabs are smaller and weigh less than male crabs. This could explain why carapace width is still included as a significant predictor in the model. A sex:temperature interaction suggests a combination of physical and biochemical differences in righting response. 
 
 ```{r}
 modTTR %>% #Formatted data
@@ -729,7 +766,7 @@ modTTR %>% #Formatted data
                      breaks = seq(0, 50, 10),
                      limits = c(0, 50)) + #Create y-axis
   theme_classic(base_size = 15) + theme(legend.position = "none") #Modify theme, include a base font size, and remove legend
-ggsave("figures/TTRmodelGamma4-sex.pdf", height = 8.5, width = 11) #Save plot
+ggsave("figures/TTRmodelSex4-sex.pdf", height = 8.5, width = 11) #Save plot
 ```
 
 # Threshold analysis
