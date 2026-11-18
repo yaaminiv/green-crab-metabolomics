@@ -498,11 +498,21 @@ Looks like sex as a main effect was not statistically significant, but the treat
 
 ### Multicollinearity
 
-I want to ensure that my predictor variables are not correlated with eachother.
+I want to ensure that my predictor variables are not correlated with eachother. However, I need to do this on an version of the model with only additive components (no interactions).
 
 ```{r}
-check_collinearity(TTRmodelSex4) # Check multicollinearity assumption.
-#Terms that are flagged are involved in interactions, so probably okay.
+#Create additive model without any interactions between variables
+TTRmodelSex4_additive <- glmmTMB(
+  TTRavg ~ treatment + day.sc + 
+    sex + 
+    carapace.width.sc + 
+    (1 | treatment.tank),
+  dispformula = ~ treatment,
+  data = modTTR,
+  family = t_family()
+)
+
+check_collinearity(TTRmodelSex4_additive) #Check multicollinearity
 ```
 
 ### Heteroskedasticity
